@@ -1,12 +1,12 @@
 package fpt.capstone.vuondau.repository;
 
-import fpt.capstone.vuondau.entity.User;
+import fpt.capstone.vuondau.entity.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User,Integer> {
-    Optional<User> findByUsername(String username);
+public interface AccountRepository extends JpaRepository<Account,Integer> {
+    Optional<Account> findByUsername(String username);
 }

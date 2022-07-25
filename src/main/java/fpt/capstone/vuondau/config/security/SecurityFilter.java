@@ -1,7 +1,6 @@
 package fpt.capstone.vuondau.config.security;
 
 import fpt.capstone.vuondau.util.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,10 +17,13 @@ import java.io.IOException;
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
-    @Autowired
-    private JwtUtil util;
-    @Autowired
-    private UserDetailsService userDetailsService;
+
+    private final JwtUtil util;
+    private final UserDetailsService userDetailsService;
+    public SecurityFilter(JwtUtil util, UserDetailsService userDetailsService) {
+        this.util = util;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

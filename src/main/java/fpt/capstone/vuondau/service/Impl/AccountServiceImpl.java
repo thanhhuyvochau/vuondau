@@ -1,9 +1,9 @@
 package fpt.capstone.vuondau.service.Impl;
 
+import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.Role;
-import fpt.capstone.vuondau.entity.User;
-import fpt.capstone.vuondau.repository.UserRepository;
-import fpt.capstone.vuondau.service.IUserService;
+import fpt.capstone.vuondau.repository.AccountRepository;
+import fpt.capstone.vuondau.service.IAccountService;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,35 +20,35 @@ import java.util.Set;
 
 @Service
 @Transactional
-public class UserServiceImpl implements IUserService, UserDetailsService {
-    private final UserRepository userRepository;
+public class AccountServiceImpl implements IAccountService, UserDetailsService {
+    private final AccountRepository accountRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.userRepository = userRepository;
+    public AccountServiceImpl(AccountRepository accountRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.accountRepository = accountRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> opt = userRepository.findByUsername(username);
+        Optional<Account> opt = accountRepository.findByUsername(username);
         org.springframework.security.core.userdetails.User springUser = null;
         if (!opt.isPresent()) {
             throw new UsernameNotFoundException("User with username: " + username);
         } else {
-            User user = opt.get();
-            List<Role> roleList = user.getRoles();
+            Account account = opt.get();
+            List<Role> roleList = account.getRoles();
             Set<GrantedAuthority> ga = new HashSet<>();
             for (Role role : roleList) {
                 ga.add(new SimpleGrantedAuthority(role.getName()));
             }
-            springUser = new org.springframework.security.core.userdetails.User(username, user.getPassword(), ga);
+            springUser = new org.springframework.security.core.userdetails.User(username, account.getPassword(), ga);
         }
         return springUser;
     }
 
     @Override
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public Optional<Account> findByUsername(String username) {
+        return accountRepository.findByUsername(username);
     }
 }
