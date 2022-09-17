@@ -2,7 +2,6 @@ package fpt.capstone.vuondau.config;
 
 import fpt.capstone.vuondau.config.security.SecurityFilter;
 import fpt.capstone.vuondau.config.security.UnAuthorizedUserAuthenticationEntryPoint;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,17 +16,24 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired
-    private UserDetailsService userDetailsService;
 
-    @Autowired
-    private BCryptPasswordEncoder bCryptEncoder;
+    private final UserDetailsService userDetailsService;
 
-    @Autowired
-    private UnAuthorizedUserAuthenticationEntryPoint authenticationEntryPoint;
 
-    @Autowired
-    private SecurityFilter secFilter;
+    private final BCryptPasswordEncoder bCryptEncoder;
+
+
+    private final UnAuthorizedUserAuthenticationEntryPoint authenticationEntryPoint;
+
+
+    private final SecurityFilter secFilter;
+
+    public SecurityConfig(UserDetailsService userDetailsService, BCryptPasswordEncoder bCryptEncoder, UnAuthorizedUserAuthenticationEntryPoint authenticationEntryPoint, SecurityFilter secFilter) {
+        this.userDetailsService = userDetailsService;
+        this.bCryptEncoder = bCryptEncoder;
+        this.authenticationEntryPoint = authenticationEntryPoint;
+        this.secFilter = secFilter;
+    }
 
     //Required in case of Stateless Authentication
     @Override
@@ -38,7 +44,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-
         auth.userDetailsService(userDetailsService)
                 .passwordEncoder(bCryptEncoder);
     }

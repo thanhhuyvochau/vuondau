@@ -51,4 +51,10 @@ public class AccountServiceImpl implements IAccountService, UserDetailsService {
     public Optional<Account> findByUsername(String username) {
         return accountRepository.findByUsername(username);
     }
+
+    @Override
+    public Integer saveAccount(Account account) {
+        account.setPassword(bCryptPasswordEncoder.encode(account.getPassword()));
+        return accountRepository.save(account).getId();
+    }
 }
