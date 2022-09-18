@@ -3,10 +3,12 @@ package fpt.capstone.vuondau.entity.request;
 
 import java.io.Serializable;
 
-public class AccountRequest implements Serializable {
+public class AccountExistedTeacherRequest implements Serializable {
 
     private String username;
     private String password;
+    private boolean isActive = false ;
+    private Long teachId ;
 
     public String getUsername() {
         return username;
@@ -24,4 +26,19 @@ public class AccountRequest implements Serializable {
         this.password = password;
     }
 
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public Long getTeachId() {
+        return teachId;
+    }
+
+    public void setTeachId(Long teachId) {
+        this.teachId = teachId;
+    }
 }

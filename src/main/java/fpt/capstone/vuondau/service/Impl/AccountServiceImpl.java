@@ -4,6 +4,7 @@ import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.Role;
 import fpt.capstone.vuondau.entity.Teacher;
 import fpt.capstone.vuondau.entity.common.ApiException;
+import fpt.capstone.vuondau.entity.request.AccountExistedTeacherRequest;
 import fpt.capstone.vuondau.entity.request.AccountRequest;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
 import fpt.capstone.vuondau.repository.AccountRepository;
@@ -67,7 +68,7 @@ public class AccountServiceImpl implements IAccountService, UserDetailsService {
     }
 
     @Override
-    public AccountTeacherResponse createTeacherAccount(AccountRequest accountRequest) {
+    public AccountTeacherResponse createTeacherAccount(AccountExistedTeacherRequest accountRequest) {
         Account account = new Account();
         account.setUsername(accountRequest.getUsername());
         account.setPassword(bCryptPasswordEncoder.encode(accountRequest.getPassword()));

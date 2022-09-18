@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.service;
 
 import fpt.capstone.vuondau.entity.Account;
+import fpt.capstone.vuondau.entity.request.AccountExistedTeacherRequest;
 import fpt.capstone.vuondau.entity.request.AccountRequest;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
@@ -12,5 +13,5 @@ public interface IAccountService {
 
     Long saveAccount(Account account);
 
-    AccountTeacherResponse createTeacherAccount(AccountRequest accountRequest);
+    AccountTeacherResponse createTeacherAccount(AccountExistedTeacherRequest accountRequest);
 }

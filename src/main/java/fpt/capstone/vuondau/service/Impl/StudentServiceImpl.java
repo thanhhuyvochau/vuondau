@@ -31,6 +31,7 @@ public class StudentServiceImpl implements IStudentService {
     private final AccountRepository accountRepository;
     private final RoleRepository roleRepository;
 
+
     public StudentServiceImpl(StudentRepository studentRepository, BCryptPasswordEncoder bCryptPasswordEncoder, AccountRepository accountRepository, RoleRepository roleRepository) {
         this.studentRepository = studentRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
@@ -41,6 +42,12 @@ public class StudentServiceImpl implements IStudentService {
     @Override
     public List<StudentResponse> getAll() {
         List<Student> students = studentRepository.findAll();
+        return students.stream().map(this::convertStudentToStudentResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<StudentResponse> getAllByActive(Boolean isActive) {
+        List<Student> students = studentRepository.findAllByAccount_IsActive(isActive);
         return students.stream().map(this::convertStudentToStudentResponse).collect(Collectors.toList());
     }
 

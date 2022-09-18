@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.controller;
 
 import fpt.capstone.vuondau.entity.common.ApiResponse;
+import fpt.capstone.vuondau.entity.request.AccountExistedTeacherRequest;
 import fpt.capstone.vuondau.entity.request.AccountRequest;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
 import fpt.capstone.vuondau.entity.response.AccountTokenResponse;
@@ -40,7 +41,7 @@ public class AccountController {
 
     @Operation(summary = "Tạo tài khoản cho giáo viên")
     @PostMapping
-    public ResponseEntity<ApiResponse<AccountTeacherResponse>> createTeacherAccount(@RequestBody AccountRequest accountRequest) {
+    public ResponseEntity<ApiResponse<AccountTeacherResponse>> createTeacherAccount(@RequestBody AccountExistedTeacherRequest accountRequest) {
         return ResponseEntity.ok(ApiResponse.success(userService.createTeacherAccount(accountRequest)));
     }
 
