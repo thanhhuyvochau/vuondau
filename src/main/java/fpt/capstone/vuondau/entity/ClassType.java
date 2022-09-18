@@ -1,9 +1,8 @@
 package fpt.capstone.vuondau.entity;
 
-import fpt.capstone.vuondau.entity.request.EClassType;
+import fpt.capstone.vuondau.entity.common.EClassType;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity

@@ -1,7 +1,7 @@
 package fpt.capstone.vuondau.controller;
 
 import fpt.capstone.vuondau.entity.request.AccountRequest;
-import fpt.capstone.vuondau.entity.response.AccountResponse;
+import fpt.capstone.vuondau.entity.response.AccountTokenResponse;
 import fpt.capstone.vuondau.service.IAccountService;
 import fpt.capstone.vuondau.util.JwtUtil;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -26,9 +26,9 @@ public class AccountController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AccountResponse> login(@RequestBody AccountRequest accountRequest) {
+    public ResponseEntity<AccountTokenResponse> login(@RequestBody AccountRequest accountRequest) {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(accountRequest.getUsername(), accountRequest.getPassword());
         String token = jwtUtil.generateToken(accountRequest.getUsername());
-        return ResponseEntity.ok(new AccountResponse(token, "Login Successful!"));
+        return ResponseEntity.ok(new AccountTokenResponse(token, "Login Successful!"));
     }
 }

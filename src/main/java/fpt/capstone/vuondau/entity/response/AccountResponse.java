@@ -1,13 +1,35 @@
 package fpt.capstone.vuondau.entity.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import javax.persistence.Column;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class AccountResponse {
-    private String token;
-    private String message;
+    private Long id;
+
+    private String username;
+
+    private Boolean isActive;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
 }

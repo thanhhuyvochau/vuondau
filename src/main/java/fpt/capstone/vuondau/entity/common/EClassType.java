@@ -1,4 +1,4 @@
-package fpt.capstone.vuondau.entity.request;
+package fpt.capstone.vuondau.entity.common;
 
 public enum EClassType {
     SINGLE, MULTIPLE

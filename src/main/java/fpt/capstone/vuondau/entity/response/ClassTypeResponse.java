@@ -1,10 +1,6 @@
 package fpt.capstone.vuondau.entity.response;
 
-import fpt.capstone.vuondau.entity.Class;
-import fpt.capstone.vuondau.entity.request.EClassType;
-
-import javax.persistence.*;
-import java.util.List;
+import fpt.capstone.vuondau.entity.common.EClassType;
 
 
 public class ClassTypeResponse {

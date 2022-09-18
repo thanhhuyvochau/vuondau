@@ -4,16 +4,19 @@ import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.Role;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.request.RoleRequest;
+import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.RoleResponse;
 import fpt.capstone.vuondau.repository.AccountRepository;
 import fpt.capstone.vuondau.repository.RoleRepository;
 import fpt.capstone.vuondau.service.IRoleService;
 import fpt.capstone.vuondau.util.ObjectUtil;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class RoleServiceImpl implements IRoleService {
     private final RoleRepository roleRepository;
     private final AccountRepository accountRepository;
@@ -28,7 +31,7 @@ public class RoleServiceImpl implements IRoleService {
         List<Role> roles = roleRepository.findAll();
 
         return roles.stream().map(role -> {
-            RoleResponse roleResponse = ObjectUtil.copyProperties(role, new RoleResponse(), RoleResponse.class, true);
+            RoleResponse roleResponse = convertRoleToRoleResponse(role);
             return roleResponse;
         }).collect(Collectors.toList());
     }
@@ -47,7 +50,7 @@ public class RoleServiceImpl implements IRoleService {
         role.setName(roleRequest.getName());
         role.setAccounts(accounts);
         roleRepository.save(role);
-        return ObjectUtil.copyProperties(role, new RoleResponse(), RoleResponse.class, true);
+        return convertRoleToRoleResponse(role);
     }
 
     @Override
@@ -64,7 +67,7 @@ public class RoleServiceImpl implements IRoleService {
         oldRole.setName(roleRequest.getName());
         oldRole.setAccounts(accounts);
         roleRepository.save(oldRole);
-        return ObjectUtil.copyProperties(oldRole, new RoleResponse(), RoleResponse.class, true);
+        return convertRoleToRoleResponse(oldRole);
     }
 
     @Override
@@ -72,5 +75,15 @@ public class RoleServiceImpl implements IRoleService {
         Role oldRole = roleRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Role not found by id:" + id));
         roleRepository.delete(oldRole);
         return true;
+    }
+
+    private RoleResponse convertRoleToRoleResponse(Role role) {
+        RoleResponse roleResponse = ObjectUtil.copyProperties(role, new RoleResponse(), RoleResponse.class, true);
+        List<AccountResponse> accountResponses = role.getAccounts().stream().map(account -> {
+            AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class, true);
+            return accountResponse;
+        }).collect(Collectors.toList());
+        roleResponse.setAccountResponseList(accountResponses);
+        return roleResponse;
     }
 }
