@@ -37,9 +37,9 @@ public class Account {
     @OneToOne(mappedBy = "account")
     private Manager manager;
 
-    @OneToOne(mappedBy = "account")
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private Teacher teacher;
-    @OneToOne(mappedBy = "account")
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private Student student;
 
     public void setRole(Role role) {

@@ -12,6 +12,10 @@ public class Constants {
 
 
     }
+
     public static class DefaultData {
+        public static final String STUDENT_ROLE_CODE = "STUDENT";
+        public static final String MANAGER_ROLE_MANAGER = "MANAGER";
+        public static final String TEACHER_ROLE_CODE = "TEACHER";
     }
 }

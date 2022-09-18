@@ -13,10 +13,12 @@ import fpt.capstone.vuondau.util.ObjectUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class RoleServiceImpl implements IRoleService {
     private final RoleRepository roleRepository;
     private final AccountRepository accountRepository;

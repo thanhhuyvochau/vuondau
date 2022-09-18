@@ -9,7 +9,7 @@ import java.util.List;
 public interface IStudentService {
     List<StudentResponse> getAll();
 
-    StudentResponse searchByName(String name);
+    List<StudentResponse> searchByName(String name);
 
     StudentResponse create(StudentRequest studentRequest);
 

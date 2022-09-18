@@ -18,7 +18,7 @@ public class Student {
     private String email;
     @Column(name = "phone_number")
     private String phoneNumber;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id")
     private Account account;
 
