@@ -20,6 +20,8 @@ public class Account {
 
     @Column(name = "password")
     private String password;
+    @Column(name = "is_active")
+    private Boolean isActive;
 
     @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(name = "account_role",
@@ -49,6 +51,14 @@ public class Account {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
     }
 
     public List<Role> getRoles() {

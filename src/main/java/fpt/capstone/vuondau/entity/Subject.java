@@ -1,6 +1,5 @@
 package fpt.capstone.vuondau.entity;
 
-
 import javax.persistence.*;
 
 @Entity
@@ -8,27 +7,17 @@ import javax.persistence.*;
 public class Subject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
+    private Long id;
     @Column(name = "name")
     private String name;
+    @Column(name = "code")
+    private String code;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "grade_id")
-    private Grade grade ;
-
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subject_group_id")
-    private SubjectGroup subjectGroup ;
-
-
-
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -38,5 +27,13 @@ public class Subject {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

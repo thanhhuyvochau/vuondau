@@ -1,17 +1,20 @@
 package fpt.capstone.vuondau.entity;
 
+import fpt.capstone.vuondau.entity.request.EClassType;
+
 import javax.persistence.*;
 
 @Entity
-@Table(name = "grade")
-public class Grade {
+@Table(name = "class_type")
+public class ClassType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "name")
     private String name;
     @Column(name = "code")
-    private String code;
+    @Enumerated(EnumType.STRING)
+    private EClassType code;
 
     public Long getId() {
         return id;
@@ -29,11 +32,11 @@ public class Grade {
         this.name = name;
     }
 
-    public String getCode() {
+    public EClassType getCode() {
         return code;
     }
 
-    public void setCode(String code) {
+    public void setCode(EClassType code) {
         this.code = code;
     }
 }
