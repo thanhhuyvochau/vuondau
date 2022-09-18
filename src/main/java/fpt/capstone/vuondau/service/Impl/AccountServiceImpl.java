@@ -29,7 +29,7 @@ public class AccountServiceImpl implements IAccountService, UserDetailsService {
     private final AccountRepository accountRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    private final TeacherRepository teacherRepository ;
+    private final TeacherRepository teacherRepository;
 
     public AccountServiceImpl(AccountRepository accountRepository, BCryptPasswordEncoder bCryptPasswordEncoder, TeacherRepository teacherRepository) {
         this.accountRepository = accountRepository;
@@ -48,7 +48,7 @@ public class AccountServiceImpl implements IAccountService, UserDetailsService {
             Role role = account.getRole();
             Set<GrantedAuthority> ga = new HashSet<>();
 //            for (Role role : roleList) {
-                ga.add(new SimpleGrantedAuthority(role.getName()));
+            ga.add(new SimpleGrantedAuthority(role.getName()));
 //            }
             springUser = new org.springframework.security.core.userdetails.User(username, account.getPassword(), ga);
         }
@@ -68,17 +68,16 @@ public class AccountServiceImpl implements IAccountService, UserDetailsService {
 
     @Override
     public AccountTeacherResponse createTeacherAccount(AccountRequest accountRequest) {
-        Account account = new Account() ;
+        Account account = new Account();
         account.setUsername(accountRequest.getUsername());
-        account.setPassword(accountRequest.getPassword());
+        account.setPassword(bCryptPasswordEncoder.encode(accountRequest.getPassword()));
         account.setActive(accountRequest.isActive());
         Teacher teacher = teacherRepository.findById(accountRequest.getTeachId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay teacher"));
         account.setTeacher(teacher);
 
         Account save = accountRepository.save(account);
-        AccountTeacherResponse response = new AccountTeacherResponse( );
+        AccountTeacherResponse response = new AccountTeacherResponse();
         response.setUsername(save.getUsername());
-        response.setPassword(save.getPassword());
         response.setActive(save.getActive());
         response.setTeacherId(save.getTeacher().getId());
         return response;

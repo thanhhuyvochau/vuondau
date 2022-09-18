@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("api/user")
+@RequestMapping("api/users")
 public class AccountController {
     private final IAccountService userService;
     private final JwtUtil jwtUtil;

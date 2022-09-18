@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/class-type")
+@RequestMapping("/api/class-types")
 public class ClassTypeController {
     private final IClassTypeService IClassTypeService;
 

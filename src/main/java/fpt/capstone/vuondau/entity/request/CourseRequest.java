@@ -18,5 +18,45 @@ public class CourseRequest {
 
     private Long subjectId;
 
-    private List<Long> teacherCourses = new ArrayList<>();
+    private List<Long> teacherIds = new ArrayList<>();
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public Long getGradeId() {
+        return gradeId;
+    }
+
+    public void setGradeId(Long gradeId) {
+        this.gradeId = gradeId;
+    }
+
+    public Long getSubjectId() {
+        return subjectId;
+    }
+
+    public void setSubjectId(Long subjectId) {
+        this.subjectId = subjectId;
+    }
+
+    public List<Long> getTeacherIds() {
+        return teacherIds;
+    }
+
+    public void setTeacherIds(List<Long> teacherIds) {
+        this.teacherIds = teacherIds;
+    }
 }

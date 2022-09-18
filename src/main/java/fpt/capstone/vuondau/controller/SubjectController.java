@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("api/subject")
+@RequestMapping("api/subjects")
 public class SubjectController {
 
     private final ISubjectService subjectService;
@@ -29,9 +29,9 @@ public class SubjectController {
 
 
     @Operation(summary = "Sửa subject bằng id ")
-    @PutMapping("/{panoId}")
-    public ResponseEntity<ApiResponse<SubjectResponse>> updateSubject(@PathVariable Long subjectId, @Valid @RequestBody SubjectRequest subjectRequest) {
-        return ResponseEntity.ok(ApiResponse.success(subjectService.updateSubject(subjectId, subjectRequest)));
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<SubjectResponse>> updateSubject(@PathVariable Long id, @Valid @RequestBody SubjectRequest subjectRequest) {
+        return ResponseEntity.ok(ApiResponse.success(subjectService.updateSubject(id, subjectRequest)));
     }
 
     @Operation(summary = "Xóa subject bằng  Id")
