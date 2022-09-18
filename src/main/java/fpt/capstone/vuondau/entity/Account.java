@@ -26,12 +26,12 @@ public class Account {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
-    private Role role ;
+    private Role role;
 
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id")
-    private Image image ;
+    private Image image;
 
 
     @OneToOne(mappedBy = "account")
@@ -39,7 +39,8 @@ public class Account {
 
     @OneToOne(mappedBy = "account")
     private Teacher teacher;
-
+    @OneToOne(mappedBy = "account")
+    private Student student;
 
     public void setRole(Role role) {
         this.role = role;
@@ -103,5 +104,13 @@ public class Account {
 
     public Role getRole() {
         return role;
+    }
+
+    public Student getStudent() {
+        return student;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
     }
 }
