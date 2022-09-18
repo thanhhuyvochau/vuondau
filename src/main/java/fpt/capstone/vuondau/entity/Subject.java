@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.entity;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "subject")
@@ -12,6 +13,9 @@ public class Subject {
     private String name;
     @Column(name = "code")
     private String code;
+
+    @OneToMany(mappedBy="subject")
+    private List<Course> courses;
 
     public Long getId() {
         return id;
@@ -36,4 +40,14 @@ public class Subject {
     public void setCode(String code) {
         this.code = code;
     }
+
+    public List<Course> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
+    }
+
+
 }

@@ -1,22 +1,21 @@
 package fpt.capstone.vuondau.entity;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
-@Table(name = "image")
-public class Image {
+@Table(name = "resource")
+public class Resource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "url")
     private String url;
-    @Column(name = "description")
-    private String description;
 
-    @OneToOne(mappedBy = "image")
-    private Account account;
+    @Column(name = "description")
+    private String status;
+
+    @OneToOne(mappedBy = "resource")
+    private Teacher teacher;
 
 
     public Long getId() {
@@ -35,19 +34,19 @@ public class Image {
         this.url = url;
     }
 
-    public String getDescription() {
-        return description;
+    public String getStatus() {
+        return status;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public Account getAccount() {
-        return account;
+    public Teacher getTeacher() {
+        return teacher;
     }
 
-    public void setAccount(Account account) {
-        this.account = account;
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
     }
 }

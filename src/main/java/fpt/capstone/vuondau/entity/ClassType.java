@@ -3,6 +3,8 @@ package fpt.capstone.vuondau.entity;
 import fpt.capstone.vuondau.entity.request.EClassType;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "class_type")
@@ -12,9 +14,13 @@ public class ClassType {
     private Long id;
     @Column(name = "name")
     private String name;
+
     @Column(name = "code")
     @Enumerated(EnumType.STRING)
     private EClassType code;
+
+    @OneToMany(mappedBy="classType")
+    private List<Class> classes;
 
     public Long getId() {
         return id;
@@ -39,4 +45,13 @@ public class ClassType {
     public void setCode(EClassType code) {
         this.code = code;
     }
+
+    public List<Class> getClasses() {
+        return classes;
+    }
+
+    public void setClasses(List<Class> classes) {
+        this.classes = classes;
+    }
+
 }
