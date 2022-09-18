@@ -1,6 +1,8 @@
 package fpt.capstone.vuondau.entity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "student")
@@ -20,6 +22,8 @@ public class Student {
     @JoinColumn(name = "account_id")
     private Account account;
 
+    @OneToMany(mappedBy = "student",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    private List<StudentClass> studentClasses = new ArrayList<>();
     public Long getId() {
         return id;
     }
@@ -66,5 +70,13 @@ public class Student {
 
     public void setAccount(Account account) {
         this.account = account;
+    }
+
+    public List<StudentClass> getStudentClasses() {
+        return studentClasses;
+    }
+
+    public void setStudentClasses(List<StudentClass> studentClasses) {
+        this.studentClasses = studentClasses;
     }
 }
