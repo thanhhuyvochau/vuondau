@@ -4,6 +4,8 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -29,11 +31,18 @@ public class Class {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_type_id")
-    private ClassType classType ;
+    private ClassType classType;
 
+    @OneToMany(mappedBy = "aClass", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<StudentClass> studentClasses = new ArrayList<>();
 
+    public List<StudentClass> getStudentClasses() {
+        return studentClasses;
+    }
 
-
+    public void setStudentClasses(List<StudentClass> studentClasses) {
+        this.studentClasses = studentClasses;
+    }
 
     public Integer getId() {
         return id;
