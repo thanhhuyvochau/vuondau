@@ -18,9 +18,9 @@ public class Subject {
     private Grade grade ;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subject_group_id")
-    private SubjectGroup subjectGroup ;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "subject_group_id")
+//    private SubjectGroup subjectGroup ;
 
 
 
