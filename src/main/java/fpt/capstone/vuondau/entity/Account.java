@@ -10,8 +10,9 @@ import java.util.List;
 @Entity
 @Table(name = "account")
 public class Account {
+    private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id")
     private Long id;
 
@@ -21,7 +22,7 @@ public class Account {
     @Column(name = "password")
     private String password;
     @Column(name = "is_active")
-    private Boolean isActive;
+    private Boolean isActive = false;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
