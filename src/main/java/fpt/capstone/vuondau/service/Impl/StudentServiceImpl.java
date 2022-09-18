@@ -60,7 +60,7 @@ public class StudentServiceImpl implements IStudentService {
     @Override
     public StudentResponse create(StudentRequest studentRequest) {
         AccountRequest accountRequest = Optional.ofNullable(studentRequest.getAccount()).orElseThrow(() -> ApiException.create(HttpStatus.BAD_REQUEST).withMessage("There no account in request!"));
-        Account account = accountRepository.findByUsername(accountRequest.getUsername()).get();
+        Account account = accountRepository.findByUsername(accountRequest.getUsername()).orElse(null);
         if (account != null) {
             throw ApiException.create(HttpStatus.CONFLICT).withMessage("Username already exist, try another username");
         }

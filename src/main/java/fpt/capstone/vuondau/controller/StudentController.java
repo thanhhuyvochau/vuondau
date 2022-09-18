@@ -39,13 +39,13 @@ public class StudentController {
 
     @Operation(description = "Tạo tài và khoản học sinh")
     @PostMapping
-    public ResponseEntity<ApiResponse<StudentResponse>> create(StudentRequest studentRequest) {
+    public ResponseEntity<ApiResponse<StudentResponse>> create(@RequestBody StudentRequest studentRequest) {
         return ResponseEntity.ok(ApiResponse.success(studentService.create(studentRequest)));
     }
 
     @Operation(description = "Cập nhật thông tin học sinh ")
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<StudentResponse>> update(StudentRequest studentRequest, @PathVariable Long id) {
+    public ResponseEntity<ApiResponse<StudentResponse>> update(@RequestBody StudentRequest studentRequest, @PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success(studentService.update(studentRequest, id)));
     }
 
