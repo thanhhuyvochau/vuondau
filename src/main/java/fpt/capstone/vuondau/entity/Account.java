@@ -20,12 +20,54 @@ public class Account {
 
     @Column(name = "password")
     private String password;
+    @Column(name = "is_active")
+    private Boolean isActive;
 
-    @ManyToMany(cascade = {CascadeType.ALL})
-    @JoinTable(name = "account_role",
-            joinColumns = {@JoinColumn(name = "account_id")},
-            inverseJoinColumns = {@JoinColumn(name = "role_id")})
-    private List<Role> roles = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id")
+    private Role role ;
+
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id")
+    private Image image ;
+
+
+    @OneToOne(mappedBy = "account")
+    private Manager manager;
+
+    @OneToOne(mappedBy = "account")
+    private Teacher teacher;
+
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
+    public Manager getManager() {
+        return manager;
+    }
+
+    public void setManager(Manager manager) {
+        this.manager = manager;
+    }
+
+    public Teacher getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
+    }
 
     public Integer getId() {
         return id;
@@ -51,11 +93,15 @@ public class Account {
         this.password = password;
     }
 
-    public List<Role> getRoles() {
-        return roles;
+    public Boolean getActive() {
+        return isActive;
     }
 
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
+    public Role getRole() {
+        return role;
     }
 }

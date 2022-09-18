@@ -1,21 +1,26 @@
 package fpt.capstone.vuondau.entity;
 
+import fpt.capstone.vuondau.entity.request.EClassType;
+
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "grade")
-public class Grade {
+@Table(name = "class_type")
+public class ClassType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "name")
     private String name;
-    @Column(name = "code")
-    private String code;
 
-    @OneToMany(mappedBy="grade")
-    private List<Course> courses;
+    @Column(name = "code")
+    @Enumerated(EnumType.STRING)
+    private EClassType code;
+
+    @OneToMany(mappedBy="classType")
+    private List<Class> classes;
 
     public Long getId() {
         return id;
@@ -33,20 +38,20 @@ public class Grade {
         this.name = name;
     }
 
-    public String getCode() {
+    public EClassType getCode() {
         return code;
     }
 
-    public void setCode(String code) {
+    public void setCode(EClassType code) {
         this.code = code;
     }
 
-    public List<Course> getCourses() {
-        return courses;
+    public List<Class> getClasses() {
+        return classes;
     }
 
-    public void setCourses(List<Course> courses) {
-        this.courses = courses;
+    public void setClasses(List<Class> classes) {
+        this.classes = classes;
     }
 
 }

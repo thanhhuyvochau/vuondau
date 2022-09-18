@@ -1,21 +1,24 @@
 package fpt.capstone.vuondau.entity;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
-@Table(name = "grade")
-public class Grade {
+@Table(name = "degree")
+public class Degree {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+
     @Column(name = "name")
     private String name;
+
     @Column(name = "code")
     private String code;
 
-    @OneToMany(mappedBy="grade")
-    private List<Course> courses;
+    @OneToOne(mappedBy = "degree")
+    private Teacher teacher;
+
 
     public Long getId() {
         return id;
@@ -41,12 +44,11 @@ public class Grade {
         this.code = code;
     }
 
-    public List<Course> getCourses() {
-        return courses;
+    public Teacher getTeacher() {
+        return teacher;
     }
 
-    public void setCourses(List<Course> courses) {
-        this.courses = courses;
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
     }
-
 }

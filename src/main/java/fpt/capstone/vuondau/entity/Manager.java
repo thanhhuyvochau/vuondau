@@ -3,14 +3,12 @@ package fpt.capstone.vuondau.entity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.sql.Array;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @Entity
-@Table(name = "account")
-public class Teacher {
+@Table(name = "manager")
+public class Manager {
     @Id
     @GeneratedValue
     @Column(name = "id")
@@ -28,24 +26,16 @@ public class Teacher {
     @Column(name = "phone_number")
     private Long phoneNumber;
 
-    @Column(name = "introduce")
-    private String introduce;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "cv_url_id", referencedColumnName = "id")
-    private Resource resource;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "degree_id", referencedColumnName = "id")
-    private Degree degree;
-
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id", referencedColumnName = "id")
+    private Image image;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "teacher", cascade = CascadeType.ALL)
-    private List<TeacherCourse> teacherCourses = new ArrayList<>();
+    @OneToMany(mappedBy = "manager" , cascade = CascadeType.ALL )
+    private List<Post> posts ;
 
     public Integer getId() {
         return id;
@@ -87,30 +77,6 @@ public class Teacher {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getIntroduce() {
-        return introduce;
-    }
-
-    public void setIntroduce(String introduce) {
-        this.introduce = introduce;
-    }
-
-    public Resource getResource() {
-        return resource;
-    }
-
-    public void setResource(Resource resource) {
-        this.resource = resource;
-    }
-
-    public Degree getDegree() {
-        return degree;
-    }
-
-    public void setDegree(Degree degree) {
-        this.degree = degree;
-    }
-
     public Account getAccount() {
         return account;
     }
@@ -119,15 +85,19 @@ public class Teacher {
         this.account = account;
     }
 
-    public List<TeacherCourse> getTeacherCourses() {
-        return teacherCourses;
+    public Image getImage() {
+        return image;
     }
 
-    public void setTeacherCourses(List<TeacherCourse> teacherCourses) {
-        this.teacherCourses = teacherCourses;
+    public void setImage(Image image) {
+        this.image = image;
     }
 
+    public List<Post> getPosts() {
+        return posts;
+    }
 
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
+    }
 }
-
-

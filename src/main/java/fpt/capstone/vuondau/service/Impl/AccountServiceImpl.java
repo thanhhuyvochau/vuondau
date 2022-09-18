@@ -37,11 +37,11 @@ public class AccountServiceImpl implements IAccountService, UserDetailsService {
             throw new UsernameNotFoundException("User with username: " + username);
         } else {
             Account account = opt.get();
-            List<Role> roleList = account.getRoles();
+            Role role = account.getRole();
             Set<GrantedAuthority> ga = new HashSet<>();
-            for (Role role : roleList) {
+//            for (Role role : roleList) {
                 ga.add(new SimpleGrantedAuthority(role.getName()));
-            }
+//            }
             springUser = new org.springframework.security.core.userdetails.User(username, account.getPassword(), ga);
         }
         return springUser;
