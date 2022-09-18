@@ -68,7 +68,27 @@ public class CourseServiceImpl implements ICourseService {
 
     @Override
     public CourseResponse update(CourseRequest courseRequest, Long id) {
-        return null;
+        Course course = courseRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + id));
+        Grade grade = gradeRepository.findById(courseRequest.getGradeId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Grade not found with id:" + courseRequest.getGradeId()));
+        Subject subject = subjectRepository.findById(courseRequest.getSubjectId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Subject not found with id:" + courseRequest.getSubjectId()));
+        List<Teacher> teachers = teacherRepository.findAllById(courseRequest.getTeacherIds());
+        if (teachers.size() < courseRequest.getTeacherIds().size()) {
+            throw ApiException.create(HttpStatus.CONFLICT).withMessage("Teacher ids are invalid!");
+        }
+
+        Course newCourse = ObjectUtil.copyProperties(courseRequest, new Course(), Course.class, true);
+        course = ObjectUtil.copyProperties(newCourse, course, Course.class, true);
+
+        course.setGrade(grade);
+        course.setSubject(subject);
+        Course finalCourse = course;
+        course.setTeacherCourses(teachers.stream().map(teacher -> {
+            TeacherCourse teacherCourse = new TeacherCourse();
+            teacherCourse.setCourse(finalCourse);
+            teacherCourse.setTeacher(teacher);
+            return teacherCourse;
+        }).collect(Collectors.toList()));
+        return convertCourseToCourseResponse(course);
     }
 
     @Override
