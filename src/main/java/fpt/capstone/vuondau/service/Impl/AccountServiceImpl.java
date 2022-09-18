@@ -53,7 +53,7 @@ public class AccountServiceImpl implements IAccountService, UserDetailsService {
     }
 
     @Override
-    public Integer saveAccount(Account account) {
+    public Long saveAccount(Account account) {
         account.setPassword(bCryptPasswordEncoder.encode(account.getPassword()));
         return accountRepository.save(account).getId();
     }

@@ -6,5 +6,6 @@ import java.util.Optional;
 
 public interface IAccountService {
     Optional<Account> findByUsername(String username);
-    Integer saveAccount(Account account);
+
+    Long saveAccount(Account account);
 }

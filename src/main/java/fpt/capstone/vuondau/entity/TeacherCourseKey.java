@@ -9,9 +9,8 @@ import java.io.Serializable;
 @Embeddable
 public class TeacherCourseKey implements Serializable {
 
-    @Column(name = "tacher_id")
+    @Column(name = "teacher_id")
     private Integer teachId;
-
     @Column(name = "course_id")
     private Integer courseId;
 

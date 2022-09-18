@@ -21,11 +21,11 @@ public class Course {
     @Column(name = "code")
     private String code;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name="grade_id")
     private Grade grade;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name="subject_id")
     private Subject subject;
 
