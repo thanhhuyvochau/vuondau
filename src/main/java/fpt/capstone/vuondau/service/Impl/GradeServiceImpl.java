@@ -1,15 +1,18 @@
 package fpt.capstone.vuondau.service.Impl;
 
+import fpt.capstone.vuondau.entity.ClassType;
 import fpt.capstone.vuondau.entity.Course;
 import fpt.capstone.vuondau.entity.Grade;
 import fpt.capstone.vuondau.entity.Subject;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.request.GradeRequest;
+import fpt.capstone.vuondau.entity.response.ClassTypeResponse;
 import fpt.capstone.vuondau.entity.response.GradeResponse;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
 import fpt.capstone.vuondau.repository.CourseRepository;
 import fpt.capstone.vuondau.repository.GradeRepository;
 import fpt.capstone.vuondau.service.IGradeService;
+import fpt.capstone.vuondau.util.ObjectUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +33,7 @@ public class GradeServiceImpl implements IGradeService {
 
     @Override
     public GradeResponse createNewGrade(GradeRequest gradeRequest) {
+
         Grade grade = new Grade() ;
         grade.setCode(gradeRequest.getCode());
         grade.setName(gradeRequest.getName());
@@ -43,6 +47,9 @@ public class GradeServiceImpl implements IGradeService {
         response.setCode(gradeSaved.getCode());
         response.setCourseIds(gradeSaved.getCourses());
         return response;
+
+
+
     }
 
     @Override

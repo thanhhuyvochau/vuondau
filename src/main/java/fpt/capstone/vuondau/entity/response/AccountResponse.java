@@ -3,6 +3,7 @@ package fpt.capstone.vuondau.entity.response;
 import javax.persistence.Column;
 
 public class AccountResponse {
+
     private Long id;
 
     private String username;
