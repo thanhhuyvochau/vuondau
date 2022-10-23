@@ -55,12 +55,12 @@ public class CourseServiceImpl implements ICourseService {
         Course course = ObjectUtil.copyProperties(courseRequest, new Course(), Course.class, true);
         course.setGrade(grade);
         course.setSubject(subject);
-        course.setTeacherCourses(teachers.stream().map(teacher -> {
-            TeacherCourse teacherCourse = new TeacherCourse();
-            teacherCourse.setCourse(course);
-            teacherCourse.setTeacher(teacher);
-            return teacherCourse;
-        }).collect(Collectors.toList()));
+//        course.setTeacherCourses(teachers.stream().map(teacher -> {
+//            TeacherCourse teacherCourse = new TeacherCourse();
+//            teacherCourse.setCourse(course);
+//            teacherCourse.setTeacher(teacher);
+//            return teacherCourse;
+//        }).collect(Collectors.toList()));
         courseRepository.save(course);
 
         return convertCourseToCourseResponse(course);
@@ -82,12 +82,12 @@ public class CourseServiceImpl implements ICourseService {
         course.setGrade(grade);
         course.setSubject(subject);
         Course finalCourse = course;
-        course.setTeacherCourses(teachers.stream().map(teacher -> {
-            TeacherCourse teacherCourse = new TeacherCourse();
-            teacherCourse.setCourse(finalCourse);
-            teacherCourse.setTeacher(teacher);
-            return teacherCourse;
-        }).collect(Collectors.toList()));
+//        course.setTeacherCourses(teachers.stream().map(teacher -> {
+//            TeacherCourse teacherCourse = new TeacherCourse();
+//            teacherCourse.setCourse(finalCourse);
+//            teacherCourse.setTeacher(teacher);
+//            return teacherCourse;
+//        }).collect(Collectors.toList()));
         return convertCourseToCourseResponse(course);
     }
 

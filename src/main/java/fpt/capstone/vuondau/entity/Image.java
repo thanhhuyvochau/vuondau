@@ -15,8 +15,6 @@ public class Image {
     @Column(name = "description")
     private String description;
 
-    @OneToOne(mappedBy = "image")
-    private Account account;
 
 
     public Long getId() {
@@ -43,11 +41,5 @@ public class Image {
         this.description = description;
     }
 
-    public Account getAccount() {
-        return account;
-    }
 
-    public void setAccount(Account account) {
-        this.account = account;
-    }
 }

@@ -1,5 +1,6 @@
 package fpt.capstone.vuondau.entity;
 
+import fpt.capstone.vuondau.entity.common.EDegreeType;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -21,55 +22,38 @@ public class Account {
 
     @Column(name = "password")
     private String password;
+
     @Column(name = "is_active")
     private Boolean isActive = false;
 
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "cv_url")
+    private String cvUrl;
+
+    @Column(name = "introduce")
+    private String introduce;
+
+    @Column(name = "degree")
+    private EDegreeType degree ;
+
+    @Column(name = "phone_number")
+    private Long phoneNumber ;
+
+    @Column(name = "image")
+    private String image ;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
     private Role role;
 
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "image_id")
-    private Image image;
-
-
-    @OneToOne(mappedBy = "account")
-    private Manager manager;
-
-    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
-    private Teacher teacher;
-    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
-    private Student student;
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public Image getImage() {
-        return image;
-    }
-
-    public void setImage(Image image) {
-        this.image = image;
-    }
-
-    public Manager getManager() {
-        return manager;
-    }
-
-    public void setManager(Manager manager) {
-        this.manager = manager;
-    }
-
-    public Teacher getTeacher() {
-        return teacher;
-    }
-
-    public void setTeacher(Teacher teacher) {
-        this.teacher = teacher;
-    }
 
     public Long getId() {
         return id;
@@ -103,15 +87,75 @@ public class Account {
         isActive = active;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getCvUrl() {
+        return cvUrl;
+    }
+
+    public void setCvUrl(String cvUrl) {
+        this.cvUrl = cvUrl;
+    }
+
+    public String getIntroduce() {
+        return introduce;
+    }
+
+    public void setIntroduce(String introduce) {
+        this.introduce = introduce;
+    }
+
+    public EDegreeType getDegree() {
+        return degree;
+    }
+
+    public void setDegree(EDegreeType degree) {
+        this.degree = degree;
+    }
+
+    public Long getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(Long phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
     public Role getRole() {
         return role;
     }
 
-    public Student getStudent() {
-        return student;
-    }
-
-    public void setStudent(Student student) {
-        this.student = student;
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

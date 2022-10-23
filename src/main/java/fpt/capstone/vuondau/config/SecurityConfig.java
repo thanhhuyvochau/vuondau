@@ -2,20 +2,30 @@ package fpt.capstone.vuondau.config;
 
 import fpt.capstone.vuondau.config.security.SecurityFilter;
 import fpt.capstone.vuondau.config.security.UnAuthorizedUserAuthenticationEntryPoint;
+import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
+import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
+import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+@Import(KeycloakSpringBootConfigResolver.class)
+@KeycloakConfiguration
+public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter{
 
     private final UserDetailsService userDetailsService;
 
@@ -35,12 +45,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         this.secFilter = secFilter;
     }
 
-    //Required in case of Stateless Authentication
-    @Override
-    @Bean
-    protected AuthenticationManager authenticationManager() throws Exception {
-        return super.authenticationManager();
-    }
+
+
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -49,8 +55,37 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
+    protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
+        return new RegisterSessionAuthenticationStrategy(new SessionRegistryImpl());
+    }
+
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManager()throws Exception {
+        return super.authenticationManager() ;
+    }
+
+    @Bean
+    protected SessionRegistry buildSessionRegistry(){
+        return  new SessionRegistryImpl() ;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean() ;
+    }
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
 
+        super.configure(http);
+        http
+                .authorizeRequests()
+                .antMatchers("/admin/*").hasRole("admin")
+                .antMatchers("/user/*").hasRole("employee")
+                .anyRequest().permitAll();
+        http
+                .csrf().disable();
+//                .authorizeRequests().anyRequest().permitAll();
 //        http
 //                .csrf().disable()    //Disabling CSRF as not using form based login
 //                .authorizeRequests()
@@ -66,9 +101,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .and()
 //                .addFilterBefore(secFilter, UsernamePasswordAuthenticationFilter.class)
 //        ;
-
-        http
-                .csrf().disable()
-                .authorizeRequests().anyRequest().permitAll();
     }
 }

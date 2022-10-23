@@ -44,8 +44,8 @@ public class Teacher {
     private Account account;
 
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "teacher", cascade = CascadeType.ALL)
-    private List<TeacherCourse> teacherCourses = new ArrayList<>();
+//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "teacher", cascade = CascadeType.ALL)
+//    private List<TeacherCourse> teacherCourses = new ArrayList<>();
 
 
 }

@@ -30,8 +30,8 @@ public class Course {
     private Subject subject;
 
 
-    @OneToMany(fetch = FetchType.LAZY , mappedBy = "course", cascade = CascadeType.ALL)
-    private List<TeacherCourse> teacherCourses = new ArrayList<>() ;
+//    @OneToMany(fetch = FetchType.LAZY , mappedBy = "course", cascade = CascadeType.ALL)
+//    private List<TeacherCourse> teacherCourses = new ArrayList<>() ;
 
     public Long getId() {
         return id;
@@ -73,12 +73,12 @@ public class Course {
         this.subject = subject;
     }
 
-    public List<TeacherCourse> getTeacherCourses() {
-        return teacherCourses;
-    }
-
-    public void setTeacherCourses(List<TeacherCourse> teacherCourses) {
-        this.teacherCourses = teacherCourses;
-    }
+//    public List<TeacherCourse> getTeacherCourses() {
+//        return teacherCourses;
+//    }
+//
+//    public void setTeacherCourses(List<TeacherCourse> teacherCourses) {
+//        this.teacherCourses = teacherCourses;
+//    }
 
 }

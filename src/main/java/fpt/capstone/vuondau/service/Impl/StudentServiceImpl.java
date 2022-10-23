@@ -59,23 +59,28 @@ public class StudentServiceImpl implements IStudentService {
 
     @Override
     public StudentResponse create(StudentRequest studentRequest) {
-        AccountRequest accountRequest = Optional.ofNullable(studentRequest.getAccount()).orElseThrow(() -> ApiException.create(HttpStatus.BAD_REQUEST).withMessage("There no account in request!"));
-        Account account = accountRepository.findByUsername(accountRequest.getUsername()).orElse(null);
-        if (account != null) {
-            throw ApiException.create(HttpStatus.CONFLICT).withMessage("Username already exist, try another username");
-        }
-        Role role = roleRepository.findRoleByCode(Constants.DefaultData.STUDENT_ROLE_CODE);
-        account = ObjectUtil.copyProperties(accountRequest, new Account(), Account.class, true);
-        account.setPassword(bCryptPasswordEncoder.encode(account.getPassword()));
-        account.setActive(true);
-        account.setRole(role);
-
-        Student student = ObjectUtil.copyProperties(studentRequest, new Student(), Student.class, true);
-        student.setAccount(account);
-
-        studentRepository.save(student);
-        return convertStudentToStudentResponse(student);
+        return null;
     }
+
+//    @Override
+//    public StudentResponse create(StudentRequest studentRequest) {
+//        AccountRequest accountRequest = Optional.ofNullable(studentRequest.getAccount()).orElseThrow(() -> ApiException.create(HttpStatus.BAD_REQUEST).withMessage("There no account in request!"));
+//        Account account = accountRepository.findByUsername(accountRequest.getUsername()).orElse(null);
+//        if (account != null) {
+//            throw ApiException.create(HttpStatus.CONFLICT).withMessage("Username already exist, try another username");
+//        }
+//        Role role = roleRepository.findRoleByCode(Constants.DefaultData.STUDENT_ROLE_CODE);
+//        account = ObjectUtil.copyProperties(accountRequest, new Account(), Account.class, true);
+//        account.setPassword(bCryptPasswordEncoder.encode(account.getPassword()));
+//        account.setActive(true);
+//        account.setRole(role);
+//
+//        Student student = ObjectUtil.copyProperties(studentRequest, new Student(), Student.class, true);
+//        student.setAccount(account);
+//
+//        studentRepository.save(student);
+//        return convertStudentToStudentResponse(student);
+//    }
 
     @Override
     public StudentResponse update(StudentRequest studentRequest, Long id) {
