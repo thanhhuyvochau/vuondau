@@ -10,23 +10,23 @@ import java.io.Serializable;
 public class TeacherCourseKey implements Serializable {
 
     @Column(name = "teacher_id")
-    private Integer teachId;
+    private Long teachId;
     @Column(name = "course_id")
-    private Integer courseId;
+    private Long courseId;
 
-    public Integer getTeachId() {
+    public Long getTeachId() {
         return teachId;
     }
 
-    public void setTeachId(Integer teachId) {
+    public void setTeachId(Long teachId) {
         this.teachId = teachId;
     }
 
-    public Integer getCourseId() {
+    public Long getCourseId() {
         return courseId;
     }
 
-    public void setCourseId(Integer courseId) {
+    public void setCourseId(Long courseId) {
         this.courseId = courseId;
     }
 }

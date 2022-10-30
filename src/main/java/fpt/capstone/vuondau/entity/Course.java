@@ -1,5 +1,6 @@
 package fpt.capstone.vuondau.entity;
 
+import fpt.capstone.vuondau.entity.common.EGradeType;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -21,17 +22,18 @@ public class Course {
     @Column(name = "code")
     private String code;
 
-    @ManyToOne
-    @JoinColumn(name="grade_id")
-    private Grade grade;
+    @JoinColumn(name="grade")
+    private EGradeType grade;
 
     @ManyToOne
     @JoinColumn(name="subject_id")
     private Subject subject;
 
+    @Column(name = "description")
+    private  String description ;
 
-//    @OneToMany(fetch = FetchType.LAZY , mappedBy = "course", cascade = CascadeType.ALL)
-//    private List<TeacherCourse> teacherCourses = new ArrayList<>() ;
+    @OneToMany(mappedBy = "course")
+    private List<TeacherCourse> teacherCourses;
 
     public Long getId() {
         return id;
@@ -57,11 +59,11 @@ public class Course {
         this.code = code;
     }
 
-    public Grade getGrade() {
+    public EGradeType getGrade() {
         return grade;
     }
 
-    public void setGrade(Grade grade) {
+    public void setGrade(EGradeType grade) {
         this.grade = grade;
     }
 
@@ -73,12 +75,19 @@ public class Course {
         this.subject = subject;
     }
 
-//    public List<TeacherCourse> getTeacherCourses() {
-//        return teacherCourses;
-//    }
-//
-//    public void setTeacherCourses(List<TeacherCourse> teacherCourses) {
-//        this.teacherCourses = teacherCourses;
-//    }
+    public String getDescription() {
+        return description;
+    }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<TeacherCourse> getTeacherCourses() {
+        return teacherCourses;
+    }
+
+    public void setTeacherCourses(List<TeacherCourse> teacherCourses) {
+        this.teacherCourses = teacherCourses;
+    }
 }

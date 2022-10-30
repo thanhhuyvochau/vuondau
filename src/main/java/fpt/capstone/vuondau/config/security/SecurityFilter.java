@@ -26,25 +26,30 @@ public class SecurityFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        // Reading Token from Authorization Header
-        String token= request.getHeader("Authorization");
-        if(token !=null) {
-            String username= util.getSubject(token);
-            //if username is not null & Context Authentication must be null
-            if(username !=null && SecurityContextHolder.getContext().getAuthentication()==null) {
-                UserDetails user= userDetailsService.loadUserByUsername(username);
-                boolean isValid=util.isValidToken(token, user.getUsername());
-                if(isValid) {
-                    UsernamePasswordAuthenticationToken authToken=
-                            new UsernamePasswordAuthenticationToken(username, user.getPassword(), user.getAuthorities());
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-                }
-            }
-        }
-        filterChain.doFilter(request, response);
     }
+
+//    @Override
+//    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+//            throws ServletException, IOException {
+//
+//        // Reading Token from Authorization Header
+//        String token= request.getHeader("Authorization");
+//        if(token !=null) {
+//            String username= util.getSubject(token);
+//            //if username is not null & Context Authentication must be null
+//            if(username !=null && SecurityContextHolder.getContext().getAuthentication()==null) {
+//                UserDetails user= userDetailsService.loadUserByUsername(username);
+//                boolean isValid=util.isValidToken(token, user.getUsername());
+//                if(isValid) {
+//                    UsernamePasswordAuthenticationToken authToken=
+//                            new UsernamePasswordAuthenticationToken(username, user.getPassword(), user.getAuthorities());
+//                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+//                    SecurityContextHolder.getContext().setAuthentication(authToken);
+//                }
+//            }
+//        }
+//        filterChain.doFilter(request, response);
+//    }
 }

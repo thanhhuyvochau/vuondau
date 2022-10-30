@@ -12,7 +12,7 @@ public class StudentClassKey implements Serializable {
     private Long studentId;
 
     @Column(name = "class_id")
-    private Integer classId;
+    private Long classId;
 
     public Long getStudentId() {
         return studentId;
@@ -22,11 +22,11 @@ public class StudentClassKey implements Serializable {
         this.studentId = studentId;
     }
 
-    public Integer getClassId() {
+    public Long getClassId() {
         return classId;
     }
 
-    public void setClassId(Integer classId) {
+    public void setClassId(Long classId) {
         this.classId = classId;
     }
 }

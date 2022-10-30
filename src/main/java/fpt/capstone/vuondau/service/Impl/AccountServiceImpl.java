@@ -2,17 +2,12 @@ package fpt.capstone.vuondau.service.Impl;
 
 import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.Role;
-import fpt.capstone.vuondau.entity.Teacher;
-import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.request.AccountExistedTeacherRequest;
-import fpt.capstone.vuondau.entity.request.AccountRequest;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
 import fpt.capstone.vuondau.repository.AccountRepository;
-import fpt.capstone.vuondau.repository.TeacherRepository;
+import fpt.capstone.vuondau.repository.RoleRepository;
 import fpt.capstone.vuondau.service.IAccountService;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import fpt.capstone.vuondau.util.ObjectUtil;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,9 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @Transactional
@@ -30,13 +24,13 @@ public class AccountServiceImpl implements IAccountService, UserDetailsService {
     private final AccountRepository accountRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    private final TeacherRepository teacherRepository;
-
-    public AccountServiceImpl(AccountRepository accountRepository, BCryptPasswordEncoder bCryptPasswordEncoder, TeacherRepository teacherRepository) {
+    private final RoleRepository  roleRepository ;
+    public AccountServiceImpl(AccountRepository accountRepository, BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
         this.accountRepository = accountRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.teacherRepository = teacherRepository;
+        this.roleRepository = roleRepository;
     }
+
 
 //    @Override
 //    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -73,31 +67,32 @@ public class AccountServiceImpl implements IAccountService, UserDetailsService {
     }
 
     @Override
-    public Long saveAccount(Account account) {
+    public Account saveAccount(Account account) {
         return null;
     }
+
+
 
     @Override
     public AccountTeacherResponse createTeacherAccount(AccountExistedTeacherRequest accountRequest) {
-        return null;
+        Account account = new Account();
+        account.setUsername(accountRequest.getUsername());
+        account.setPassword(bCryptPasswordEncoder.encode(accountRequest.getPassword()));
+        account.setFirstName(accountRequest.getFirstName());
+        account.setLastName(accountRequest.getLastName());
+        account.setPhoneNumber(account.getPhoneNumber());
+        Role role = roleRepository.findRoleByCode(accountRequest.getRoleAccount()) ;
+        account.setRole(role);
+        Account save = accountRepository.save(account);
+
+        AccountTeacherResponse response = ObjectUtil.copyProperties(save, new AccountTeacherResponse(), AccountTeacherResponse.class);
+        return response;
     }
 
-//    @Override
-//    public AccountTeacherResponse createTeacherAccount(AccountExistedTeacherRequest accountRequest) {
-//        Account account = new Account();
-//        account.setUsername(accountRequest.getUsername());
-//        account.setPassword(bCryptPasswordEncoder.encode(accountRequest.getPassword()));
-//        account.setActive(accountRequest.isActive());
-//        Teacher teacher = teacherRepository.findById(accountRequest.getTeachId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay teacher"));
-//        account.setTeacher(teacher);
-//
-//        Account save = accountRepository.save(account);
-//        AccountTeacherResponse response = new AccountTeacherResponse();
-//        response.setUsername(save.getUsername());
-//        response.setActive(save.getActive());
-//        response.setTeacherId(save.getTeacher().getId());
-//        return response;
-//    }
+    @Override
+    public List<Account> getAccount() {
+        return accountRepository.findAll();
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
