@@ -15,7 +15,6 @@ public class Post {
     @Column(name = "name")
     private String name;
 
-
     @Column(name = "title")
     private String title ;
 
@@ -40,6 +39,7 @@ public class Post {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostCategory> postCategories;
+
 
 
     public Long getId() {
