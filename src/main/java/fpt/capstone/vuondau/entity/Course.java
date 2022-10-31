@@ -29,8 +29,6 @@ public class Course {
     @JoinColumn(name="subject_id")
     private Subject subject;
 
-    @Column(name = "description")
-    private  String description ;
 
     @OneToMany(mappedBy = "course")
     private List<TeacherCourse> teacherCourses;
@@ -73,14 +71,6 @@ public class Course {
 
     public void setSubject(Subject subject) {
         this.subject = subject;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public List<TeacherCourse> getTeacherCourses() {
