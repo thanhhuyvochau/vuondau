@@ -7,7 +7,6 @@ import fpt.capstone.vuondau.entity.request.AccountRequest;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
 import fpt.capstone.vuondau.entity.response.AccountTokenResponse;
 import fpt.capstone.vuondau.service.IAccountService;
-import fpt.capstone.vuondau.util.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,22 +19,10 @@ import java.util.List;
 @RequestMapping("api/users")
 public class AccountController {
     private final IAccountService accountService;
-    private final JwtUtil jwtUtil;
-    private final AuthenticationManager authenticationManager;
 
-    public AccountController(IAccountService userService, JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
+    public AccountController(IAccountService userService) {
         this.accountService = userService;
-        this.jwtUtil = jwtUtil;
-        this.authenticationManager = authenticationManager;
     }
-
-    @PostMapping("/login")
-    public ResponseEntity<AccountTokenResponse> login(@RequestBody AccountRequest accountRequest) {
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(accountRequest.getUsername(), accountRequest.getPassword());
-        String token = jwtUtil.generateToken(accountRequest.getUsername());
-        return ResponseEntity.ok(new AccountTokenResponse(token, "Login Successful!"));
-    }
-
 
     @Operation(summary = "Tạo tài khoản cho giáo viên")
     @PostMapping
