@@ -15,16 +15,6 @@ public class StudentRequest {
 
     private String phoneNumber;
 
-    private EAccountRole accountRole ;
-
-    public EAccountRole getAccountRole() {
-        return accountRole;
-    }
-
-    public void setAccountRole(EAccountRole accountRole) {
-        this.accountRole = accountRole;
-    }
-
     public AccountRequest getAccount() {
         return account;
     }

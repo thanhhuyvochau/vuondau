@@ -6,11 +6,6 @@ spring:
     url: jdbc:mysql://103.173.255.39:3306/vuondau
     username: root
     password: test
-    jpa:
-      database-platform: org.hibernate.dialect.MySQL8Dialect
-      show-sql: 'true'
-      hibernate:
-        ddl-auto: update
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     show-sql: 'true'

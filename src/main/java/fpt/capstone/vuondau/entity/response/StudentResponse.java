@@ -12,8 +12,6 @@ public class StudentResponse {
 
     private String phoneNumber;
 
-    private AccountResponse account;
-
     public Long getId() {
         return id;
     }
@@ -54,11 +52,4 @@ public class StudentResponse {
         this.phoneNumber = phoneNumber;
     }
 
-    public AccountResponse getAccount() {
-        return account;
-    }
-
-    public void setAccount(AccountResponse account) {
-        this.account = account;
-    }
 }
