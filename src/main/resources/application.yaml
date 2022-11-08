@@ -3,9 +3,14 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://103.173.255.39:3306/vuondau
     username: root
-    url: jdbc:mysql://localhost:3306/vuondau
-    password: 123456
+    password: test
+    jpa:
+      database-platform: org.hibernate.dialect.MySQL8Dialect
+      show-sql: 'true'
+      hibernate:
+        ddl-auto: update
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     show-sql: 'true'
@@ -16,5 +21,7 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://vuondau-keycloak.amazingtech.vn/auth/realms/dev
+
+
 
 

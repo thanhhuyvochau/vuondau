@@ -16,7 +16,6 @@ import fpt.capstone.vuondau.util.ObjectUtil;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -29,14 +28,13 @@ import java.util.Optional;
 @Transactional
 public class AccountServiceImpl implements IAccountService, UserDetailsService {
     private final AccountRepository accountRepository;
-//    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    private final RoleRepository roleRepository ;
 
-    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository) {
+
+    private final RoleRepository  roleRepository ;
+    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository, RoleRepository roleRepository1) {
         this.accountRepository = accountRepository;
-
-        this.roleRepository = roleRepository;
+        this.roleRepository = roleRepository1;
     }
 
 
@@ -85,7 +83,6 @@ public class AccountServiceImpl implements IAccountService, UserDetailsService {
     public AccountTeacherResponse createTeacherAccount(AccountExistedTeacherRequest accountRequest) {
         Account account = new Account();
         account.setUsername(accountRequest.getUsername());
-//        account.setPassword(bCryptPasswordEncoder.encode(accountRequest.getPassword()));
         account.setFirstName(accountRequest.getFirstName());
         account.setLastName(accountRequest.getLastName());
         account.setPhoneNumber(account.getPhoneNumber());
