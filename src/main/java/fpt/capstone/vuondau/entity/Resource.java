@@ -14,8 +14,7 @@ public class Resource {
     @Column(name = "description")
     private String status;
 
-    @OneToOne(mappedBy = "resource")
-    private Teacher teacher;
+
 
 
     public Long getId() {
@@ -42,11 +41,5 @@ public class Resource {
         this.status = status;
     }
 
-    public Teacher getTeacher() {
-        return teacher;
-    }
 
-    public void setTeacher(Teacher teacher) {
-        this.teacher = teacher;
-    }
 }

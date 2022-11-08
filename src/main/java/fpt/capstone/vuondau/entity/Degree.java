@@ -15,8 +15,6 @@ public class Degree {
     @Column(name = "code")
     private String code;
 
-    @OneToOne(mappedBy = "degree")
-    private Teacher teacher;
 
 
     public Long getId() {
@@ -43,11 +41,5 @@ public class Degree {
         this.code = code;
     }
 
-    public Teacher getTeacher() {
-        return teacher;
-    }
 
-    public void setTeacher(Teacher teacher) {
-        this.teacher = teacher;
-    }
 }

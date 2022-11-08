@@ -1,13 +1,12 @@
 package fpt.capstone.vuondau.entity;
 
-import lombok.Data;
 
 import javax.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+
 @Entity
 @Table(name = "class")
 public class Class {

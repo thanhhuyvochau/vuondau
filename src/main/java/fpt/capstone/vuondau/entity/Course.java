@@ -1,12 +1,11 @@
 package fpt.capstone.vuondau.entity;
 
-import lombok.Data;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+
 @Entity
 @Table(name = "course")
 public class Course {
@@ -28,10 +27,6 @@ public class Course {
     @ManyToOne
     @JoinColumn(name="subject_id")
     private Subject subject;
-
-
-//    @OneToMany(fetch = FetchType.LAZY , mappedBy = "course", cascade = CascadeType.ALL)
-//    private List<TeacherCourse> teacherCourses = new ArrayList<>() ;
 
     public Long getId() {
         return id;
@@ -72,13 +67,4 @@ public class Course {
     public void setSubject(Subject subject) {
         this.subject = subject;
     }
-
-//    public List<TeacherCourse> getTeacherCourses() {
-//        return teacherCourses;
-//    }
-//
-//    public void setTeacherCourses(List<TeacherCourse> teacherCourses) {
-//        this.teacherCourses = teacherCourses;
-//    }
-
 }

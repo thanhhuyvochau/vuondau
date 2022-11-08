@@ -1,12 +1,14 @@
 package fpt.capstone.vuondau.entity;
 
-import lombok.Data;
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+
 @Entity
 @Table(name = "role")
 public class Role {
@@ -20,8 +22,11 @@ public class Role {
     @Column(name = "code")
     private String code;
 
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
-    private List<Account> accounts = new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Account> accounts ;
 
     public Long getId() {
         return id;
@@ -39,19 +44,19 @@ public class Role {
         this.name = name;
     }
 
-    public List<Account> getAccounts() {
-        return accounts;
-    }
-
-    public void setAccounts(List<Account> accounts) {
-        this.accounts = accounts;
-    }
-
     public String getCode() {
         return code;
     }
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
     }
 }

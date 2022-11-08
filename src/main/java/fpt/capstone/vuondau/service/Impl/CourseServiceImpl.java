@@ -20,16 +20,16 @@ public class CourseServiceImpl implements ICourseService {
     private final CourseRepository courseRepository;
     private final GradeRepository gradeRepository;
     private final SubjectRepository subjectRepository;
-    private final TeacherRepository teacherRepository;
+
     private final TeacherCourseRepository teacherCourseRepository;
 
-    public CourseServiceImpl(CourseRepository courseRepository, GradeRepository gradeRepository, SubjectRepository subjectRepository, TeacherRepository teacherRepository, TeacherCourseRepository teacherCourseRepository) {
+    public CourseServiceImpl(CourseRepository courseRepository, GradeRepository gradeRepository, SubjectRepository subjectRepository, TeacherCourseRepository teacherCourseRepository) {
         this.courseRepository = courseRepository;
         this.gradeRepository = gradeRepository;
         this.subjectRepository = subjectRepository;
-        this.teacherRepository = teacherRepository;
         this.teacherCourseRepository = teacherCourseRepository;
     }
+
 
     @Override
     public List<CourseResponse> getAll() {
@@ -47,10 +47,10 @@ public class CourseServiceImpl implements ICourseService {
     public CourseResponse create(CourseRequest courseRequest) {
         Grade grade = gradeRepository.findById(courseRequest.getGradeId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Grade not found with id:" + courseRequest.getGradeId()));
         Subject subject = subjectRepository.findById(courseRequest.getSubjectId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Subject not found with id:" + courseRequest.getSubjectId()));
-        List<Teacher> teachers = teacherRepository.findAllById(courseRequest.getTeacherIds());
-        if (teachers.size() < courseRequest.getTeacherIds().size()) {
-            throw ApiException.create(HttpStatus.CONFLICT).withMessage("Teacher ids are invalid!");
-        }
+//        List<Teacher> teachers = teacherRepository.findAllById(courseRequest.getTeacherIds());
+//        if (teachers.size() < courseRequest.getTeacherIds().size()) {
+//            throw ApiException.create(HttpStatus.CONFLICT).withMessage("Teacher ids are invalid!");
+//        }
 
         Course course = ObjectUtil.copyProperties(courseRequest, new Course(), Course.class, true);
         course.setGrade(grade);
@@ -71,10 +71,10 @@ public class CourseServiceImpl implements ICourseService {
         Course course = courseRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + id));
         Grade grade = gradeRepository.findById(courseRequest.getGradeId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Grade not found with id:" + courseRequest.getGradeId()));
         Subject subject = subjectRepository.findById(courseRequest.getSubjectId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Subject not found with id:" + courseRequest.getSubjectId()));
-        List<Teacher> teachers = teacherRepository.findAllById(courseRequest.getTeacherIds());
-        if (teachers.size() < courseRequest.getTeacherIds().size()) {
-            throw ApiException.create(HttpStatus.CONFLICT).withMessage("Teacher ids are invalid!");
-        }
+//        List<Teacher> teachers = teacherRepository.findAllById(courseRequest.getTeacherIds());
+//        if (teachers.size() < courseRequest.getTeacherIds().size()) {
+//            throw ApiException.create(HttpStatus.CONFLICT).withMessage("Teacher ids are invalid!");
+//        }
 
         Course newCourse = ObjectUtil.copyProperties(courseRequest, new Course(), Course.class, true);
         course = ObjectUtil.copyProperties(newCourse, course, Course.class, true);

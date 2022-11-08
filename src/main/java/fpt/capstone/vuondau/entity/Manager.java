@@ -1,11 +1,11 @@
 package fpt.capstone.vuondau.entity;
 
-import lombok.Data;
+
 
 import javax.persistence.*;
 import java.util.List;
 
-@Data
+
 @Entity
 @Table(name = "manager")
 public class Manager {

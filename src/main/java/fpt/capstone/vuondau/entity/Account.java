@@ -1,13 +1,12 @@
 package fpt.capstone.vuondau.entity;
 
 import fpt.capstone.vuondau.entity.common.EDegreeType;
-import lombok.Data;
+
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
-@Data
+
+
 @Entity
 @Table(name = "account")
 public class Account {
@@ -50,10 +49,10 @@ public class Account {
     @Column(name = "image")
     private String image ;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id")
-    private Role role;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 
     public Long getId() {
         return id;
