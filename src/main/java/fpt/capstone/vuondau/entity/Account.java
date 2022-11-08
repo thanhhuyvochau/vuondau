@@ -1,13 +1,12 @@
 package fpt.capstone.vuondau.entity;
 
 import fpt.capstone.vuondau.entity.common.EDegreeType;
-import lombok.Data;
+
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
-@Data
+
 @Entity
 @Table(name = "account")
 public class Account {
@@ -47,9 +46,6 @@ public class Account {
     @Column(name = "phone_number")
     private String  phoneNumber ;
 
-    @Column(name = "image")
-    private String image ;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="role_id")
     private Role role;
@@ -59,6 +55,7 @@ public class Account {
 
     @OneToMany(mappedBy = "account",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<StudentClass> studentClasses ;
+
 
 
     public Long getId() {
@@ -149,13 +146,6 @@ public class Account {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
 
     public Role getRole() {
         return role;

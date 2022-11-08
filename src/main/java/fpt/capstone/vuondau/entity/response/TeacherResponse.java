@@ -1,11 +1,8 @@
-package fpt.capstone.vuondau.entity.request;
+package fpt.capstone.vuondau.entity.response;
 
 
-import fpt.capstone.vuondau.entity.common.EAccountRole;
-import fpt.capstone.vuondau.entity.response.AccountResponse;
-
-public class StudentRequest {
-    private AccountRequest account;
+public class TeacherResponse {
+    private Long id;
 
     private String firstName;
 
@@ -15,22 +12,14 @@ public class StudentRequest {
 
     private String phoneNumber;
 
-    private EAccountRole accountRole ;
+    private AccountResponse account;
 
-    public EAccountRole getAccountRole() {
-        return accountRole;
+    public Long getId() {
+        return id;
     }
 
-    public void setAccountRole(EAccountRole accountRole) {
-        this.accountRole = accountRole;
-    }
-
-    public AccountRequest getAccount() {
-        return account;
-    }
-
-    public void setAccount(AccountRequest account) {
-        this.account = account;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -63,5 +52,13 @@ public class StudentRequest {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public AccountResponse getAccount() {
+        return account;
+    }
+
+    public void setAccount(AccountResponse account) {
+        this.account = account;
     }
 }

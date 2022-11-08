@@ -1,13 +1,13 @@
 package fpt.capstone.vuondau.entity.response;
 
 
-import lombok.Data;
-
 
 public class AccountTeacherResponse {
 
     private String username;
     private boolean isActive ;
+
+    private Long teacherId ;
 
     private String firstName ;
 
@@ -29,6 +29,7 @@ public class AccountTeacherResponse {
         this.lastName = lastName;
     }
 
+
     public String getUsername() {
         return username;
     }
@@ -43,6 +44,15 @@ public class AccountTeacherResponse {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+
+    public Long getTeacherId() {
+        return teacherId;
+    }
+
+    public void setTeacherId(Long teacherId) {
+        this.teacherId = teacherId;
     }
 
 

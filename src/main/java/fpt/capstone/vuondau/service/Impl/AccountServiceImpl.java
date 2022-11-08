@@ -1,21 +1,27 @@
 package fpt.capstone.vuondau.service.Impl;
 
 import fpt.capstone.vuondau.entity.Account;
-import fpt.capstone.vuondau.entity.Role;
+
 import fpt.capstone.vuondau.entity.request.AccountExistedTeacherRequest;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
 import fpt.capstone.vuondau.repository.AccountRepository;
-import fpt.capstone.vuondau.repository.RoleRepository;
+
 import fpt.capstone.vuondau.service.IAccountService;
+
+import fpt.capstone.vuondau.entity.Role;
+
+import fpt.capstone.vuondau.repository.RoleRepository;
 import fpt.capstone.vuondau.util.ObjectUtil;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+
 import java.util.List;
+
 import java.util.Optional;
 
 @Service
@@ -24,10 +30,11 @@ public class AccountServiceImpl implements IAccountService, UserDetailsService {
     private final AccountRepository accountRepository;
 
 
+
     private final RoleRepository  roleRepository ;
-    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository) {
+    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository, RoleRepository roleRepository1) {
         this.accountRepository = accountRepository;
-        this.roleRepository = roleRepository;
+        this.roleRepository = roleRepository1;
     }
 
 

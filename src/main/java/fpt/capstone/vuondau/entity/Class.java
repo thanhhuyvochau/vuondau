@@ -1,6 +1,5 @@
 package fpt.capstone.vuondau.entity;
 
-import lombok.Data;
 
 import javax.persistence.*;
 import java.time.Instant;

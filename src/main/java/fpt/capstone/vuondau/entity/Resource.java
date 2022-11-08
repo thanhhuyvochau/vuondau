@@ -23,6 +23,7 @@ public class Resource {
     List<PostResource> postResources;
 
 
+
     public Long getId() {
         return id;
     }
@@ -54,4 +55,5 @@ public class Resource {
     public void setPostResources(List<PostResource> postResources) {
         this.postResources = postResources;
     }
+
 }

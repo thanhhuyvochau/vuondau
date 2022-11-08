@@ -1,11 +1,11 @@
 package fpt.capstone.vuondau.entity;
 
 import fpt.capstone.vuondau.entity.common.EEvaluateType;
-import lombok.Data;
+
 
 import javax.persistence.*;
 
-@Data
+
 @Entity
 @Table(name = "feed_back")
 public class FeedBack {

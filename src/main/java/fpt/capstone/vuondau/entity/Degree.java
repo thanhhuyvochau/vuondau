@@ -1,17 +1,10 @@
 package fpt.capstone.vuondau.entity;
 
-
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-
 
 @Entity
-@Table(name = "role")
-public class Role {
+@Table(name = "degree")
+public class Degree {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,10 +16,6 @@ public class Role {
     private String code;
 
 
-
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<Account> accounts ;
 
     public Long getId() {
         return id;
@@ -52,11 +41,5 @@ public class Role {
         this.code = code;
     }
 
-    public List<Account> getAccounts() {
-        return accounts;
-    }
 
-    public void setAccounts(List<Account> accounts) {
-        this.accounts = accounts;
-    }
 }

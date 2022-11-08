@@ -1,13 +1,14 @@
 package fpt.capstone.vuondau.entity;
 
+
 import fpt.capstone.vuondau.entity.common.EGradeType;
-import lombok.Data;
+
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+
 @Entity
 @Table(name = "course")
 public class Course {
@@ -32,6 +33,7 @@ public class Course {
 
     @OneToMany(mappedBy = "course")
     private List<TeacherCourse> teacherCourses;
+
 
     public Long getId() {
         return id;
@@ -73,6 +75,7 @@ public class Course {
         this.subject = subject;
     }
 
+
     public List<TeacherCourse> getTeacherCourses() {
         return teacherCourses;
     }
@@ -80,4 +83,5 @@ public class Course {
     public void setTeacherCourses(List<TeacherCourse> teacherCourses) {
         this.teacherCourses = teacherCourses;
     }
+
 }

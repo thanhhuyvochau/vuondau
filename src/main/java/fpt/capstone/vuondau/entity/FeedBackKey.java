@@ -1,6 +1,6 @@
 package fpt.capstone.vuondau.entity;
 
-import lombok.Data;
+
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;

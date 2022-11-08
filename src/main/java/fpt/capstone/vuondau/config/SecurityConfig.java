@@ -7,7 +7,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.web.AuthenticationEntryPoint;
 
 
 @Configuration
@@ -18,8 +17,24 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
+
+//        super.configure(http);
+//        http
+//                .authorizeRequests()
+//                .antMatchers("/admin/*").hasRole("admin")
+//                .antMatchers("/api/teachers/*").hasRole("teacher")
+//                .antMatchers("api/teachers").hasRole("admin")
+//                .anyRequest().permitAll();
+//        http
+//                .csrf().disable();
+//                .authorizeRequests().anyRequest().permitAll();
+//        http
+//                .csrf().disable()    //Disabling CSRF as not using form based login
+
 //        http.cors()
 //                .and()
+
 //                .authorizeRequests()
 //                .anyRequest()
 //                .authenticated()
