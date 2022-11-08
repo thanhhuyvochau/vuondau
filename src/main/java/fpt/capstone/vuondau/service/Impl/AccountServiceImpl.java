@@ -22,12 +22,11 @@ import java.util.Optional;
 @Transactional
 public class AccountServiceImpl implements IAccountService, UserDetailsService {
     private final AccountRepository accountRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
 
     private final RoleRepository  roleRepository ;
-    public AccountServiceImpl(AccountRepository accountRepository, BCryptPasswordEncoder bCryptPasswordEncoder, RoleRepository roleRepository) {
+    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository) {
         this.accountRepository = accountRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.roleRepository = roleRepository;
     }
 
@@ -77,7 +76,6 @@ public class AccountServiceImpl implements IAccountService, UserDetailsService {
     public AccountTeacherResponse createTeacherAccount(AccountExistedTeacherRequest accountRequest) {
         Account account = new Account();
         account.setUsername(accountRequest.getUsername());
-        account.setPassword(bCryptPasswordEncoder.encode(accountRequest.getPassword()));
         account.setFirstName(accountRequest.getFirstName());
         account.setLastName(accountRequest.getLastName());
         account.setPhoneNumber(account.getPhoneNumber());
