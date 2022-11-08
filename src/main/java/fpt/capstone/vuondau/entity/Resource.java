@@ -1,6 +1,9 @@
 package fpt.capstone.vuondau.entity;
 
+import fpt.capstone.vuondau.entity.common.EResourceType;
+
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "resource")
@@ -8,12 +11,16 @@ public class Resource {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "url")
     private String url;
 
-    @Column(name = "description")
-    private String status;
 
+    @Column(name = "resource_type")
+    private EResourceType resourceType ;
+
+    @OneToMany(mappedBy = "resource")
+    List<PostResource> postResources;
 
 
 
@@ -33,13 +40,20 @@ public class Resource {
         this.url = url;
     }
 
-    public String getStatus() {
-        return status;
+    public EResourceType getResourceType() {
+        return resourceType;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setResourceType(EResourceType resourceType) {
+        this.resourceType = resourceType;
     }
 
+    public List<PostResource> getPostResources() {
+        return postResources;
+    }
+
+    public void setPostResources(List<PostResource> postResources) {
+        this.postResources = postResources;
+    }
 
 }

@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.entity.request;
 
 
+import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 
 public class StudentRequest {
@@ -13,6 +14,16 @@ public class StudentRequest {
     private String email;
 
     private String phoneNumber;
+
+    private EAccountRole accountRole ;
+
+    public EAccountRole getAccountRole() {
+        return accountRole;
+    }
+
+    public void setAccountRole(EAccountRole accountRole) {
+        this.accountRole = accountRole;
+    }
 
     public AccountRequest getAccount() {
         return account;

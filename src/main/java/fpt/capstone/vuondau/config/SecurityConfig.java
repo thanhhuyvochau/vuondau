@@ -1,81 +1,24 @@
 package fpt.capstone.vuondau.config;
 
-import fpt.capstone.vuondau.config.security.SecurityFilter;
-import fpt.capstone.vuondau.config.security.UnAuthorizedUserAuthenticationEntryPoint;
-import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
-import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
-import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
+import fpt.capstone.vuondau.config.security.JwtGrantedAuthoritiesConverterCustom;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.security.core.session.SessionRegistryImpl;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
-import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.web.AuthenticationEntryPoint;
 
 
 @Configuration
-@EnableWebSecurity
-@Import(KeycloakSpringBootConfigResolver.class)
-@KeycloakConfiguration
-public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter{
-
-    private final UserDetailsService userDetailsService;
-
-
-    private final BCryptPasswordEncoder bCryptEncoder;
-
-
-    private final UnAuthorizedUserAuthenticationEntryPoint authenticationEntryPoint;
-
-
-    private final SecurityFilter secFilter;
-
-    public SecurityConfig(UserDetailsService userDetailsService, BCryptPasswordEncoder bCryptEncoder, UnAuthorizedUserAuthenticationEntryPoint authenticationEntryPoint, SecurityFilter secFilter) {
-        this.userDetailsService = userDetailsService;
-        this.bCryptEncoder = bCryptEncoder;
-        this.authenticationEntryPoint = authenticationEntryPoint;
-        this.secFilter = secFilter;
-    }
-
-
-
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService)
-                .passwordEncoder(bCryptEncoder);
-    }
-
-    @Override
-    protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
-        return new RegisterSessionAuthenticationStrategy(new SessionRegistryImpl());
-    }
-
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManager()throws Exception {
-        return super.authenticationManager() ;
-    }
-
-    @Bean
-    protected SessionRegistry buildSessionRegistry(){
-        return  new SessionRegistryImpl() ;
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean() ;
-    }
+@EnableGlobalMethodSecurity(
+        prePostEnabled = true,
+        securedEnabled = true,
+        jsr250Enabled = true)
+public class SecurityConfig extends WebSecurityConfigurerAdapter{
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
 
 //        super.configure(http);
 //        http
@@ -89,18 +32,29 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter{
 //                .authorizeRequests().anyRequest().permitAll();
 //        http
 //                .csrf().disable()    //Disabling CSRF as not using form based login
+
+//        http.cors()
+//                .and()
+
 //                .authorizeRequests()
-//                .antMatchers("/user/saveUser","/user/loginUser").permitAll()
-//                .anyRequest().authenticated()
+//                .anyRequest()
+//                .authenticated()
 //                .and()
-//                .exceptionHandling()
-//                .authenticationEntryPoint(authenticationEntryPoint)
-//                .and()
-//                .sessionManagement()
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                //To Verify user from second request onwards............
-//                .and()
-//                .addFilterBefore(secFilter, UsernamePasswordAuthenticationFilter.class)
-//        ;
+//                .oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter());
+
+        http.cors()
+                .and()
+                .authorizeRequests()
+                .anyRequest().permitAll();
+    }
+
+
+
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverterCustom grantedAuthoritiesConverterCustom = new JwtGrantedAuthoritiesConverterCustom();
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverterCustom);
+        return jwtAuthenticationConverter;
     }
 }

@@ -1,10 +1,5 @@
 package fpt.capstone.vuondau.entity.request;
 
-import fpt.capstone.vuondau.entity.Grade;
-import fpt.capstone.vuondau.entity.Subject;
-import fpt.capstone.vuondau.entity.TeacherCourse;
-
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 

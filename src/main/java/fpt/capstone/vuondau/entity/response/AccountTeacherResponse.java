@@ -1,10 +1,34 @@
 package fpt.capstone.vuondau.entity.response;
 
 
+
 public class AccountTeacherResponse {
+
     private String username;
     private boolean isActive ;
+
     private Long teacherId ;
+
+    private String firstName ;
+
+    private String lastName ;
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
 
     public String getUsername() {
         return username;
@@ -22,6 +46,7 @@ public class AccountTeacherResponse {
         isActive = active;
     }
 
+
     public Long getTeacherId() {
         return teacherId;
     }
@@ -29,4 +54,6 @@ public class AccountTeacherResponse {
     public void setTeacherId(Long teacherId) {
         this.teacherId = teacherId;
     }
+
+
 }

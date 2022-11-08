@@ -6,55 +6,42 @@ import java.util.List;
 @Entity
 @Table(name = "teacher_course")
 public class TeacherCourse {
-    private Long id;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @EmbeddedId
+    private TeacherCourseKey id;
 
-    @Id
-    public Long getId() {
+    @ManyToOne
+    @MapsId("teacherId")
+    @JoinColumn(name = "teacher_id")
+    private Account account;
+
+    @ManyToOne
+    @MapsId("courseId")
+    @JoinColumn(name = "course_id")
+    private Course course;
+
+
+    public TeacherCourseKey getId() {
         return id;
     }
 
-//    @EmbeddedId
-//    private TeacherCourseKey id = new TeacherCourseKey() ;
-//
-//
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @MapsId("teachId")
-//    private Teacher teacher ;
-//
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @MapsId("courseId")
-//    private Course course  ;
-//
-//
-//
-//
-//    public TeacherCourseKey getId() {
-//        return id;
-//    }
-//
-//    public void setId(TeacherCourseKey id) {
-//        this.id = id;
-//    }
-//
-//    public Teacher getTeacher() {
-//        return teacher;
-//    }
-//
-//    public void setTeacher(Teacher teacher) {
-//        this.teacher = teacher;
-//    }
-//
-//    public Course getCourse() {
-//        return course;
-//    }
-//
-//    public void setCourse(Course course) {
-//        this.course = course;
-//    }
-//
+    public void setId(TeacherCourseKey id) {
+        this.id = id;
+    }
 
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
+    public Course getCourse() {
+        return course;
+    }
+
+    public void setCourse(Course course) {
+        this.course = course;
+    }
 }

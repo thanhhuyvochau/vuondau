@@ -30,12 +30,9 @@ public class Manager {
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "image_id", referencedColumnName = "id")
-    private Image image;
 
-    @OneToMany(mappedBy = "manager" , cascade = CascadeType.ALL )
-    private List<Post> posts ;
+//    @OneToMany(mappedBy = "manager" , cascade = CascadeType.ALL )
+//    private List<Post> posts ;
 
     public Integer getId() {
         return id;
@@ -85,19 +82,6 @@ public class Manager {
         this.account = account;
     }
 
-    public Image getImage() {
-        return image;
-    }
 
-    public void setImage(Image image) {
-        this.image = image;
-    }
 
-    public List<Post> getPosts() {
-        return posts;
-    }
-
-    public void setPosts(List<Post> posts) {
-        this.posts = posts;
-    }
 }

@@ -1,6 +1,9 @@
 package fpt.capstone.vuondau.entity;
 
 
+import fpt.capstone.vuondau.entity.common.EGradeType;
+
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,13 +23,17 @@ public class Course {
     @Column(name = "code")
     private String code;
 
-    @ManyToOne
-    @JoinColumn(name="grade_id")
-    private Grade grade;
+    @JoinColumn(name="grade")
+    private EGradeType grade;
 
     @ManyToOne
     @JoinColumn(name="subject_id")
     private Subject subject;
+
+
+    @OneToMany(mappedBy = "course")
+    private List<TeacherCourse> teacherCourses;
+
 
     public Long getId() {
         return id;
@@ -52,11 +59,11 @@ public class Course {
         this.code = code;
     }
 
-    public Grade getGrade() {
+    public EGradeType getGrade() {
         return grade;
     }
 
-    public void setGrade(Grade grade) {
+    public void setGrade(EGradeType grade) {
         this.grade = grade;
     }
 
@@ -67,4 +74,14 @@ public class Course {
     public void setSubject(Subject subject) {
         this.subject = subject;
     }
+
+
+    public List<TeacherCourse> getTeacherCourses() {
+        return teacherCourses;
+    }
+
+    public void setTeacherCourses(List<TeacherCourse> teacherCourses) {
+        this.teacherCourses = teacherCourses;
+    }
+
 }

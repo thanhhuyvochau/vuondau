@@ -6,12 +6,15 @@ import fpt.capstone.vuondau.entity.request.AccountRequest;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface IAccountService {
     Optional<Account> findByUsername(String username);
 
-    Long saveAccount(Account account);
+    Account saveAccount(Account account);
 
     AccountTeacherResponse createTeacherAccount(AccountExistedTeacherRequest accountRequest);
+
+    List<Account> getAccount();
 }

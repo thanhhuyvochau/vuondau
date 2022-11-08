@@ -2,15 +2,21 @@ package fpt.capstone.vuondau.entity;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "post")
 public class Post {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "name")
     private String name;
+
+    @Column(name = "title")
+    private String title ;
 
     @Column(name = "brief")
     private String brief;
@@ -24,9 +30,15 @@ public class Post {
     @Column(name = "create_date")
     private Instant createDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id")
-    private Manager manager;
+    @ManyToOne
+    @JoinColumn(name="admin_id", nullable=false)
+    private Account account;
+
+    @OneToMany(mappedBy = "post")
+    List<PostResource> postResources;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<PostCategory> postCategories;
 
 
 
@@ -44,6 +56,14 @@ public class Post {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getBrief() {
@@ -78,12 +98,27 @@ public class Post {
         this.createDate = createDate;
     }
 
-    public Manager getManager() {
-        return manager;
+    public Account getAccount() {
+        return account;
     }
 
-    public void setManager(Manager manager) {
-        this.manager = manager;
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
+    public List<PostResource> getPostResources() {
+        return postResources;
+    }
+
+    public void setPostResources(List<PostResource> postResources) {
+        this.postResources = postResources;
+    }
+
+    public List<PostCategory> getPostCategories() {
+        return postCategories;
+    }
+
+    public void setPostCategories(List<PostCategory> postCategories) {
+        this.postCategories = postCategories;
+    }
 }

@@ -13,7 +13,7 @@ public class Class {
     @Id
     @GeneratedValue
     @Column(name = "id")
-    private Integer id;
+    private Long id;
 
     @Column(name = "name")
     private String name;
@@ -32,22 +32,28 @@ public class Class {
     @JoinColumn(name = "class_type_id")
     private ClassType classType;
 
-    @OneToMany(mappedBy = "aClass", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<StudentClass> studentClasses = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="course_id")
+    private Course course ;
 
-    public List<StudentClass> getStudentClasses() {
-        return studentClasses;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="teacher_id")
+    private Account account ;
 
-    public void setStudentClasses(List<StudentClass> studentClasses) {
-        this.studentClasses = studentClasses;
-    }
+    @OneToMany(mappedBy = "aClass"  ,cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<StudentClass> studentClasses ;
 
-    public Integer getId() {
+    @Column(name = "number_student")
+    private Long numberStudent ;
+
+    @Column(name = "level")
+    private String level ;
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -91,4 +97,43 @@ public class Class {
         this.classType = classType;
     }
 
+    public Course getCourse() {
+        return course;
+    }
+
+    public void setCourse(Course course) {
+        this.course = course;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
+    public Long getNumberStudent() {
+        return numberStudent;
+    }
+
+    public void setNumberStudent(Long numberStudent) {
+        this.numberStudent = numberStudent;
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    public List<StudentClass> getStudentClasses() {
+        return studentClasses;
+    }
+
+    public void setStudentClasses(List<StudentClass> studentClasses) {
+        this.studentClasses = studentClasses;
+    }
 }

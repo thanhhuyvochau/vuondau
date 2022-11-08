@@ -4,7 +4,7 @@ import fpt.capstone.vuondau.entity.common.EDegreeType;
 
 
 import javax.persistence.*;
-
+import java.util.List;
 
 
 @Entity
@@ -44,15 +44,19 @@ public class Account {
     private EDegreeType degree ;
 
     @Column(name = "phone_number")
-    private Long phoneNumber ;
+    private String  phoneNumber ;
 
-    @Column(name = "image")
-    private String image ;
-
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="role_id")
     private Role role;
+
+    @OneToMany(mappedBy = "account")
+    private List<TeacherCourse> teacherCourses;
+
+    @OneToMany(mappedBy = "account",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<StudentClass> studentClasses ;
+
+
 
     public Long getId() {
         return id;
@@ -134,21 +138,14 @@ public class Account {
         this.degree = degree;
     }
 
-    public Long getPhoneNumber() {
+    public String  getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(Long phoneNumber) {
+    public void setPhoneNumber(String  phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
 
     public Role getRole() {
         return role;
@@ -156,5 +153,21 @@ public class Account {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public List<TeacherCourse> getTeacherCourses() {
+        return teacherCourses;
+    }
+
+    public void setTeacherCourses(List<TeacherCourse> teacherCourses) {
+        this.teacherCourses = teacherCourses;
+    }
+
+    public List<StudentClass> getStudentClasses() {
+        return studentClasses;
+    }
+
+    public void setStudentClasses(List<StudentClass> studentClasses) {
+        this.studentClasses = studentClasses;
     }
 }
