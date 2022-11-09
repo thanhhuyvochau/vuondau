@@ -15,8 +15,13 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://vuondau-keycloak.amazingtech.vn/auth/realms/dev
-
+          issuer-uri: keycloak:8080/auth/realms/dev
+keycloak:
+  realm: dev
+  resource: admin-spring-boot
+  auth-server-url: keycloak:8080/auth
+  credentials:
+    secret: EJlhzOe84TZJhy41J3GhEg0yhaXzQuJL
 
 
 
