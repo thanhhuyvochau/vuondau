@@ -24,6 +24,11 @@ public class FeedBack {
     @JoinColumn(name = "course_id")
     private Course course;
 
+
+    @ManyToOne
+    @JoinColumn(name="class_id")
+    private Class clazz  ;
+
     private String content ;
 
     private EEvaluateType eEvaluateType ;
@@ -66,5 +71,13 @@ public class FeedBack {
 
     public void seteEvaluateType(EEvaluateType eEvaluateType) {
         this.eEvaluateType = eEvaluateType;
+    }
+
+    public Class getClazz() {
+        return clazz;
+    }
+
+    public void setClazz(Class clazz) {
+        this.clazz = clazz;
     }
 }

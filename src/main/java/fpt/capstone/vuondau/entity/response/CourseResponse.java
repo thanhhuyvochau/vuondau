@@ -1,6 +1,8 @@
 package fpt.capstone.vuondau.entity.response;
 
+import fpt.capstone.vuondau.entity.Dto.TeacherCourseDto;
 import fpt.capstone.vuondau.entity.TeacherCourse;
+import fpt.capstone.vuondau.entity.common.EGradeType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +13,13 @@ public class CourseResponse {
 
     private String code;
 
-    private GradeResponse grade;
+    private EGradeType grade;
 
     private SubjectResponse subject;
 
-    private List<TeacherCourse> teacherCourses = new ArrayList<>() ;
+    private List<TeacherCourseDto> teacherCourse ;
+
+
 
     public Long getId() {
         return id;
@@ -41,13 +45,7 @@ public class CourseResponse {
         this.code = code;
     }
 
-    public GradeResponse getGrade() {
-        return grade;
-    }
 
-    public void setGrade(GradeResponse grade) {
-        this.grade = grade;
-    }
 
     public SubjectResponse getSubject() {
         return subject;
@@ -57,11 +55,20 @@ public class CourseResponse {
         this.subject = subject;
     }
 
-    public List<TeacherCourse> getTeacherCourses() {
-        return teacherCourses;
+
+    public List<TeacherCourseDto> getTeacherCourse() {
+        return teacherCourse;
     }
 
-    public void setTeacherCourses(List<TeacherCourse> teacherCourses) {
-        this.teacherCourses = teacherCourses;
+    public void setTeacherCourse(List<TeacherCourseDto> teacherCourse) {
+        this.teacherCourse = teacherCourse;
+    }
+
+    public EGradeType getGrade() {
+        return grade;
+    }
+
+    public void setGrade(EGradeType grade) {
+        this.grade = grade;
     }
 }

@@ -14,8 +14,8 @@ public class Subject {
     @Column(name = "code")
     private String code;
 
-    @OneToMany(mappedBy="subject")
-    private List<Course> courses;
+//    @OneToMany(mappedBy="subject")
+//    private List<Course> courses;
 
     public Long getId() {
         return id;
@@ -41,13 +41,13 @@ public class Subject {
         this.code = code;
     }
 
-    public List<Course> getCourses() {
-        return courses;
-    }
-
-    public void setCourses(List<Course> courses) {
-        this.courses = courses;
-    }
+//    public List<Course> getCourses() {
+//        return courses;
+//    }
+//
+//    public void setCourses(List<Course> courses) {
+//        this.courses = courses;
+//    }
 
 
 }

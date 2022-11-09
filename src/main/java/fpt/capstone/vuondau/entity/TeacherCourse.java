@@ -20,6 +20,7 @@ public class TeacherCourse {
     @JoinColumn(name = "course_id")
     private Course course;
 
+    private String isAllowed ;
 
     public TeacherCourseKey getId() {
         return id;
@@ -43,5 +44,13 @@ public class TeacherCourse {
 
     public void setCourse(Course course) {
         this.course = course;
+    }
+
+    public String getIsAllowed() {
+        return isAllowed;
+    }
+
+    public void setIsAllowed(String isAllowed) {
+        this.isAllowed = isAllowed;
     }
 }

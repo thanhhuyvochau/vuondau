@@ -23,10 +23,10 @@ public class Course {
     @Column(name = "code")
     private String code;
 
-    @JoinColumn(name="grade")
+    @JoinColumn(name="grade", nullable = false)
     private EGradeType grade;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
     @JoinColumn(name="subject_id")
     private Subject subject;
 

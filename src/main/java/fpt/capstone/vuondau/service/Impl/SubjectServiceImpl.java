@@ -32,14 +32,14 @@ public class SubjectServiceImpl implements ISubjectService {
         subject.setCode(subjectRequest.getCode());
         subject.setName(subject.getName());
         List<Course> allCourse = courseRepository.findAllById(subjectRequest.getCourseIds());
-        subject.setCourses(allCourse);
+//        subject.setCourses(allCourse);
 
         Subject subjectSaved = subjectRepository.save(subject);
         SubjectResponse response = new SubjectResponse();
         response.setId(subjectSaved.getId());
         response.setName(subjectSaved.getName());
         response.setCode(subjectSaved.getCode());
-        response.setCourseIds(subjectSaved.getCourses());
+//        response.setCourseIds(subjectSaved.getCourses());
 
         return response;
     }
@@ -50,14 +50,14 @@ public class SubjectServiceImpl implements ISubjectService {
         subject.setCode(subjectRequest.getCode());
         subject.setName(subject.getName());
         List<Course> allCourse = courseRepository.findAllById(subjectRequest.getCourseIds());
-        subject.setCourses(allCourse);
+//        subject.setCourses(allCourse);
         Subject subjectSaved = subjectRepository.save(subject);
 
         SubjectResponse response = new SubjectResponse();
         response.setId(subjectSaved.getId());
         response.setName(subjectSaved.getName());
         response.setCode(subjectSaved.getCode());
-        response.setCourseIds(subjectSaved.getCourses());
+//        response.setCourseIds(subjectSaved.getCourses());
         return response;
     }
 
@@ -75,7 +75,7 @@ public class SubjectServiceImpl implements ISubjectService {
         response.setId(subject.getId());
         response.setName(subject.getName());
         response.setCode(subject.getCode());
-        response.setCourseIds(subject.getCourses());
+//        response.setCourseIds(subject.getCourses());
         return response;
     }
 }
