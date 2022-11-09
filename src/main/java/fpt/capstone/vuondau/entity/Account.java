@@ -12,8 +12,8 @@ import java.util.List;
 public class Account {
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "account_id_generator")
+    @SequenceGenerator(name = "account_id_generator", sequenceName = "account_id_generator")
     private Long id;
 
     @Column(name = "user_name")

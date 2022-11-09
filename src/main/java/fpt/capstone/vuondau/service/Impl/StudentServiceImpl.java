@@ -30,24 +30,5 @@ public class StudentServiceImpl implements IStudentService {
         this.accountRepository = accountRepository;
     }
 
-    @Override
-    public StudentResponse studentCreateAccount(StudentRequest studentRequest) {
-        Account account = new Account();
-        AccountRequest studentRequestAccount = studentRequest.getAccount();
-        if (studentRequestAccount != null) {
-            account.setUsername(studentRequestAccount.getUsername());
-            account.setPassword(studentRequestAccount.getPassword());
-            account.setFirstName(studentRequest.getFirstName());
-            account.setLastName(studentRequest.getLastName());
-            account.setActive(false);
-            account.setEmail(studentRequest.getEmail());
-            account.setPhoneNumber(studentRequest.getPhoneNumber());
-            Role role = roleRepository.findRoleByCode(EAccountRole.STUDENT.name())
-                    .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
-            account.setRole(role);
-            Account accountSave = accountRepository.save(account);
-            return ObjectUtil.copyProperties(accountSave, new StudentResponse(), StudentResponse.class);
-        }
-        return null;
-    }
+
 }
