@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.entity.request;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import fpt.capstone.vuondau.entity.common.EAccountRole;
 
 import java.io.Serializable;
 
@@ -20,7 +21,7 @@ public class AccountExistedTeacherRequest implements Serializable {
     private String  phone ;
 
     @JsonIgnore
-    private String roleAccount  = "TEACHER";
+    private EAccountRole roleAccount ;
 
 
     public String getUsername() {
@@ -63,11 +64,12 @@ public class AccountExistedTeacherRequest implements Serializable {
         this.phone = phone;
     }
 
-    public String getRoleAccount() {
+
+    public EAccountRole getRoleAccount() {
         return roleAccount;
     }
 
-    public void setRoleAccount(String roleAccount) {
+    public void setRoleAccount(EAccountRole roleAccount) {
         this.roleAccount = roleAccount;
     }
 

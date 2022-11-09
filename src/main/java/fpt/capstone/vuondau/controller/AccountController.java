@@ -32,7 +32,7 @@ public class AccountController {
 
     @PostMapping("/teacher")
     public ResponseEntity<Account> saveAccount (Account account) {
-        return ResponseEntity.ok(accountService.saveAccount(account)) ;
+        return ResponseEntity.ok(accountService.saveAccount(account));
     }
 
 
