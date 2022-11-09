@@ -73,6 +73,14 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success(iAdminService.viewStudentFeedbackClass(classId)));
     }
 
+    //MANAGE IT REQUEST FROM
+
+
+
+
+    // MANAGE SUBJECT
+
+
 
 
     // MANGER COURSE
@@ -83,6 +91,6 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success(iAdminService.searchCourse(query, pageable)));
     }
 
-
+// MANAGE TOPIC
 
 }
