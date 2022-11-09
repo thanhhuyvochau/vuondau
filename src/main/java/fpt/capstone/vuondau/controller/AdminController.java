@@ -1,9 +1,11 @@
 package fpt.capstone.vuondau.controller;
 
+import fpt.capstone.vuondau.entity.Dto.FeedBackDto;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.request.AccountSearchRequest;
+import fpt.capstone.vuondau.entity.request.CourseSearchRequest;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.CourseResponse;
 import fpt.capstone.vuondau.service.IAdminService;
@@ -58,14 +60,37 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success(iAdminService.updateRoleAccount(id, eAccountRole)));
     }
 
+    @Operation(summary = "cập nhật active cho account")
+    @PostMapping("/{id}/approve-teacher-account")
+    public ResponseEntity<ApiResponse<AccountResponse>> ApproveAccountTeacher(@PathVariable long id ) {
+        return ResponseEntity.ok(ApiResponse.success(iAdminService.ApproveAccountTeacher(id)));
+    }
+
+
+    @Operation(summary = "xem hoc sinh feedback lớp ")
+    @GetMapping("/{classId}/-view-feadback")
+    public ResponseEntity<ApiResponse<FeedBackDto>> viewStudentFeedbackClass(@PathVariable long classId ) {
+        return ResponseEntity.ok(ApiResponse.success(iAdminService.viewStudentFeedbackClass(classId)));
+    }
+
+    //MANAGE IT REQUEST FROM
+
+
+
+
+    // MANAGE SUBJECT
+
+
 
 
     // MANGER COURSE
     @Operation(summary = "Tìm Kiếm course")
-    @GetMapping("/search-cource")
-    public ResponseEntity<ApiResponse<ApiPage<CourseResponse>>> searchCourse(@Nullable AccountSearchRequest query,
+    @GetMapping("/cource")
+    public ResponseEntity<ApiResponse<ApiPage<CourseResponse>>> searchCourse(@Nullable CourseSearchRequest query,
                                                                              Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iAdminService.searchCourse(query, pageable)));
     }
+
+// MANAGE TOPIC
 
 }

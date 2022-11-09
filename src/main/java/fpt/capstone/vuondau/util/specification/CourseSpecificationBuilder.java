@@ -2,13 +2,17 @@ package fpt.capstone.vuondau.util.specification;
 
 
 import fpt.capstone.vuondau.entity.Course;
+
+
 import fpt.capstone.vuondau.entity.Course_;
-import org.apache.logging.log4j.util.Strings;
+import fpt.capstone.vuondau.util.SpecificationUtil;
 import org.springframework.data.jpa.domain.Specification;
+
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javax.persistence.criteria.Expression;
 
 public class CourseSpecificationBuilder {
 
@@ -24,13 +28,15 @@ public class CourseSpecificationBuilder {
             return this;
         }
 
-        specifications.add((root, query, criteriaBuilder) ->
-                criteriaBuilder.like(criteriaBuilder.concat(criteriaBuilder.coalesce(root.get(Course_.NAME), Strings.EMPTY),
-                                criteriaBuilder.coalesce(root.get(Course_.CODE), Strings.EMPTY)),
-                        "%" + q + "%"));
+        specifications.add((root, query, criteriaBuilder) -> {
+            Expression<String> courseCode = root.get(Course_.CODE);
+            Expression<String> courseName = root.get(Course_.NAME);
+            Expression<String> stringExpression = SpecificationUtil.concat(criteriaBuilder, " ", courseCode, courseName);
+            return criteriaBuilder.like(stringExpression, '%' + q + '%');
+        });
 
 
-                return this ;
+        return this;
     }
 
     public Specification<Course> build() {

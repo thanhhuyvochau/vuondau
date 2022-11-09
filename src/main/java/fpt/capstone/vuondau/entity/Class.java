@@ -43,6 +43,9 @@ public class Class {
     @OneToMany(mappedBy = "aClass"  ,cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<StudentClass> studentClasses ;
 
+    @OneToMany(mappedBy = "clazz"  ,cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<FeedBack> feedBacks ;
+
     @Column(name = "number_student")
     private Long numberStudent ;
 
@@ -135,5 +138,13 @@ public class Class {
 
     public void setStudentClasses(List<StudentClass> studentClasses) {
         this.studentClasses = studentClasses;
+    }
+
+    public List<FeedBack> getFeedBacks() {
+        return feedBacks;
+    }
+
+    public void setFeedBacks(List<FeedBack> feedBacks) {
+        this.feedBacks = feedBacks;
     }
 }
