@@ -9,10 +9,10 @@ import fpt.capstone.vuondau.entity.Dto.RoleDto;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
-import fpt.capstone.vuondau.entity.request.AccountSearchRequest;
-import fpt.capstone.vuondau.entity.request.CourseSearchRequest;
+import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.CourseResponse;
+import fpt.capstone.vuondau.entity.response.SubjectResponse;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IAdminService;
 import fpt.capstone.vuondau.util.MessageUtil;
@@ -22,6 +22,7 @@ import fpt.capstone.vuondau.util.PageUtil;
 import fpt.capstone.vuondau.util.specification.AccountSpecificationBuilder;
 
 import fpt.capstone.vuondau.util.specification.CourseSpecificationBuilder;
+import fpt.capstone.vuondau.util.specification.SubjectSpecificationBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -45,11 +46,16 @@ public class AdminServiceImpl implements IAdminService {
 
     private final CourseRepository courseRepository;
 
-    private final ClassRepository classRepository ;
+    private final ClassRepository classRepository;
 
-    private final FeedbackRepository feedbackRepository ;
+    private final FeedbackRepository feedbackRepository;
 
-    public AdminServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, RoleRepository roleRepository, CourseRepository courseRepository, ClassRepository classRepository, FeedbackRepository feedbackRepository) {
+
+    private final SubjectRepository subjectRepository;
+
+    private final  TeacherCourseRepository teacherCourseRepository ;
+
+    public AdminServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, RoleRepository roleRepository, CourseRepository courseRepository, ClassRepository classRepository, FeedbackRepository feedbackRepository, SubjectRepository subjectRepository, TeacherCourseRepository teacherCourseRepository) {
         this.accountRepository = accountRepository;
         this.messageUtil = messageUtil;
         this.roleRepository = roleRepository;
@@ -57,6 +63,8 @@ public class AdminServiceImpl implements IAdminService {
 
         this.classRepository = classRepository;
         this.feedbackRepository = feedbackRepository;
+        this.subjectRepository = subjectRepository;
+        this.teacherCourseRepository = teacherCourseRepository;
     }
 
     @Override
@@ -132,15 +140,18 @@ public class AdminServiceImpl implements IAdminService {
     @Override
     public ApiPage<CourseResponse> searchCourse(CourseSearchRequest query, Pageable pageable) {
         CourseSpecificationBuilder builder = CourseSpecificationBuilder.specification()
-                .queryLike(query.getQ()) ;
+                .queryLike(query.getQ());
 
         Page<Course> coursePage = courseRepository.findAll(builder.build(), pageable);
 
-//        Page<Course> coursePage = courseRepository.findAll(builder.build(), pageable);
-
         return PageUtil.convert(coursePage.map(this::convertCourseToCourseResponse));
 
+    }
 
+    public CourseResponse convertCourseToCourseResponse(Course course) {
+        CourseResponse courseResponse = ObjectUtil.copyProperties(course, new CourseResponse(), CourseResponse.class);
+        courseResponse.setGrade(course.getGrade());
+        return courseResponse;
     }
 
     @Override
@@ -160,25 +171,119 @@ public class AdminServiceImpl implements IAdminService {
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay class") + classId));
 
 
-        FeedBackDto feedBackDto = new FeedBackDto() ;
-        ClassDto classDto = ObjectUtil.copyProperties(fbclass , new ClassDto (), ClassDto.class) ;
+        FeedBackDto feedBackDto = new FeedBackDto();
+        ClassDto classDto = ObjectUtil.copyProperties(fbclass, new ClassDto(), ClassDto.class);
         feedBackDto.setClassInfo(classDto);
 
         List<FeedBack> feedBacks = feedbackRepository.countAllByClazz(fbclass);
-        List<FeedBacClassDto> feedBacClassDtoList =  new ArrayList<>() ;
+        List<FeedBacClassDto> feedBacClassDtoList = new ArrayList<>();
         feedBacks.stream().map(feedBack -> {
-            FeedBacClassDto feedBacClassDto = ObjectUtil.copyProperties(feedBack , new FeedBacClassDto() , FeedBacClassDto.class) ;
-            feedBacClassDtoList.add(feedBacClassDto) ;
-            return feedBacClassDto ;
-        }).collect(Collectors.toList()) ;
+            FeedBacClassDto feedBacClassDto = ObjectUtil.copyProperties(feedBack, new FeedBacClassDto(), FeedBacClassDto.class);
+            feedBacClassDtoList.add(feedBacClassDto);
+            return feedBacClassDto;
+        }).collect(Collectors.toList());
 
         feedBackDto.setFeedBacClass(feedBacClassDtoList);
-        return feedBackDto ;
+        return feedBackDto;
     }
 
-    public CourseResponse convertCourseToCourseResponse(Course course) {
-        CourseResponse courseResponse = ObjectUtil.copyProperties(course, new CourseResponse(), CourseResponse.class);
-        courseResponse.setGrade(course.getGrade());
+    @Override
+    public ApiPage<SubjectResponse> searchSubject(SubjectSearchRequest query, Pageable pageable) {
+        SubjectSpecificationBuilder builder = SubjectSpecificationBuilder.specification()
+                .queryLike(query.getQ());
+
+        Page<Subject> coursePage = subjectRepository.findAll(builder.build(), pageable);
+
+        return PageUtil.convert(coursePage.map(this::convertSubjectToSubjectResponse));
+
+    }
+
+    public SubjectResponse convertSubjectToSubjectResponse(Subject subject) {
+        SubjectResponse courseResponse = ObjectUtil.copyProperties(subject, new SubjectResponse(), SubjectResponse.class);
         return courseResponse;
     }
+
+
+    @Override
+    public ApiPage<SubjectResponse> viewAllSubject(Pageable pageable) {
+        Page<Subject> allSubjects = subjectRepository.findAll(pageable);
+        return PageUtil.convert(allSubjects
+                .map(subject -> {
+                    SubjectResponse subjectResponse = ObjectUtil.copyProperties(subject, new SubjectResponse(), SubjectResponse.class);
+
+                    return subjectResponse;
+                }));
+
+    }
+
+    @Override
+    public SubjectResponse viewSubjectDetail(long subjectId) {
+        Subject subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay account") + subjectId));
+        SubjectResponse subjectResponse = ObjectUtil.copyProperties(subject, new SubjectResponse(), SubjectResponse.class);
+        return subjectResponse;
+    }
+
+    @Override
+    public Boolean deleteSubject(long subjectId) {
+        Subject subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay account") + subjectId));
+        subjectRepository.delete(subject);
+        return true;
+    }
+
+    @Override
+    public SubjectResponse updateSubject(long subjectId, SubjectRequest subjectRequest) {
+        Subject subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay account") + subjectId));
+        subject.setCode(subjectRequest.getCode());
+        subject.setName(subject.getName());
+        List<Course> courses = courseRepository.findAllById(subjectRequest.getCourseIds());
+        if (!courses.isEmpty()) {
+            subject.setCourses(courses);
+        }
+        Subject save = subjectRepository.save(subject);
+        return ObjectUtil.copyProperties(save, new SubjectResponse(), SubjectResponse.class);
+
+    }
+
+    @Override
+    public ApiPage<CourseResponse> viewAllCourse(Pageable pageable) {
+        Page<Course> allCourse = courseRepository.findAll(pageable);
+        return PageUtil.convert(allCourse
+                .map(course -> {
+                    CourseResponse courseResponse = ObjectUtil.copyProperties(course, new CourseResponse(), CourseResponse.class);
+                    return courseResponse;
+                }));
+    }
+
+    @Override
+    public CourseResponse viewCourseDetail(long courseID) {
+        Course course = courseRepository.findById(courseID)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay course") + courseID));
+        CourseResponse courseResponse = ObjectUtil.copyProperties(course, new CourseResponse(), CourseResponse.class);
+        return courseResponse;
+    }
+
+    @Override
+    public CourseResponse updateCourse(long courseID, CourseRequest courseRequest) {
+        Course course = courseRepository.findById(courseID)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay course") + courseID));
+        course.setCode(courseRequest.getCode());
+        course.setName(courseRequest.getName());
+        course.setGrade(courseRequest.getGradeType());
+        Subject subject = subjectRepository.findById(courseRequest.getSubjectId())
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay subject") + courseRequest.getSubjectId()));
+        course.setSubject(subject);
+
+        List<TeacherCourse> allTeacherCourse = teacherCourseRepository.findAllByCourse(course);
+
+        allTeacherCourse.stream().map(teacherCourse -> {
+
+        })
+        return ObjectUtil.copyProperties(save, new SubjectResponse(), SubjectResponse.class);
+
+    }
+
+
 }
