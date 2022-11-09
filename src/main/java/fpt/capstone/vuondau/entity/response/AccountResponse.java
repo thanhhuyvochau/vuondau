@@ -1,5 +1,7 @@
 package fpt.capstone.vuondau.entity.response;
 
+import fpt.capstone.vuondau.entity.Dto.RoleDto;
+
 import javax.persistence.Column;
 
 public class AccountResponse {
@@ -7,6 +9,14 @@ public class AccountResponse {
     private Long id;
 
     private String username;
+
+    private String firstName ;
+
+    private String lastName ;
+
+    private String phoneNumber ;
+
+    private RoleDto role ;
 
     private Boolean isActive;
 
@@ -32,5 +42,37 @@ public class AccountResponse {
 
     public void setActive(Boolean active) {
         isActive = active;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public RoleDto getRole() {
+        return role;
+    }
+
+    public void setRole(RoleDto role) {
+        this.role = role;
     }
 }

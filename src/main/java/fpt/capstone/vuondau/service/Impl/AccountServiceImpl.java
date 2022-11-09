@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.service.Impl;
 
 import fpt.capstone.vuondau.entity.Account;
 
+import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.request.AccountExistedTeacherRequest;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
 import fpt.capstone.vuondau.repository.AccountRepository;
@@ -11,8 +12,10 @@ import fpt.capstone.vuondau.service.IAccountService;
 import fpt.capstone.vuondau.entity.Role;
 
 import fpt.capstone.vuondau.repository.RoleRepository;
+import fpt.capstone.vuondau.util.MessageUtil;
 import fpt.capstone.vuondau.util.ObjectUtil;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -29,11 +32,12 @@ import java.util.Optional;
 public class AccountServiceImpl implements IAccountService, UserDetailsService {
     private final AccountRepository accountRepository;
 
-
+    private final MessageUtil messageUtil;
 
     private final RoleRepository  roleRepository ;
-    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository, RoleRepository roleRepository1) {
+    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository, MessageUtil messageUtil, RoleRepository roleRepository1) {
         this.accountRepository = accountRepository;
+        this.messageUtil = messageUtil;
         this.roleRepository = roleRepository1;
     }
 
@@ -86,7 +90,8 @@ public class AccountServiceImpl implements IAccountService, UserDetailsService {
         account.setFirstName(accountRequest.getFirstName());
         account.setLastName(accountRequest.getLastName());
         account.setPhoneNumber(account.getPhoneNumber());
-        Role role = roleRepository.findRoleByCode(accountRequest.getRoleAccount()) ;
+        Role role = roleRepository.findRoleByCode(accountRequest.getRoleAccount().name())
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
         account.setRole(role);
         Account save = accountRepository.save(account);
 
