@@ -7,6 +7,7 @@ import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.CourseResponse;
+import fpt.capstone.vuondau.entity.response.RequestFormResponese;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
 import fpt.capstone.vuondau.service.IAdminService;
 import fpt.capstone.vuondau.util.specification.AccountSpecificationBuilder;
@@ -121,7 +122,7 @@ public class AdminController {
     }
 
     @Operation(summary = "Lấy tất cả course ")
-    @GetMapping("/get-all-subject")
+    @GetMapping("/get-all-course")
     public ResponseEntity<ApiResponse<ApiPage<CourseResponse>>> viewAllCourse(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iAdminService.viewAllCourse( pageable)));
     }
@@ -139,5 +140,15 @@ public class AdminController {
     }
 
 // MANAGE TOPIC
+
+//MANGER IT REQUEST FROM
+@Operation(summary = "Tìm Kiếm request form ")
+@GetMapping("/search-request-form")
+public ResponseEntity<ApiResponse<ApiPage<RequestFormResponese>>> searchRequestForm(@Nullable RequestSearchRequest query,
+                                                                                    Pageable pageable) {
+    return ResponseEntity.ok(ApiResponse.success(iAdminService.searchRequestForm(query, pageable)));
+}
+
+
 
 }

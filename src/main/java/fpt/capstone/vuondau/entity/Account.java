@@ -56,7 +56,8 @@ public class Account {
     @OneToMany(mappedBy = "account",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<StudentClass> studentClasses ;
 
-
+    @OneToMany(mappedBy = "account",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Request> requests ;
 
     public Long getId() {
         return id;
@@ -169,5 +170,13 @@ public class Account {
 
     public void setStudentClasses(List<StudentClass> studentClasses) {
         this.studentClasses = studentClasses;
+    }
+
+    public List<Request> getRequests() {
+        return requests;
+    }
+
+    public void setRequests(List<Request> requests) {
+        this.requests = requests;
     }
 }
