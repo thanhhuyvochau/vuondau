@@ -19,6 +19,7 @@ spring:
 keycloak:
   realm: dev
   resource: admin-spring-boot
+  app-client: employee-service
   auth-server-url: keycloak:8080/auth
   credentials:
     secret: EJlhzOe84TZJhy41J3GhEg0yhaXzQuJL
