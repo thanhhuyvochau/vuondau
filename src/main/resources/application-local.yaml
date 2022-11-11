@@ -26,6 +26,7 @@ spring:
 keycloak:
   realm: dev
   resource: admin-spring-boot
+  app-client: employee-service
   auth-server-url: http://vuondau-keycloak.amazingtech.vn/auth
   credentials:
     secret: EJlhzOe84TZJhy41J3GhEg0yhaXzQuJL

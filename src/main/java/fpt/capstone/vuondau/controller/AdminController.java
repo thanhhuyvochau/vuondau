@@ -20,7 +20,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/admin")
+@RequestMapping("/api/admin")
 public class AdminController {
 
     private final IAdminService iAdminService;
@@ -119,13 +119,11 @@ public class AdminController {
                                                                              Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iAdminService.searchCourse(query, pageable)));
     }
-
     @Operation(summary = "Lấy tất cả course ")
     @GetMapping("/get-all-course")
     public ResponseEntity<ApiResponse<ApiPage<CourseResponse>>> viewAllCourse(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iAdminService.viewAllCourse( pageable)));
     }
-
     @Operation(summary = "xem chi tiết course ")
     @GetMapping("/{courseID}")
     public ResponseEntity<ApiResponse<CourseResponse>> viewSubjectCourse(@PathVariable long courseID ) {
