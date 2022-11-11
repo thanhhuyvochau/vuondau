@@ -25,8 +25,6 @@ public interface IAccountService {
 
     List<Account> getAccount();
 
-    Boolean saveAccountToKeycloak(Account account);
-
     StudentResponse studentCreateAccount(StudentRequest studentRequest);
 
 }

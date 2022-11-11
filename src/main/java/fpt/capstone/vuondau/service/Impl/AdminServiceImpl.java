@@ -267,22 +267,22 @@ public class AdminServiceImpl implements IAdminService {
 
     @Override
     public CourseResponse updateCourse(long courseID, CourseRequest courseRequest) {
-        Course course = courseRepository.findById(courseID)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay course") + courseID));
-        course.setCode(courseRequest.getCode());
-        course.setName(courseRequest.getName());
-        course.setGrade(courseRequest.getGradeType());
-        Subject subject = subjectRepository.findById(courseRequest.getSubjectId())
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay subject") + courseRequest.getSubjectId()));
-        course.setSubject(subject);
-
-        List<TeacherCourse> allTeacherCourse = teacherCourseRepository.findAllByCourse(course);
-
-        allTeacherCourse.stream().map(teacherCourse -> {
-
-        })
-        return ObjectUtil.copyProperties(save, new SubjectResponse(), SubjectResponse.class);
-
+//        Course course = courseRepository.findById(courseID)
+//                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay course") + courseID));
+//        course.setCode(courseRequest.getCode());
+//        course.setName(courseRequest.getName());
+//        course.setGrade(courseRequest.getGradeType());
+//        Subject subject = subjectRepository.findById(courseRequest.getSubjectId())
+//                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay subject") + courseRequest.getSubjectId()));
+//        course.setSubject(subject);
+//
+//        List<TeacherCourse> allTeacherCourse = teacherCourseRepository.findAllByCourse(course);
+//
+//        allTeacherCourse.stream().map(teacherCourse -> {
+//
+//        })
+//        return ObjectUtil.copyProperties(save, new SubjectResponse(), SubjectResponse.class);
+    return null;
     }
 
 
