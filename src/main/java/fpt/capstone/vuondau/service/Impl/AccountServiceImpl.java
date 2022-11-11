@@ -16,8 +16,8 @@ import fpt.capstone.vuondau.service.IAccountService;
 import fpt.capstone.vuondau.entity.Role;
 
 import fpt.capstone.vuondau.repository.RoleRepository;
-import fpt.capstone.vuondau.util.KeycloakUtils.KeycloakRoleUtil;
-import fpt.capstone.vuondau.util.KeycloakUtils.KeycloakUserUtil;
+import fpt.capstone.vuondau.util.keycloak.KeycloakRoleUtil;
+import fpt.capstone.vuondau.util.keycloak.KeycloakUserUtil;
 import fpt.capstone.vuondau.util.MessageUtil;
 import fpt.capstone.vuondau.util.ObjectUtil;
 
@@ -75,7 +75,7 @@ public class AccountServiceImpl implements IAccountService {
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
         account.setRole(role);
         Account save = accountRepository.save(account);
-        Boolean saveAccountSuccess = keycloakUserUtil.saveAccount(account);
+        Boolean saveAccountSuccess = keycloakUserUtil.create(account);
         Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getName(), account);
         if (saveAccountSuccess && assignRoleSuccess) {
             return ObjectUtil.copyProperties(save, new AccountTeacherResponse(), AccountTeacherResponse.class);
@@ -104,7 +104,7 @@ public class AccountServiceImpl implements IAccountService {
                     .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
             account.setRole(role);
             Account accountSave = accountRepository.save(account);
-            Boolean saveAccountSuccess = keycloakUserUtil.saveAccount(account);
+            Boolean saveAccountSuccess = keycloakUserUtil.create(account);
             Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getName(), account);
             if (saveAccountSuccess && assignRoleSuccess) {
                 return ObjectUtil.copyProperties(accountSave, new StudentResponse(), StudentResponse.class);

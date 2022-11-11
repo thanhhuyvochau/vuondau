@@ -1,6 +1,7 @@
-package fpt.capstone.vuondau.util.KeycloakUtils;
+package fpt.capstone.vuondau.util.keycloak;
 
 import fpt.capstone.vuondau.entity.Account;
+import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.util.ObjectUtil;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.UserResource;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import javax.ws.rs.core.Response;
 import java.util.Collections;
+import java.util.Optional;
 
 @Component
 public class KeycloakUserUtil {
@@ -37,9 +39,14 @@ public class KeycloakUserUtil {
 
     public Boolean update(Account account) {
         CredentialRepresentation credentialRepresentation = preparePasswordRepresentation(account.getPassword());
-        UserRepresentation userRepresentation = prepareUserRepresentation(account, credentialRepresentation);
-        UserResource userResource = getUserResource(account);
-        keycloak.realm(realm).users().get(userResource.toRepresentation().getId()).update(userRepresentation);
+        try {
+            UserRepresentation userRepresentation = prepareUserRepresentation(account, credentialRepresentation);
+            UserResource userResource = Optional.ofNullable(getUserResource(account))
+                    .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("User not found in Keycloak!!"));
+            keycloak.realm(realm).users().get(userResource.toRepresentation().getId()).update(userRepresentation);
+        } catch (Exception e) {
+            throw ApiException.create(HttpStatus.CONFLICT).withMessage(e.getMessage());
+        }
         return true;
     }
 
@@ -57,10 +64,6 @@ public class KeycloakUserUtil {
 
     private UserRepresentation prepareUserRepresentation(Account account, CredentialRepresentation credentialRepresentation) {
         UserRepresentation newUser = ObjectUtil.copyProperties(account, new UserRepresentation(), UserRepresentation.class, true);
-//        newUser.setEmail(account.getEmail());
-//        newUser.setFirstName(account.getFirstName());
-//        newUser.setLastName(account.getLastName());
-//        newUser.setUsername(account.getUsername());
         newUser.setCredentials(Collections.singletonList(credentialRepresentation));
         newUser.setEnabled(true);
         return newUser;
