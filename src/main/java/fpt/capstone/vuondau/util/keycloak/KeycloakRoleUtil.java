@@ -1,4 +1,4 @@
-package fpt.capstone.vuondau.util.KeycloakUtils;
+package fpt.capstone.vuondau.util.keycloak;
 
 import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.common.ApiException;
