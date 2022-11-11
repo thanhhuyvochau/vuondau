@@ -49,7 +49,6 @@ public class AdminServiceImpl implements IAdminService {
 
     private final FeedbackRepository feedbackRepository;
 
-
     private final SubjectRepository subjectRepository;
 
     private final TeacherCourseRepository teacherCourseRepository;

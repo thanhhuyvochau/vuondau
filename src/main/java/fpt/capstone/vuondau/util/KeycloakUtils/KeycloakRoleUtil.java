@@ -20,8 +20,7 @@ public class KeycloakRoleUtil {
     private final Keycloak keycloak;
     @Value("${keycloak.realm}")
     private String realm;
-    @Value("${keycloak.app-client}")
-    private String appClient;
+
     private final KeycloakClientUtil keycloakClientUtil;
     private final KeycloakRealmUtil keycloakRealmUtil;
     private final KeycloakUserUtil keycloakUserUtil;
@@ -37,7 +36,9 @@ public class KeycloakRoleUtil {
         RoleRepresentation roleRepresentation = new RoleRepresentation();
         roleRepresentation.setName(roleName);
         roleRepresentation.setClientRole(true);
-        keycloak.realm(realm);
+        RealmResource realmReSource = keycloakRealmUtil.getRealmReSource();
+        ClientResource clientResource = keycloakClientUtil.getClientResource(realmReSource);
+        clientResource.roles().create(roleRepresentation);
     }
 
     public List<RoleRepresentation> findAllClientRoles() {
