@@ -11,7 +11,12 @@ public class ExceptionControllerAdvice {
 
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseBody
-    public ResponseEntity<String> exception(AccessDeniedException e) {
+    public ResponseEntity<String> handleUnAuthorizedException(AccessDeniedException e) {
         return ResponseEntity.badRequest().body("403: Access Denied");
+    }
+    @ExceptionHandler(Exception.class)
+    @ResponseBody
+    public ResponseEntity<String> handleCommonException(AccessDeniedException e) {
+        return ResponseEntity.badRequest().body("Exception occurred, please contact to dev!");
     }
 }
