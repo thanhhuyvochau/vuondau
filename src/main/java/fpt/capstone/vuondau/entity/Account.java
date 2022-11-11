@@ -57,6 +57,9 @@ public class Account {
     private List<StudentClass> studentClasses ;
 
 
+    @OneToMany(mappedBy = "account",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Request> requests ;
+
     @Column(name = "keycloak_id")
     private String keycloakId;
 
