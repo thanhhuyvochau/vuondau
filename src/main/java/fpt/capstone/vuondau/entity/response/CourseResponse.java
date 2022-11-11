@@ -1,11 +1,9 @@
 package fpt.capstone.vuondau.entity.response;
 
-import fpt.capstone.vuondau.entity.Dto.SubjectDto;
-import fpt.capstone.vuondau.entity.Dto.TeacherCourseDto;
-import fpt.capstone.vuondau.entity.TeacherCourse;
+import fpt.capstone.vuondau.entity.dto.SubjectDto;
+import fpt.capstone.vuondau.entity.dto.TeacherCourseDto;
 import fpt.capstone.vuondau.entity.common.EGradeType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CourseResponse {

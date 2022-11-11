@@ -1,10 +1,7 @@
-package fpt.capstone.vuondau.entity.Dto;
+package fpt.capstone.vuondau.entity.dto;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.springframework.lang.Nullable;
-
-import javax.persistence.Column;
 
 public class TeacherCourseDto {
 

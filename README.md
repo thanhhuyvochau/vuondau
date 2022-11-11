@@ -1,8 +1,7 @@
 
 
-# Vuon Dau
+# Vuon Dau Capstone Project
 
-A brief description of what this project does and who it's for
 
 
 ## Server Deployment
