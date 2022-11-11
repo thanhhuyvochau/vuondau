@@ -53,8 +53,9 @@ public class Account {
     @OneToMany(mappedBy = "account")
     private List<TeacherCourse> teacherCourses;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<StudentClass> studentClasses;
+    @OneToMany(mappedBy = "account",  cascade = CascadeType.ALL, fetch = FetchType.LAZY ,orphanRemoval = true)
+    private List<StudentClass> studentClasses ;
+
 
     @Column(name = "keycloak_id")
     private String keycloakId;

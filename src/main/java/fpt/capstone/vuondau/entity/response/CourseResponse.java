@@ -1,5 +1,6 @@
 package fpt.capstone.vuondau.entity.response;
 
+import fpt.capstone.vuondau.entity.Dto.SubjectDto;
 import fpt.capstone.vuondau.entity.Dto.TeacherCourseDto;
 import fpt.capstone.vuondau.entity.TeacherCourse;
 import fpt.capstone.vuondau.entity.common.EGradeType;
@@ -15,7 +16,7 @@ public class CourseResponse {
 
     private EGradeType grade;
 
-    private SubjectResponse subject;
+    private SubjectDto subject;
 
     private List<TeacherCourseDto> teacherCourse ;
 
@@ -46,15 +47,13 @@ public class CourseResponse {
     }
 
 
-
-    public SubjectResponse getSubject() {
+    public SubjectDto getSubject() {
         return subject;
     }
 
-    public void setSubject(SubjectResponse subject) {
+    public void setSubject(SubjectDto subject) {
         this.subject = subject;
     }
-
 
     public List<TeacherCourseDto> getTeacherCourse() {
         return teacherCourse;

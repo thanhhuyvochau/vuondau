@@ -1,5 +1,7 @@
 package fpt.capstone.vuondau.entity;
 
+import org.springframework.lang.Nullable;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -20,7 +22,9 @@ public class TeacherCourse {
     @JoinColumn(name = "course_id")
     private Course course;
 
-    private String isAllowed ;
+
+    @Column(nullable = true, columnDefinition = "bit default 0")
+    private Boolean isAllowed ;
 
     public TeacherCourseKey getId() {
         return id;
@@ -46,11 +50,11 @@ public class TeacherCourse {
         this.course = course;
     }
 
-    public String getIsAllowed() {
+    public Boolean getIsAllowed() {
         return isAllowed;
     }
 
-    public void setIsAllowed(String isAllowed) {
-        this.isAllowed = isAllowed;
+    public void setIsAllowed(Boolean allowed) {
+        isAllowed = allowed;
     }
 }
