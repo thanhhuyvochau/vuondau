@@ -1,0 +1,47 @@
+server:
+  port: 8081
+spring:
+  profiles:
+    active: dev
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://vuondau-keycloak.amazingtech.vn/auth/realms/dev
+
+
+#minio:
+#  url: http://103.173.255.39:9001
+#  access:
+#    secret: mGUnihw7IeJ3C6EQ
+#    name: requestformstudent
+#  buckek:
+#    name: requestformstudent
+#  endpoint: http://150.95.109.67:9001
+
+
+minio:
+  url: http://103.173.255.39:9001
+  access:
+    secret: mGUnihw7IeJ3C6EQ
+    name: mGUnihw7IeJ3C6EQ
+  buckek:
+    name: requestformstudent
+  endpoint: http://150.95.109.67:9000
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+
+
+
+
+#
+
+

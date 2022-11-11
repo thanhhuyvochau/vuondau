@@ -16,6 +16,29 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: keycloak:8080/auth/realms/dev
+
+
+
+
+
+minio:
+  url: http://minio:9001
+  access:
+    secret: mGUnihw7IeJ3C6EQ
+    name: mGUnihw7IeJ3C6EQ
+  buckek:
+    name: requestformstudent
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+
+
 keycloak:
   realm: dev
   resource: admin-spring-boot
@@ -23,6 +46,7 @@ keycloak:
   auth-server-url: keycloak:8080/auth
   credentials:
     secret: EJlhzOe84TZJhy41J3GhEg0yhaXzQuJL
+
 
 
 
