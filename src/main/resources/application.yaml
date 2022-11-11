@@ -1,0 +1,10 @@
+server:
+  port: 8081
+spring:
+  profiles:
+    active: dev
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://vuondau-keycloak.amazingtech.vn/auth/realms/dev

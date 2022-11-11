@@ -1,11 +1,9 @@
-package fpt.capstone.vuondau.entity.Dto;
+package fpt.capstone.vuondau.entity.dto;
 
 
-import fpt.capstone.vuondau.entity.Course;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class SubjectDto implements Serializable {
 

@@ -1,4 +1,4 @@
-package fpt.capstone.vuondau.entity.Dto;
+package fpt.capstone.vuondau.entity.dto;
 
 
 public class ClassDto {

@@ -18,6 +18,6 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public ResponseEntity<String> handleCommonException(Exception e) {
-        return ResponseEntity.badRequest().body("Exception occurred, please contact to dev!");
+        return ResponseEntity.badRequest().body("Exception occurred, please contact to dev!"+e.getMessage());
     }
 }

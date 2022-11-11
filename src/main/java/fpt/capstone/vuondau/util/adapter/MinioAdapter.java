@@ -21,7 +21,7 @@ public class MinioAdapter {
         this.minioClient = minioClient;
     }
 
-    @Value("${minio.buckek.name}")
+    @Value("${minio.bucket}")
     String defaultBucketName;
 
     public ObjectWriteResponse uploadFile(String name, String contentType, InputStream content, long size) {
