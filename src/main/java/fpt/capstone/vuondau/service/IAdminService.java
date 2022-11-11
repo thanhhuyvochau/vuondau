@@ -4,13 +4,13 @@ import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.Dto.FeedBackDto;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
-import fpt.capstone.vuondau.entity.request.AccountExistedTeacherRequest;
-import fpt.capstone.vuondau.entity.request.AccountSearchRequest;
-import fpt.capstone.vuondau.entity.request.CourseSearchRequest;
+import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
 import fpt.capstone.vuondau.entity.response.CourseResponse;
+import fpt.capstone.vuondau.entity.response.SubjectResponse;
 import fpt.capstone.vuondau.util.specification.AccountSpecificationBuilder;
+import fpt.capstone.vuondau.util.specification.SubjectSpecificationBuilder;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -33,4 +33,20 @@ public interface IAdminService {
     AccountResponse ApproveAccountTeacher(long id);
 
     FeedBackDto viewStudentFeedbackClass(Long classId) ;
+
+    ApiPage<SubjectResponse> searchSubject(SubjectSearchRequest query , Pageable pageable);
+
+    ApiPage<SubjectResponse> viewAllSubject(Pageable pageable);
+
+    SubjectResponse viewSubjectDetail(long subjectId);
+
+    Boolean deleteSubject(long subjectId);
+
+    SubjectResponse updateSubject(long subjectId,  SubjectRequest subjectRequest);
+
+    ApiPage<CourseResponse> viewAllCourse(Pageable pageable);
+
+    CourseResponse viewCourseDetail(long courseID);
+
+    CourseResponse updateCourse(long courseID, CourseRequest subjectRequest);
 }
