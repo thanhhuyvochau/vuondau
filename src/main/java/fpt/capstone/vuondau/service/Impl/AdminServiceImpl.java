@@ -2,10 +2,7 @@ package fpt.capstone.vuondau.service.Impl;
 
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
-import fpt.capstone.vuondau.entity.Dto.ClassDto;
-import fpt.capstone.vuondau.entity.Dto.FeedBacClassDto;
-import fpt.capstone.vuondau.entity.Dto.FeedBackDto;
-import fpt.capstone.vuondau.entity.Dto.RoleDto;
+import fpt.capstone.vuondau.entity.Dto.*;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
@@ -29,9 +26,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 
+import javax.mail.search.SubjectTerm;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,7 +52,7 @@ public class AdminServiceImpl implements IAdminService {
 
     private final SubjectRepository subjectRepository;
 
-    private final  TeacherCourseRepository teacherCourseRepository ;
+    private final TeacherCourseRepository teacherCourseRepository;
 
     public AdminServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, RoleRepository roleRepository, CourseRepository courseRepository, ClassRepository classRepository, FeedbackRepository feedbackRepository, SubjectRepository subjectRepository, TeacherCourseRepository teacherCourseRepository) {
         this.accountRepository = accountRepository;
@@ -276,12 +275,45 @@ public class AdminServiceImpl implements IAdminService {
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay subject") + courseRequest.getSubjectId()));
         course.setSubject(subject);
 
-        List<TeacherCourse> allTeacherCourse = teacherCourseRepository.findAllByCourse(course);
+        List<TeacherCourse> teacherCourseList = new ArrayList<>();
+        List<Long> teacherIds = courseRequest.getTeacherIds();
+        course.getTeacherCourses().clear();
 
-        allTeacherCourse.stream().map(teacherCourse -> {
 
-        })
-        return ObjectUtil.copyProperties(save, new SubjectResponse(), SubjectResponse.class);
+        for (Long teacherId : teacherIds) {
+            TeacherCourse teacherCourse = new TeacherCourse();
+            Account teacher = accountRepository.findById(teacherId)
+                    .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay teacher") + teacherId));
+            if (teacher.getRole().getCode().equals(EAccountRole.TEACHER.name())) {
+                TeacherCourseKey teacherCourseKey = new TeacherCourseKey();
+                teacherCourseKey.setCourseId(course.getId());
+                teacherCourseKey.setTeachId(teacherId);
+                teacherCourse.setId(teacherCourseKey);
+                teacherCourse.setCourse(course);
+                teacherCourse.setAccount(teacher);
+                teacherCourseList.add(teacherCourse);
+            }
+        }
+
+        course.getTeacherCourses().addAll(teacherCourseList);
+        Course save = courseRepository.save(course);
+        CourseResponse courseResponse = ObjectUtil.copyProperties(save, new CourseResponse(), CourseResponse.class);
+
+        courseResponse.setSubject(ObjectUtil.copyProperties(subject, new SubjectDto(), SubjectDto.class));
+
+        List<TeacherCourseDto> teacherCourseDtoList = new ArrayList<>();
+        teacherCourseList.stream().map(teacherCourse -> {
+            TeacherCourseDto teacherCourseDto = new TeacherCourseDto();
+            teacherCourseDto.setTeacherId(teacherCourse.getAccount().getId());
+            teacherCourseDto.setTopicId(teacherCourse.getCourse().getId());
+
+            teacherCourseDto.setIsAllowed(teacherCourse.getIsAllowed());
+
+            teacherCourseDtoList.add(teacherCourseDto);
+            return teacherCourseDto;
+        }).collect(Collectors.toList());
+        courseResponse.setTeacherCourse(teacherCourseDtoList);
+        return courseResponse;
 
     }
 
