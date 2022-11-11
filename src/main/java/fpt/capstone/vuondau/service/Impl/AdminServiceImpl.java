@@ -314,7 +314,6 @@ public class AdminServiceImpl implements IAdminService {
         }).collect(Collectors.toList());
         courseResponse.setTeacherCourse(teacherCourseDtoList);
         return courseResponse;
-
     }
 
 

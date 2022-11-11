@@ -12,7 +12,7 @@ import java.util.List;
 public class Account {
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "account_id_generator")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_id_generator")
     @SequenceGenerator(name = "account_id_generator", sequenceName = "account_id_generator")
     private Long id;
 
@@ -41,13 +41,13 @@ public class Account {
     private String introduce;
 
     @Column(name = "degree")
-    private EDegreeType degree ;
+    private EDegreeType degree;
 
     @Column(name = "phone_number")
-    private String  phoneNumber ;
+    private String phoneNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="role_id")
+    @JoinColumn(name = "role_id")
     private Role role;
 
     @OneToMany(mappedBy = "account")
@@ -57,6 +57,8 @@ public class Account {
     private List<StudentClass> studentClasses ;
 
 
+    @Column(name = "keycloak_id")
+    private String keycloakId;
 
     public Long getId() {
         return id;
@@ -138,11 +140,11 @@ public class Account {
         this.degree = degree;
     }
 
-    public String  getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String  phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -169,5 +171,13 @@ public class Account {
 
     public void setStudentClasses(List<StudentClass> studentClasses) {
         this.studentClasses = studentClasses;
+    }
+
+    public String getKeycloakId() {
+        return keycloakId;
+    }
+
+    public void setKeycloakId(String keycloakId) {
+        this.keycloakId = keycloakId;
     }
 }
