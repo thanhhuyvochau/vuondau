@@ -1,7 +1,5 @@
-package fpt.capstone.vuondau.entity.Dto;
+package fpt.capstone.vuondau.entity.dto;
 
-
-import javax.persistence.Column;
 
 public class RoleDto {
 
