@@ -53,7 +53,7 @@ public class Account {
     @OneToMany(mappedBy = "account")
     private List<TeacherCourse> teacherCourses;
 
-    @OneToMany(mappedBy = "account",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "account",  cascade = CascadeType.ALL, fetch = FetchType.LAZY ,orphanRemoval = true)
     private List<StudentClass> studentClasses ;
 
 

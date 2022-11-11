@@ -121,7 +121,7 @@ public class AdminController {
     }
 
     @Operation(summary = "Lấy tất cả course ")
-    @GetMapping("/get-all-subject")
+    @GetMapping("/get-all-course")
     public ResponseEntity<ApiResponse<ApiPage<CourseResponse>>> viewAllCourse(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iAdminService.viewAllCourse( pageable)));
     }

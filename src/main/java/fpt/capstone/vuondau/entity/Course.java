@@ -31,7 +31,7 @@ public class Course {
     private Subject subject;
 
 
-    @OneToMany(mappedBy = "course")
+    @OneToMany(mappedBy = "course" ,cascade = CascadeType.ALL, fetch = FetchType.LAZY ,orphanRemoval = true)
     private List<TeacherCourse> teacherCourses;
 
 
