@@ -93,22 +93,36 @@ public class AccountServiceImpl implements IAccountService {
         Account account = new Account();
         AccountRequest studentRequestAccount = studentRequest.getAccount();
         if (studentRequestAccount != null) {
+
+            if (accountRepository.existsAccountByUsername(studentRequestAccount.getUsername())) {
+                throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage(messageUtil.getLocalMessage("Username đã tồn tại"));
+            }
             account.setUsername(studentRequestAccount.getUsername());
             account.setPassword(studentRequestAccount.getPassword());
             account.setFirstName(studentRequest.getFirstName());
             account.setLastName(studentRequest.getLastName());
-            account.setActive(false);
+            account.setActive(true);
             account.setEmail(studentRequest.getEmail());
             account.setPhoneNumber(studentRequest.getPhoneNumber());
             Role role = roleRepository.findRoleByCode(EAccountRole.STUDENT.name())
                     .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
             account.setRole(role);
             Account accountSave = accountRepository.save(account);
-            Boolean saveAccountSuccess = keycloakUserUtil.create(account);
-            Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getCode(), account);
-            if (saveAccountSuccess && assignRoleSuccess) {
-                return ObjectUtil.copyProperties(accountSave, new StudentResponse(), StudentResponse.class);
-            }
+
+//            Boolean saveAccountSuccess = keycloakUserUtil.create(account);
+//            Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getName(), account);
+//            if (saveAccountSuccess && assignRoleSuccess) {
+//                return ObjectUtil.copyProperties(accountSave, new StudentResponse(), StudentResponse.class);
+
+            return ObjectUtil.copyProperties(accountSave, new StudentResponse(), StudentResponse.class);
+//        }
+
+//            Boolean saveAccountSuccess = keycloakUserUtil.create(account);
+//            Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getCode(), account);
+//            if (saveAccountSuccess && assignRoleSuccess) {
+//                return ObjectUtil.copyProperties(accountSave, new StudentResponse(), StudentResponse.class);
+//            }
+
         }
         return null;  // throw exception in future
     }

@@ -17,11 +17,13 @@ public class Question {
     private String content;
     @Column(name = "is_closed")
     private Boolean isClosed;
+
+    @ManyToOne
     @JoinColumn(name = "student_id")
-    @ManyToOne
     private Account student;
-    @JoinColumn(name = "subject_id")
+
     @ManyToOne
+    @JoinColumn(name = "subject_id")
     private Subject subject;
     @Column(name = "upvote_number")
     private Integer upvoteNumber;

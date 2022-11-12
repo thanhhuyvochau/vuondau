@@ -16,7 +16,7 @@ public class Subject {
     @OneToMany(mappedBy = "subject")
     private List<Course> courses;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
     private List<Question> questions;
 
     public Long getId() {
