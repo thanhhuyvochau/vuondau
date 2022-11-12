@@ -6,5 +6,5 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface IStudentService {
 
-    RequestFormResponse uploadRequestForm( RequestFormDto requestFormDto);
+    RequestFormResponse uploadRequestForm( Long id ,RequestFormDto requestFormDto);
 }
