@@ -13,9 +13,11 @@ public class Subject {
     private String name;
     @Column(name = "code")
     private String code;
-
-    @OneToMany(mappedBy="subject")
+    @OneToMany(mappedBy = "subject")
     private List<Course> courses;
+
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+    private List<Question> questions;
 
     public Long getId() {
         return id;
@@ -49,5 +51,12 @@ public class Subject {
         this.courses = courses;
     }
 
+    public List<Question> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
+    }
 
 }
