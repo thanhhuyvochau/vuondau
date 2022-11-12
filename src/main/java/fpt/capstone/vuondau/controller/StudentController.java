@@ -32,9 +32,9 @@ public class StudentController {
     }
 
 
-    @PostMapping("/upload-request")
-    public ResponseEntity<ApiResponse<RequestFormResponse>> uploadRequestForm(@ModelAttribute RequestFormDto requestFormDto) {
-        return ResponseEntity.ok(ApiResponse.success(iStudentService.uploadRequestForm(requestFormDto)));
+    @PostMapping("/{id}/upload-request")
+    public ResponseEntity<ApiResponse<RequestFormResponse>> uploadRequestForm(@PathVariable Long id , @ModelAttribute RequestFormDto requestFormDto) {
+        return ResponseEntity.ok(ApiResponse.success(iStudentService.uploadRequestForm(id,requestFormDto)));
     }
 
 }

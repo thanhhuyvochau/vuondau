@@ -1,10 +1,12 @@
 package fpt.capstone.vuondau.service.Impl;
 
+import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.Request;
 import fpt.capstone.vuondau.entity.RequestType;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.request.RequestFormDto;
 import fpt.capstone.vuondau.entity.request.RequestTypeDto;
+import fpt.capstone.vuondau.entity.request.StudentDto;
 import fpt.capstone.vuondau.entity.response.RequestFormResponse;
 import fpt.capstone.vuondau.repository.AccountRepository;
 import fpt.capstone.vuondau.repository.RequestRepository;
@@ -53,10 +55,11 @@ public class StudentServiceImpl implements IStudentService {
 
 
     @Override
-    public RequestFormResponse uploadRequestForm( RequestFormDto requestFormDto) {
+    public RequestFormResponse uploadRequestForm( Long id , RequestFormDto requestFormDto) {
         try{
             String name = requestFormDto.getFile().getOriginalFilename() + "-" + Instant.now().toString() ;
-            ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name ,  requestFormDto.getFile().getContentType(),  requestFormDto.getFile().getInputStream(),  requestFormDto.getFile().getSize()) ;
+            ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name ,  requestFormDto.getFile().getContentType(),
+                    requestFormDto.getFile().getInputStream(),  requestFormDto.getFile().getSize()) ;
             Request request = new Request() ;
             request.setName(name);
             request.setTitle(requestFormDto.getTitle());
@@ -65,14 +68,18 @@ public class StudentServiceImpl implements IStudentService {
                     .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay request Type") + requestFormDto.getRequestTypeId()));
             request.setRequestType(requestType) ;
             request.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
+
+            Account student = accountRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay student") + id));
+            request.setAccount(student);
             Request save = requestRepository.save(request);
+
             RequestFormResponse requestFormResponse = ObjectUtil.copyProperties(save, new RequestFormResponse(), RequestFormResponse.class);
             requestFormResponse.setRequestType(ObjectUtil.copyProperties(requestType, new RequestTypeDto(), RequestTypeDto.class));
+            requestFormResponse.setStudent(ObjectUtil.copyProperties(student ,new StudentDto(), StudentDto.class));
 
             return requestFormResponse ;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 }
