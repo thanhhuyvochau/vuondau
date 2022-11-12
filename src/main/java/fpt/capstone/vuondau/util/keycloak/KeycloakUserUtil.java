@@ -4,8 +4,13 @@ import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.util.ObjectUtil;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.ClientsResource;
+import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
+import org.keycloak.admin.client.resource.UsersResource;
+import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -13,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import javax.ws.rs.core.Response;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -30,8 +36,9 @@ public class KeycloakUserUtil {
     public Boolean create(Account account) {
         CredentialRepresentation credentialRepresentation = preparePasswordRepresentation(account.getPassword());
         UserRepresentation userRepresentation = prepareUserRepresentation(account, credentialRepresentation);
-        Response response = keycloak.realm(realm).users().create(userRepresentation);
-        if (response.getStatus() == HttpStatus.OK.value()) {
+        RealmResource realmResource = keycloak.realm(realm);
+        Response response = realmResource.users().create(userRepresentation);
+        if (response.getStatus() == HttpStatus.CREATED.value()) {
             return true;
         }
         return false;
@@ -40,20 +47,27 @@ public class KeycloakUserUtil {
     public Boolean update(Account account) {
         CredentialRepresentation credentialRepresentation = preparePasswordRepresentation(account.getPassword());
         try {
-            UserRepresentation userRepresentation = prepareUserRepresentation(account, credentialRepresentation);
-            UserResource userResource = Optional.ofNullable(getUserResource(account))
+            UserRepresentation newUserRepresentation = prepareUserRepresentation(account, credentialRepresentation);
+            UserRepresentation userRepresentation = Optional.ofNullable(getUserRepresentation(account))
                     .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("User not found in Keycloak!!"));
-            keycloak.realm(realm).users().get(userResource.toRepresentation().getId()).update(userRepresentation);
+            keycloak.realm(realm).users().get(userRepresentation.getId()).update(newUserRepresentation);
         } catch (Exception e) {
             throw ApiException.create(HttpStatus.CONFLICT).withMessage(e.getMessage());
         }
         return true;
     }
 
-    protected UserResource getUserResource(Account account) {
-        return keycloakRealmUtil.getRealmReSource().users().get(account.getKeycloakId());
+    protected UserRepresentation getUserRepresentation(Account account) {
+        return keycloakRealmUtil.getRealmReSource().users().search(account.getUsername(), true).stream().findFirst().orElse(null);
     }
 
+    protected UserResource getUserResource(Account account) {
+        UserRepresentation userRepresentation = getUserRepresentation(account);
+        return keycloakRealmUtil.getRealmReSource().users().get(userRepresentation.getId());
+    }
+    protected UsersResource getUsersResource() {
+        return keycloakRealmUtil.getRealmReSource().users();
+    }
     private CredentialRepresentation preparePasswordRepresentation(String password) {
         CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
         credentialRepresentation.setTemporary(false);

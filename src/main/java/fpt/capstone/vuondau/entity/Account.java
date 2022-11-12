@@ -4,6 +4,7 @@ import fpt.capstone.vuondau.entity.common.EDegreeType;
 
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -53,18 +54,23 @@ public class Account {
     @OneToMany(mappedBy = "account")
     private List<TeacherCourse> teacherCourses;
 
-    @OneToMany(mappedBy = "account",  cascade = CascadeType.ALL, fetch = FetchType.LAZY ,orphanRemoval = true)
-    private List<StudentClass> studentClasses ;
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<StudentClass> studentClasses;
 
 
-    @OneToMany(mappedBy = "account",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Request> requests ;
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Request> requests;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<StudentAnswer >studentAnswers;
 
     @Column(name = "keycloak_id")
     private String keycloakId;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    private List<Question> questions = new ArrayList<>();
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -195,11 +201,29 @@ public class Account {
         this.requests = requests;
     }
 
+
     public List<StudentAnswer> getStudentAnswers() {
         return studentAnswers;
     }
 
     public void setStudentAnswers(List<StudentAnswer> studentAnswers) {
         this.studentAnswers = studentAnswers;
+
+    }
+
+    public List<Question> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 }

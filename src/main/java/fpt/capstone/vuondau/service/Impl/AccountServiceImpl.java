@@ -108,6 +108,7 @@ public class AccountServiceImpl implements IAccountService {
                     .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
             account.setRole(role);
             Account accountSave = accountRepository.save(account);
+
 //            Boolean saveAccountSuccess = keycloakUserUtil.create(account);
 //            Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getName(), account);
 //            if (saveAccountSuccess && assignRoleSuccess) {
@@ -115,6 +116,13 @@ public class AccountServiceImpl implements IAccountService {
 
             return ObjectUtil.copyProperties(accountSave, new StudentResponse(), StudentResponse.class);
 //        }
+
+//            Boolean saveAccountSuccess = keycloakUserUtil.create(account);
+//            Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getCode(), account);
+//            if (saveAccountSuccess && assignRoleSuccess) {
+//                return ObjectUtil.copyProperties(accountSave, new StudentResponse(), StudentResponse.class);
+//            }
+
         }
         return null;  // throw exception in future
     }
