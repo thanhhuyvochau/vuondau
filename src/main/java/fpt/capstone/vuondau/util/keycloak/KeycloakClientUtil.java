@@ -8,19 +8,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class KeycloakClientUtil {
     @Value("${keycloak.app-client}")
     private String appClientId;
 
-    protected ClientRepresentation getClientRepresentation(RealmResource resource) {
-        return resource.clients().findByClientId(appClientId)
-                .stream().findFirst()
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("App client not found!"));
-    }
-
     protected ClientResource getClientResource(RealmResource resource) {
-        return resource.clients().get(appClientId);
+        ClientRepresentation clientRepresentation = resource.clients().findByClientId(appClientId).stream().findFirst().orElse(null);
+        if (clientRepresentation != null) {
+            return resource.clients().get(clientRepresentation.getId());
+        }
+        return null;
     }
 
 }
