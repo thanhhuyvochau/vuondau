@@ -105,7 +105,7 @@ public class AccountServiceImpl implements IAccountService {
             account.setRole(role);
             Account accountSave = accountRepository.save(account);
             Boolean saveAccountSuccess = keycloakUserUtil.create(account);
-            Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getName(), account);
+            Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getCode(), account);
             if (saveAccountSuccess && assignRoleSuccess) {
                 return ObjectUtil.copyProperties(accountSave, new StudentResponse(), StudentResponse.class);
             }

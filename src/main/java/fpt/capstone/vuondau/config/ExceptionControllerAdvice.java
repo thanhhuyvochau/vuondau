@@ -15,9 +15,9 @@ public class ExceptionControllerAdvice {
         return ResponseEntity.badRequest().body("403: Access Denied");
     }
 
-    @ExceptionHandler(Exception.class)
-    @ResponseBody
-    public ResponseEntity<String> handleCommonException(Exception e) {
-        return ResponseEntity.badRequest().body("Exception occurred, please contact to dev!"+e.getMessage());
-    }
+//    @ExceptionHandler(Exception.class)
+//    @ResponseBody
+//    public ResponseEntity<String> handleCommonException(Exception e) {
+//        return ResponseEntity.badRequest().body("Exception occurred, please contact to dev!"+e.getMessage());
+//    }
 }
