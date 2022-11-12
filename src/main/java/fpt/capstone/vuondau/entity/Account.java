@@ -60,6 +60,9 @@ public class Account {
     @OneToMany(mappedBy = "account",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Request> requests ;
 
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    private List<StudentAnswer >studentAnswers;
+
     @Column(name = "keycloak_id")
     private String keycloakId;
 
@@ -182,5 +185,21 @@ public class Account {
 
     public void setKeycloakId(String keycloakId) {
         this.keycloakId = keycloakId;
+    }
+
+    public List<Request> getRequests() {
+        return requests;
+    }
+
+    public void setRequests(List<Request> requests) {
+        this.requests = requests;
+    }
+
+    public List<StudentAnswer> getStudentAnswers() {
+        return studentAnswers;
+    }
+
+    public void setStudentAnswers(List<StudentAnswer> studentAnswers) {
+        this.studentAnswers = studentAnswers;
     }
 }
