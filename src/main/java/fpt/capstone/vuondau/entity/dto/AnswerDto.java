@@ -2,8 +2,17 @@ package fpt.capstone.vuondau.entity.dto;
 
 public class AnswerDto {
 
+    private Long id;
     private String answer;
-    private boolean isVisible ;
+    private boolean isVisible;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getAnswer() {
         return answer;

@@ -4,9 +4,11 @@ import fpt.capstone.vuondau.entity.dto.FeedBackDto;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.request.*;
+import fpt.capstone.vuondau.entity.response.*;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.CourseResponse;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
+
 import org.springframework.data.domain.Pageable;
 
 public interface IAdminService {
@@ -42,4 +44,6 @@ public interface IAdminService {
     CourseResponse viewCourseDetail(long courseID);
 
     CourseResponse updateCourse(long courseID, CourseRequest subjectRequest);
+
+    ApiPage <RequestFormResponese> searchRequestForm(RequestSearchRequest query, Pageable pageable);
 }

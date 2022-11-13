@@ -9,8 +9,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
-    Page<Subject> findAll(Specification<Subject> spec, Pageable pageable);
+    Page<Subject> findAll(Specification<Subject>spec, Pageable pageable);
 }

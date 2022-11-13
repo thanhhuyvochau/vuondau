@@ -58,8 +58,9 @@ public class Account {
     private List<StudentClass> studentClasses;
 
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Request> requests;
+    @OneToMany(mappedBy = "account",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Request> requests ;
+
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<StudentAnswer >studentAnswers;
@@ -71,6 +72,7 @@ public class Account {
     private List<Question> questions = new ArrayList<>();
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
+
 
     public Long getId() {
         return id;
@@ -185,6 +187,7 @@ public class Account {
         this.studentClasses = studentClasses;
     }
 
+
     public String getKeycloakId() {
         return keycloakId;
     }
@@ -193,6 +196,7 @@ public class Account {
         this.keycloakId = keycloakId;
     }
 
+
     public List<Request> getRequests() {
         return requests;
     }
@@ -200,6 +204,7 @@ public class Account {
     public void setRequests(List<Request> requests) {
         this.requests = requests;
     }
+
 
 
     public List<StudentAnswer> getStudentAnswers() {
@@ -226,4 +231,5 @@ public class Account {
     public void setComments(List<Comment> comments) {
         this.comments = comments;
     }
+
 }
