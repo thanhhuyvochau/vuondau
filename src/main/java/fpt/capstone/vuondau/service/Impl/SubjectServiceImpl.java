@@ -109,20 +109,18 @@ public class SubjectServiceImpl implements ISubjectService {
         String queryString= String.join(" ", stringAnswer) ;
 
 //        final Page<Subject>[] subjectPage = new Page[]{};
-        SuggestSubjectSpecificationBuilder builder = SuggestSubjectSpecificationBuilder.specification() ;
-//                .querySubjectCode(queryString) ;
-        Page<Subject> subjectPage = null;
-        for (String s : stringAnswer ) {
-            builder.querySubjectCode(s) ;
-            subjectPage = subjectRepository.findAll(builder.build(), pageable) ;
-        }
-        System.out.println(subjectPage);
+        SuggestSubjectSpecificationBuilder builder = SuggestSubjectSpecificationBuilder.specification()
+                .querySubjectCode(queryString) ;
+//        Page<Subject> subjectPage = null;
+//        for (String s : stringAnswer ) {
+//            builder.querySubjectCode(s) ;
+//            subjectPage = subjectRepository.findAll(builder.build(), pageable) ;
+//        }
+//        System.out.println(subjectPage);
 
+        Page<Subject> subjectPage = subjectRepository.findAll(builder.build(), pageable) ;
 
-//
-     return  null ;
-
-//        return PageUtil.convert(subjectPage.get().map(this::convertSubjectToSubjectResponse));
+        return PageUtil.convert(subjectPage.map(this::convertSubjectToSubjectResponse));
     }
 
     public SubjectResponse convertSubjectToSubjectResponse(Subject subject) {
