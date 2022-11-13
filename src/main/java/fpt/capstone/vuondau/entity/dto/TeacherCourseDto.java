@@ -1,15 +1,19 @@
-package fpt.capstone.vuondau.entity.Dto;
+package fpt.capstone.vuondau.entity.dto;
 
+
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class TeacherCourseDto {
 
 
-    private Long topicId;
+        private Long topicId;
 
 
-    private Long teacherId;
+        private Long teacherId;
 
-    private boolean isAllowed ;
+
+        @Schema(nullable = true)
+        private Boolean isAllowed ;
 
     public Long getTopicId() {
         return topicId;
@@ -27,11 +31,11 @@ public class TeacherCourseDto {
         this.teacherId = teacherId;
     }
 
-    public boolean isAllowed() {
+    public Boolean getIsAllowed() {
         return isAllowed;
     }
 
-    public void setAllowed(boolean allowed) {
+    public void setIsAllowed(Boolean allowed) {
         isAllowed = allowed;
     }
 }

@@ -1,17 +1,15 @@
 package fpt.capstone.vuondau.service;
 
-import fpt.capstone.vuondau.entity.Account;
-import fpt.capstone.vuondau.entity.Dto.FeedBackDto;
+import fpt.capstone.vuondau.entity.dto.FeedBackDto;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.*;
-import fpt.capstone.vuondau.util.specification.AccountSpecificationBuilder;
-import fpt.capstone.vuondau.util.specification.SubjectSpecificationBuilder;
-import org.springframework.data.domain.Pageable;
+import fpt.capstone.vuondau.entity.response.AccountResponse;
+import fpt.capstone.vuondau.entity.response.CourseResponse;
+import fpt.capstone.vuondau.entity.response.SubjectResponse;
 
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.domain.Pageable;
 
 public interface IAdminService {
 

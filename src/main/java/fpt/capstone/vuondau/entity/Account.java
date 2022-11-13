@@ -4,6 +4,7 @@ import fpt.capstone.vuondau.entity.common.EDegreeType;
 
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -12,7 +13,7 @@ import java.util.List;
 public class Account {
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "account_id_generator")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_id_generator")
     @SequenceGenerator(name = "account_id_generator", sequenceName = "account_id_generator")
     private Long id;
 
@@ -41,23 +42,37 @@ public class Account {
     private String introduce;
 
     @Column(name = "degree")
-    private EDegreeType degree ;
+    private EDegreeType degree;
 
     @Column(name = "phone_number")
-    private String  phoneNumber ;
+    private String phoneNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="role_id")
+    @JoinColumn(name = "role_id")
     private Role role;
 
     @OneToMany(mappedBy = "account")
     private List<TeacherCourse> teacherCourses;
 
-    @OneToMany(mappedBy = "account",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<StudentClass> studentClasses ;
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<StudentClass> studentClasses;
+
 
     @OneToMany(mappedBy = "account",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Request> requests ;
+
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    private List<StudentAnswer >studentAnswers;
+
+    @Column(name = "keycloak_id")
+    private String keycloakId;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    private List<Question> questions = new ArrayList<>();
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
+
 
     public Long getId() {
         return id;
@@ -139,11 +154,11 @@ public class Account {
         this.degree = degree;
     }
 
-    public String  getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String  phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -172,6 +187,16 @@ public class Account {
         this.studentClasses = studentClasses;
     }
 
+
+    public String getKeycloakId() {
+        return keycloakId;
+    }
+
+    public void setKeycloakId(String keycloakId) {
+        this.keycloakId = keycloakId;
+    }
+
+
     public List<Request> getRequests() {
         return requests;
     }
@@ -179,4 +204,32 @@ public class Account {
     public void setRequests(List<Request> requests) {
         this.requests = requests;
     }
+
+
+
+    public List<StudentAnswer> getStudentAnswers() {
+        return studentAnswers;
+    }
+
+    public void setStudentAnswers(List<StudentAnswer> studentAnswers) {
+        this.studentAnswers = studentAnswers;
+
+    }
+
+    public List<Question> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
 }

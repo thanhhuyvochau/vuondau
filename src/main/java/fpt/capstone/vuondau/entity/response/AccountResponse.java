@@ -1,8 +1,6 @@
 package fpt.capstone.vuondau.entity.response;
 
-import fpt.capstone.vuondau.entity.Dto.RoleDto;
-
-import javax.persistence.Column;
+import fpt.capstone.vuondau.entity.dto.RoleDto;
 
 public class AccountResponse {
 

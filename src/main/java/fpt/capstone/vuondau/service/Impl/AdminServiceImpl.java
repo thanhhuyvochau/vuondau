@@ -2,7 +2,11 @@ package fpt.capstone.vuondau.service.Impl;
 
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
-import fpt.capstone.vuondau.entity.Dto.*;
+
+
+
+import fpt.capstone.vuondau.entity.dto.*;
+
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
@@ -48,7 +52,6 @@ public class AdminServiceImpl implements IAdminService {
     private final ClassRepository classRepository;
 
     private final FeedbackRepository feedbackRepository;
-
 
     private final SubjectRepository subjectRepository;
 
@@ -106,7 +109,7 @@ public class AdminServiceImpl implements IAdminService {
     @Override
     public AccountResponse viewAccountDetail(long id) {
         Account account = accountRepository.findById(id)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay account") + id));
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
         AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class);
         if (account.getRole() != null) {
             accountResponse.setRole(ObjectUtil.copyProperties(account.getRole(), new RoleDto(), RoleDto.class));
@@ -117,7 +120,7 @@ public class AdminServiceImpl implements IAdminService {
     @Override
     public Boolean banAndUbBanAccount(long id) {
         Account account = accountRepository.findById(id)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay account") + id));
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
         if (account.getActive() == true) {
             account.setActive(false);
         } else {
@@ -130,9 +133,9 @@ public class AdminServiceImpl implements IAdminService {
     @Override
     public AccountResponse updateRoleAccount(long id, EAccountRole eAccountRole) {
         Account account = accountRepository.findById(id)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay account") + id));
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
         Role role = roleRepository.findRoleByCode(eAccountRole.name())
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay role"));
         account.setRole(role);
         Account save = accountRepository.save(account);
         AccountResponse accountResponse = ObjectUtil.copyProperties(save, new AccountResponse(), AccountResponse.class);
@@ -160,7 +163,7 @@ public class AdminServiceImpl implements IAdminService {
     @Override
     public AccountResponse ApproveAccountTeacher(long id) {
         Account account = accountRepository.findById(id)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay account") + id));
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(("Khong tim thay account") + id));
         account.setActive(true);
         Account save = accountRepository.save(account);
         AccountResponse accountResponse = ObjectUtil.copyProperties(save, new AccountResponse(), AccountResponse.class);
@@ -171,7 +174,7 @@ public class AdminServiceImpl implements IAdminService {
     @Override
     public FeedBackDto viewStudentFeedbackClass(Long classId) {
         Class fbclass = classRepository.findById(classId)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay class") + classId));
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(("Khong tim thay class") + classId));
 
 
         FeedBackDto feedBackDto = new FeedBackDto();
@@ -222,7 +225,7 @@ public class AdminServiceImpl implements IAdminService {
     @Override
     public SubjectResponse viewSubjectDetail(long subjectId) {
         Subject subject = subjectRepository.findById(subjectId)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay account") + subjectId));
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(("Khong tim thay account") + subjectId));
         SubjectResponse subjectResponse = ObjectUtil.copyProperties(subject, new SubjectResponse(), SubjectResponse.class);
         return subjectResponse;
     }
@@ -230,7 +233,7 @@ public class AdminServiceImpl implements IAdminService {
     @Override
     public Boolean deleteSubject(long subjectId) {
         Subject subject = subjectRepository.findById(subjectId)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay account") + subjectId));
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(("Khong tim thay account") + subjectId));
         subjectRepository.delete(subject);
         return true;
     }
@@ -238,7 +241,7 @@ public class AdminServiceImpl implements IAdminService {
     @Override
     public SubjectResponse updateSubject(long subjectId, SubjectRequest subjectRequest) {
         Subject subject = subjectRepository.findById(subjectId)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay account") + subjectId));
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(("Khong tim thay account") + subjectId));
         subject.setCode(subjectRequest.getCode());
         subject.setName(subject.getName());
         List<Course> courses = courseRepository.findAllById(subjectRequest.getCourseIds());
@@ -263,7 +266,7 @@ public class AdminServiceImpl implements IAdminService {
     @Override
     public CourseResponse viewCourseDetail(long courseID) {
         Course course = courseRepository.findById(courseID)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay course") + courseID));
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(("Khong tim thay course") + courseID));
         CourseResponse courseResponse = ObjectUtil.copyProperties(course, new CourseResponse(), CourseResponse.class);
         return courseResponse;
     }
@@ -271,37 +274,53 @@ public class AdminServiceImpl implements IAdminService {
     @Override
     public CourseResponse updateCourse(long courseID, CourseRequest courseRequest) {
         Course course = courseRepository.findById(courseID)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay course") + courseID));
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay course" + courseID));
         course.setCode(courseRequest.getCode());
         course.setName(courseRequest.getName());
         course.setGrade(courseRequest.getGradeType());
         Subject subject = subjectRepository.findById(courseRequest.getSubjectId())
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay subject") + courseRequest.getSubjectId()));
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(("Khong tim thay subject") + courseRequest.getSubjectId()));
         course.setSubject(subject);
 
-
         List<TeacherCourse> teacherCourseList = new ArrayList<>();
-
-        for (Long id : courseRequest.getTeacherIds()) {
-
-            Account account = accountRepository.findById(id)
-                    .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay teacher") + id));
-            TeacherCourse teacherCourse1 = new TeacherCourse();
-
-
-            teacherCourse1.setCourse(course);
-            teacherCourse1.setAccount(account);
-            teacherCourseList.add(teacherCourse1);
-
-
-        }
+        List<Long> teacherIds = courseRequest.getTeacherIds();
         course.getTeacherCourses().clear();
+
+
+        for (Long teacherId : teacherIds) {
+            TeacherCourse teacherCourse = new TeacherCourse();
+            Account teacher = accountRepository.findById(teacherId)
+                    .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(("Khong tim thay teacher") + teacherId));
+            if (teacher.getRole().getCode().equals(EAccountRole.TEACHER.name())) {
+                TeacherCourseKey teacherCourseKey = new TeacherCourseKey();
+                teacherCourseKey.setCourseId(course.getId());
+                teacherCourseKey.setTeachId(teacherId);
+                teacherCourse.setId(teacherCourseKey);
+                teacherCourse.setCourse(course);
+                teacherCourse.setAccount(teacher);
+                teacherCourseList.add(teacherCourse);
+            }
+        }
+
         course.getTeacherCourses().addAll(teacherCourseList);
-
-
         Course save = courseRepository.save(course);
-        return ObjectUtil.copyProperties(save, new CourseResponse(), CourseResponse.class);
+        CourseResponse courseResponse = ObjectUtil.copyProperties(save, new CourseResponse(), CourseResponse.class);
 
+        courseResponse.setSubject(ObjectUtil.copyProperties(subject, new SubjectDto(), SubjectDto.class));
+
+        List<TeacherCourseDto> teacherCourseDtoList = new ArrayList<>();
+        teacherCourseList.stream().map(teacherCourse -> {
+            TeacherCourseDto teacherCourseDto = new TeacherCourseDto();
+            teacherCourseDto.setTeacherId(teacherCourse.getAccount().getId());
+            teacherCourseDto.setTopicId(teacherCourse.getCourse().getId());
+
+            teacherCourseDto.setIsAllowed(teacherCourse.getIsAllowed());
+
+            teacherCourseDtoList.add(teacherCourseDto);
+            return teacherCourseDto;
+        }).collect(Collectors.toList());
+        courseResponse.setTeacherCourse(teacherCourseDtoList);
+        return courseResponse;
     }
 
     @Override
@@ -316,6 +335,7 @@ public class AdminServiceImpl implements IAdminService {
         requestFormResponese.setRequestType(ObjectUtil.copyProperties(request.getRequestType(), new RequestTypeDto(), RequestTypeDto.class));
         return requestFormResponese;
     }
+
 
 
 }

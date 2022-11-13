@@ -1,6 +1,6 @@
 package fpt.capstone.vuondau.controller;
 
-import fpt.capstone.vuondau.entity.Dto.FeedBackDto;
+import fpt.capstone.vuondau.entity.dto.FeedBackDto;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
@@ -10,18 +10,14 @@ import fpt.capstone.vuondau.entity.response.CourseResponse;
 import fpt.capstone.vuondau.entity.response.RequestFormResponese;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
 import fpt.capstone.vuondau.service.IAdminService;
-import fpt.capstone.vuondau.util.specification.AccountSpecificationBuilder;
-import fpt.capstone.vuondau.util.specification.SubjectSpecificationBuilder;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/admin")
+@RequestMapping("/api/admin")
 public class AdminController {
 
     private final IAdminService iAdminService;
@@ -120,13 +116,11 @@ public class AdminController {
                                                                              Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iAdminService.searchCourse(query, pageable)));
     }
-
     @Operation(summary = "Lấy tất cả course ")
     @GetMapping("/get-all-course")
     public ResponseEntity<ApiResponse<ApiPage<CourseResponse>>> viewAllCourse(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iAdminService.viewAllCourse( pageable)));
     }
-
     @Operation(summary = "xem chi tiết course ")
     @GetMapping("/{courseID}")
     public ResponseEntity<ApiResponse<CourseResponse>> viewSubjectCourse(@PathVariable long courseID ) {

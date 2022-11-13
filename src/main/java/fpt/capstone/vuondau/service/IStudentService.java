@@ -1,8 +1,10 @@
 package fpt.capstone.vuondau.service;
 
-import fpt.capstone.vuondau.entity.request.StudentRequest;
-import fpt.capstone.vuondau.entity.response.StudentResponse;
+import fpt.capstone.vuondau.entity.request.RequestFormDto;
+import fpt.capstone.vuondau.entity.response.RequestFormResponse;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface IStudentService {
 
+    RequestFormResponse uploadRequestForm( Long id ,RequestFormDto requestFormDto);
 }

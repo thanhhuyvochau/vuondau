@@ -1,9 +1,8 @@
 package fpt.capstone.vuondau.entity;
 
 
+
 import javax.persistence.*;
-import java.time.Instant;
-import java.util.List;
 
 
 @Entity
@@ -16,6 +15,16 @@ public class Request {
 
     @Column(name = "tile")
     private String title;
+
+    @Column(name = "name")
+    private String name ;
+
+    @Column(name = "reason")
+    private String reason  ;
+
+    @Column(name = "url")
+    private String url;
+
 
     @ManyToOne
     @JoinColumn(name = "student_id")
@@ -56,4 +65,30 @@ public class Request {
     public void setRequestType(RequestType requestType) {
         this.requestType = requestType;
     }
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
 }

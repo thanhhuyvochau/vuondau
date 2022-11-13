@@ -1,10 +1,8 @@
 package fpt.capstone.vuondau.entity.response;
 
-import fpt.capstone.vuondau.entity.Dto.RequestTypeDto;
-import fpt.capstone.vuondau.entity.Dto.TeacherCourseDto;
-import fpt.capstone.vuondau.entity.common.EGradeType;
 
-import java.util.List;
+import fpt.capstone.vuondau.entity.dto.RequestTypeDto;
+
 
 public class RequestFormResponese {
     private Long id;

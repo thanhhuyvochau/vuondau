@@ -16,21 +16,17 @@ import fpt.capstone.vuondau.service.IAccountService;
 import fpt.capstone.vuondau.entity.Role;
 
 import fpt.capstone.vuondau.repository.RoleRepository;
+import fpt.capstone.vuondau.util.keycloak.KeycloakRoleUtil;
+import fpt.capstone.vuondau.util.keycloak.KeycloakUserUtil;
 import fpt.capstone.vuondau.util.MessageUtil;
 import fpt.capstone.vuondau.util.ObjectUtil;
 
 import org.keycloak.admin.client.Keycloak;
-import org.keycloak.representations.idm.CredentialRepresentation;
-import org.keycloak.representations.idm.UserRepresentation;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import javax.ws.rs.core.Response;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import java.util.Optional;
@@ -44,14 +40,17 @@ public class AccountServiceImpl implements IAccountService {
 
     private final RoleRepository roleRepository;
     private final Keycloak keycloak;
-    @Value("${keycloak.realm}")
-    private String realm;
 
-    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository, MessageUtil messageUtil, RoleRepository roleRepository1, Keycloak keycloak) {
+    private final KeycloakUserUtil keycloakUserUtil;
+    private final KeycloakRoleUtil keycloakRoleUtil;
+
+    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository, MessageUtil messageUtil, RoleRepository roleRepository1, Keycloak keycloak, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil) {
         this.accountRepository = accountRepository;
         this.messageUtil = messageUtil;
         this.roleRepository = roleRepository1;
         this.keycloak = keycloak;
+        this.keycloakUserUtil = keycloakUserUtil;
+        this.keycloakRoleUtil = keycloakRoleUtil;
     }
 
     @Override
@@ -76,9 +75,12 @@ public class AccountServiceImpl implements IAccountService {
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
         account.setRole(role);
         Account save = accountRepository.save(account);
-
-        AccountTeacherResponse response = ObjectUtil.copyProperties(save, new AccountTeacherResponse(), AccountTeacherResponse.class);
-        return response;
+        Boolean saveAccountSuccess = keycloakUserUtil.create(account);
+        Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getName(), account);
+        if (saveAccountSuccess && assignRoleSuccess) {
+            return ObjectUtil.copyProperties(save, new AccountTeacherResponse(), AccountTeacherResponse.class);
+        }
+        return null;
     }
 
     @Override
@@ -87,52 +89,41 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    public Boolean saveAccountToKeycloak(Account account) {
-        CredentialRepresentation credentialRepresentation = preparePasswordRepresentation(account.getPassword());
-        UserRepresentation userRepresentation = prepareUserRepresentation(account, credentialRepresentation);
-        Response response = keycloak.realm(realm).users().create(userRepresentation);
-        if (response.getStatus() == HttpStatus.OK.value()) {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
     public StudentResponse studentCreateAccount(StudentRequest studentRequest) {
         Account account = new Account();
         AccountRequest studentRequestAccount = studentRequest.getAccount();
         if (studentRequestAccount != null) {
+
+            if (accountRepository.existsAccountByUsername(studentRequestAccount.getUsername())) {
+                throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage(messageUtil.getLocalMessage("Username đã tồn tại"));
+            }
             account.setUsername(studentRequestAccount.getUsername());
             account.setPassword(studentRequestAccount.getPassword());
             account.setFirstName(studentRequest.getFirstName());
             account.setLastName(studentRequest.getLastName());
-            account.setActive(false);
+            account.setActive(true);
             account.setEmail(studentRequest.getEmail());
             account.setPhoneNumber(studentRequest.getPhoneNumber());
-//            Role role = roleRepository.findRoleByCode(EAccountRole.STUDENT.name())
-//                    .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
-//            account.setRole(role);
+            Role role = roleRepository.findRoleByCode(EAccountRole.STUDENT.name())
+                    .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
+            account.setRole(role);
             Account accountSave = accountRepository.save(account);
-            Boolean result = saveAccountToKeycloak(account);
-            if (result) {
-                return ObjectUtil.copyProperties(accountSave, new StudentResponse(), StudentResponse.class);
-            }
+
+//            Boolean saveAccountSuccess = keycloakUserUtil.create(account);
+//            Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getName(), account);
+//            if (saveAccountSuccess && assignRoleSuccess) {
+//                return ObjectUtil.copyProperties(accountSave, new StudentResponse(), StudentResponse.class);
+
+            return ObjectUtil.copyProperties(accountSave, new StudentResponse(), StudentResponse.class);
+//        }
+
+//            Boolean saveAccountSuccess = keycloakUserUtil.create(account);
+//            Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getCode(), account);
+//            if (saveAccountSuccess && assignRoleSuccess) {
+//                return ObjectUtil.copyProperties(accountSave, new StudentResponse(), StudentResponse.class);
+//            }
+
         }
         return null;  // throw exception in future
-    }
-
-    private CredentialRepresentation preparePasswordRepresentation(String password) {
-        CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
-        credentialRepresentation.setTemporary(false);
-        credentialRepresentation.setType(CredentialRepresentation.PASSWORD);
-        credentialRepresentation.setValue(password);
-        return credentialRepresentation;
-    }
-
-    private UserRepresentation prepareUserRepresentation(Account account, CredentialRepresentation credentialRepresentation) {
-        UserRepresentation newUser = ObjectUtil.copyProperties(account, new UserRepresentation(), UserRepresentation.class, true);
-        newUser.setCredentials(Collections.singletonList(credentialRepresentation));
-        newUser.setEnabled(true);
-        return newUser;
     }
 }
