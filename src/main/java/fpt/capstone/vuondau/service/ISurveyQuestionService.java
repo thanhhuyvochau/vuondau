@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.service;
 
 import fpt.capstone.vuondau.entity.Account;
+import fpt.capstone.vuondau.entity.dto.SurveyQuestionAnswerDto;
 import fpt.capstone.vuondau.entity.request.AccountExistedTeacherRequest;
 import fpt.capstone.vuondau.entity.request.StudentRequest;
 import fpt.capstone.vuondau.entity.request.StudentSurveyRequest;
@@ -16,4 +17,6 @@ public interface ISurveyQuestionService {
     Boolean adminCreateSurveyQuestion(List<SurveyQuestionRequest> surveyQuestionRequest);
 
     Boolean studentSubmitSurvey( Long studentId,List<StudentSurveyRequest> studentSurveyRequests);
+
+    List<SurveyQuestionAnswerDto> listSurveyQuestion();
 }

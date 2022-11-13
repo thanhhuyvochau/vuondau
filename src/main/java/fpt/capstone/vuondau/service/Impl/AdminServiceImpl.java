@@ -2,13 +2,18 @@ package fpt.capstone.vuondau.service.Impl;
 
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
+
+
+
 import fpt.capstone.vuondau.entity.dto.*;
+
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.CourseResponse;
+import fpt.capstone.vuondau.entity.response.RequestFormResponese;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IAdminService;
@@ -19,6 +24,7 @@ import fpt.capstone.vuondau.util.PageUtil;
 import fpt.capstone.vuondau.util.specification.AccountSpecificationBuilder;
 
 import fpt.capstone.vuondau.util.specification.CourseSpecificationBuilder;
+import fpt.capstone.vuondau.util.specification.RequestFormSpecificationBuilder;
 import fpt.capstone.vuondau.util.specification.SubjectSpecificationBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -51,7 +57,9 @@ public class AdminServiceImpl implements IAdminService {
 
     private final TeacherCourseRepository teacherCourseRepository;
 
-    public AdminServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, RoleRepository roleRepository, CourseRepository courseRepository, ClassRepository classRepository, FeedbackRepository feedbackRepository, SubjectRepository subjectRepository, TeacherCourseRepository teacherCourseRepository) {
+    private final RequestRepository requestRepository;
+
+    public AdminServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, RoleRepository roleRepository, CourseRepository courseRepository, ClassRepository classRepository, FeedbackRepository feedbackRepository, SubjectRepository subjectRepository, TeacherCourseRepository teacherCourseRepository, RequestRepository requestRepository) {
         this.accountRepository = accountRepository;
         this.messageUtil = messageUtil;
         this.roleRepository = roleRepository;
@@ -61,6 +69,8 @@ public class AdminServiceImpl implements IAdminService {
         this.feedbackRepository = feedbackRepository;
         this.subjectRepository = subjectRepository;
         this.teacherCourseRepository = teacherCourseRepository;
+
+        this.requestRepository = requestRepository;
     }
 
     @Override
@@ -312,6 +322,20 @@ public class AdminServiceImpl implements IAdminService {
         courseResponse.setTeacherCourse(teacherCourseDtoList);
         return courseResponse;
     }
+
+    @Override
+    public ApiPage<RequestFormResponese> searchRequestForm(RequestSearchRequest query, Pageable pageable) {
+        RequestFormSpecificationBuilder builder = RequestFormSpecificationBuilder.specification()
+                .queryLike(query.getQ());
+        Page<Request> requestPage = requestRepository.findAll(builder.build(), pageable);
+        return PageUtil.convert(requestPage.map(this::convertRequestToRequestResponse));
+    }
+    public RequestFormResponese convertRequestToRequestResponse(Request request) {
+        RequestFormResponese requestFormResponese = ObjectUtil.copyProperties(request, new RequestFormResponese(), RequestFormResponese.class);
+        requestFormResponese.setRequestType(ObjectUtil.copyProperties(request.getRequestType(), new RequestTypeDto(), RequestTypeDto.class));
+        return requestFormResponese;
+    }
+
 
 
 }

@@ -7,6 +7,7 @@ import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.CourseResponse;
+import fpt.capstone.vuondau.entity.response.RequestFormResponese;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
 import fpt.capstone.vuondau.service.IAdminService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -133,5 +134,15 @@ public class AdminController {
     }
 
 // MANAGE TOPIC
+
+//MANGER IT REQUEST FROM
+@Operation(summary = "Tìm Kiếm request form ")
+@GetMapping("/search-request-form")
+public ResponseEntity<ApiResponse<ApiPage<RequestFormResponese>>> searchRequestForm(@Nullable RequestSearchRequest query,
+                                                                                    Pageable pageable) {
+    return ResponseEntity.ok(ApiResponse.success(iAdminService.searchRequestForm(query, pageable)));
+}
+
+
 
 }

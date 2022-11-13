@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.controller;
 
 import fpt.capstone.vuondau.entity.common.ApiResponse;
+import fpt.capstone.vuondau.entity.dto.SurveyQuestionAnswerDto;
 import fpt.capstone.vuondau.entity.request.StudentSurveyRequest;
 import fpt.capstone.vuondau.entity.request.SurveyQuestionRequest;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
@@ -29,9 +30,14 @@ public class SurveyQuestionController {
 
     @Operation(summary = "Hoc sinh  khảo sát bộ câu hỏi")
     @PostMapping("{studentId}/student-submit-survey")
-    public ResponseEntity<ApiResponse<Boolean>> studentSubmitSurvey(@PathVariable Long studentId,@RequestBody List<StudentSurveyRequest> studentSurveyRequests) {
+    public ResponseEntity<ApiResponse<Boolean>> studentSubmitSurvey(@PathVariable Long studentId, @RequestBody List<StudentSurveyRequest> studentSurveyRequests) {
         return ResponseEntity.ok(ApiResponse.success(iSurveyQuestionService.studentSubmitSurvey(studentId,studentSurveyRequests)));
     }
 
+    @Operation(summary = "Danh sách câu hỏi khảo sát cho học sinh")
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<SurveyQuestionAnswerDto>>> listSurveyQuestion () {
+        return ResponseEntity.ok(ApiResponse.success(iSurveyQuestionService.listSurveyQuestion()));
+    }
 
 }

@@ -1,6 +1,9 @@
 package fpt.capstone.vuondau.entity;
 
+
+
 import javax.persistence.*;
+
 
 @Entity
 @Table(name = "request")
@@ -21,6 +24,7 @@ public class Request {
 
     @Column(name = "url")
     private String url;
+
 
     @ManyToOne
     @JoinColumn(name = "student_id")
@@ -62,6 +66,7 @@ public class Request {
         this.requestType = requestType;
     }
 
+
     public String getName() {
         return name;
     }
@@ -85,4 +90,5 @@ public class Request {
     public void setReason(String reason) {
         this.reason = reason;
     }
+
 }

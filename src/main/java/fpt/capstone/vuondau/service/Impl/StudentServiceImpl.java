@@ -4,8 +4,9 @@ import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.Request;
 import fpt.capstone.vuondau.entity.RequestType;
 import fpt.capstone.vuondau.entity.common.ApiException;
+
+import fpt.capstone.vuondau.entity.dto.RequestTypeDto;
 import fpt.capstone.vuondau.entity.request.RequestFormDto;
-import fpt.capstone.vuondau.entity.request.RequestTypeDto;
 import fpt.capstone.vuondau.entity.request.StudentDto;
 import fpt.capstone.vuondau.entity.response.RequestFormResponse;
 import fpt.capstone.vuondau.repository.AccountRepository;
@@ -21,7 +22,7 @@ import io.minio.ObjectWriteResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+
 
 import javax.transaction.Transactional;
 import java.io.IOException;

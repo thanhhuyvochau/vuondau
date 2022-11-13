@@ -1,10 +1,12 @@
-package fpt.capstone.vuondau.entity.request;
+package fpt.capstone.vuondau.entity.dto;
+
 
 public class RequestTypeDto {
 
-
-    private Long id ;
+    private Long id;
     private String name;
+
+
     private String code;
 
     public Long getId() {

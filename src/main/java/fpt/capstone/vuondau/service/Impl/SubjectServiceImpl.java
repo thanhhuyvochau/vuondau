@@ -3,7 +3,6 @@ package fpt.capstone.vuondau.service.Impl;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
-import fpt.capstone.vuondau.entity.dto.SubjectDto;
 import fpt.capstone.vuondau.entity.request.SubjectRequest;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
 import fpt.capstone.vuondau.repository.AccountRepository;
@@ -12,7 +11,6 @@ import fpt.capstone.vuondau.repository.StudentAnswerRepository;
 import fpt.capstone.vuondau.repository.SubjectRepository;
 import fpt.capstone.vuondau.service.ISubjectService;
 import fpt.capstone.vuondau.util.MessageUtil;
-import fpt.capstone.vuondau.util.ObjectUtil;
 import fpt.capstone.vuondau.util.PageUtil;
 import fpt.capstone.vuondau.util.specification.SuggestSubjectSpecificationBuilder;
 import org.springframework.data.domain.Page;
@@ -22,8 +20,8 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -108,22 +106,30 @@ public class SubjectServiceImpl implements ISubjectService {
 
         List<Answer> answer = studentAnswers.stream().map(StudentAnswer::getAnswer).collect(Collectors.toList());
         List<String> stringAnswer = answer.stream().map(Answer::getAnswer).collect(Collectors.toList());
-        String queryString= String.join("-", stringAnswer) ;
+        String queryString= String.join(" ", stringAnswer) ;
 
+//        final Page<Subject>[] subjectPage = new Page[]{};
         SuggestSubjectSpecificationBuilder builder = SuggestSubjectSpecificationBuilder.specification()
-                     .querySubjectCode(queryString) ;
+                .querySubjectCode(queryString) ;
+//        Page<Subject> subjectPage = null;
+//        for (String s : stringAnswer ) {
+//            builder.querySubjectCode(s) ;
+//            subjectPage = subjectRepository.findAll(builder.build(), pageable) ;
+//        }
+//        System.out.println(subjectPage);
 
-        Page<Subject>  subjectPage = subjectRepository.findAll(builder.build(), pageable) ;
+        Page<Subject> subjectPage = subjectRepository.findAll(builder.build(), pageable) ;
 
         return PageUtil.convert(subjectPage.map(this::convertSubjectToSubjectResponse));
     }
 
     public SubjectResponse convertSubjectToSubjectResponse(Subject subject) {
-//        SubjectResponse subjectResponse = new SubjectResponse();
-//        subjectResponse.setId(subject.getId());
-//        subjectResponse.setCode(subject.getCode());
-//        subjectResponse.setName(subject.getName());
-//        subjectResponse.setCourseIds(subject.getCourses());
-        return ObjectUtil.copyProperties(subject, new SubjectResponse() , SubjectResponse.class);
+        SubjectResponse subjectResponse = new SubjectResponse();
+        subjectResponse.setId(subject.getId());
+        subjectResponse.setCode(subject.getCode());
+        subjectResponse.setName(subject.getName());
+        subjectResponse.setCourseIds(subject.getCourses());
+//        return ObjectUtil.copyProperties(subject, new SubjectResponse() , SubjectResponse.class);
+        return  subjectResponse ;
     }
 }
