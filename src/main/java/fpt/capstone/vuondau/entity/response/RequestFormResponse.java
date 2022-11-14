@@ -1,7 +1,7 @@
 package fpt.capstone.vuondau.entity.response;
 
 import fpt.capstone.vuondau.entity.dto.RequestTypeDto;
-import fpt.capstone.vuondau.entity.request.StudentDto;
+import fpt.capstone.vuondau.entity.dto.StudentDto;
 
 public class RequestFormResponse {
 

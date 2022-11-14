@@ -7,7 +7,6 @@ import fpt.capstone.vuondau.entity.Role;
 import fpt.capstone.vuondau.entity.dto.CommentDto;
 import fpt.capstone.vuondau.entity.dto.QuestionDto;
 import fpt.capstone.vuondau.entity.dto.RoleDto;
-import fpt.capstone.vuondau.entity.request.StudentDto;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 
 import java.util.List;
