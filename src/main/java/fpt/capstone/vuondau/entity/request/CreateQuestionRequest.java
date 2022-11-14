@@ -11,7 +11,7 @@ import java.util.List;
 public class CreateQuestionRequest {
     private String content;
 
-    private SubjectResponse subject;
+    private Long subjectId;
 
     public String getContent() {
         return content;
@@ -21,11 +21,11 @@ public class CreateQuestionRequest {
         this.content = content;
     }
 
-    public SubjectResponse getSubject() {
-        return subject;
+    public Long getSubjectId() {
+        return subjectId;
     }
 
-    public void setSubject(SubjectResponse subject) {
-        this.subject = subject;
+    public void setSubjectId(Long subjectId) {
+        this.subjectId = subjectId;
     }
 }

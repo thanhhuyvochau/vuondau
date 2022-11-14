@@ -14,9 +14,9 @@ public class Comment {
     @Column(name = "content")
     private String content;
     @Column(name = "upvote_number")
-    private Integer upvoteNumber;
+    private Integer upvoteNumber = 0;
     @Column(name = "downVote_number")
-    private Integer downVoteNumber;
+    private Integer downVoteNumber = 0;
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "parentComment")
     private List<Comment> subComments = new ArrayList<>();
     @ManyToOne
