@@ -15,7 +15,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://vuondau-keycloak.amazingtech.vn/auth/realms/dev
+          issuer-uri: http://vuondau-keycloak.amazingtech.vn/auth/realms/vuondau-application
   servlet:
     multipart:
       enabled: 'true'
@@ -40,9 +40,9 @@ management:
       show-details: always
 # Keycloak settings
 keycloak:
-  realm: dev
-  resource: admin-spring-boot
-  app-client: employee-service
+  realm: vuondau-application
+  resource: springboot-admin-client
+  app-client: vuondau
   auth-server-url: http://vuondau-keycloak.amazingtech.vn/auth
   credentials:
-    secret: EJlhzOe84TZJhy41J3GhEg0yhaXzQuJL
+    secret: 0Z8fWR17uURSeTWmKd4EdapEUF8ck9ku
