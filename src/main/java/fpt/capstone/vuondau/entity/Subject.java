@@ -1,5 +1,7 @@
 package fpt.capstone.vuondau.entity;
 
+import fpt.capstone.vuondau.entity.common.ESubjectCode;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -12,7 +14,8 @@ public class Subject {
     @Column(name = "name")
     private String name;
     @Column(name = "code")
-    private String code;
+    @Enumerated(EnumType.STRING)
+    private ESubjectCode code;
     @OneToMany(mappedBy = "subject")
     private List<Course> courses;
 
@@ -35,11 +38,11 @@ public class Subject {
         this.name = name;
     }
 
-    public String getCode() {
+    public ESubjectCode getCode() {
         return code;
     }
 
-    public void setCode(String code) {
+    public void setCode(ESubjectCode code) {
         this.code = code;
     }
 

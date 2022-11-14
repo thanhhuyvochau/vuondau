@@ -3,6 +3,7 @@ package fpt.capstone.vuondau.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import fpt.capstone.vuondau.entity.common.EAccountRole;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -20,7 +21,8 @@ public class Role {
     private String name;
 
     @Column(name = "code")
-    private String code;
+    @Enumerated(EnumType.STRING)
+    private EAccountRole code;
 
 
 
@@ -44,11 +46,11 @@ public class Role {
         this.name = name;
     }
 
-    public String getCode() {
+    public EAccountRole getCode() {
         return code;
     }
 
-    public void setCode(String code) {
+    public void setCode(EAccountRole code) {
         this.code = code;
     }
 
