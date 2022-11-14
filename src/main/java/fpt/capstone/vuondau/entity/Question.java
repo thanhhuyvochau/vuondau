@@ -16,7 +16,7 @@ public class Question {
     @Column(name = "content")
     private String content;
     @Column(name = "is_closed")
-    private Boolean isClosed;
+    private Boolean isClosed = false;
 
     @ManyToOne
     @JoinColumn(name = "student_id")
@@ -26,9 +26,9 @@ public class Question {
     @JoinColumn(name = "subject_id")
     private Subject subject;
     @Column(name = "upvote_number")
-    private Integer upvoteNumber;
+    private Integer upvoteNumber = 0;
     @Column(name = "downVote_number")
-    private Integer downVoteNumber;
+    private Integer downVoteNumber = 0;
     @OneToMany(mappedBy = "question")
     private List<Comment> comments = new ArrayList<>();
 

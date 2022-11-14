@@ -11,28 +11,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 public class QuestionDto {
-    
-    
-    
+
+
     private Long id;
-    
+
     private String content;
-    
+
     private Boolean isClosed;
-    
-    
+
+
     private AccountResponse student;
-    
-    
+
+
     private SubjectResponse subject;
-    
+
     private Integer upvoteNumber;
-    
+
     private Integer downVoteNumber;
-    
-    private List<Comment> comments = new ArrayList<>();
+
+    private List<CommentDto> comments = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -90,11 +88,11 @@ public class QuestionDto {
         this.downVoteNumber = downVoteNumber;
     }
 
-    public List<Comment> getComments() {
+    public List<CommentDto> getComments() {
         return comments;
     }
 
-    public void setComments(List<Comment> comments) {
+    public void setComments(List<CommentDto> comments) {
         this.comments = comments;
     }
 }

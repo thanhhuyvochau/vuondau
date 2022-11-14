@@ -86,4 +86,12 @@ public class CommentDto {
     public void setQuestion(Question question) {
         this.question = question;
     }
+
+    public AccountResponse getStudent() {
+        return student;
+    }
+
+    public void setStudent(AccountResponse student) {
+        this.student = student;
+    }
 }

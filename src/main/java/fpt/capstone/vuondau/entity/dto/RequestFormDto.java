@@ -1,4 +1,4 @@
-package fpt.capstone.vuondau.entity.request;
+package fpt.capstone.vuondau.entity.dto;
 
 import fpt.capstone.vuondau.entity.common.EGradeType;
 import fpt.capstone.vuondau.entity.dto.SubjectDto;

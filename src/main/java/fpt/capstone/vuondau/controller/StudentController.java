@@ -2,7 +2,7 @@ package fpt.capstone.vuondau.controller;
 
 
 import fpt.capstone.vuondau.entity.common.ApiResponse;
-import fpt.capstone.vuondau.entity.request.RequestFormDto;
+import fpt.capstone.vuondau.entity.dto.RequestFormDto;
 import fpt.capstone.vuondau.entity.request.StudentRequest;
 import fpt.capstone.vuondau.entity.response.RequestFormResponse;
 import fpt.capstone.vuondau.entity.response.StudentResponse;
@@ -11,7 +11,6 @@ import fpt.capstone.vuondau.service.IStudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController

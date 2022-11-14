@@ -1,4 +1,4 @@
-package fpt.capstone.vuondau.entity.request;
+package fpt.capstone.vuondau.entity.dto;
 
 public class StudentDto {
 
