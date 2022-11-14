@@ -41,7 +41,7 @@ public class AdminController {
     }
 
     @Operation(summary = "xem chi tiết account ")
-    @GetMapping("/{accountId}")
+    @GetMapping("/{accountId}/info-account-detail")
     public ResponseEntity<ApiResponse<AccountResponse>> viewAccountDetail(@PathVariable long accountId ) {
         return ResponseEntity.ok(ApiResponse.success(iAdminService.viewAccountDetail(accountId)));
     }
@@ -91,7 +91,7 @@ public class AdminController {
     }
 
     @Operation(summary = "xem chi tiết subject ")
-    @GetMapping("/{subjectId}")
+    @GetMapping("/{subjectId}/infor-detail-subject")
     public ResponseEntity<ApiResponse<SubjectResponse>> viewSubjectDetail(@PathVariable long subjectId ) {
         return ResponseEntity.ok(ApiResponse.success(iAdminService.viewSubjectDetail(subjectId)));
     }

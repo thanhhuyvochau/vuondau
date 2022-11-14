@@ -26,7 +26,7 @@ public class SuggestSubjectSpecificationBuilder {
         }
 
         specifications.add((root, query, criteriaBuilder) -> {
-            Expression<String> courseCode = root.get(Subject_.CODE);
+            Expression<String> courseCode = root.get(Subject_.NAME);
 
 
             return criteriaBuilder.like(courseCode, subjectCode);

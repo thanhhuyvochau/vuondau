@@ -106,6 +106,10 @@ public class SurveyQuestionServiceImpl implements ISurveyQuestionService {
         if (studentAnswerList.size() < allSurveyQuestion.size()) {
             throw ApiException.create(HttpStatus.METHOD_NOT_ALLOWED).withMessage(messageUtil.getLocalMessage("Bạn chưa khảo sát hết cau hỏi"));
         }
+
+        // Lưu db to suggest subject
+
+
         studentAnswerRepository.saveAll(studentAnswerList);
         return true;
     }
