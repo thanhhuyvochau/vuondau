@@ -21,7 +21,7 @@ public class AccountExistedTeacherRequest implements Serializable {
     private String  phone ;
 
     @JsonIgnore
-    private EAccountRole roleAccount ;
+    private String roleAccount ;
 
 
     public String getUsername() {
@@ -65,11 +65,11 @@ public class AccountExistedTeacherRequest implements Serializable {
     }
 
 
-    public EAccountRole getRoleAccount() {
+    public String getRoleAccount() {
         return roleAccount;
     }
 
-    public void setRoleAccount(EAccountRole roleAccount) {
+    public void setRoleAccount(String roleAccount) {
         this.roleAccount = roleAccount;
     }
 

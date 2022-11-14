@@ -23,7 +23,8 @@ public class Course {
     @Column(name = "code")
     private String code;
 
-    @JoinColumn(name="grade", nullable = false)
+    @JoinColumn(name="grade")
+    @Enumerated(EnumType.STRING)
     private EGradeType grade;
 
     @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
