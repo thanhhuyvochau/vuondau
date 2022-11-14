@@ -1,4 +1,4 @@
-package fpt.capstone.vuondau.config;
+package fpt.capstone.vuondau.config.minio;
 
 import io.minio.MinioClient;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 @Configuration
-public class MinioConfiguration {
+public class MinioConfig {
 
     @Value("${minio.access-key}")
     private String accessKey;

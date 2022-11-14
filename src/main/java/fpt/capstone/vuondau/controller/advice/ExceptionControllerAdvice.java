@@ -1,4 +1,4 @@
-package fpt.capstone.vuondau.config;
+package fpt.capstone.vuondau.controller.advice;
 
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
