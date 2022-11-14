@@ -108,15 +108,10 @@ public class SubjectServiceImpl implements ISubjectService {
         List<String> stringAnswer = answer.stream().map(Answer::getAnswer).collect(Collectors.toList());
         String queryString= String.join(" ", stringAnswer) ;
 
-//        final Page<Subject>[] subjectPage = new Page[]{};
+
         SuggestSubjectSpecificationBuilder builder = SuggestSubjectSpecificationBuilder.specification()
                 .querySubjectCode(queryString) ;
-//        Page<Subject> subjectPage = null;
-//        for (String s : stringAnswer ) {
-//            builder.querySubjectCode(s) ;
-//            subjectPage = subjectRepository.findAll(builder.build(), pageable) ;
-//        }
-//        System.out.println(subjectPage);
+
 
         Page<Subject> subjectPage = subjectRepository.findAll(builder.build(), pageable) ;
 
