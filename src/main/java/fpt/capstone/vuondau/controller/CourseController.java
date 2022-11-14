@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.controller;
 
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.request.CourseRequest;
+import fpt.capstone.vuondau.entity.request.TopicsSubjectRequest;
 import fpt.capstone.vuondau.entity.response.CourseResponse;
 import fpt.capstone.vuondau.service.ICourseService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,11 +14,23 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/courses")
 public class CourseController {
-//    private final ICourseService courseService;
 
-//    public CourseController(ICourseService courseService) {
-//        this.courseService = courseService;
-//    }
+
+
+    private final ICourseService courseService;
+
+    public CourseController(ICourseService courseService) {
+        this.courseService = courseService;
+    }
+
+
+
+    @Operation(description = "giáo viên request các topic cho subject")
+    @PostMapping("/{teacherId}/create-topics-subject")
+    public ResponseEntity<ApiResponse<TopicsSubjectRequest>> teacherCreateTopicInSubject(@PathVariable Long teacherId  , @RequestBody TopicsSubjectRequest topicsSubjectRequest ) {
+        System.out.println(teacherId);
+        return ResponseEntity.ok(ApiResponse.success(courseService.teacherCreateTopicInSubject(teacherId,topicsSubjectRequest)));
+    }
 
 //    @Operation(description = "Lấy tất cả khóa học")
 //    @GetMapping
