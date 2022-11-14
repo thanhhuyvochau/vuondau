@@ -17,7 +17,7 @@ public class SubjectResponse implements Serializable {
     private String name ;
 
     @Schema(description = "id course ")
-    private List<Course> courseIds ;
+    private List<Long> courseIds ;
 
     public Long getId() {
         return id;
@@ -43,11 +43,11 @@ public class SubjectResponse implements Serializable {
         this.name = name;
     }
 
-    public List<Course> getCourseIds() {
+    public List<Long> getCourseIds() {
         return courseIds;
     }
 
-    public void setCourseIds(List<Course> courseIds) {
+    public void setCourseIds(List<Long> courseIds) {
         this.courseIds = courseIds;
     }
 }
