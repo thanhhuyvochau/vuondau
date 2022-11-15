@@ -107,6 +107,15 @@ public class SubjectServiceImpl implements ISubjectService {
         List<StudentAnswer> studentAnswers = account.getStudentAnswers();
 
         List<Answer> answer = studentAnswers.stream().map(StudentAnswer::getAnswer).collect(Collectors.toList());
+
+        List<String> stringAnswer = answer.stream().map(Answer::getAnswer).collect(Collectors.toList());
+        String queryString= String.join(" ", stringAnswer) ;
+
+
+//        SuggestSubjectSpecificationBuilder builder = SuggestSubjectSpecificationBuilder.specification()
+//                .querySubjectCode(queryString) ;
+
+
         Optional<String> first = answer.stream().map(Answer::getAnswer).findFirst();
         String s = "";
         if (first.isPresent()) {
@@ -114,6 +123,7 @@ public class SubjectServiceImpl implements ISubjectService {
         }
         SuggestSubjectSpecificationBuilder builder = SuggestSubjectSpecificationBuilder.specification()
                 .querySubjectCode(s);
+
 
         Page<Subject> subjectPage = subjectRepository.findAll(builder.build(), pageable);
 
