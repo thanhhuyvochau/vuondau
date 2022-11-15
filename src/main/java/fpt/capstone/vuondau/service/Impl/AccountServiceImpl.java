@@ -69,9 +69,13 @@ public class AccountServiceImpl implements IAccountService {
 
 
         Account account = new Account();
-        if (accountRepository.existsAccountByUsername(accountRequest.getUsername())){
+        if (accountRepository.existsAccountByUsername(accountRequest.getUsername())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("user name  đã tòn tạo"));
+        }
+        if (accountRepository.existsAccountByEmail(accountRequest.getEmail())) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Email đã tòn tạo"));
         }
         account.setUsername(accountRequest.getUsername());
         account.setFirstName(accountRequest.getFirstName());
@@ -83,7 +87,7 @@ public class AccountServiceImpl implements IAccountService {
         account.setRole(role);
         Account save = accountRepository.save(account);
         Boolean saveAccountSuccess = keycloakUserUtil.create(account);
-        Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getName(), account);
+        Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getCode().name(), account);
         if (saveAccountSuccess && assignRoleSuccess) {
             return ObjectUtil.copyProperties(save, new AccountTeacherResponse(), AccountTeacherResponse.class);
         }
@@ -102,7 +106,10 @@ public class AccountServiceImpl implements IAccountService {
         if (studentRequestAccount != null) {
 
             if (accountRepository.existsAccountByUsername(studentRequestAccount.getUsername())) {
-                throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage(messageUtil.getLocalMessage("Username đã tồn tại"));
+                throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage("Username đã tồn tại");
+            }
+            if (accountRepository.existsAccountByEmail(studentRequest.getEmail())) {
+                throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage("Email đã tồn tại");
             }
             account.setUsername(studentRequestAccount.getUsername());
             account.setPassword(studentRequestAccount.getPassword());

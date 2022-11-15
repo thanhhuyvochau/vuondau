@@ -24,6 +24,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     Page<Account> findAll(Specification<Account> spec, Pageable pageable);
 
     Boolean existsAccountByUsername(String username);
-
+    Boolean existsAccountByEmail(String email);
     Account findByUsername(String username);
 }
