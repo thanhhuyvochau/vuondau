@@ -7,12 +7,14 @@ import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.request.AccountExistedTeacherRequest;
 import fpt.capstone.vuondau.entity.request.AccountRequest;
 import fpt.capstone.vuondau.entity.request.StudentRequest;
+import fpt.capstone.vuondau.entity.request.UploadAvatarRequest;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
 import fpt.capstone.vuondau.entity.response.StudentResponse;
 import fpt.capstone.vuondau.util.ObjectUtil;
 import org.springframework.http.HttpStatus;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,4 +29,5 @@ public interface IAccountService {
 
     StudentResponse studentCreateAccount(StudentRequest studentRequest);
 
+    Boolean uploadAvatar(long id, UploadAvatarRequest uploadAvatarRequest) throws IOException;
 }
