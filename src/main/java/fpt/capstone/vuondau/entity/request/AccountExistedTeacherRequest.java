@@ -22,7 +22,19 @@ public class AccountExistedTeacherRequest implements Serializable {
 
     @JsonIgnore
     private String roleAccount ;
+    private String email;
 
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public String getUsername() {
         return username;
