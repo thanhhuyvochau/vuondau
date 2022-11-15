@@ -1,17 +1,20 @@
 package fpt.capstone.vuondau.entity.request;
 
-import fpt.capstone.vuondau.entity.Question;
-import fpt.capstone.vuondau.entity.response.AccountResponse;
-
-import java.util.ArrayList;
-import java.util.List;
-
 
 public class CreateCommentRequest {
 
     private String content;
 
     private Long questionId;
+    private Long parentCommentId;
+
+    public Long getParentCommentId() {
+        return parentCommentId;
+    }
+
+    public void setParentCommentId(Long parentCommentId) {
+        this.parentCommentId = parentCommentId;
+    }
 
     public String getContent() {
         return content;

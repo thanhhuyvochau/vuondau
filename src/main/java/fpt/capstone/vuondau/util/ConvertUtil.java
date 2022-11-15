@@ -33,7 +33,7 @@ public class ConvertUtil {
 
     private static CommentDto doConvertEntityToResponseAsTree(Comment comment, Comment parentComment) {
         CommentDto commentDto = ObjectUtil.copyProperties(comment, new CommentDto(), CommentDto.class, true);
-        AccountResponse accountResponse = doConvertEntityToResponse(comment.getStudent());
+        AccountResponse accountResponse = doConvertEntityToResponse(comment.getAccount());
         commentDto.setStudent(accountResponse);
         if (parentComment != null) {
             CommentDto parentCommentDto = ObjectUtil.copyProperties(parentComment, new CommentDto(), CommentDto.class, true);
