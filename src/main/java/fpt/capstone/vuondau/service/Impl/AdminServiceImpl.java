@@ -134,7 +134,7 @@ public class AdminServiceImpl implements IAdminService {
     public AccountResponse updateRoleAccount(long id, EAccountRole eAccountRole) {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
-        Role role = roleRepository.findRoleByCode(eAccountRole.name())
+        Role role = roleRepository.findRoleByCode(eAccountRole)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay role"));
         account.setRole(role);
         Account save = accountRepository.save(account);

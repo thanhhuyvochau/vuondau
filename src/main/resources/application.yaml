@@ -7,4 +7,4 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://vuondau-keycloak.amazingtech.vn/auth/realms/dev
+          issuer-uri: http://vuondau-keycloak.amazingtech.vn/auth/realms/vuondau-application

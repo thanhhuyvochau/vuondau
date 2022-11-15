@@ -10,8 +10,6 @@ import java.util.List;
 public interface ICommentService {
     CommentDto getComment(Long id);
 
-    List<CommentDto> getComments();
-
     List<CommentDto> getCommentByQuestion(Long questionId);
 
     CommentDto createComment(CreateCommentRequest createCommentRequest);

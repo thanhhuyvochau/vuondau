@@ -23,7 +23,11 @@ public class Course {
     @Column(name = "code")
     private String code;
 
-    @JoinColumn(name="grade", nullable = false)
+    @Column(name = "is_active")
+    private boolean isActive;
+
+    @JoinColumn(name="grade")
+    @Enumerated(EnumType.STRING)
     private EGradeType grade;
 
     @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
@@ -57,6 +61,14 @@ public class Course {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
     public EGradeType getGrade() {

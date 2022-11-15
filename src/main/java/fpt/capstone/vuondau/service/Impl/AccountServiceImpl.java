@@ -66,20 +66,27 @@ public class AccountServiceImpl implements IAccountService {
 
     @Override
     public AccountTeacherResponse createTeacherAccount(AccountExistedTeacherRequest accountRequest) {
+
+
         Account account = new Account();
+        if (accountRepository.existsAccountByUsername(accountRequest.getUsername())){
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("user name  đã tòn tạo"));
+        }
         account.setUsername(accountRequest.getUsername());
         account.setFirstName(accountRequest.getFirstName());
         account.setLastName(accountRequest.getLastName());
-        account.setPhoneNumber(account.getPhoneNumber());
-        Role role = roleRepository.findRoleByCode(accountRequest.getRoleAccount().name())
+        account.setPhoneNumber(accountRequest.getPhone());
+
+        Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
         account.setRole(role);
         Account save = accountRepository.save(account);
-        Boolean saveAccountSuccess = keycloakUserUtil.create(account);
-        Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getName(), account);
-        if (saveAccountSuccess && assignRoleSuccess) {
-            return ObjectUtil.copyProperties(save, new AccountTeacherResponse(), AccountTeacherResponse.class);
-        }
+//        Boolean saveAccountSuccess = keycloakUserUtil.create(account);
+//        Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getName(), account);
+//        if (saveAccountSuccess && assignRoleSuccess) {
+//            return ObjectUtil.copyProperties(save, new AccountTeacherResponse(), AccountTeacherResponse.class);
+//        }
         return null;
     }
 
@@ -104,25 +111,16 @@ public class AccountServiceImpl implements IAccountService {
             account.setActive(true);
             account.setEmail(studentRequest.getEmail());
             account.setPhoneNumber(studentRequest.getPhoneNumber());
-            Role role = roleRepository.findRoleByCode(EAccountRole.STUDENT.name())
+            Role role = roleRepository.findRoleByCode(EAccountRole.STUDENT)
                     .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
             account.setRole(role);
             Account accountSave = accountRepository.save(account);
 
-//            Boolean saveAccountSuccess = keycloakUserUtil.create(account);
-//            Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getName(), account);
-//            if (saveAccountSuccess && assignRoleSuccess) {
-//                return ObjectUtil.copyProperties(accountSave, new StudentResponse(), StudentResponse.class);
-
-            return ObjectUtil.copyProperties(accountSave, new StudentResponse(), StudentResponse.class);
-//        }
-
-//            Boolean saveAccountSuccess = keycloakUserUtil.create(account);
-//            Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getCode(), account);
-//            if (saveAccountSuccess && assignRoleSuccess) {
-//                return ObjectUtil.copyProperties(accountSave, new StudentResponse(), StudentResponse.class);
-//            }
-
+            Boolean saveAccountSuccess = keycloakUserUtil.create(account);
+            Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getName(), account);
+            if (saveAccountSuccess && assignRoleSuccess) {
+                return ObjectUtil.copyProperties(accountSave, new StudentResponse(), StudentResponse.class);
+            }
         }
         return null;  // throw exception in future
     }

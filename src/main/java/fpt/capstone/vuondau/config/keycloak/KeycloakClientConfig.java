@@ -1,4 +1,4 @@
-package fpt.capstone.vuondau.config;
+package fpt.capstone.vuondau.config.keycloak;
 
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;

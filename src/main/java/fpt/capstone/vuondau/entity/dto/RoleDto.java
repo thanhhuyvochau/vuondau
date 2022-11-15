@@ -1,13 +1,15 @@
 package fpt.capstone.vuondau.entity.dto;
 
 
+import fpt.capstone.vuondau.entity.common.EAccountRole;
+
 public class RoleDto {
 
 
     private String name;
 
 
-    private String code;
+    private EAccountRole code;
 
 
     public String getName() {
@@ -18,11 +20,11 @@ public class RoleDto {
         this.name = name;
     }
 
-    public String getCode() {
+    public EAccountRole getCode() {
         return code;
     }
 
-    public void setCode(String code) {
+    public void setCode(EAccountRole code) {
         this.code = code;
     }
 }

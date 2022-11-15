@@ -19,7 +19,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -105,15 +107,25 @@ public class SubjectServiceImpl implements ISubjectService {
         List<StudentAnswer> studentAnswers = account.getStudentAnswers();
 
         List<Answer> answer = studentAnswers.stream().map(StudentAnswer::getAnswer).collect(Collectors.toList());
+
         List<String> stringAnswer = answer.stream().map(Answer::getAnswer).collect(Collectors.toList());
         String queryString= String.join(" ", stringAnswer) ;
 
 
+//        SuggestSubjectSpecificationBuilder builder = SuggestSubjectSpecificationBuilder.specification()
+//                .querySubjectCode(queryString) ;
+
+
+        Optional<String> first = answer.stream().map(Answer::getAnswer).findFirst();
+        String s = "";
+        if (first.isPresent()) {
+            s = first.get();
+        }
         SuggestSubjectSpecificationBuilder builder = SuggestSubjectSpecificationBuilder.specification()
-                .querySubjectCode(queryString) ;
+                .querySubjectCode(s);
 
 
-        Page<Subject> subjectPage = subjectRepository.findAll(builder.build(), pageable) ;
+        Page<Subject> subjectPage = subjectRepository.findAll(builder.build(), pageable);
 
         return PageUtil.convert(subjectPage.map(this::convertSubjectToSubjectResponse));
     }
@@ -123,8 +135,8 @@ public class SubjectServiceImpl implements ISubjectService {
         subjectResponse.setId(subject.getId());
         subjectResponse.setCode(subject.getCode());
         subjectResponse.setName(subject.getName());
-        subjectResponse.setCourseIds(subject.getCourses());
-//        return ObjectUtil.copyProperties(subject, new SubjectResponse() , SubjectResponse.class);
-        return  subjectResponse ;
+        List<Long> idCourse = subject.getCourses().stream().map(Course::getId).collect(Collectors.toList());
+        subjectResponse.setCourseIds(idCourse);
+        return subjectResponse;
     }
 }

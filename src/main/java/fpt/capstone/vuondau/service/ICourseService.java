@@ -1,18 +1,23 @@
 package fpt.capstone.vuondau.service;
 
 import fpt.capstone.vuondau.entity.request.CourseRequest;
+import fpt.capstone.vuondau.entity.request.TopicsSubjectRequest;
 import fpt.capstone.vuondau.entity.response.CourseResponse;
+import fpt.capstone.vuondau.entity.response.SubjectResponse;
 
 import java.util.List;
 
 public interface ICourseService {
-    List<CourseResponse> getAll();
+    TopicsSubjectRequest teacherCreateTopicInSubject( Long teacherId  ,TopicsSubjectRequest topicsSubjectRequest);
 
-    List<CourseResponse> searchCourseByName(String name);
-
-    CourseResponse create(CourseRequest courseRequest);
-
-    CourseResponse update(CourseRequest courseRequest, Long id);
-
-    Boolean delete(Long id);
+    SubjectResponse createRegisterSubject(Long teacherId, Long subjectId );
+//    List<CourseResponse> getAll();
+//
+//    List<CourseResponse> searchCourseByName(String name);
+//
+//    CourseResponse create(CourseRequest courseRequest);
+//
+//    CourseResponse update(CourseRequest courseRequest, Long id);
+//
+//    Boolean delete(Long id);
 }

@@ -1,32 +1,120 @@
-//package fpt.capstone.vuondau.service.Impl;
-//
-//import fpt.capstone.vuondau.entity.*;
-//import fpt.capstone.vuondau.entity.common.ApiException;
-//import fpt.capstone.vuondau.entity.request.CourseRequest;
-//import fpt.capstone.vuondau.entity.response.CourseResponse;
-//import fpt.capstone.vuondau.repository.*;
-//import fpt.capstone.vuondau.service.ICourseService;
-//import fpt.capstone.vuondau.util.ObjectUtil;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.stereotype.Service;
-//
-//import java.util.List;
-//
-//@Service
-//public class CourseServiceImpl implements ICourseService {
-//
-//    private final CourseRepository courseRepository;
-//
-//    private final SubjectRepository subjectRepository;
-//
-//    private final TeacherCourseRepository teacherCourseRepository;
-//
-//    public CourseServiceImpl(CourseRepository courseRepository, SubjectRepository subjectRepository, TeacherCourseRepository teacherCourseRepository) {
-//        this.courseRepository = courseRepository;
-//        this.subjectRepository = subjectRepository;
-//        this.teacherCourseRepository = teacherCourseRepository;
-//    }
-//
+package fpt.capstone.vuondau.service.Impl;
+
+import fpt.capstone.vuondau.entity.*;
+import fpt.capstone.vuondau.entity.common.ApiException;
+import fpt.capstone.vuondau.entity.dto.CourseDto;
+import fpt.capstone.vuondau.entity.request.TopicsSubjectRequest;
+import fpt.capstone.vuondau.entity.response.SubjectResponse;
+import fpt.capstone.vuondau.repository.*;
+import fpt.capstone.vuondau.service.ICourseService;
+import fpt.capstone.vuondau.util.ObjectUtil;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class CourseServiceImpl implements ICourseService {
+
+    private final CourseRepository courseRepository;
+
+    private final SubjectRepository subjectRepository;
+
+    private final TeacherCourseRepository teacherCourseRepository;
+
+    private final AccountRepository accountRepository;
+
+    public CourseServiceImpl(CourseRepository courseRepository, SubjectRepository subjectRepository, TeacherCourseRepository teacherCourseRepository, AccountRepository accountRepository) {
+        this.courseRepository = courseRepository;
+        this.subjectRepository = subjectRepository;
+        this.teacherCourseRepository = teacherCourseRepository;
+        this.accountRepository = accountRepository;
+    }
+
+    @Override
+    public TopicsSubjectRequest teacherCreateTopicInSubject(Long teacherId, TopicsSubjectRequest topicsSubjectRequest) {
+
+        Subject subject = subjectRepository.findById(topicsSubjectRequest.getSubjectId())
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("subject not found with id:" + topicsSubjectRequest.getSubjectId()));
+        Account account = accountRepository.findById(teacherId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("teacher not found with id:" + teacherId));
+        List<Course> courseList = new ArrayList<>();
+
+        TopicsSubjectRequest response = new TopicsSubjectRequest();
+
+        List<CourseDto> coursesRequest = topicsSubjectRequest.getCourses();
+        for (CourseDto courseDto : coursesRequest) {
+            Course course = new Course();
+            course.setCode(courseDto.getCode());
+            course.setName(courseDto.getName());
+            course.setGrade(courseDto.getGrade());
+            course.setSubject(subject);
+            List<TeacherCourse> teacherCourseList = new ArrayList<>();
+            TeacherCourse teacherCourse = new TeacherCourse();
+            TeacherCourseKey teacherCourseKey = new TeacherCourseKey();
+            teacherCourseKey.setTeachId(account.getId());
+            teacherCourseKey.setCourseId(course.getId());
+            teacherCourse.setId(teacherCourseKey);
+            teacherCourse.setCourse(course);
+            teacherCourse.setAccount(account);
+            teacherCourseList.add(teacherCourse);
+            course.setTeacherCourses(teacherCourseList);
+            courseList.add(course);
+
+            // Response
+            response.setSubjectId(subject.getId());
+            List<CourseDto> courseDtoList = new ArrayList<>();
+            courseList.stream().map(courseResponse -> {
+                CourseDto courseDtoResponse = ObjectUtil.copyProperties(courseResponse, new CourseDto(), CourseDto.class);
+                courseDtoList.add(courseDtoResponse);
+                return courseResponse;
+            }).collect(Collectors.toList());
+            response.setCourses(courseDtoList);
+        }
+        courseRepository.saveAll(courseList);
+        return response;
+    }
+
+    @Override
+    public SubjectResponse createRegisterSubject(Long teacherId , Long subjectId) {
+
+        Account account = accountRepository.findById(teacherId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("teacher not found with id:" + teacherId));
+        Subject subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("subject not found with id:" + subjectId));
+
+        List<Long> courseIds=  new ArrayList<>() ;
+
+        Course course = new Course() ;
+        course.setCode("introduce");
+        course.setName("introduce");
+        course.setActive(false);
+        course.setSubject(subject);
+        List<TeacherCourse> teacherCourseList = new ArrayList<>();
+        TeacherCourse teacherCourse = new TeacherCourse();
+        TeacherCourseKey teacherCourseKey = new TeacherCourseKey();
+        teacherCourseKey.setTeachId(account.getId());
+        teacherCourseKey.setCourseId(course.getId());
+        teacherCourse.setId(teacherCourseKey);
+        teacherCourse.setCourse(course);
+        teacherCourse.setAccount(account);
+        teacherCourseList.add(teacherCourse);
+        course.setTeacherCourses(teacherCourseList);
+
+        Course save = courseRepository.save(course);
+
+        courseIds.add(save.getId()) ;
+        SubjectResponse response = new SubjectResponse() ;
+        response.setId(subject.getId());
+        response.setCode(save.getSubject().getCode());
+        response.setName(subject.getName());
+        response.setCourseIds(courseIds);
+        return response;
+    }
+
+
 //
 //    @Override
 //    public List<CourseResponse> getAll() {
@@ -187,4 +275,4 @@
 ////        courseResponse.setSubject(subjectResponse);
 ////        return courseResponse;
 ////    }
-//}
+}

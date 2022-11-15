@@ -6,8 +6,8 @@ import fpt.capstone.vuondau.entity.RequestType;
 import fpt.capstone.vuondau.entity.common.ApiException;
 
 import fpt.capstone.vuondau.entity.dto.RequestTypeDto;
-import fpt.capstone.vuondau.entity.request.RequestFormDto;
-import fpt.capstone.vuondau.entity.request.StudentDto;
+import fpt.capstone.vuondau.entity.dto.RequestFormDto;
+import fpt.capstone.vuondau.entity.dto.StudentDto;
 import fpt.capstone.vuondau.entity.response.RequestFormResponse;
 import fpt.capstone.vuondau.repository.AccountRepository;
 import fpt.capstone.vuondau.repository.RequestRepository;
