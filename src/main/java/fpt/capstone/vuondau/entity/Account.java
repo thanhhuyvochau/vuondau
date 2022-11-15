@@ -70,7 +70,7 @@ public class Account {
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<Question> questions = new ArrayList<>();
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
 

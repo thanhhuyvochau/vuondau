@@ -23,9 +23,9 @@ public class Comment {
     @JoinColumn(name = "parent_comment_id")
     private Comment parentComment;
 
-    @JoinColumn(name = "student_id")
+    @JoinColumn(name = "account_id")
     @ManyToOne
-    private Account student;
+    private Account account;
     @ManyToOne
     @JoinColumn(name = "question_id")
     private Question question;
@@ -78,12 +78,12 @@ public class Comment {
         this.parentComment = parentComment;
     }
 
-    public Account getStudent() {
-        return student;
+    public Account getAccount() {
+        return account;
     }
 
-    public void setStudent(Account student) {
-        this.student = student;
+    public void setAccount(Account student) {
+        this.account = student;
     }
 
     public Question getQuestion() {
