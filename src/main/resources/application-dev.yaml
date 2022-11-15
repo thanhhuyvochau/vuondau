@@ -5,7 +5,6 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://mysql8:3306/vuondau
-
     username: root
     password: test
   jpa:
@@ -28,8 +27,11 @@ keycloak:
   realm: vuondau-application
   resource: springboot-admin-client
   app-client: vuondau
-  auth-server-url: keycloak:8080/auth
+  auth-server-url: http://vuondau-keycloak.amazingtech.vn/auth
   credentials:
     secret: 0Z8fWR17uURSeTWmKd4EdapEUF8ck9ku
+
+
+
 
 
