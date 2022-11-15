@@ -52,6 +52,10 @@ public class Class {
     @Column(name = "level")
     private String level ;
 
+    @Column(name = "is_avtive")
+    private boolean isActive ;
+
+
     public Long getId() {
         return id;
     }
@@ -146,5 +150,13 @@ public class Class {
 
     public void setFeedBacks(List<FeedBack> feedBacks) {
         this.feedBacks = feedBacks;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }

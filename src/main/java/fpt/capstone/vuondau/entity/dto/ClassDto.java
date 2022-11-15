@@ -1,6 +1,8 @@
 package fpt.capstone.vuondau.entity.dto;
 
 
+import java.time.Instant;
+
 public class ClassDto {
 
 
@@ -10,6 +12,16 @@ public class ClassDto {
     private long teacherId ;
 
     private long courseId ;
+
+    private Instant startDate ;
+
+    private Instant endDate ;
+
+    private String level;
+
+    private Long numberStudent ;
+
+
 
 
     public String getClassName() {
@@ -42,5 +54,38 @@ public class ClassDto {
 
     public void setCourseId(long courseId) {
         this.courseId = courseId;
+    }
+
+
+    public Instant getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Instant startDate) {
+        this.startDate = startDate;
+    }
+
+    public Instant getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Instant endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    public Long getNumberStudent() {
+        return numberStudent;
+    }
+
+    public void setNumberStudent(Long numberStudent) {
+        this.numberStudent = numberStudent;
     }
 }
