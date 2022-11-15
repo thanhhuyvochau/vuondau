@@ -1,9 +1,13 @@
 package fpt.capstone.vuondau.service.Impl;
 
 import fpt.capstone.vuondau.entity.*;
+import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiException;
+import fpt.capstone.vuondau.entity.dto.ClassDto;
 import fpt.capstone.vuondau.entity.dto.CourseDto;
+import fpt.capstone.vuondau.entity.request.ClassRequest;
 import fpt.capstone.vuondau.entity.request.TopicsSubjectRequest;
+import fpt.capstone.vuondau.entity.response.ClassSubjectResponse;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.ICourseService;
@@ -11,6 +15,7 @@ import fpt.capstone.vuondau.util.ObjectUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,11 +31,14 @@ public class CourseServiceImpl implements ICourseService {
 
     private final AccountRepository accountRepository;
 
-    public CourseServiceImpl(CourseRepository courseRepository, SubjectRepository subjectRepository, TeacherCourseRepository teacherCourseRepository, AccountRepository accountRepository) {
+    private final ClassRepository classRepository ;
+
+    public CourseServiceImpl(CourseRepository courseRepository, SubjectRepository subjectRepository, TeacherCourseRepository teacherCourseRepository, AccountRepository accountRepository, ClassRepository classRepository) {
         this.courseRepository = courseRepository;
         this.subjectRepository = subjectRepository;
         this.teacherCourseRepository = teacherCourseRepository;
         this.accountRepository = accountRepository;
+        this.classRepository = classRepository;
     }
 
     @Override
@@ -78,16 +86,18 @@ public class CourseServiceImpl implements ICourseService {
     }
 
     @Override
-    public SubjectResponse createRegisterSubject(Long teacherId , Long subjectId) {
+    public ClassSubjectResponse createRegisterSubject(Long teacherId,  Long subjectId  ,ClassRequest classRequest) {
 
         Account account = accountRepository.findById(teacherId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("teacher not found with id:" + teacherId));
         Subject subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("subject not found with id:" + subjectId));
 
-        List<Long> courseIds=  new ArrayList<>() ;
+        List<Long> courseIds = new ArrayList<>();
 
-        Course course = new Course() ;
+
+
+        Course course = new Course();
         course.setCode("introduce");
         course.setName("introduce");
         course.setActive(false);
@@ -105,12 +115,37 @@ public class CourseServiceImpl implements ICourseService {
 
         Course save = courseRepository.save(course);
 
-        courseIds.add(save.getId()) ;
-        SubjectResponse response = new SubjectResponse() ;
+        Class clazz = new Class();
+        clazz.setCode(classRequest.getCode());
+        clazz.setName(classRequest.getName());
+        clazz.setStartDate(Instant.now());
+        clazz.setEndDate(classRequest.getEndDate());
+        clazz.setCourse(course);
+        clazz.setAccount(account);
+        clazz.setLevel(classRequest.getLevel());
+        clazz.setNumberStudent(30L);
+        clazz.setActive(false);
+
+        Class classSave = classRepository.save(clazz);
+
+
+        courseIds.add(save.getId());
+        ClassSubjectResponse response = new ClassSubjectResponse();
         response.setId(subject.getId());
         response.setCode(save.getSubject().getCode());
         response.setName(subject.getName());
         response.setCourseIds(courseIds);
+
+        ClassDto classDto = new ClassDto() ;
+        classDto.setClassName(classSave.getName());
+        classDto.setClassCode(classSave.getCode());
+        classDto.setCourseId(course.getId());
+        classDto.setTeacherId(account.getId());
+        classDto.setLevel(classSave.getLevel());
+        classDto.setEndDate(classSave.getEndDate());
+        classDto.setStartDate(classSave.getStartDate());
+        classDto.setNumberStudent(classSave.getNumberStudent());
+        response.setClazz(classDto);
         return response;
     }
 

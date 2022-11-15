@@ -1,7 +1,9 @@
 package fpt.capstone.vuondau.service;
 
+import fpt.capstone.vuondau.entity.request.ClassRequest;
 import fpt.capstone.vuondau.entity.request.CourseRequest;
 import fpt.capstone.vuondau.entity.request.TopicsSubjectRequest;
+import fpt.capstone.vuondau.entity.response.ClassSubjectResponse;
 import fpt.capstone.vuondau.entity.response.CourseResponse;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
 
@@ -10,7 +12,7 @@ import java.util.List;
 public interface ICourseService {
     TopicsSubjectRequest teacherCreateTopicInSubject( Long teacherId  ,TopicsSubjectRequest topicsSubjectRequest);
 
-    SubjectResponse createRegisterSubject(Long teacherId, Long subjectId );
+    ClassSubjectResponse createRegisterSubject(Long teacherId,  Long subjectId, ClassRequest classRequest );
 //    List<CourseResponse> getAll();
 //
 //    List<CourseResponse> searchCourseByName(String name);
