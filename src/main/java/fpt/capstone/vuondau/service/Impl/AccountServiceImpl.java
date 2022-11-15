@@ -2,31 +2,42 @@ package fpt.capstone.vuondau.service.Impl;
 
 import fpt.capstone.vuondau.entity.Account;
 
+import fpt.capstone.vuondau.entity.Resource;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
+import fpt.capstone.vuondau.entity.common.EResourceType;
 import fpt.capstone.vuondau.entity.request.AccountExistedTeacherRequest;
 import fpt.capstone.vuondau.entity.request.AccountRequest;
 import fpt.capstone.vuondau.entity.request.StudentRequest;
+import fpt.capstone.vuondau.entity.request.UploadAvatarRequest;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
 import fpt.capstone.vuondau.entity.response.StudentResponse;
 import fpt.capstone.vuondau.repository.AccountRepository;
 
+import fpt.capstone.vuondau.repository.ResourceRepository;
 import fpt.capstone.vuondau.service.IAccountService;
 
 import fpt.capstone.vuondau.entity.Role;
 
 import fpt.capstone.vuondau.repository.RoleRepository;
+import fpt.capstone.vuondau.util.RequestUrlUtil;
+import fpt.capstone.vuondau.util.adapter.MinioAdapter;
 import fpt.capstone.vuondau.util.keycloak.KeycloakRoleUtil;
 import fpt.capstone.vuondau.util.keycloak.KeycloakUserUtil;
 import fpt.capstone.vuondau.util.MessageUtil;
 import fpt.capstone.vuondau.util.ObjectUtil;
 
+import io.minio.ObjectWriteResponse;
 import org.keycloak.admin.client.Keycloak;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
+import java.io.IOException;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Optional;
@@ -44,13 +55,22 @@ public class AccountServiceImpl implements IAccountService {
     private final KeycloakUserUtil keycloakUserUtil;
     private final KeycloakRoleUtil keycloakRoleUtil;
 
-    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository, MessageUtil messageUtil, RoleRepository roleRepository1, Keycloak keycloak, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil) {
+    private final MinioAdapter minioAdapter;
+
+    private final ResourceRepository resourceRepository;
+
+    @Value("${minio.url}")
+    String minioUrl;
+
+    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository, MessageUtil messageUtil, RoleRepository roleRepository1, Keycloak keycloak, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository) {
         this.accountRepository = accountRepository;
         this.messageUtil = messageUtil;
         this.roleRepository = roleRepository1;
         this.keycloak = keycloak;
         this.keycloakUserUtil = keycloakUserUtil;
         this.keycloakRoleUtil = keycloakRoleUtil;
+        this.minioAdapter = minioAdapter;
+        this.resourceRepository = resourceRepository;
     }
 
     @Override
@@ -69,7 +89,7 @@ public class AccountServiceImpl implements IAccountService {
 
 
         Account account = new Account();
-        if (accountRepository.existsAccountByUsername(accountRequest.getUsername())){
+        if (accountRepository.existsAccountByUsername(accountRequest.getUsername())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("user name  đã tòn tạo"));
         }
@@ -123,5 +143,35 @@ public class AccountServiceImpl implements IAccountService {
             }
         }
         return null;  // throw exception in future
+    }
+
+    @Override
+    public Boolean uploadAvatar(long id, UploadAvatarRequest uploadAvatarRequest) {
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
+        List<Account> accounts = new ArrayList<>();
+        accounts.add(account);
+        try {
+            String name = uploadAvatarRequest.getFile().getOriginalFilename() + "-" + Instant.now().toString();
+            ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, uploadAvatarRequest.getFile().getContentType(),
+                    uploadAvatarRequest.getFile().getInputStream(), uploadAvatarRequest.getFile().getSize());
+
+            Resource resource = new Resource();
+            resource.setName(name);
+            resource.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
+//            resource.getAccounts().addAll(accounts) ;
+            resource.setAccounts(accounts);
+            resource.setResourceType(EResourceType.AVATAR);
+            resourceRepository.save(resource);
+
+            account.setResource(resource);
+            accountRepository.save(account) ;
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        return true;
     }
 }

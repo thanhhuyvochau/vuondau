@@ -2,8 +2,10 @@ package fpt.capstone.vuondau.controller;
 
 import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
+import fpt.capstone.vuondau.entity.dto.RequestFormDto;
 import fpt.capstone.vuondau.entity.request.AccountExistedTeacherRequest;
 import fpt.capstone.vuondau.entity.request.AccountRequest;
+import fpt.capstone.vuondau.entity.request.UploadAvatarRequest;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
 import fpt.capstone.vuondau.entity.response.AccountTokenResponse;
 import fpt.capstone.vuondau.service.IAccountService;
@@ -13,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -39,6 +42,12 @@ public class AccountController {
     @GetMapping("/teacher")
     public ResponseEntity<List<Account>> getAccount () {
         return ResponseEntity.ok(accountService.getAccount()) ;
+    }
+
+    @Operation(summary = "account upload avatar")
+    @PostMapping("/{id}/upload-avatar")
+    public ResponseEntity<Boolean> uploadAvatar (@PathVariable long id,  @ModelAttribute UploadAvatarRequest uploadAvatarRequest) throws IOException {
+        return ResponseEntity.ok(accountService.uploadAvatar(id, uploadAvatarRequest));
     }
 
 }

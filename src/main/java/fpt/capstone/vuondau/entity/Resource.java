@@ -15,14 +15,17 @@ public class Resource {
     @Column(name = "url")
     private String url;
 
-
+    @Column(name = "name")
+    private String name;
     @Column(name = "resource_type")
-    private EResourceType resourceType ;
+    @Enumerated(EnumType.STRING)
+    private EResourceType resourceType;
 
     @OneToMany(mappedBy = "resource")
     List<PostResource> postResources;
 
-
+    @OneToMany(mappedBy = "resource")
+    List<Account> accounts;
 
     public Long getId() {
         return id;
@@ -56,4 +59,19 @@ public class Resource {
         this.postResources = postResources;
     }
 
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
