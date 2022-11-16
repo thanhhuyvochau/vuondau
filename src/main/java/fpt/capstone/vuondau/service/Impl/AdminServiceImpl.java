@@ -257,10 +257,7 @@ public class AdminServiceImpl implements IAdminService {
     public ApiPage<CourseResponse> viewAllCourse(Pageable pageable) {
         Page<Course> allCourse = courseRepository.findAll(pageable);
         return PageUtil.convert(allCourse
-                .map(course -> {
-                    CourseResponse courseResponse = ObjectUtil.copyProperties(course, new CourseResponse(), CourseResponse.class);
-                    return courseResponse;
-                }));
+                .map(course -> ObjectUtil.copyProperties(course, new CourseResponse(), CourseResponse.class,true)));
     }
 
     @Override
@@ -291,7 +288,7 @@ public class AdminServiceImpl implements IAdminService {
             TeacherCourse teacherCourse = new TeacherCourse();
             Account teacher = accountRepository.findById(teacherId)
                     .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(("Khong tim thay teacher") + teacherId));
-            if (teacher.getRole().getCode().equals(EAccountRole.TEACHER.name())) {
+            if (teacher.getRole().getCode().name().equals(EAccountRole.TEACHER.name())) {
                 TeacherCourseKey teacherCourseKey = new TeacherCourseKey();
                 teacherCourseKey.setCourseId(course.getId());
                 teacherCourseKey.setTeachId(teacherId);

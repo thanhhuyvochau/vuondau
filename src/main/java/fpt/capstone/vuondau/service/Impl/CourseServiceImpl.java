@@ -100,7 +100,7 @@ public class CourseServiceImpl implements ICourseService {
         Course course = new Course();
         course.setCode("introduce");
         course.setName("introduce");
-        course.setActive(false);
+        course.setIsActive(false);
         course.setSubject(subject);
         List<TeacherCourse> teacherCourseList = new ArrayList<>();
         TeacherCourse teacherCourse = new TeacherCourse();
