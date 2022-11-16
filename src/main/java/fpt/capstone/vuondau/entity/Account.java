@@ -4,6 +4,7 @@ import fpt.capstone.vuondau.entity.common.EDegreeType;
 
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +39,9 @@ public class Account {
     @Column(name = "cv_url")
     private String cvUrl;
 
+    @Column(name = "birthday")
+    private Instant  birthday;
+
     @Column(name = "introduce")
     private String introduce;
 
@@ -68,11 +72,16 @@ public class Account {
     @Column(name = "keycloak_id")
     private String keycloakId;
 
+
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<Question> questions = new ArrayList<>();
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "avatar_id")
+    private Resource resource ;
 
     public Long getId() {
         return id;
@@ -120,6 +129,14 @@ public class Account {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public Instant getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Instant birthday) {
+        this.birthday = birthday;
     }
 
     public String getEmail() {
@@ -232,4 +249,11 @@ public class Account {
         this.comments = comments;
     }
 
+    public Resource getResource() {
+        return resource;
+    }
+
+    public void setResource(Resource resource) {
+        this.resource = resource;
+    }
 }
