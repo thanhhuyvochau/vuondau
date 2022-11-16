@@ -24,7 +24,7 @@ public class Course {
     private String code;
 
     @Column(name = "is_active")
-    private boolean isActive;
+    private Boolean isActive;
 
     @JoinColumn(name="grade")
     @Enumerated(EnumType.STRING)
@@ -63,11 +63,11 @@ public class Course {
         this.code = code;
     }
 
-    public boolean isActive() {
+    public Boolean getIsActive() {
         return isActive;
     }
 
-    public void setActive(boolean active) {
+    public void setIsActive(Boolean active) {
         isActive = active;
     }
 
