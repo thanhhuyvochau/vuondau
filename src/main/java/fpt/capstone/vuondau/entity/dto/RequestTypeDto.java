@@ -1,13 +1,13 @@
 package fpt.capstone.vuondau.entity.dto;
 
 
+import fpt.capstone.vuondau.entity.common.EResourceType;
+
 public class RequestTypeDto {
 
     private Long id;
     private String name;
-
-
-    private String code;
+    private EResourceType code;
 
     public Long getId() {
         return id;
@@ -25,11 +25,11 @@ public class RequestTypeDto {
         this.name = name;
     }
 
-    public String getCode() {
+    public EResourceType getCode() {
         return code;
     }
 
-    public void setCode(String code) {
+    public void setCode(EResourceType code) {
         this.code = code;
     }
 }

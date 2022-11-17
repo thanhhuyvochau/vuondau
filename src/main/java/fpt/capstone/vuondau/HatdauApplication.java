@@ -1,9 +1,12 @@
 package fpt.capstone.vuondau;
 
+import fpt.capstone.vuondau.entity.RequestType;
 import fpt.capstone.vuondau.entity.Role;
 import fpt.capstone.vuondau.entity.Subject;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
+import fpt.capstone.vuondau.entity.common.EResourceType;
 import fpt.capstone.vuondau.entity.common.ESubjectCode;
+import fpt.capstone.vuondau.repository.RequestTypeRepository;
 import fpt.capstone.vuondau.repository.RoleRepository;
 import fpt.capstone.vuondau.repository.SubjectRepository;
 import org.springframework.boot.SpringApplication;
@@ -16,6 +19,8 @@ import java.util.List;
 
 import static fpt.capstone.vuondau.entity.common.EAccountRole.STUDENT;
 import static fpt.capstone.vuondau.entity.common.EAccountRole.TEACHER;
+import static fpt.capstone.vuondau.entity.common.EResourceType.AVATAR;
+import static fpt.capstone.vuondau.entity.common.EResourceType.FILE;
 import static fpt.capstone.vuondau.entity.common.ESubjectCode.*;
 
 
@@ -26,9 +31,12 @@ public class HatdauApplication {
 
     private final SubjectRepository subjectRepository;
 
-    public HatdauApplication(RoleRepository roleRepository, SubjectRepository subjectRepository) {
+    private final RequestTypeRepository requestTypeRepository ;
+
+    public HatdauApplication(RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository) {
         this.roleRepository = roleRepository;
         this.subjectRepository = subjectRepository;
+        this.requestTypeRepository = requestTypeRepository;
     }
 
     public static void main(String[] args) {
@@ -40,8 +48,6 @@ public class HatdauApplication {
     public void intiDataRole() {
 
         List<Role> allRole = roleRepository.findAll();
-//        Boolean existTeacherRole = allRole.stream().map(role -> role.getCode().equals(TEACHER)).findFirst().orElse(Boolean.FALSE);
-//        Boolean existStudentRole = allRole.stream().map(role -> role.getCode().equals(STUDENT)).findFirst().orElse(Boolean.FALSE);
         Boolean existTeacherRole = false;
         Boolean existStudentRole = false;
         for (Role role : allRole) {
@@ -67,6 +73,41 @@ public class HatdauApplication {
             roleList.add(roleStudent);
         }
         roleRepository.saveAll(roleList);
+
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void intiRequestType() {
+
+        List<RequestType> allRequestType = requestTypeRepository.findAll();
+
+        Boolean existTypeAvatar = false;
+        Boolean existTypeFile = false;
+        for (RequestType requestType : allRequestType) {
+            if (requestType.getCode().equals(AVATAR)) {
+                existTypeAvatar = true;
+            }
+            if (requestType.getCode().equals(FILE)) {
+                existTypeFile = true;
+            }
+        }
+
+        List<RequestType> requestTypeList= new ArrayList<>();
+        if (!existTypeAvatar) {
+            RequestType requestType = new RequestType();
+            requestType.setCode(AVATAR);
+            requestType.setName("avatar");
+
+            requestTypeList.add(requestType);
+        }
+        if (!existTypeFile) {
+            RequestType requestType = new RequestType();
+            requestType.setCode(FILE);
+            requestType.setName("file");
+
+            requestTypeList.add(requestType);
+        }
+        requestTypeRepository.saveAll(requestTypeList);
 
     }
 

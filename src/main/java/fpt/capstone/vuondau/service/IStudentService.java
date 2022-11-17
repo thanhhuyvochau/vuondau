@@ -5,5 +5,5 @@ import fpt.capstone.vuondau.entity.response.RequestFormResponse;
 
 public interface IStudentService {
 
-    RequestFormResponse uploadRequestForm( Long id ,RequestFormDto requestFormDto);
+
 }

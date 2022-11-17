@@ -2,9 +2,7 @@ package fpt.capstone.vuondau.controller;
 
 
 import fpt.capstone.vuondau.entity.common.ApiResponse;
-import fpt.capstone.vuondau.entity.dto.RequestFormDto;
 import fpt.capstone.vuondau.entity.request.StudentRequest;
-import fpt.capstone.vuondau.entity.response.RequestFormResponse;
 import fpt.capstone.vuondau.entity.response.StudentResponse;
 import fpt.capstone.vuondau.service.IAccountService;
 import fpt.capstone.vuondau.service.IStudentService;
@@ -16,10 +14,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/students")
 public class StudentController {
-    private final IStudentService iStudentService;
+
     private final IAccountService iAccountService;
-    public StudentController(IStudentService iStudentService, IAccountService iAccountService) {
-        this.iStudentService = iStudentService;
+
+    public StudentController( IAccountService iAccountService) {
         this.iAccountService = iAccountService;
     }
 
@@ -31,9 +29,6 @@ public class StudentController {
     }
 
 
-    @PostMapping("/{id}/upload-request")
-    public ResponseEntity<ApiResponse<RequestFormResponse>> uploadRequestForm(@PathVariable Long id , @ModelAttribute RequestFormDto requestFormDto) {
-        return ResponseEntity.ok(ApiResponse.success(iStudentService.uploadRequestForm(id,requestFormDto)));
-    }
+
 
 }

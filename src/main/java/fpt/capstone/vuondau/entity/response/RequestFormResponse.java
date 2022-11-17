@@ -1,10 +1,13 @@
 package fpt.capstone.vuondau.entity.response;
 
+import fpt.capstone.vuondau.entity.common.ERequestStatus;
 import fpt.capstone.vuondau.entity.dto.RequestTypeDto;
 import fpt.capstone.vuondau.entity.dto.StudentDto;
 
 public class RequestFormResponse {
 
+
+    private Long id ;
     private String title;
 
     private String reason;
@@ -16,6 +19,25 @@ public class RequestFormResponse {
     private RequestTypeDto requestType;
 
     private StudentDto student ;
+
+    private ERequestStatus status ;
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public ERequestStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ERequestStatus status) {
+        this.status = status;
+    }
 
     public String getUrl() {
         return url;
