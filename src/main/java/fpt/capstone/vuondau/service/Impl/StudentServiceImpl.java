@@ -31,56 +31,6 @@ import java.time.Instant;
 @Service
 @Transactional
 public class StudentServiceImpl implements IStudentService {
-    private final MessageUtil messageUtil;
-    private final RoleRepository roleRepository;
-    private final AccountRepository accountRepository;
-
-    private final MinioAdapter minioAdapter;
 
 
-    private final RequestRepository requestRepository ;
-
-    private final RequestTypeRepository requestTypeRepository ;
-
-    @Value("${minio.url}")
-    String minioUrl;
-
-    public StudentServiceImpl(MessageUtil messageUtil, RoleRepository roleRepository, AccountRepository accountRepository, MinioAdapter minioAdapter, RequestRepository requestRepository, RequestTypeRepository requestTypeRepository) {
-        this.messageUtil = messageUtil;
-        this.roleRepository = roleRepository;
-        this.accountRepository = accountRepository;
-        this.minioAdapter = minioAdapter;
-        this.requestRepository = requestRepository;
-        this.requestTypeRepository = requestTypeRepository;
-    }
-
-
-    @Override
-    public RequestFormResponse uploadRequestForm( Long id , RequestFormDto requestFormDto) {
-        try{
-            String name = requestFormDto.getFile().getOriginalFilename() + "-" + Instant.now().toString() ;
-            ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name ,  requestFormDto.getFile().getContentType(),
-                    requestFormDto.getFile().getInputStream(),  requestFormDto.getFile().getSize()) ;
-            Request request = new Request() ;
-            request.setName(name);
-            request.setTitle(requestFormDto.getTitle());
-            request.setReason(requestFormDto.getReason());
-            RequestType requestType = requestTypeRepository.findById(requestFormDto.getRequestTypeId())
-                    .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay request Type") + requestFormDto.getRequestTypeId()));
-            request.setRequestType(requestType) ;
-            request.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
-
-            Account student = accountRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay student") + id));
-            request.setAccount(student);
-            Request save = requestRepository.save(request);
-
-            RequestFormResponse requestFormResponse = ObjectUtil.copyProperties(save, new RequestFormResponse(), RequestFormResponse.class);
-            requestFormResponse.setRequestType(ObjectUtil.copyProperties(requestType, new RequestTypeDto(), RequestTypeDto.class));
-            requestFormResponse.setStudent(ObjectUtil.copyProperties(student ,new StudentDto(), StudentDto.class));
-
-            return requestFormResponse ;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
