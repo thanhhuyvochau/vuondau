@@ -1,5 +1,7 @@
 package fpt.capstone.vuondau.entity.response;
 
+import fpt.capstone.vuondau.entity.dto.ClassDto;
+import fpt.capstone.vuondau.entity.dto.CourseDetailDto;
 import fpt.capstone.vuondau.entity.dto.SubjectDto;
 import fpt.capstone.vuondau.entity.dto.TeacherCourseDto;
 import fpt.capstone.vuondau.entity.common.EGradeType;
@@ -12,12 +14,17 @@ public class CourseResponse {
 
     private String code;
 
+    private String description ;
+
     private EGradeType grade;
+
+
+
+    private ClassDto clazz ;
 
     private SubjectDto subject;
 
     private List<TeacherCourseDto> teacherCourse ;
-
 
 
     public Long getId() {
@@ -67,5 +74,22 @@ public class CourseResponse {
 
     public void setGrade(EGradeType grade) {
         this.grade = grade;
+    }
+
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public ClassDto getClazz() {
+        return clazz;
+    }
+
+    public void setClazz(ClassDto clazz) {
+        this.clazz = clazz;
     }
 }

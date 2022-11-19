@@ -109,29 +109,6 @@ public class AdminController {
     }
 
 
-    // MANGER COURSE
-    @Operation(summary = "Tìm Kiếm course")
-    @GetMapping("/search-cource")
-    public ResponseEntity<ApiResponse<ApiPage<CourseResponse>>> searchCourse(@Nullable CourseSearchRequest query,
-                                                                             Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.success(iAdminService.searchCourse(query, pageable)));
-    }
-    @Operation(summary = "Lấy tất cả course ")
-    @GetMapping("/get-all-course")
-    public ResponseEntity<ApiResponse<ApiPage<CourseResponse>>> viewAllCourse(Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.success(iAdminService.viewAllCourse( pageable)));
-    }
-    @Operation(summary = "xem chi tiết course ")
-    @GetMapping("/{courseID}")
-    public ResponseEntity<ApiResponse<CourseResponse>> viewSubjectCourse(@PathVariable long courseID ) {
-        return ResponseEntity.ok(ApiResponse.success(iAdminService.viewCourseDetail(courseID)));
-    }
-
-    @Operation(summary = "sửa course")
-    @PostMapping("/{courseID}/update-course")
-    public ResponseEntity<ApiResponse<CourseResponse>> updateCourse(@PathVariable long courseID , @RequestBody CourseRequest subjectRequest) {
-        return ResponseEntity.ok(ApiResponse.success(iAdminService.updateCourse(courseID, subjectRequest)));
-    }
 
 // MANAGE TOPIC
 

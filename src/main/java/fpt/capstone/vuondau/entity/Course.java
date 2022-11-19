@@ -23,20 +23,30 @@ public class Course {
     @Column(name = "code")
     private String code;
 
+    @Column(name = "description")
+    private String description ;
     @Column(name = "is_active")
     private Boolean isActive;
 
-    @JoinColumn(name="grade")
+
+
+    @JoinColumn(name = "grade")
     @Enumerated(EnumType.STRING)
     private EGradeType grade;
 
-    @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
-    @JoinColumn(name="subject_id")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "subject_id")
     private Subject subject;
 
 
-    @OneToMany(mappedBy = "course" ,cascade = CascadeType.ALL, fetch = FetchType.LAZY ,orphanRemoval = true)
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<TeacherCourse> teacherCourses;
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Class> classes;
+
+    @OneToMany(mappedBy = "course")
+    private List<CartItemCourse> cartItemCourses;
 
 
     public Long getId() {
@@ -61,6 +71,14 @@ public class Course {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Boolean getIsActive() {
@@ -96,4 +114,21 @@ public class Course {
         this.teacherCourses = teacherCourses;
     }
 
+
+
+    public List<Class> getClasses() {
+        return classes;
+    }
+
+    public void setClasses(List<Class> classes) {
+        this.classes = classes;
+    }
+
+    public List<CartItemCourse> getCartItemCourses() {
+        return cartItemCourses;
+    }
+
+    public void setCartItemCourses(List<CartItemCourse> cartItemCourses) {
+        this.cartItemCourses = cartItemCourses;
+    }
 }

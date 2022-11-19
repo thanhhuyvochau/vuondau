@@ -83,6 +83,10 @@ public class Account {
     @JoinColumn(name = "avatar_id")
     private Resource resource ;
 
+
+    @OneToOne(mappedBy = "student")
+    private Cart cart;
+
     public Long getId() {
         return id;
     }
@@ -179,6 +183,13 @@ public class Account {
         this.phoneNumber = phoneNumber;
     }
 
+    public Cart getCart() {
+        return cart;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
+    }
 
     public Role getRole() {
         return role;

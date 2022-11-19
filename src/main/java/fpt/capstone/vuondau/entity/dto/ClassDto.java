@@ -1,17 +1,15 @@
 package fpt.capstone.vuondau.entity.dto;
 
 
+import fpt.capstone.vuondau.entity.common.EClassStatus;
+
 import java.time.Instant;
 
 public class ClassDto {
 
 
-    private String className;
-    private String classCode;
-
-    private long teacherId ;
-
-    private long courseId ;
+    private String name;
+    private String code;
 
     private Instant startDate ;
 
@@ -21,41 +19,26 @@ public class ClassDto {
 
     private Long numberStudent ;
 
+    private EClassStatus status ;
+
+    private Long maxNumberStudent ;
 
 
-
-    public String getClassName() {
-        return className;
+    public String getName() {
+        return name;
     }
 
-    public void setClassName(String className) {
-        this.className = className;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getClassCode() {
-        return classCode;
+    public String getCode() {
+        return code;
     }
 
-    public void setClassCode(String classCode) {
-        this.classCode = classCode;
+    public void setCode(String code) {
+        this.code = code;
     }
-
-    public long getTeacherId() {
-        return teacherId;
-    }
-
-    public void setTeacherId(long teacherId) {
-        this.teacherId = teacherId;
-    }
-
-    public long getCourseId() {
-        return courseId;
-    }
-
-    public void setCourseId(long courseId) {
-        this.courseId = courseId;
-    }
-
 
     public Instant getStartDate() {
         return startDate;
@@ -87,5 +70,21 @@ public class ClassDto {
 
     public void setNumberStudent(Long numberStudent) {
         this.numberStudent = numberStudent;
+    }
+
+    public EClassStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(EClassStatus status) {
+        this.status = status;
+    }
+
+    public Long getMaxNumberStudent() {
+        return maxNumberStudent;
+    }
+
+    public void setMaxNumberStudent(Long maxNumberStudent) {
+        this.maxNumberStudent = maxNumberStudent;
     }
 }

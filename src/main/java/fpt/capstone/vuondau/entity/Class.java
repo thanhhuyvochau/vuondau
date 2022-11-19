@@ -40,14 +40,20 @@ public class Class {
     @JoinColumn(name="teacher_id")
     private Account account ;
 
+
     @OneToMany(mappedBy = "aClass"  ,cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<StudentClass> studentClasses ;
+
+
 
     @OneToMany(mappedBy = "clazz"  ,cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FeedBack> feedBacks ;
 
     @Column(name = "number_student")
     private Long numberStudent ;
+
+    @Column(name = "max_number_student")
+    private Long maxNumberStudent ;
 
     @Column(name = "level")
     private String level ;
@@ -158,5 +164,14 @@ public class Class {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+
+    public Long getMaxNumberStudent() {
+        return maxNumberStudent;
+    }
+
+    public void setMaxNumberStudent(Long maxNumberStudent) {
+        this.maxNumberStudent = maxNumberStudent;
     }
 }

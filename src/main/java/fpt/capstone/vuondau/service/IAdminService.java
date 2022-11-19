@@ -39,11 +39,5 @@ public interface IAdminService {
 
     SubjectResponse updateSubject(long subjectId,  SubjectRequest subjectRequest);
 
-    ApiPage<CourseResponse> viewAllCourse(Pageable pageable);
-
-    CourseResponse viewCourseDetail(long courseID);
-
-    CourseResponse updateCourse(long courseID, CourseRequest subjectRequest);
-
     ApiPage <RequestFormResponese> searchRequestForm(RequestSearchRequest query, Pageable pageable);
 }
