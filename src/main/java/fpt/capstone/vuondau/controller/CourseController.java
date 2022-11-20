@@ -8,7 +8,9 @@ import fpt.capstone.vuondau.entity.request.ClassRequest;
 import fpt.capstone.vuondau.entity.request.CourseRequest;
 import fpt.capstone.vuondau.entity.request.CourseSearchRequest;
 import fpt.capstone.vuondau.entity.request.TopicsSubjectRequest;
+import fpt.capstone.vuondau.entity.response.ClassCourseResponse;
 import fpt.capstone.vuondau.entity.response.ClassSubjectResponse;
+import fpt.capstone.vuondau.entity.response.CourseDetailResponse;
 import fpt.capstone.vuondau.entity.response.CourseResponse;
 import fpt.capstone.vuondau.service.ICourseService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,8 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
-
-import javax.validation.Valid;
+import java.util.List;
 
 
 @RestController
@@ -55,7 +56,7 @@ public class CourseController {
     @Operation(summary = "Tìm Kiếm course")
     @GetMapping("/search-cource")
     public ResponseEntity<ApiResponse<ApiPage<CourseResponse>>> searchCourse(@Nullable CourseSearchRequest query,
-                                                                             Pageable pageable) {
+                                                                                   Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(courseService.searchCourse(query, pageable)));
     }
 
@@ -66,43 +67,47 @@ public class CourseController {
     }
 
     @Operation(summary = "xem chi tiết course ")
-    @GetMapping("/{courseID}")
-    public ResponseEntity<ApiResponse<CourseResponse>> viewSubjectCourse(@PathVariable long courseID ) {
-        return ResponseEntity.ok(ApiResponse.success(courseService.viewCourseDetail(courseID)));
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<CourseDetailResponse>> viewSubjectCourse(@PathVariable long id ) {
+        return ResponseEntity.ok(ApiResponse.success(courseService.viewCourseDetail(id)));
     }
 
 
     @Operation(summary = "sửa course")
-    @PostMapping("/{courseID}/update-course")
-    public ResponseEntity<ApiResponse<CourseResponse>> updateCourse(@PathVariable long courseID , @RequestBody CourseRequest subjectRequest) {
-        return ResponseEntity.ok(ApiResponse.success(courseService.updateCourse(courseID, subjectRequest)));
+    @PostMapping("/{id}/update-course")
+    public ResponseEntity<ApiResponse<CourseDetailResponse>> updateCourse(@PathVariable long id , @RequestBody CourseRequest subjectRequest) {
+        return ResponseEntity.ok(ApiResponse.success(courseService.updateCourse(id, subjectRequest)));
     }
 
-
+    @Operation(summary = "Học sinh xem lich sử course")
+    @GetMapping("/{studentId}/histoty-course")
+    public ResponseEntity<ApiResponse<List<ClassCourseResponse>>> viewHistoryCourse(@PathVariable long studentId ) {
+        return ResponseEntity.ok(ApiResponse.success(courseService.viewHistoryCourse(studentId)));
+    }
 
 //    @Operation(description = "Lấy tất cả khóa học")
 //    @GetMapping
-//    public ResponseEntity<ApiResponse<List<CourseResponse>>> getAll() {
+//    public ResponseEntity<ApiResponse<List<CourseDetailResponse>>> getAll() {
 //        return ResponseEntity.ok(ApiResponse.success(courseService.getAll()));
 //    }
 //
 //
 //    @Operation(description = "Tìm kiếm khóa học bằng ")
 //    @GetMapping("/search")
-//    public ResponseEntity<ApiResponse<List<CourseResponse>>> searchByName(@RequestParam String name) {
+//    public ResponseEntity<ApiResponse<List<CourseDetailResponse>>> searchByName(@RequestParam String name) {
 //        return ResponseEntity.ok(ApiResponse.success(courseService.searchCourseByName(name)));
 //    }
 //
 //
 //    @Operation(description = "Tạo khóa học")
 //    @PostMapping
-//    public ResponseEntity<ApiResponse<CourseResponse>> create(@RequestBody CourseRequest courseRequest) {
+//    public ResponseEntity<ApiResponse<CourseDetailResponse>> create(@RequestBody CourseRequest courseRequest) {
 //        return ResponseEntity.ok(ApiResponse.success(courseService.create(courseRequest)));
 //    }
 //
 //    @Operation(description = "Cập nhật khóa học")
 //    @PutMapping("/{id}")
-//    public ResponseEntity<ApiResponse<CourseResponse>> update(@RequestBody CourseRequest courseRequest, Long id) {
+//    public ResponseEntity<ApiResponse<CourseDetailResponse>> update(@RequestBody CourseRequest courseRequest, Long id) {
 //        return ResponseEntity.ok(ApiResponse.success(courseService.update(courseRequest, id)));
 //    }
 //    @Operation(description = "Xóa khóa ")

@@ -16,9 +16,10 @@ public interface ICourseService {
 
     ApiPage<CourseResponse> viewAllCourse(Pageable pageable);
 
-    CourseResponse viewCourseDetail(long courseID);
+    CourseDetailResponse viewCourseDetail(long courseID);
 
-    CourseResponse updateCourse(long courseID, CourseRequest subjectRequest);
+    CourseDetailResponse updateCourse(long courseID, CourseRequest subjectRequest);
 
 
+    List<ClassCourseResponse> viewHistoryCourse(long studentId);
 }

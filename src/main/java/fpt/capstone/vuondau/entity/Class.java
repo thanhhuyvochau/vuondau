@@ -1,6 +1,8 @@
 package fpt.capstone.vuondau.entity;
 
 
+import fpt.capstone.vuondau.entity.common.EClassStatus;
+
 import javax.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -21,6 +23,9 @@ public class Class {
     @Column(name = "code")
     private String code;
 
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private EClassStatus status ;
 
     @Column(name = "start_date")
     private Instant startDate;
@@ -62,6 +67,7 @@ public class Class {
     private boolean isActive ;
 
 
+
     public Long getId() {
         return id;
     }
@@ -84,6 +90,14 @@ public class Class {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public EClassStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(EClassStatus status) {
+        this.status = status;
     }
 
     public Instant getStartDate() {

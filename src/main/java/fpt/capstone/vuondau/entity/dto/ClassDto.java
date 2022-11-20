@@ -7,7 +7,7 @@ import java.time.Instant;
 
 public class ClassDto {
 
-
+    private Long id ;
     private String name;
     private String code;
 
@@ -23,6 +23,13 @@ public class ClassDto {
 
     private Long maxNumberStudent ;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

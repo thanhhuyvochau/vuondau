@@ -1,30 +1,38 @@
 package fpt.capstone.vuondau.entity.response;
 
+import fpt.capstone.vuondau.entity.common.EGradeType;
 import fpt.capstone.vuondau.entity.dto.ClassDto;
-import fpt.capstone.vuondau.entity.dto.CourseDetailDto;
 import fpt.capstone.vuondau.entity.dto.SubjectDto;
 import fpt.capstone.vuondau.entity.dto.TeacherCourseDto;
-import fpt.capstone.vuondau.entity.common.EGradeType;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class CourseResponse {
+
+    @Schema(description = "id course")
     private Long id;
-    private String name;
 
-    private String code;
-
-    private String description ;
-
-    private EGradeType grade;
+    @Schema(description = "hình đại diện course")
+    private String image;
 
 
+    @Schema(description = "Têncủa course")
+    private String courseName;
 
-    private ClassDto clazz ;
 
-    private SubjectDto subject;
+    @Schema(description = "Tên giáo viên")
+    private String teacherName;
 
-    private List<TeacherCourseDto> teacherCourse ;
+
+    @Schema(description = "Giá tiền của course")
+    private BigDecimal unitPriceCourse;
+
+    @Schema(description = "Giá tiền của course")
+    private BigDecimal finalPriceCourse;
+
+    private SubjectDto subject ;
 
 
     public Long getId() {
@@ -35,22 +43,45 @@ public class CourseResponse {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getImage() {
+        return image;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setImage(String image) {
+        this.image = image;
     }
 
-    public String getCode() {
-        return code;
+    public String getCourseName() {
+        return courseName;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
     }
 
+    public String getTeacherName() {
+        return teacherName;
+    }
+
+    public void setTeacherName(String teacherName) {
+        this.teacherName = teacherName;
+    }
+
+    public BigDecimal getUnitPriceCourse() {
+        return unitPriceCourse;
+    }
+
+    public void setUnitPriceCourse(BigDecimal unitPriceCourse) {
+        this.unitPriceCourse = unitPriceCourse;
+    }
+
+    public BigDecimal getFinalPriceCourse() {
+        return finalPriceCourse;
+    }
+
+    public void setFinalPriceCourse(BigDecimal finalPriceCourse) {
+        this.finalPriceCourse = finalPriceCourse;
+    }
 
     public SubjectDto getSubject() {
         return subject;
@@ -58,38 +89,5 @@ public class CourseResponse {
 
     public void setSubject(SubjectDto subject) {
         this.subject = subject;
-    }
-
-    public List<TeacherCourseDto> getTeacherCourse() {
-        return teacherCourse;
-    }
-
-    public void setTeacherCourse(List<TeacherCourseDto> teacherCourse) {
-        this.teacherCourse = teacherCourse;
-    }
-
-    public EGradeType getGrade() {
-        return grade;
-    }
-
-    public void setGrade(EGradeType grade) {
-        this.grade = grade;
-    }
-
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public ClassDto getClazz() {
-        return clazz;
-    }
-
-    public void setClazz(ClassDto clazz) {
-        this.clazz = clazz;
     }
 }

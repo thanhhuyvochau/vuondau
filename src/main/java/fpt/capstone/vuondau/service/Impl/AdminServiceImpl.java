@@ -12,7 +12,7 @@ import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
-import fpt.capstone.vuondau.entity.response.CourseResponse;
+import fpt.capstone.vuondau.entity.response.CourseDetailResponse;
 import fpt.capstone.vuondau.entity.response.RequestFormResponese;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
 import fpt.capstone.vuondau.repository.*;
@@ -145,7 +145,7 @@ public class AdminServiceImpl implements IAdminService {
     }
 
     @Override
-    public ApiPage<CourseResponse> searchCourse(CourseSearchRequest query, Pageable pageable) {
+    public ApiPage<CourseDetailResponse> searchCourse(CourseSearchRequest query, Pageable pageable) {
         CourseSpecificationBuilder builder = CourseSpecificationBuilder.specification()
                 .queryLike(query.getQ());
 
@@ -155,10 +155,10 @@ public class AdminServiceImpl implements IAdminService {
 
     }
 
-    public CourseResponse convertCourseToCourseResponse(Course course) {
-        CourseResponse courseResponse = ObjectUtil.copyProperties(course, new CourseResponse(), CourseResponse.class);
-        courseResponse.setGrade(course.getGrade());
-        return courseResponse;
+    public CourseDetailResponse convertCourseToCourseResponse(Course course) {
+        CourseDetailResponse courseDetailResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class);
+        courseDetailResponse.setGrade(course.getGrade());
+        return courseDetailResponse;
     }
 
     @Override

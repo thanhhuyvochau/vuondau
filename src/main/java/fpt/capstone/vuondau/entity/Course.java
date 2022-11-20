@@ -5,6 +5,7 @@ import fpt.capstone.vuondau.entity.common.EGradeType;
 
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +29,11 @@ public class Course {
     @Column(name = "is_active")
     private Boolean isActive;
 
+    @Column(name = "unit_price")
+    private BigDecimal unitPrice;
+
+    @Column(name = "final_price")
+    private BigDecimal finalPrice;
 
 
     @JoinColumn(name = "grade")
@@ -48,6 +54,9 @@ public class Course {
     @OneToMany(mappedBy = "course")
     private List<CartItemCourse> cartItemCourses;
 
+    @ManyToOne
+    @JoinColumn(name = "resource_id")
+    private Resource resource ;
 
     public Long getId() {
         return id;
@@ -55,6 +64,14 @@ public class Course {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
     }
 
     public String getName() {
@@ -115,6 +132,13 @@ public class Course {
     }
 
 
+    public Resource getResource() {
+        return resource;
+    }
+
+    public void setResource(Resource resource) {
+        this.resource = resource;
+    }
 
     public List<Class> getClasses() {
         return classes;
@@ -130,5 +154,13 @@ public class Course {
 
     public void setCartItemCourses(List<CartItemCourse> cartItemCourses) {
         this.cartItemCourses = cartItemCourses;
+    }
+
+    public BigDecimal getFinalPrice() {
+        return finalPrice;
+    }
+
+    public void setFinalPrice(BigDecimal finalPrice) {
+        this.finalPrice = finalPrice;
     }
 }

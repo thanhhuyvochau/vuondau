@@ -7,15 +7,14 @@ import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.dto.*;
 import fpt.capstone.vuondau.entity.request.*;
-import fpt.capstone.vuondau.entity.response.AccountResponse;
+import fpt.capstone.vuondau.entity.response.ClassCourseResponse;
 import fpt.capstone.vuondau.entity.response.ClassSubjectResponse;
+import fpt.capstone.vuondau.entity.response.CourseDetailResponse;
 import fpt.capstone.vuondau.entity.response.CourseResponse;
-import fpt.capstone.vuondau.entity.response.SubjectResponse;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.ICourseService;
 import fpt.capstone.vuondau.util.ObjectUtil;
 import fpt.capstone.vuondau.util.PageUtil;
-import fpt.capstone.vuondau.util.specification.AccountSpecificationBuilder;
 import fpt.capstone.vuondau.util.specification.CourseSpecificationBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,9 +24,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class CourseServiceImpl implements ICourseService {
@@ -169,8 +166,8 @@ public class CourseServiceImpl implements ICourseService {
 
     }
 
-//    public CourseResponse convertCourseToCourseResponse(Course course) {
-//        CourseResponse courseResponse = ObjectUtil.copyProperties(course, new CourseResponse(), CourseResponse.class);
+//    public CourseDetailResponse convertCourseToCourseResponse(Course course) {
+//        CourseDetailResponse courseResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class);
 //        courseResponse.setGrade(course.getGrade());
 //        return courseResponse;
 //    }
@@ -182,15 +179,43 @@ public class CourseServiceImpl implements ICourseService {
         return PageUtil.convert(allCourse.map(this::convertCourseToCourseResponse));
     }
 
-
     private CourseResponse convertCourseToCourseResponse(Course course) {
         CourseResponse courseResponse = new CourseResponse();
+        courseResponse.setId(course.getId());
+        courseResponse.setCourseName(course.getName());
+        courseResponse.setUnitPriceCourse(course.getUnitPrice());
+        courseResponse.setFinalPriceCourse(course.getFinalPrice());
+
+        List<TeacherCourse> teacherCourses = course.getTeacherCourses();
+        teacherCourses.stream().map(teacherCourse -> {
+            courseResponse.setTeacherName(teacherCourse.getAccount().getName());
+            return teacherCourse;
+        }).collect(Collectors.toList());
+        courseResponse.setUnitPriceCourse(course.getUnitPrice());
+        if (course.getResource() != null) {
+            courseResponse.setImage(course.getResource().getUrl());
+        }
+        Subject subject = course.getSubject();
+        if (subject != null) {
+            courseResponse.setSubject(ObjectUtil.copyProperties(subject, new SubjectDto(), SubjectDto.class));
+        }
+
+
+        return courseResponse;
+    }
+
+    public CourseDetailResponse convertCourseToCourseDetailResponse(Course course) {
+        CourseDetailResponse courseDetailResponse = new CourseDetailResponse();
 
 
         // set course
-        courseResponse = ObjectUtil.copyProperties(course, new CourseResponse(), CourseResponse.class, true);
-
         // set course detail
+        courseDetailResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class, true);
+        if (course.getResource() != null) {
+            courseDetailResponse.setImage(course.getResource().getUrl());
+        }
+
+        courseDetailResponse.setUnitPrice(course.getUnitPrice());
 
 
         // set subject
@@ -200,12 +225,12 @@ public class CourseServiceImpl implements ICourseService {
             subjectDto.setId(subject.getId());
             subjectDto.setName(subject.getName());
             subjectDto.setCode(subject.getCode());
-            courseResponse.setSubject(subjectDto);
+            courseDetailResponse.setSubject(subjectDto);
         }
         // set Class
         Account account = course.getTeacherCourses().stream().map(TeacherCourse::getAccount).findFirst().get();
         Class classes = classRepository.findByCourseAndAccount(course, account);
-        if (classes!= null) {
+        if (classes != null) {
             ClassDto classDto = new ClassDto();
             classDto.setName(classes.getName());
             classDto.setCode(classes.getCode());
@@ -215,7 +240,7 @@ public class CourseServiceImpl implements ICourseService {
             classDto.setNumberStudent(classes.getNumberStudent());
             classDto.setMaxNumberStudent(classes.getMaxNumberStudent());
 
-            courseResponse.setClazz(classDto);
+            courseDetailResponse.setClazz(classDto);
         }
 
         // set teacher course
@@ -226,26 +251,27 @@ public class CourseServiceImpl implements ICourseService {
             teacherCourseDto.setTopicId(teacherCourse.getCourse().getId());
             teacherCourseDto.setIsAllowed(teacherCourse.getIsAllowed());
             teacherCourseDto.setTeacherId(teacherCourse.getAccount().getId());
-            teacherCourseDto.setTeacherName(teacherCourse.getAccount().getFirstName() +" "+ teacherCourse.getAccount().getLastName());
+            teacherCourseDto.setTeacherName(teacherCourse.getAccount().getName());
             teacherCourseDtoList.add(teacherCourseDto);
 
             return teacherCourse;
         }).collect(Collectors.toList());
 
-        courseResponse.setTeacherCourse(teacherCourseDtoList);
-        return courseResponse;
+        courseDetailResponse.setTeacherCourse(teacherCourseDtoList);
+        return courseDetailResponse;
     }
 
     @Override
-    public CourseResponse viewCourseDetail(long courseID) {
+    public CourseDetailResponse viewCourseDetail(long courseID) {
         Course course = courseRepository.findById(courseID)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(("Khong tim thay course") + courseID));
-        CourseResponse courseResponse = ObjectUtil.copyProperties(course, new CourseResponse(), CourseResponse.class);
-        return courseResponse;
+//        CourseDetailResponse courseDetailResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class);
+//        return courseDetailResponse;
+        return convertCourseToCourseDetailResponse(course);
     }
 
     @Override
-    public CourseResponse updateCourse(long courseID, CourseRequest courseRequest) {
+    public CourseDetailResponse updateCourse(long courseID, CourseRequest courseRequest) {
         Course course = courseRepository.findById(courseID)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay course" + courseID));
         course.setCode(courseRequest.getCode());
@@ -277,9 +303,9 @@ public class CourseServiceImpl implements ICourseService {
 
         course.getTeacherCourses().addAll(teacherCourseList);
         Course save = courseRepository.save(course);
-        CourseResponse courseResponse = ObjectUtil.copyProperties(save, new CourseResponse(), CourseResponse.class);
+        CourseDetailResponse courseDetailResponse = ObjectUtil.copyProperties(save, new CourseDetailResponse(), CourseDetailResponse.class);
 
-        courseResponse.setSubject(ObjectUtil.copyProperties(subject, new SubjectDto(), SubjectDto.class));
+        courseDetailResponse.setSubject(ObjectUtil.copyProperties(subject, new SubjectDto(), SubjectDto.class));
 
         List<TeacherCourseDto> teacherCourseDtoList = new ArrayList<>();
         teacherCourseList.stream().map(teacherCourse -> {
@@ -292,23 +318,58 @@ public class CourseServiceImpl implements ICourseService {
             teacherCourseDtoList.add(teacherCourseDto);
             return teacherCourseDto;
         }).collect(Collectors.toList());
-        courseResponse.setTeacherCourse(teacherCourseDtoList);
-        return courseResponse;
+        courseDetailResponse.setTeacherCourse(teacherCourseDtoList);
+        return courseDetailResponse;
+    }
+
+    @Override
+    public List<ClassCourseResponse> viewHistoryCourse(long studentId) {
+        Account account = accountRepository.findById(studentId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("teacher not found with id:" + studentId));
+        List<StudentClass> studentClasses = account.getStudentClasses();
+        List<ClassCourseResponse> classCourseResponseList = new ArrayList<>();
+
+        ClassCourseResponse courseResponse = new ClassCourseResponse();
+        courseResponse.setStudentId(account.getId());
+//        if (studentClasses != null) {
+        for (StudentClass studentClass : studentClasses) {
+            courseResponse.setStudentId(account.getId());
+            courseResponse.setClazz(ObjectUtil.copyProperties(studentClass.getaClass(), new ClassDto(), ClassDto.class));
+            Class aClass = studentClass.getaClass();
+            if (aClass != null) {
+                Course course = aClass.getCourse();
+                courseResponse.setCourse(ObjectUtil.copyProperties(course, new CourseDto(), CourseDto.class));
+                CourseDto courseDto = new CourseDto() ;
+                courseDto.setUnitPrice(course.getUnitPrice());
+                courseDto.setFinalPrice(course.getFinalPrice());
+                if (course != null) {
+                    Subject subject = course.getSubject();
+                    if (subject != null) {
+                        courseResponse.setSubject(ObjectUtil.copyProperties(subject, new SubjectDto(), SubjectDto.class));
+                    }
+                }
+            }
+
+        }
+        classCourseResponseList.add(courseResponse);
+
+//        }
+        return classCourseResponseList;
     }
 
 //
 //    @Override
-//    public List<CourseResponse> getAll() {
+//    public List<CourseDetailResponse> getAll() {
 //        return null;
 //    }
 //
 //    @Override
-//    public List<CourseResponse> searchCourseByName(String name) {
+//    public List<CourseDetailResponse> searchCourseByName(String name) {
 //        return null;
 //    }
 //
 //    @Override
-//    public CourseResponse create(CourseRequest courseRequest) {
+//    public CourseDetailResponse create(CourseRequest courseRequest) {
 //
 //        Grade grade = gradeRepository.findById(courseRequest.getGradeId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Grade not found with id:" + courseRequest.getGradeId()));
 //        Subject subject = subjectRepository.findById(courseRequest.getSubjectId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Subject not found with id:" + courseRequest.getSubjectId()));
@@ -335,7 +396,7 @@ public class CourseServiceImpl implements ICourseService {
 //    }
 //
 //    @Override
-//    public CourseResponse update(CourseRequest courseRequest, Long id) {
+//    public CourseDetailResponse update(CourseRequest courseRequest, Long id) {
 //
 //        Course course = courseRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + id));
 //        Grade grade = gradeRepository.findById(courseRequest.getGradeId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Grade not found with id:" + courseRequest.getGradeId()));
@@ -382,19 +443,19 @@ public class CourseServiceImpl implements ICourseService {
 ////    }
 ////
 ////    @Override
-////    public List<CourseResponse> getAll() {
+////    public List<CourseDetailResponse> getAll() {
 ////        List<Course> courses = courseRepository.findAll();
 ////        return courses.stream().map(this::convertCourseToCourseResponse).collect(Collectors.toList());
 ////    }
 ////
 ////    @Override
-////    public List<CourseResponse> searchCourseByName(String name) {
+////    public List<CourseDetailResponse> searchCourseByName(String name) {
 ////        List<Course> courses = courseRepository.searchCourseByNameContainsIgnoreCase(name.trim());
 ////        return courses.stream().map(course -> convertCourseToCourseResponse(course)).collect(Collectors.toList());
 ////    }
 ////
 ////    @Override
-////    public CourseResponse create(CourseRequest courseRequest) {
+////    public CourseDetailResponse create(CourseRequest courseRequest) {
 ////        Grade grade = gradeRepository.findById(courseRequest.getGradeId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Grade not found with id:" + courseRequest.getGradeId()));
 ////        Subject subject = subjectRepository.findById(courseRequest.getSubjectId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Subject not found with id:" + courseRequest.getSubjectId()));
 ////        List<Teacher> teachers = teacherRepository.findAllById(courseRequest.getTeacherIds());
@@ -417,7 +478,7 @@ public class CourseServiceImpl implements ICourseService {
 ////    }
 ////
 ////    @Override
-////    public CourseResponse update(CourseRequest courseRequest, Long id) {
+////    public CourseDetailResponse update(CourseRequest courseRequest, Long id) {
 ////        Course course = courseRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + id));
 ////        Grade grade = gradeRepository.findById(courseRequest.getGradeId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Grade not found with id:" + courseRequest.getGradeId()));
 ////        Subject subject = subjectRepository.findById(courseRequest.getSubjectId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Subject not found with id:" + courseRequest.getSubjectId()));
@@ -448,8 +509,8 @@ public class CourseServiceImpl implements ICourseService {
 ////        return true;
 ////    }
 ////
-////    private CourseResponse convertCourseToCourseResponse(Course course) {
-////        CourseResponse courseResponse = ObjectUtil.copyProperties(course, new CourseResponse(), CourseResponse.class, true);
+////    private CourseDetailResponse convertCourseToCourseResponse(Course course) {
+////        CourseDetailResponse courseResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class, true);
 ////        GradeResponse gradeResponse = ObjectUtil.copyProperties(course.getGrade(), new GradeResponse(), GradeResponse.class, true);
 ////        SubjectResponse subjectResponse = ObjectUtil.copyProperties(course.getSubject(), new SubjectResponse(), SubjectResponse.class, true);
 ////        courseResponse.setGrade(gradeResponse);
