@@ -18,6 +18,9 @@ public class CartCourseResponse {
     @Schema(description = "Tổng tiền của cart ")
     private BigDecimal totalPrice;
 
+    @Schema(description = "Tổng tiền của cart ")
+    private int quantity;
+
     public Long getCartId() {
         return cartId;
     }
@@ -40,5 +43,13 @@ public class CartCourseResponse {
 
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }

@@ -185,7 +185,7 @@ public class CourseServiceImpl implements ICourseService {
         courseResponse.setCourseName(course.getName());
         courseResponse.setUnitPriceCourse(course.getUnitPrice());
         courseResponse.setFinalPriceCourse(course.getFinalPrice());
-
+        courseResponse.setCourseTitle(course.getTitle());
         List<TeacherCourse> teacherCourses = course.getTeacherCourses();
         teacherCourses.stream().map(teacherCourse -> {
             courseResponse.setTeacherName(teacherCourse.getAccount().getName());
@@ -216,7 +216,7 @@ public class CourseServiceImpl implements ICourseService {
         }
 
         courseDetailResponse.setUnitPrice(course.getUnitPrice());
-
+        courseDetailResponse.setTitle(course.getTitle());
 
         // set subject
         Subject subject = course.getSubject();
@@ -232,6 +232,7 @@ public class CourseServiceImpl implements ICourseService {
         Class classes = classRepository.findByCourseAndAccount(course, account);
         if (classes != null) {
             ClassDto classDto = new ClassDto();
+            classDto.setId(classes.getId());
             classDto.setName(classes.getName());
             classDto.setCode(classes.getCode());
             classDto.setLevel(classes.getLevel());
@@ -355,6 +356,63 @@ public class CourseServiceImpl implements ICourseService {
 
 //        }
         return classCourseResponseList;
+    }
+
+
+    @Override
+    public ClassCourseResponse studentEnrollCourse(long studentId, long courseId, long classId) {
+
+        Account account = accountRepository.findById(studentId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("student not found with id:" + studentId));
+
+//        Course course = courseRepository.findById(courseId)
+//                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay course" + courseId));
+
+//        Class aClass = classRepository.findByIdAndCourse(classId, course).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay course" + courseId));
+
+        Class aClass = classRepository.findById(classId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
+
+        ClassCourseResponse classCourseResponse = null ;
+
+        if (aClass.getMaxNumberStudent() < aClass.getNumberStudent()){
+
+            classCourseResponse  = new ClassCourseResponse() ;
+            StudentClass studentClass = new StudentClass() ;
+            StudentClassKey studentClassKey = new StudentClassKey() ;
+            studentClassKey.setClassId(aClass.getId());
+            studentClassKey.setStudentId(account.getId());
+            studentClass.setId(studentClassKey);
+            studentClass.setAccount(account);
+            studentClass.setAClass(aClass);
+            studentClass.setEnrollDate(Instant.now());
+
+            aClass.getStudentClasses().add(studentClass);
+            aClass.setNumberStudent(aClass.getNumberStudent()+1 );
+            classRepository.save(aClass) ;
+
+
+            // response
+            classCourseResponse.setStudentId(studentId);
+            classCourseResponse.setClazz(ObjectUtil.copyProperties(studentClass.getaClass(), new ClassDto(), ClassDto.class));
+            Class aClass1 = studentClass.getaClass();
+            if (aClass1 != null) {
+                Course course1 = aClass.getCourse();
+                classCourseResponse.setCourse(ObjectUtil.copyProperties(course1, new CourseDto(), CourseDto.class));
+                CourseDto courseDto = new CourseDto() ;
+                courseDto.setUnitPrice(course1.getUnitPrice());
+                courseDto.setFinalPrice(course1.getFinalPrice());
+                if (course1 != null) {
+                    Subject subject = course1.getSubject();
+                    if (subject != null) {
+                        classCourseResponse.setSubject(ObjectUtil.copyProperties(subject, new SubjectDto(), SubjectDto.class));
+                    }
+                }
+            }
+
+        }
+        //response
+
+        return classCourseResponse;
     }
 
 //

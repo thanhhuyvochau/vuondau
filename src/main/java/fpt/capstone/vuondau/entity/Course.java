@@ -24,6 +24,9 @@ public class Course {
     @Column(name = "code")
     private String code;
 
+    @Column(name = "title")
+    private String title;
+
     @Column(name = "description")
     private String description ;
     @Column(name = "is_active")
@@ -58,6 +61,8 @@ public class Course {
     @JoinColumn(name = "resource_id")
     private Resource resource ;
 
+
+
     public Long getId() {
         return id;
     }
@@ -80,6 +85,14 @@ public class Course {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getCode() {

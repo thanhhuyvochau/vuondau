@@ -85,6 +85,12 @@ public class CourseController {
         return ResponseEntity.ok(ApiResponse.success(courseService.viewHistoryCourse(studentId)));
     }
 
+    @Operation(summary = "Học sinh enroll vao class - course")
+    @PostMapping("/{studentId}/enroll-course")
+    public ResponseEntity<ApiResponse<ClassCourseResponse>> studentEnrollCourse(@PathVariable long studentId , long courseId,  long classId ) {
+        return ResponseEntity.ok(ApiResponse.success(courseService.studentEnrollCourse(studentId, courseId,classId)));
+    }
+
 //    @Operation(description = "Lấy tất cả khóa học")
 //    @GetMapping
 //    public ResponseEntity<ApiResponse<List<CourseDetailResponse>>> getAll() {

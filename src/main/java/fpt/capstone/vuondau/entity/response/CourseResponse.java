@@ -17,6 +17,8 @@ public class CourseResponse {
     @Schema(description = "hình đại diện course")
     private String image;
 
+    @Schema(description = "title của course")
+    private String courseTitle;
 
     @Schema(description = "Têncủa course")
     private String courseName;
@@ -35,6 +37,7 @@ public class CourseResponse {
     private SubjectDto subject ;
 
 
+
     public Long getId() {
         return id;
     }
@@ -49,6 +52,14 @@ public class CourseResponse {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getCourseTitle() {
+        return courseTitle;
+    }
+
+    public void setCourseTitle(String courseTitle) {
+        this.courseTitle = courseTitle;
     }
 
     public String getCourseName() {

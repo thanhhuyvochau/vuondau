@@ -3,6 +3,7 @@ package fpt.capstone.vuondau.service.Impl;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.dto.RoleDto;
+import fpt.capstone.vuondau.entity.dto.SubjectDto;
 import fpt.capstone.vuondau.entity.response.*;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.ICartService;
@@ -105,7 +106,7 @@ public class CartServiceImpl implements ICartService {
 
 
             BigDecimal totalPrice  = BigDecimal.ZERO ;
-
+            int quantity = 0 ;
             cartCourseResponse.setCartId(cart.getId());
             List<CartItem> cartItemList = cart.getCartItem();
             for (CartItem cartItem : cartItemList) {
@@ -126,13 +127,15 @@ public class CartServiceImpl implements ICartService {
                         courseResponse.setFinalPriceCourse(course.getFinalPrice());
                         if (!course.getTeacherCourses().isEmpty()) {
                             Account account = course.getTeacherCourses().stream().map(TeacherCourse::getAccount).findFirst().get();
-//                            courseResponse.setTeacherName(account.getFirstName() + " " + account.getLastName());
+
                             courseResponse.setTeacherName(account.getName());
                         }
                         if (course.getFinalPrice()!= null){
                             totalPrice = totalPrice.add(course.getFinalPrice());
                         }
+                        quantity+= 1 ;
 
+                        courseResponse.setSubject(ObjectUtil.copyProperties(course.getSubject(), new SubjectDto() , SubjectDto.class));
 
                         courseResponseList.add(courseResponse);
 
@@ -140,7 +143,7 @@ public class CartServiceImpl implements ICartService {
                 }
             }
 
-
+            cartCourseResponse.setQuantity(quantity);
             cartCourseResponse.setTotalPrice(totalPrice);
             cartCourseResponse.setCourses(courseResponseList);
         }

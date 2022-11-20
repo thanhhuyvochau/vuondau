@@ -22,4 +22,6 @@ public interface ICourseService {
 
 
     List<ClassCourseResponse> viewHistoryCourse(long studentId);
+
+    ClassCourseResponse studentEnrollCourse(long id, long courseId, long classId);
 }
