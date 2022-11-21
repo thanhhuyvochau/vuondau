@@ -9,58 +9,71 @@ import java.util.List;
 public class MoodleCourseDataRequest implements Serializable {
 
 
-    @JsonProperty("fullname")
-    private String fullname;
 
-    @JsonProperty("shortname")
-    private String shortname;
+    private List<MoodleCourseBody> courses ;
 
-    @JsonProperty("categoryid")
-    private Long categoryid;
+    public static class  MoodleCourseBody {
+        @JsonProperty("fullname")
+        private String fullname;
 
-    @JsonProperty("startdate")
-    private Long startdate;
+        @JsonProperty("shortname")
+        private String shortname;
 
-    @JsonProperty("enddate")
-    private Long enddate;
+        @JsonProperty("categoryid")
+        private Long categoryid;
 
-    public String getFullname() {
-        return fullname;
+        @JsonProperty("startdate")
+        private Long startdate;
+
+        @JsonProperty("enddate")
+        private Long enddate;
+
+        public String getFullname() {
+            return fullname;
+        }
+
+        public void setFullname(String fullname) {
+            this.fullname = fullname;
+        }
+
+        public String getShortname() {
+            return shortname;
+        }
+
+        public void setShortname(String shortname) {
+            this.shortname = shortname;
+        }
+
+        public Long getCategoryid() {
+            return categoryid;
+        }
+
+        public void setCategoryid(Long categoryid) {
+            this.categoryid = categoryid;
+        }
+
+        public Long getStartdate() {
+            return startdate;
+        }
+
+        public void setStartdate(Long startdate) {
+            this.startdate = startdate;
+        }
+
+        public Long getEnddate() {
+            return enddate;
+        }
+
+        public void setEnddate(Long enddate) {
+            this.enddate = enddate;
+        }
     }
 
-    public void setFullname(String fullname) {
-        this.fullname = fullname;
+    public List<MoodleCourseBody> getCourses() {
+        return courses;
     }
 
-    public String getShortname() {
-        return shortname;
-    }
-
-    public void setShortname(String shortname) {
-        this.shortname = shortname;
-    }
-
-    public Long getCategoryid() {
-        return categoryid;
-    }
-
-    public void setCategoryid(Long categoryid) {
-        this.categoryid = categoryid;
-    }
-
-    public Long getStartdate() {
-        return startdate;
-    }
-
-    public void setStartdate(Long startdate) {
-        this.startdate = startdate;
-    }
-
-    public Long getEnddate() {
-        return enddate;
-    }
-
-    public void setEnddate(Long enddate) {
-        this.enddate = enddate;
+    public void setCourses(List<MoodleCourseBody> courses) {
+        this.courses = courses;
     }
 }

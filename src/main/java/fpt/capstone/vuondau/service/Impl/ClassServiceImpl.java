@@ -13,12 +13,15 @@ import fpt.capstone.vuondau.entity.Subject;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.request.CreateClassRequest;
+import fpt.capstone.vuondau.entity.request.CreateCourseRequest;
 import fpt.capstone.vuondau.repository.AccountRepository;
 import fpt.capstone.vuondau.repository.ClassRepository;
 import fpt.capstone.vuondau.repository.CourseRepository;
 import fpt.capstone.vuondau.repository.SubjectRepository;
 import fpt.capstone.vuondau.service.IClassService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -31,9 +34,9 @@ public class ClassServiceImpl implements IClassService {
     private final SubjectRepository subjectRepository;
     private final ClassRepository classRepository;
 
-    private final CourseRepository courseRepository ;
+    private final CourseRepository courseRepository;
 
-    private final MoodleCourseRepository moodleCourseRepository ;
+    private final MoodleCourseRepository moodleCourseRepository;
 
     public ClassServiceImpl(AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository) {
         this.accountRepository = accountRepository;
@@ -49,7 +52,7 @@ public class ClassServiceImpl implements IClassService {
         Account teacher = accountRepository.findById(teacherId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay teacher" + teacherId));
 
-        Class clazz = new Class() ;
+        Class clazz = new Class();
         clazz.setName(createClassRequest.getName());
         clazz.setCode(createClassRequest.getCode());
         clazz.setStartDate(createClassRequest.getStartDate());
@@ -62,47 +65,98 @@ public class ClassServiceImpl implements IClassService {
         clazz.setAccount(teacher);
 
 
-        Course course = new Course() ;
+        CreateCourseRequest createCourseRequest = createClassRequest.getCourseRequest();
+//        Course course = new Course() ;
+//        course.setCode(createCourseRequest.getCode());
+//        course.setTitle(createCourseRequest.getTitle());
+//        course.setDescription(createCourseRequest.getDescription());
+
+        Course course = new Course();
         course.setName(createClassRequest.getCourseRequest().getName());
         course.setCode(createClassRequest.getCourseRequest().getCode());
         course.setTitle(createClassRequest.getCourseRequest().getTitle());
         course.setDescription(createClassRequest.getCourseRequest().getDescription());
-//        course.setResource();
+
         course.setIsActive(false);
-        Subject subject = subjectRepository.findById(createClassRequest.getCourseRequest().getSubjectId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay subject"));
+        Subject subject = subjectRepository.findById(createCourseRequest.getSubjectId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay subject"));
         course.setSubject(subject);
 
-        courseRepository.save(course) ;
+        courseRepository.save(course);
 
         clazz.setCourse(course);
-        classRepository.save(clazz) ;
+        classRepository.save(clazz);
 
+        S1CourseRequest s1CourseRequest = new S1CourseRequest();
 
+        List<MoodleCourseDataRequest.MoodleCourseBody> moodleCourseBodyList = new ArrayList<>();
 
-        synchronizedCourseToMoodle(subject, createClassRequest) ;
+        MoodleCourseDataRequest.MoodleCourseBody courseBody = new MoodleCourseDataRequest.MoodleCourseBody();
+        courseBody.setFullname(createClassRequest.getName());
+        courseBody.setShortname(createClassRequest.getCode());
+        courseBody.setCategoryid(subject.getId());
 
+        moodleCourseBodyList.add(courseBody);
+
+        s1CourseRequest.setCourses(moodleCourseBodyList);
+        S1BaseSingleResponse<S1CourseResponse> s1CourseResponseS1BaseSingleResponse = moodleCourseRepository.postCourse(s1CourseRequest);
 
 
         return true;
     }
 
+    @Override
+    public Boolean synchronizedClassToMoodle( MoodleCourseDataRequest moodleCourseDataRequest ) {
 
-    public Boolean synchronizedCourseToMoodle ( Subject subject , CreateClassRequest createClassRequest ){
 
+        List<MoodleCourseDataRequest>moodleCourseDataRequestList = new ArrayList<>() ;
         S1CourseRequest s1CourseRequest = new S1CourseRequest() ;
-        MoodleCourseDataRequest moodleCourseDataRequest = new MoodleCourseDataRequest() ;
-        List<MoodleCourseDataRequest> coursesList = new ArrayList<>( );
-        MoodleCourseDataRequest courseDataRequest = new MoodleCourseDataRequest() ;
-        courseDataRequest.setFullname(createClassRequest.getName());
-        courseDataRequest.setShortname(createClassRequest.getCode());
-        courseDataRequest.setCategoryid(subject.getId());
-        coursesList.add(courseDataRequest) ;
 
-        s1CourseRequest.setCourses(coursesList);
+        List<MoodleCourseDataRequest.MoodleCourseBody> moodleCourseBodyList = new ArrayList<>() ;
+
+
+        for (MoodleCourseDataRequest.MoodleCourseBody request : moodleCourseDataRequest.getCourses()) {
+            MoodleCourseDataRequest.MoodleCourseBody moodleCourseBody = new MoodleCourseDataRequest.MoodleCourseBody();
+            moodleCourseBody.setFullname(request.getFullname());
+            moodleCourseBody.setShortname(request.getShortname());
+            moodleCourseBody.setCategoryid(request.getCategoryid());
+            moodleCourseBodyList.add(moodleCourseBody) ;
+        }
+
+        s1CourseRequest.setCourses(moodleCourseBodyList);
 
         S1BaseSingleResponse<S1CourseResponse> s1CourseResponseS1BaseSingleResponse = moodleCourseRepository.postCourse(s1CourseRequest);
 
+//        moodleCourseRepository.postCourse(s1CourseRequest);
+
         return true ;
     }
+
+
+//    public Boolean synchronizedCourseToMoodle (CreateClassRequest createClassRequest ){
+//
+//        List<MoodleCourseDataRequest.MoodleCourseBody> moodleCourseBodyList = new ArrayList<>() ;
+//
+//        CreateCourseRequest courseRequest = createClassRequest.getCourseRequest();
+//        for (CreateCourseRequest  request : courseRequest) {
+//            MoodleCourseDataRequest.MoodleCourseBody moodleCourseBody = new MoodleCourseDataRequest.MoodleCourseBody();
+//            moodleCourseBody.setFullname(request.getFullname());
+//            moodleCourseBody.setShortname(request.getShortname());
+//            moodleCourseBody.setCategoryid(request.getCategoryid());
+//            moodleCourseBodyList.add(moodleCourseBody) ;
+//        }
+//
+//
+//
+//
+//        s1CourseRequest.setCourses(moodleCourseBodyList);
+//
+//        S1BaseSingleResponse<S1CourseResponse> s1CourseResponseS1BaseSingleResponse = moodleCourseRepository.postCourse(s1CourseRequest);
+//
+////        moodleCourseRepository.postCourse(s1CourseRequest);
+//
+//        S1BaseSingleResponse<S1CourseResponse> s1CourseResponseS1BaseSingleResponse = moodleCourseRepository.postCourse(s1CourseRequest);
+//
+//        return true ;
+//    }
 
 }

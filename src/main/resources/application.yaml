@@ -11,4 +11,4 @@ spring:
 
 
 moodle:
-  baseUri: http://moodle-vuondau.amazingtech.vn/webservice/restful/server.php/
+  baseUri: http://moodle-vuondau.amazingtech.vn/webservice/restful/server.php/core_course_create_courses

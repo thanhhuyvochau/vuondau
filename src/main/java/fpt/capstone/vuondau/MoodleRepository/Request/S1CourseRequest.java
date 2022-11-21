@@ -5,7 +5,7 @@ import java.util.List;
 public class S1CourseRequest {
     private String token;
     private String action ;
-    private List<MoodleCourseDataRequest> courses ;
+    private List<MoodleCourseDataRequest.MoodleCourseBody> courses ;
 
     public String getToken() {
         return token;
@@ -23,11 +23,11 @@ public class S1CourseRequest {
         this.action = action;
     }
 
-    public List<MoodleCourseDataRequest> getCourses() {
+    public List<MoodleCourseDataRequest.MoodleCourseBody> getCourses() {
         return courses;
     }
 
-    public void setCourses(List<MoodleCourseDataRequest> courses) {
+    public void setCourses(List<MoodleCourseDataRequest.MoodleCourseBody> courses) {
         this.courses = courses;
     }
 }
