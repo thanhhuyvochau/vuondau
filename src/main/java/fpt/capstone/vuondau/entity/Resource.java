@@ -27,6 +27,10 @@ public class Resource {
     @OneToMany(mappedBy = "resource")
     List<Account> accounts;
 
+    @OneToMany(mappedBy = "resource", cascade = CascadeType.ALL)
+    private List<Course> course ;
+
+
     public Long getId() {
         return id;
     }
@@ -73,5 +77,13 @@ public class Resource {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Course> getCourse() {
+        return course;
+    }
+
+    public void setCourse(List<Course> course) {
+        this.course = course;
     }
 }

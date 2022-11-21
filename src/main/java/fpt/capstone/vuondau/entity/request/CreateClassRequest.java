@@ -1,35 +1,27 @@
-package fpt.capstone.vuondau.entity.dto;
+package fpt.capstone.vuondau.entity.request;
 
-
-import fpt.capstone.vuondau.entity.common.EClassStatus;
-
+import javax.persistence.Column;
+import java.io.Serializable;
 import java.time.Instant;
 
-public class ClassDto {
 
-    private Long id ;
+public class CreateClassRequest implements Serializable {
+
+
     private String name;
     private String code;
-
     private Instant startDate ;
-
     private Instant endDate ;
-
     private String level;
 
     private Long numberStudent ;
 
-    private EClassStatus status ;
-
     private Long maxNumberStudent ;
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+
+    private CreateCourseRequest courseRequest ;
+
 
     public String getName() {
         return name;
@@ -79,19 +71,21 @@ public class ClassDto {
         this.numberStudent = numberStudent;
     }
 
-    public EClassStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(EClassStatus status) {
-        this.status = status;
-    }
-
     public Long getMaxNumberStudent() {
         return maxNumberStudent;
     }
 
     public void setMaxNumberStudent(Long maxNumberStudent) {
         this.maxNumberStudent = maxNumberStudent;
+    }
+
+
+
+    public CreateCourseRequest getCourseRequest() {
+        return courseRequest;
+    }
+
+    public void setCourseRequest(CreateCourseRequest courseRequest) {
+        this.courseRequest = courseRequest;
     }
 }

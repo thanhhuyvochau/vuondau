@@ -1,6 +1,8 @@
 package fpt.capstone.vuondau.entity;
 
 
+import fpt.capstone.vuondau.entity.common.EClassStatus;
+
 import javax.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -21,6 +23,9 @@ public class Class {
     @Column(name = "code")
     private String code;
 
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private EClassStatus status ;
 
     @Column(name = "start_date")
     private Instant startDate;
@@ -40,8 +45,11 @@ public class Class {
     @JoinColumn(name="teacher_id")
     private Account account ;
 
+
     @OneToMany(mappedBy = "aClass"  ,cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<StudentClass> studentClasses ;
+
+
 
     @OneToMany(mappedBy = "clazz"  ,cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FeedBack> feedBacks ;
@@ -49,11 +57,15 @@ public class Class {
     @Column(name = "number_student")
     private Long numberStudent ;
 
+    @Column(name = "max_number_student")
+    private Long maxNumberStudent ;
+
     @Column(name = "level")
     private String level ;
 
     @Column(name = "is_avtive")
     private boolean isActive ;
+
 
 
     public Long getId() {
@@ -78,6 +90,14 @@ public class Class {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public EClassStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(EClassStatus status) {
+        this.status = status;
     }
 
     public Instant getStartDate() {
@@ -158,5 +178,14 @@ public class Class {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+
+    public Long getMaxNumberStudent() {
+        return maxNumberStudent;
+    }
+
+    public void setMaxNumberStudent(Long maxNumberStudent) {
+        this.maxNumberStudent = maxNumberStudent;
     }
 }

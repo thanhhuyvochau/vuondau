@@ -6,7 +6,7 @@ import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.*;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
-import fpt.capstone.vuondau.entity.response.CourseResponse;
+import fpt.capstone.vuondau.entity.response.CourseDetailResponse;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
 
 import org.springframework.data.domain.Pageable;
@@ -23,7 +23,7 @@ public interface IAdminService {
 
     AccountResponse updateRoleAccount(long id, EAccountRole eAccountRole);
 
-    ApiPage<CourseResponse> searchCourse(CourseSearchRequest query, Pageable pageable);
+    ApiPage<CourseDetailResponse> searchCourse(CourseSearchRequest query, Pageable pageable);
 
     AccountResponse ApproveAccountTeacher(long id);
 
@@ -38,12 +38,6 @@ public interface IAdminService {
     Boolean deleteSubject(long subjectId);
 
     SubjectResponse updateSubject(long subjectId,  SubjectRequest subjectRequest);
-
-    ApiPage<CourseResponse> viewAllCourse(Pageable pageable);
-
-    CourseResponse viewCourseDetail(long courseID);
-
-    CourseResponse updateCourse(long courseID, CourseRequest subjectRequest);
 
     ApiPage <RequestFormResponese> searchRequestForm(RequestSearchRequest query, Pageable pageable);
 }
