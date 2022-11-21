@@ -5,6 +5,7 @@ import fpt.capstone.vuondau.entity.common.EGradeType;
 
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,20 +24,43 @@ public class Course {
     @Column(name = "code")
     private String code;
 
+    @Column(name = "title")
+    private String title;
+
+    @Column(name = "description")
+    private String description ;
     @Column(name = "is_active")
     private Boolean isActive;
 
-    @JoinColumn(name="grade")
+    @Column(name = "unit_price")
+    private BigDecimal unitPrice;
+
+    @Column(name = "final_price")
+    private BigDecimal finalPrice;
+
+
+    @JoinColumn(name = "grade")
     @Enumerated(EnumType.STRING)
     private EGradeType grade;
 
-    @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
-    @JoinColumn(name="subject_id")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "subject_id")
     private Subject subject;
 
 
-    @OneToMany(mappedBy = "course" ,cascade = CascadeType.ALL, fetch = FetchType.LAZY ,orphanRemoval = true)
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<TeacherCourse> teacherCourses;
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL , orphanRemoval = true)
+    private List<Class> classes;
+
+    @OneToMany(mappedBy = "course")
+    private List<CartItemCourse> cartItemCourses;
+
+    @ManyToOne
+    @JoinColumn(name = "resource_id")
+    private Resource resource ;
+
 
 
     public Long getId() {
@@ -47,6 +71,14 @@ public class Course {
         this.id = id;
     }
 
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
     public String getName() {
         return name;
     }
@@ -55,12 +87,28 @@ public class Course {
         this.name = name;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getCode() {
         return code;
     }
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Boolean getIsActive() {
@@ -96,4 +144,36 @@ public class Course {
         this.teacherCourses = teacherCourses;
     }
 
+
+    public Resource getResource() {
+        return resource;
+    }
+
+    public void setResource(Resource resource) {
+        this.resource = resource;
+    }
+
+    public List<Class> getClasses() {
+        return classes;
+    }
+
+    public void setClasses(List<Class> classes) {
+        this.classes = classes;
+    }
+
+    public List<CartItemCourse> getCartItemCourses() {
+        return cartItemCourses;
+    }
+
+    public void setCartItemCourses(List<CartItemCourse> cartItemCourses) {
+        this.cartItemCourses = cartItemCourses;
+    }
+
+    public BigDecimal getFinalPrice() {
+        return finalPrice;
+    }
+
+    public void setFinalPrice(BigDecimal finalPrice) {
+        this.finalPrice = finalPrice;
+    }
 }

@@ -6,14 +6,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class TeacherCourseDto {
 
 
-        private Long topicId;
+    private Long topicId;
 
 
-        private Long teacherId;
+    private Long teacherId;
+
+    private String teacherName ;
 
 
-        @Schema(nullable = true)
-        private Boolean isAllowed ;
+    @Schema(nullable = true)
+    private Boolean isAllowed;
 
     public Long getTopicId() {
         return topicId;
@@ -37,5 +39,13 @@ public class TeacherCourseDto {
 
     public void setIsAllowed(Boolean allowed) {
         isAllowed = allowed;
+    }
+
+    public String getTeacherName() {
+        return teacherName;
+    }
+
+    public void setTeacherName(String teacherName) {
+        this.teacherName = teacherName;
     }
 }

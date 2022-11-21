@@ -30,7 +30,7 @@ public class RequestFormSpecificationBuilder {
         specifications.add((root, query, criteriaBuilder) -> {
             Expression<String> requestCode = root.get(Request_.title);
 
-            Expression<String> stringExpression = SpecificationUtil.concat(criteriaBuilder, " ", requestCode);
+            Expression<String> stringExpression = SpecificationUtil.concat(criteriaBuilder, " ",   requestCode);
             return criteriaBuilder.like(stringExpression, '%' + q + '%');
         });
 

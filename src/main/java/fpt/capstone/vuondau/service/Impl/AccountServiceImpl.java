@@ -98,8 +98,9 @@ public class AccountServiceImpl implements IAccountService {
                     .withMessage(messageUtil.getLocalMessage("Email đã tòn tạo"));
         }
         account.setUsername(accountRequest.getUsername());
-        account.setFirstName(accountRequest.getFirstName());
-        account.setLastName(accountRequest.getLastName());
+        account.setName(accountRequest.getName());
+//        account.setFirstName(accountRequest.getFirstName());
+//        account.setLastName(accountRequest.getLastName());
         account.setPhoneNumber(accountRequest.getPhone());
 
         Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER)
@@ -133,8 +134,9 @@ public class AccountServiceImpl implements IAccountService {
             }
             account.setUsername(studentRequestAccount.getUsername());
             account.setPassword(studentRequestAccount.getPassword());
-            account.setFirstName(studentRequest.getFirstName());
-            account.setLastName(studentRequest.getLastName());
+            account.setName(studentRequest.getName());
+//            account.setFirstName(studentRequest.getFirstName());
+//            account.setLastName(studentRequest.getLastName());
             account.setActive(true);
             account.setEmail(studentRequest.getEmail());
             account.setPhoneNumber(studentRequest.getPhoneNumber());
