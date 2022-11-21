@@ -1,5 +1,7 @@
 package fpt.capstone.vuondau.entity.request;
 
+import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCourseDataRequest;
+
 import javax.persistence.Column;
 import java.io.Serializable;
 import java.time.Instant;
@@ -17,8 +19,6 @@ public class CreateClassRequest implements Serializable {
     private Long numberStudent ;
 
     private Long maxNumberStudent ;
-
-
 
     private CreateCourseRequest courseRequest ;
 
@@ -78,8 +78,6 @@ public class CreateClassRequest implements Serializable {
     public void setMaxNumberStudent(Long maxNumberStudent) {
         this.maxNumberStudent = maxNumberStudent;
     }
-
-
 
     public CreateCourseRequest getCourseRequest() {
         return courseRequest;

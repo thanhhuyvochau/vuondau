@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.entity.request;
 
 import fpt.capstone.vuondau.entity.common.EGradeType;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +14,12 @@ public class CreateCourseRequest {
 
     private String code;
 
-
     private String title;
 
     private String description ;
+
+    private MultipartFile file ;
+
 
     public Long getSubjectId() {
         return subjectId;
@@ -58,5 +61,11 @@ public class CreateCourseRequest {
         this.description = description;
     }
 
+    public MultipartFile getFile() {
+        return file;
+    }
 
+    public void setFile(MultipartFile file) {
+        this.file = file;
+    }
 }
