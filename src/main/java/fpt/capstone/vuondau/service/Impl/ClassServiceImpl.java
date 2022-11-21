@@ -34,13 +34,14 @@ public class ClassServiceImpl implements IClassService {
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
         clazz.setActive(false);
         clazz.setAccount(teacher);
+
+        CreateCourseRequest createCourseRequest = createClassRequest.getCourseRequest();
         Course course = new Course() ;
-        course.setName(createClassRequest.getCourseRequest().getName());
-        course.setCode(createClassRequest.getCourseRequest().getCode());
-        course.setTitle(createClassRequest.getCourseRequest().getTitle());
-        course.setDescription(createClassRequest.getCourseRequest().getDescription());
+        course.setCode(createCourseRequest.getCode());
+        course.setTitle(createCourseRequest.getTitle());
+        course.setDescription(createCourseRequest.getDescription());
         course.setIsActive(false);
-        Subject subject = subjectRepository.findById(createClassRequest.getCourseRequest().getSubjectId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay subject"));
+        Subject subject = subjectRepository.findById(createCourseRequest.getSubjectId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay subject"));
         course.setSubject(subject);
         clazz.setCourse(course);
 
