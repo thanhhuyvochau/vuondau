@@ -1,5 +1,10 @@
 package fpt.capstone.vuondau.service.Impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
+import fpt.capstone.vuondau.MoodleRepository.Request.MoodleMasterDataRequest;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleRecourseClassResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiException;
@@ -39,13 +44,16 @@ public class CourseServiceImpl implements ICourseService {
 
     private final ClassRepository classRepository;
 
+    private final MoodleCourseRepository moodleCourseRepository;
 
-    public CourseServiceImpl(CourseRepository courseRepository, SubjectRepository subjectRepository, TeacherCourseRepository teacherCourseRepository, AccountRepository accountRepository, ClassRepository classRepository) {
+
+    public CourseServiceImpl(CourseRepository courseRepository, SubjectRepository subjectRepository, TeacherCourseRepository teacherCourseRepository, AccountRepository accountRepository, ClassRepository classRepository, MoodleCourseRepository moodleCourseRepository) {
         this.courseRepository = courseRepository;
         this.subjectRepository = subjectRepository;
         this.teacherCourseRepository = teacherCourseRepository;
         this.accountRepository = accountRepository;
         this.classRepository = classRepository;
+        this.moodleCourseRepository = moodleCourseRepository;
     }
 
     @Override
@@ -204,7 +212,7 @@ public class CourseServiceImpl implements ICourseService {
         return courseResponse;
     }
 
-    public CourseDetailResponse convertCourseToCourseDetailResponse(Course course) {
+    public CourseDetailResponse convertCourseToCourseDetailResponse(Course course,  Long classId) throws JsonProcessingException {
         CourseDetailResponse courseDetailResponse = new CourseDetailResponse();
 
 
@@ -228,21 +236,24 @@ public class CourseServiceImpl implements ICourseService {
             courseDetailResponse.setSubject(subjectDto);
         }
         // set Class
-        Account account = course.getTeacherCourses().stream().map(TeacherCourse::getAccount).findFirst().get();
-        Class classes = classRepository.findByCourseAndAccount(course, account);
-        if (classes != null) {
-            ClassDto classDto = new ClassDto();
-            classDto.setId(classes.getId());
-            classDto.setName(classes.getName());
-            classDto.setCode(classes.getCode());
-            classDto.setLevel(classes.getLevel());
-            classDto.setStartDate(classes.getStartDate());
-            classDto.setEndDate(classes.getEndDate());
-            classDto.setNumberStudent(classes.getNumberStudent());
-            classDto.setMaxNumberStudent(classes.getMaxNumberStudent());
+        if (!course.getTeacherCourses().isEmpty()){
+            Account account = course.getTeacherCourses().stream().map(TeacherCourse::getAccount).findFirst().get();
+            Class classes = classRepository.findByCourseAndAccount(course, account);
+            if (classes != null) {
+                ClassDto classDto = new ClassDto();
+                classDto.setId(classes.getId());
+                classDto.setName(classes.getName());
+                classDto.setCode(classes.getCode());
+                classDto.setLevel(classes.getLevel());
+                classDto.setStartDate(classes.getStartDate());
+                classDto.setEndDate(classes.getEndDate());
+                classDto.setNumberStudent(classes.getNumberStudent());
+                classDto.setMaxNumberStudent(classes.getMaxNumberStudent());
 
-            courseDetailResponse.setClazz(classDto);
+                courseDetailResponse.setClazz(classDto);
+            }
         }
+
 
         // set teacher course
         List<TeacherCourseDto> teacherCourseDtoList = new ArrayList<>();
@@ -259,16 +270,33 @@ public class CourseServiceImpl implements ICourseService {
         }).collect(Collectors.toList());
 
         courseDetailResponse.setTeacherCourse(teacherCourseDtoList);
+
+
+        CourseIdRequest courseIdRequest = new CourseIdRequest();
+        courseIdRequest.setCourseid(classId );
+        MoodleMasterDataRequest s1MasterDataRequest = new MoodleMasterDataRequest() ;
+        List<MoodleRecourseClassResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
+
+        List<MoodleRecourseClassResponse> moodleRecourseClassResponseList = new ArrayList<>( );
+        resourceCourse.stream().map(moodleRecourseClassResponse -> {
+            MoodleRecourseClassResponse setResource = new MoodleRecourseClassResponse() ;
+            setResource.setId(moodleRecourseClassResponse.getId());
+            moodleRecourseClassResponseList.add(setResource);
+            return moodleRecourseClassResponse ;
+        }).collect(Collectors.toList());
+
+        courseDetailResponse.setRecourses(moodleRecourseClassResponseList);
+
         return courseDetailResponse;
     }
 
     @Override
-    public CourseDetailResponse viewCourseDetail(long courseID) {
+    public CourseDetailResponse viewCourseDetail(long courseID, Long classId) throws JsonProcessingException {
         Course course = courseRepository.findById(courseID)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(("Khong tim thay course") + courseID));
 //        CourseDetailResponse courseDetailResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class);
 //        return courseDetailResponse;
-        return convertCourseToCourseDetailResponse(course);
+        return convertCourseToCourseDetailResponse(course, classId);
     }
 
     @Override
@@ -413,6 +441,16 @@ public class CourseServiceImpl implements ICourseService {
         //response
 
         return classCourseResponse;
+    }
+
+    @Override
+    public List<MoodleRecourseClassResponse> synchronizedResource(Long classId) throws JsonProcessingException {
+        CourseIdRequest courseIdRequest = new CourseIdRequest();
+        courseIdRequest.setCourseid(classId );
+        MoodleMasterDataRequest s1MasterDataRequest = new MoodleMasterDataRequest() ;
+        List<MoodleRecourseClassResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
+        System.out.println(resourceCourse);
+        return resourceCourse;
     }
 
 //

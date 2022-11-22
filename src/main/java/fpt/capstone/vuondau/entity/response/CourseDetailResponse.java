@@ -1,5 +1,7 @@
 package fpt.capstone.vuondau.entity.response;
 
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleRecourseClassResponse;
 import fpt.capstone.vuondau.entity.dto.ClassDto;
 import fpt.capstone.vuondau.entity.dto.SubjectDto;
 import fpt.capstone.vuondau.entity.dto.TeacherCourseDto;
@@ -27,11 +29,14 @@ public class CourseDetailResponse {
     @Schema(description = "Giá tiền của course")
     private BigDecimal unitPrice;
 
+
     private ClassDto clazz ;
 
     private SubjectDto subject;
 
     private List<TeacherCourseDto> teacherCourse ;
+
+    private  List<MoodleRecourseClassResponse> recourses ;
 
 
     public Long getId() {
@@ -122,5 +127,13 @@ public class CourseDetailResponse {
 
     public void setUnitPrice(BigDecimal unitPrice) {
         this.unitPrice = unitPrice;
+    }
+
+    public List<MoodleRecourseClassResponse> getRecourses() {
+        return recourses;
+    }
+
+    public void setRecourses(List<MoodleRecourseClassResponse> recourses) {
+        this.recourses = recourses;
     }
 }

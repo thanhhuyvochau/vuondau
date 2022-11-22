@@ -1,5 +1,6 @@
 package fpt.capstone.vuondau.service.Impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.dto.RoleDto;
@@ -39,7 +40,7 @@ public class CartServiceImpl implements ICartService {
     }
 
     @Override
-    public CartResponse addCourseIntoCart(long courseId, Long studentId) {
+    public CartResponse addCourseIntoCart(long courseId, Long studentId) throws JsonProcessingException {
 
 
         Course course = courseRepository.findById(courseId)
@@ -85,7 +86,7 @@ public class CartServiceImpl implements ICartService {
 
         List<CartItemTopicResponse> cartItemTopicList = new ArrayList<>();
         CartItemTopicResponse cartItemTopic = new CartItemTopicResponse();
-        CourseDetailResponse courseDetailResponse = courseServiceImpl.convertCourseToCourseDetailResponse(course);
+        CourseDetailResponse courseDetailResponse = courseServiceImpl.convertCourseToCourseDetailResponse(course, null);
         cartItemTopic.setCourse(courseDetailResponse);
         cartItemTopicList.add(cartItemTopic);
         cartResponse.setCartItemTopic(cartItemTopicList);
