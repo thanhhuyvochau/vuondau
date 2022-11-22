@@ -19,6 +19,8 @@ public class CourseDetailResponse {
 
     private String title;
 
+    private boolean isActive ;
+
     private String description ;
 
     private EGradeType grade;
@@ -45,6 +47,14 @@ public class CourseDetailResponse {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
     public String getName() {

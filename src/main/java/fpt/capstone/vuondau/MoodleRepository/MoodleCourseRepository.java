@@ -23,7 +23,7 @@ public class MoodleCourseRepository extends S1BaseRepository {
     public List<MoodleClassResponse> postCourse(S1CourseRequest request) throws JsonProcessingException {
         TypeReference<List<MoodleClassResponse>> typeReference = new TypeReference<List<MoodleClassResponse>>() {
         };
-        return caller.postWithAuthenticationTokeCustom(masterUri, request, typeReference);
+        return caller.postWithAuthenticationTokeCustom(createCourseUri, request, typeReference);
     }
 
 

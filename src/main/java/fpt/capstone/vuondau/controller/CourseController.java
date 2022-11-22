@@ -68,8 +68,8 @@ public class CourseController {
 
     @Operation(summary = "xem chi tiết course ")
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<CourseDetailResponse>> viewSubjectCourse(@PathVariable long id , @RequestParam Long classId) throws JsonProcessingException {
-        return ResponseEntity.ok(ApiResponse.success(courseService.viewCourseDetail(id , classId)));
+    public ResponseEntity<ApiResponse<CourseDetailResponse>> viewSubjectCourse(@PathVariable long id ) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(courseService.viewCourseDetail(id )));
     }
 
     @Operation(summary = "Get resource course từ moodle")

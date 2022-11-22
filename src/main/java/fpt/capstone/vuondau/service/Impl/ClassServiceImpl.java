@@ -26,6 +26,8 @@ import fpt.capstone.vuondau.util.RequestUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -89,6 +91,24 @@ public class ClassServiceImpl implements IClassService {
         classRepository.save(clazz);
 
 
+        S1CourseRequest s1CourseRequest = new S1CourseRequest() ;
+
+        List<MoodleCourseDataRequest.MoodleCourseBody> moodleCourseBodyList = new ArrayList<>() ;
+
+
+
+            MoodleCourseDataRequest.MoodleCourseBody moodleCourseBody = new MoodleCourseDataRequest.MoodleCourseBody();
+            moodleCourseBody.setFullname(createClassRequest.getName());
+            moodleCourseBody.setShortname(createClassRequest.getCode());
+            moodleCourseBody.setCategoryid(subject.getId());
+            moodleCourseBody.setStartdate(Instant.now().getEpochSecond());
+            moodleCourseBody.setEnddate(Instant.now().getEpochSecond());
+            moodleCourseBodyList.add(moodleCourseBody) ;
+
+
+        s1CourseRequest.setCourses(moodleCourseBodyList);
+
+        List<MoodleClassResponse> moodleClassResponses = moodleCourseRepository.postCourse(s1CourseRequest);
 
         return true;
     }
@@ -97,7 +117,7 @@ public class ClassServiceImpl implements IClassService {
     public Boolean synchronizedClassToMoodle( MoodleCourseDataRequest moodleCourseDataRequest ) throws JsonProcessingException {
 
 
-        List<MoodleCourseDataRequest>moodleCourseDataRequestList = new ArrayList<>() ;
+
         S1CourseRequest s1CourseRequest = new S1CourseRequest() ;
 
         List<MoodleCourseDataRequest.MoodleCourseBody> moodleCourseBodyList = new ArrayList<>() ;
