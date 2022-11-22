@@ -9,10 +9,8 @@ import fpt.capstone.vuondau.MoodleRepository.Request.S1CourseRequest;
 import fpt.capstone.vuondau.MoodleRepository.Response.MoodleBaseResponse;
 import fpt.capstone.vuondau.MoodleRepository.Response.S1BaseSingleResponse;
 import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
-import fpt.capstone.vuondau.entity.Account;
+import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
-import fpt.capstone.vuondau.entity.Course;
-import fpt.capstone.vuondau.entity.Subject;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.request.CreateClassRequest;
@@ -60,6 +58,9 @@ public class ClassServiceImpl implements IClassService {
         Account teacher = accountRepository.findById(teacherId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay teacher" + teacherId));
 
+
+
+        // set class bên vườn đậu
         Class clazz = new Class();
         clazz.setName(createClassRequest.getName());
         clazz.setCode(createClassRequest.getCode());
@@ -68,42 +69,57 @@ public class ClassServiceImpl implements IClassService {
         clazz.setNumberStudent(createClassRequest.getNumberStudent());
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
         clazz.setStatus(EClassStatus.NOTSTART);
-
+        clazz.setStartDate(createClassRequest.getStartDate());
+        clazz.setEndDate(createClassRequest.getEndDate());
         clazz.setActive(false);
         clazz.setAccount(teacher);
 
 
         CreateCourseRequest createCourseRequest = createClassRequest.getCourseRequest();
+        Subject subject = subjectRepository.findById(createCourseRequest.getSubjectId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay subject"));
 
+
+        //set course chp class
         Course course = new Course();
         course.setName(createClassRequest.getCourseRequest().getName());
         course.setCode(createClassRequest.getCourseRequest().getCode());
         course.setTitle(createClassRequest.getCourseRequest().getTitle());
         course.setDescription(createClassRequest.getCourseRequest().getDescription());
 
+        List<TeacherCourse> teacherCourseList = new ArrayList<>();
+        TeacherCourse teacherCourse = new TeacherCourse();
+        TeacherCourseKey teacherCourseKey = new TeacherCourseKey();
+        teacherCourseKey.setTeachId(teacherId);
+        teacherCourseKey.setCourseId(course.getId());
+        teacherCourse.setId(teacherCourseKey);
+        teacherCourse.setAccount(teacher);
+        teacherCourse.setCourse(course);
+        teacherCourseList.add(teacherCourse);
+        course.setTeacherCourses(teacherCourseList);
         course.setIsActive(false);
-        Subject subject = subjectRepository.findById(createCourseRequest.getSubjectId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay subject"));
         course.setSubject(subject);
 
         courseRepository.save(course);
+//        teacher.setTeacherCourses(teacherCourseList);
 
         clazz.setCourse(course);
         classRepository.save(clazz);
 
 
-        S1CourseRequest s1CourseRequest = new S1CourseRequest() ;
+        // set class từ vườn đậu moodle (source)
 
-        List<MoodleCourseDataRequest.MoodleCourseBody> moodleCourseBodyList = new ArrayList<>() ;
+        S1CourseRequest s1CourseRequest = new S1CourseRequest();
+
+        List<MoodleCourseDataRequest.MoodleCourseBody> moodleCourseBodyList = new ArrayList<>();
 
 
-
-            MoodleCourseDataRequest.MoodleCourseBody moodleCourseBody = new MoodleCourseDataRequest.MoodleCourseBody();
-            moodleCourseBody.setFullname(createClassRequest.getName());
-            moodleCourseBody.setShortname(createClassRequest.getCode());
-            moodleCourseBody.setCategoryid(subject.getId());
-            moodleCourseBody.setStartdate(Instant.now().getEpochSecond());
-            moodleCourseBody.setEnddate(Instant.now().getEpochSecond());
-            moodleCourseBodyList.add(moodleCourseBody) ;
+        MoodleCourseDataRequest.MoodleCourseBody moodleCourseBody = new MoodleCourseDataRequest.MoodleCourseBody();
+        moodleCourseBody.setFullname(createClassRequest.getName());
+        moodleCourseBody.setShortname(createClassRequest.getCode());
+        moodleCourseBody.setCategoryid(subject.getId());
+        moodleCourseBody.setStartdate(Instant.now().getEpochSecond());
+        moodleCourseBody.setEnddate(Instant.now().getEpochSecond());
+        moodleCourseBodyList.add(moodleCourseBody);
 
 
         s1CourseRequest.setCourses(moodleCourseBodyList);
@@ -114,13 +130,12 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
-    public Boolean synchronizedClassToMoodle( MoodleCourseDataRequest moodleCourseDataRequest ) throws JsonProcessingException {
+    public Boolean synchronizedClassToMoodle(MoodleCourseDataRequest moodleCourseDataRequest) throws JsonProcessingException {
 
 
+        S1CourseRequest s1CourseRequest = new S1CourseRequest();
 
-        S1CourseRequest s1CourseRequest = new S1CourseRequest() ;
-
-        List<MoodleCourseDataRequest.MoodleCourseBody> moodleCourseBodyList = new ArrayList<>() ;
+        List<MoodleCourseDataRequest.MoodleCourseBody> moodleCourseBodyList = new ArrayList<>();
 
 
         for (MoodleCourseDataRequest.MoodleCourseBody request : moodleCourseDataRequest.getCourses()) {
@@ -128,14 +143,14 @@ public class ClassServiceImpl implements IClassService {
             moodleCourseBody.setFullname(request.getFullname());
             moodleCourseBody.setShortname(request.getShortname());
             moodleCourseBody.setCategoryid(request.getCategoryid());
-            moodleCourseBodyList.add(moodleCourseBody) ;
+            moodleCourseBodyList.add(moodleCourseBody);
         }
 
         s1CourseRequest.setCourses(moodleCourseBodyList);
 
         List<MoodleClassResponse> moodleClassResponses = moodleCourseRepository.postCourse(s1CourseRequest);
 
-        return true ;
+        return true;
     }
 
 //    @Override
@@ -152,7 +167,6 @@ public class ClassServiceImpl implements IClassService {
 //        return classList;
 //    }
 //
-
 
 
 }

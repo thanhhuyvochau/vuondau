@@ -59,10 +59,10 @@ public class Account {
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @OneToMany(mappedBy = "account")
+    @OneToMany(mappedBy = "account" ,cascade = CascadeType.ALL,  orphanRemoval = true)
     private List<TeacherCourse> teacherCourses;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL,  orphanRemoval = true)
     private List<StudentClass> studentClasses;
 
 
