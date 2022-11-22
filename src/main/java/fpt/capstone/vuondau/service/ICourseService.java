@@ -18,7 +18,7 @@ public interface ICourseService {
 
     ApiPage<CourseResponse> viewAllCourse(Pageable pageable);
 
-    CourseDetailResponse viewCourseDetail(long courseID, Long classId) throws JsonProcessingException;
+    CourseDetailResponse viewCourseDetail(long courseID) throws JsonProcessingException;
 
     CourseDetailResponse updateCourse(long courseID, CourseRequest subjectRequest);
 

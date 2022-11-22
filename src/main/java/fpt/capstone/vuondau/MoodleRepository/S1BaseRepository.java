@@ -11,7 +11,8 @@ public class S1BaseRepository {
     @Value("${moodle.resourceUri}")
     protected String resourceUri;
 
-
+    @Value("${moodle.createCourseUri}")
+    protected String createCourseUri;
 
     protected final Caller caller;
 
@@ -37,5 +38,13 @@ public class S1BaseRepository {
 
     public void setResourceUri(String resourceUri) {
         this.resourceUri = resourceUri;
+    }
+
+    public String getCreateCourseUri() {
+        return createCourseUri;
+    }
+
+    public void setCreateCourseUri(String createCourseUri) {
+        this.createCourseUri = createCourseUri;
     }
 }

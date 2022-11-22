@@ -86,7 +86,7 @@ public class CartServiceImpl implements ICartService {
 
         List<CartItemTopicResponse> cartItemTopicList = new ArrayList<>();
         CartItemTopicResponse cartItemTopic = new CartItemTopicResponse();
-        CourseDetailResponse courseDetailResponse = courseServiceImpl.convertCourseToCourseDetailResponse(course, null);
+        CourseDetailResponse courseDetailResponse = courseServiceImpl.convertCourseToCourseDetailResponse(course);
         cartItemTopic.setCourse(courseDetailResponse);
         cartItemTopicList.add(cartItemTopic);
         cartResponse.setCartItemTopic(cartItemTopicList);
