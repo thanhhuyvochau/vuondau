@@ -12,12 +12,12 @@ public class TeacherCourse {
     @EmbeddedId
     private TeacherCourseKey id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("teacherId")
     @JoinColumn(name = "teacher_id")
     private Account account;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("courseId")
     @JoinColumn(name = "course_id")
     private Course course;
