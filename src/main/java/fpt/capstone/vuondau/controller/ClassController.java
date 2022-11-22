@@ -1,7 +1,10 @@
 package fpt.capstone.vuondau.controller;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCourseDataRequest;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
+import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.Subject;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.request.CreateClassRequest;
@@ -18,7 +21,7 @@ import java.util.List;
 @RequestMapping("/api/class")
 public class ClassController {
 
-    private final IClassService iClassService ;
+    private final IClassService iClassService;
 
     public ClassController(IClassService iClassService) {
         this.iClassService = iClassService;
@@ -27,19 +30,23 @@ public class ClassController {
 
     @Operation(summary = "Giáo viên quest tao class + subject - course")
     @PostMapping({"/{teacherId}"})
-    public ResponseEntity<ApiResponse<Boolean>> teacherRequestCreateClass(@PathVariable Long teacherId , @RequestBody CreateClassRequest createClassRequest ) {
+    public ResponseEntity<ApiResponse<Boolean>> teacherRequestCreateClass(@PathVariable Long teacherId, @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClass(teacherId, createClassRequest)));
 
     }
 
 
-
-    @Operation(summary = "")
-    @PostMapping({"/synchrized-document"})
-    public ResponseEntity<ApiResponse<Boolean>>synchronizedClassToMoodle(@RequestBody MoodleCourseDataRequest moodleCourseDataRequest) {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.synchronizedClassToMoodle( moodleCourseDataRequest)));
-
+    @Operation(summary = "Tạo class qua moodle")
+    @PostMapping({"/create-class-to-moodle"})
+    public ResponseEntity<ApiResponse<Boolean>> synchronizedClassToMoodle(@RequestBody MoodleCourseDataRequest moodleCourseDataRequest) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.synchronizedClassToMoodle(moodleCourseDataRequest)));
     }
+
+//    @Operation(summary = "Get class từ moodle")
+//    @GetMapping("get-class-from-moodle")
+//    public ResponseEntity<ApiResponse<  List<MoodleClassResponse> >> synchronizedClass() throws JsonProcessingException {
+//        return ResponseEntity.ok(ApiResponse.success(iClassService.synchronizedClass()));
+//    }
 
 
 }

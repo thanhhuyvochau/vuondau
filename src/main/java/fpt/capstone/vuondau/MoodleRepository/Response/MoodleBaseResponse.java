@@ -3,7 +3,7 @@ package fpt.capstone.vuondau.MoodleRepository.Response;
 import java.util.ArrayList;
 import java.util.List;
 
-public class S1BaseSingleResponse<T> {
+public class MoodleBaseResponse<T> {
     private String $id;
     private int status;
     private String message;

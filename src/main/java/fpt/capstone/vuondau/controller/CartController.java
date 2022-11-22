@@ -1,5 +1,6 @@
 package fpt.capstone.vuondau.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.response.CartCourseResponse;
 import fpt.capstone.vuondau.entity.response.CartResponse;
@@ -22,7 +23,7 @@ public class CartController {
 
     @Operation(summary = "Hoc Sinh thêm course vào cart ")
     @PostMapping("/{courseId}")
-    public ResponseEntity<ApiResponse<CartResponse>> addCourseIntoCart(@PathVariable long courseId, Long studentId) {
+    public ResponseEntity<ApiResponse<CartResponse>> addCourseIntoCart(@PathVariable long courseId, Long studentId) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iCartService.addCourseIntoCart(courseId, studentId)));
     }
 

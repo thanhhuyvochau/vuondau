@@ -1,11 +1,14 @@
 package fpt.capstone.vuondau.service.Impl;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
 import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCourseDataRequest;
+import fpt.capstone.vuondau.MoodleRepository.Request.MoodleMasterDataRequest;
 import fpt.capstone.vuondau.MoodleRepository.Request.S1CourseRequest;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleBaseResponse;
 import fpt.capstone.vuondau.MoodleRepository.Response.S1BaseSingleResponse;
-import fpt.capstone.vuondau.MoodleRepository.Response.S1CourseResponse;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
 import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.Course;
@@ -19,17 +22,19 @@ import fpt.capstone.vuondau.repository.ClassRepository;
 import fpt.capstone.vuondau.repository.CourseRepository;
 import fpt.capstone.vuondau.repository.SubjectRepository;
 import fpt.capstone.vuondau.service.IClassService;
-import org.springframework.http.HttpHeaders;
+import fpt.capstone.vuondau.util.RequestUtil;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
 public class ClassServiceImpl implements IClassService {
+
+    final private RequestUtil requestUtil;
     private final AccountRepository accountRepository;
     private final SubjectRepository subjectRepository;
     private final ClassRepository classRepository;
@@ -38,7 +43,8 @@ public class ClassServiceImpl implements IClassService {
 
     private final MoodleCourseRepository moodleCourseRepository;
 
-    public ClassServiceImpl(AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository) {
+    public ClassServiceImpl(RequestUtil requestUtil, AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository) {
+        this.requestUtil = requestUtil;
         this.accountRepository = accountRepository;
         this.subjectRepository = subjectRepository;
         this.classRepository = classRepository;
@@ -48,7 +54,7 @@ public class ClassServiceImpl implements IClassService {
 
 
     @Override
-    public Boolean teacherRequestCreateClass(Long teacherId, CreateClassRequest createClassRequest) {
+    public Boolean teacherRequestCreateClass(Long teacherId, CreateClassRequest createClassRequest) throws JsonProcessingException {
         Account teacher = accountRepository.findById(teacherId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay teacher" + teacherId));
 
@@ -66,10 +72,6 @@ public class ClassServiceImpl implements IClassService {
 
 
         CreateCourseRequest createCourseRequest = createClassRequest.getCourseRequest();
-//        Course course = new Course() ;
-//        course.setCode(createCourseRequest.getCode());
-//        course.setTitle(createCourseRequest.getTitle());
-//        course.setDescription(createCourseRequest.getDescription());
 
         Course course = new Course();
         course.setName(createClassRequest.getCourseRequest().getName());
@@ -86,26 +88,13 @@ public class ClassServiceImpl implements IClassService {
         clazz.setCourse(course);
         classRepository.save(clazz);
 
-        S1CourseRequest s1CourseRequest = new S1CourseRequest();
-
-        List<MoodleCourseDataRequest.MoodleCourseBody> moodleCourseBodyList = new ArrayList<>();
-
-        MoodleCourseDataRequest.MoodleCourseBody courseBody = new MoodleCourseDataRequest.MoodleCourseBody();
-        courseBody.setFullname(createClassRequest.getName());
-        courseBody.setShortname(createClassRequest.getCode());
-        courseBody.setCategoryid(subject.getId());
-
-        moodleCourseBodyList.add(courseBody);
-
-        s1CourseRequest.setCourses(moodleCourseBodyList);
-        S1BaseSingleResponse<S1CourseResponse> s1CourseResponseS1BaseSingleResponse = moodleCourseRepository.postCourse(s1CourseRequest);
 
 
         return true;
     }
 
     @Override
-    public Boolean synchronizedClassToMoodle( MoodleCourseDataRequest moodleCourseDataRequest ) {
+    public Boolean synchronizedClassToMoodle( MoodleCourseDataRequest moodleCourseDataRequest ) throws JsonProcessingException {
 
 
         List<MoodleCourseDataRequest>moodleCourseDataRequestList = new ArrayList<>() ;
@@ -124,39 +113,26 @@ public class ClassServiceImpl implements IClassService {
 
         s1CourseRequest.setCourses(moodleCourseBodyList);
 
-        S1BaseSingleResponse<S1CourseResponse> s1CourseResponseS1BaseSingleResponse = moodleCourseRepository.postCourse(s1CourseRequest);
-
-//        moodleCourseRepository.postCourse(s1CourseRequest);
+        List<MoodleClassResponse> moodleClassResponses = moodleCourseRepository.postCourse(s1CourseRequest);
 
         return true ;
     }
 
-
-//    public Boolean synchronizedCourseToMoodle (CreateClassRequest createClassRequest ){
-//
-//        List<MoodleCourseDataRequest.MoodleCourseBody> moodleCourseBodyList = new ArrayList<>() ;
-//
-//        CreateCourseRequest courseRequest = createClassRequest.getCourseRequest();
-//        for (CreateCourseRequest  request : courseRequest) {
-//            MoodleCourseDataRequest.MoodleCourseBody moodleCourseBody = new MoodleCourseDataRequest.MoodleCourseBody();
-//            moodleCourseBody.setFullname(request.getFullname());
-//            moodleCourseBody.setShortname(request.getShortname());
-//            moodleCourseBody.setCategoryid(request.getCategoryid());
-//            moodleCourseBodyList.add(moodleCourseBody) ;
-//        }
-//
-//
-//
-//
-//        s1CourseRequest.setCourses(moodleCourseBodyList);
-//
-//        S1BaseSingleResponse<S1CourseResponse> s1CourseResponseS1BaseSingleResponse = moodleCourseRepository.postCourse(s1CourseRequest);
-//
-////        moodleCourseRepository.postCourse(s1CourseRequest);
-//
-//        S1BaseSingleResponse<S1CourseResponse> s1CourseResponseS1BaseSingleResponse = moodleCourseRepository.postCourse(s1CourseRequest);
-//
-//        return true ;
+//    @Override
+//    public  List<MoodleClassResponse>  synchronizedClass() throws JsonProcessingException {
+//        MoodleMasterDataRequest s1MasterDataRequest = new MoodleMasterDataRequest() ;
+//        List<MoodleClassResponse> response  = moodleCourseRepository.getCourse(s1MasterDataRequest);
+//        List<MoodleClassResponse> classList = new ArrayList<>() ;
+//        List<MoodleClassResponse> listClassMoodle = response.stream().map(moodleClassResponse -> {
+//            MoodleClassResponse moodleClassResponse1 = new MoodleClassResponse() ;
+//            moodleClassResponse1.setId(moodleClassResponse.getId());
+//            classList.add(moodleClassResponse1 );
+//            return moodleClassResponse1 ;
+//        }).collect(Collectors.toList()) ;
+//        return classList;
 //    }
+//
+
+
 
 }

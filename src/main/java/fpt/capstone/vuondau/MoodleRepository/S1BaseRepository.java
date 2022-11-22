@@ -8,7 +8,8 @@ public class S1BaseRepository {
     @Value("${moodle.baseUri}")
     protected String masterUri;
 
-
+    @Value("${moodle.resourceUri}")
+    protected String resourceUri;
 
 
 
@@ -30,5 +31,11 @@ public class S1BaseRepository {
         return caller;
     }
 
+    public String getResourceUri() {
+        return resourceUri;
+    }
 
+    public void setResourceUri(String resourceUri) {
+        this.resourceUri = resourceUri;
+    }
 }

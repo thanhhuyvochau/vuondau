@@ -1,5 +1,7 @@
 package fpt.capstone.vuondau.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleRecourseClassResponse;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.*;
@@ -16,7 +18,7 @@ public interface ICourseService {
 
     ApiPage<CourseResponse> viewAllCourse(Pageable pageable);
 
-    CourseDetailResponse viewCourseDetail(long courseID);
+    CourseDetailResponse viewCourseDetail(long courseID, Long classId) throws JsonProcessingException;
 
     CourseDetailResponse updateCourse(long courseID, CourseRequest subjectRequest);
 
@@ -24,4 +26,6 @@ public interface ICourseService {
     List<ClassCourseResponse> viewHistoryCourse(long studentId);
 
     ClassCourseResponse studentEnrollCourse(long id, long courseId, long classId);
+
+    List<MoodleRecourseClassResponse> synchronizedResource(Long classId) throws JsonProcessingException;
 }

@@ -1,13 +1,13 @@
 package fpt.capstone.vuondau.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleRecourseClassResponse;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 
 
-import fpt.capstone.vuondau.entity.request.ClassRequest;
-import fpt.capstone.vuondau.entity.request.CourseRequest;
-import fpt.capstone.vuondau.entity.request.CourseSearchRequest;
-import fpt.capstone.vuondau.entity.request.TopicsSubjectRequest;
+import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.ClassCourseResponse;
 import fpt.capstone.vuondau.entity.response.ClassSubjectResponse;
 import fpt.capstone.vuondau.entity.response.CourseDetailResponse;
@@ -68,10 +68,15 @@ public class CourseController {
 
     @Operation(summary = "xem chi tiết course ")
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<CourseDetailResponse>> viewSubjectCourse(@PathVariable long id ) {
-        return ResponseEntity.ok(ApiResponse.success(courseService.viewCourseDetail(id)));
+    public ResponseEntity<ApiResponse<CourseDetailResponse>> viewSubjectCourse(@PathVariable long id , @RequestParam Long classId) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(courseService.viewCourseDetail(id , classId)));
     }
 
+    @Operation(summary = "Get resource course từ moodle")
+    @GetMapping("get-resource-from-moodle")
+    public ResponseEntity<ApiResponse<  List<MoodleRecourseClassResponse>>> synchronizedResource(@RequestParam Long classId) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(courseService.synchronizedResource(classId)));
+    }
 
     @Operation(summary = "sửa course")
     @PostMapping("/{id}/update-course")
