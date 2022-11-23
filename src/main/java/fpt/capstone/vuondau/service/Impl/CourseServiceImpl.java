@@ -491,6 +491,7 @@ public class CourseServiceImpl implements ICourseService {
         course.setTitle(courseRequest.getTitle());
         course.setDescription(courseRequest.getDescription());
         course.setIsActive(false);
+
         courseRepository.save(course);
         return true;
     }
