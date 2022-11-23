@@ -8,8 +8,15 @@ public class S1BaseRepository {
     @Value("${moodle.baseUri}")
     protected String masterUri;
 
+
+    @Value("${moodle.categoryUri}")
+    protected String categoryUri;
+
     @Value("${moodle.resourceUri}")
     protected String resourceUri;
+
+    @Value("${moodle.createCategoryUri}")
+    protected String createCategoryUri;
 
     @Value("${moodle.createCourseUri}")
     protected String createCourseUri;
@@ -46,5 +53,13 @@ public class S1BaseRepository {
 
     public void setCreateCourseUri(String createCourseUri) {
         this.createCourseUri = createCourseUri;
+    }
+
+    public String getCategoryUri() {
+        return categoryUri;
+    }
+
+    public void setCategoryUri(String categoryUri) {
+        this.categoryUri = categoryUri;
     }
 }

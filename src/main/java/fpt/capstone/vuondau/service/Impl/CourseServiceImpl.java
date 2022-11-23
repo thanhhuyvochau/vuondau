@@ -3,7 +3,6 @@ package fpt.capstone.vuondau.service.Impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
 import fpt.capstone.vuondau.MoodleRepository.Request.MoodleMasterDataRequest;
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
 import fpt.capstone.vuondau.MoodleRepository.Response.MoodleRecourseClassResponse;
 import fpt.capstone.vuondau.MoodleRepository.Response.ResourceMoodleResponse;
 import fpt.capstone.vuondau.entity.*;
@@ -19,6 +18,7 @@ import fpt.capstone.vuondau.entity.response.CourseDetailResponse;
 import fpt.capstone.vuondau.entity.response.CourseResponse;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.ICourseService;
+import fpt.capstone.vuondau.util.MessageUtil;
 import fpt.capstone.vuondau.util.ObjectUtil;
 import fpt.capstone.vuondau.util.PageUtil;
 import fpt.capstone.vuondau.util.specification.CourseSpecificationBuilder;
@@ -47,14 +47,17 @@ public class CourseServiceImpl implements ICourseService {
 
     private final MoodleCourseRepository moodleCourseRepository;
 
+    private final MessageUtil messageUtil;
 
-    public CourseServiceImpl(CourseRepository courseRepository, SubjectRepository subjectRepository, TeacherCourseRepository teacherCourseRepository, AccountRepository accountRepository, ClassRepository classRepository, MoodleCourseRepository moodleCourseRepository) {
+
+    public CourseServiceImpl(CourseRepository courseRepository, SubjectRepository subjectRepository, TeacherCourseRepository teacherCourseRepository, AccountRepository accountRepository, ClassRepository classRepository, MoodleCourseRepository moodleCourseRepository, MessageUtil messageUtil) {
         this.courseRepository = courseRepository;
         this.subjectRepository = subjectRepository;
         this.teacherCourseRepository = teacherCourseRepository;
         this.accountRepository = accountRepository;
         this.classRepository = classRepository;
         this.moodleCourseRepository = moodleCourseRepository;
+        this.messageUtil = messageUtil;
     }
 
     @Override
@@ -282,9 +285,10 @@ public class CourseServiceImpl implements ICourseService {
 
         CourseIdRequest courseIdRequest = new CourseIdRequest();
         if (classes!= null) {
-            courseIdRequest.setCourseid(classes.getId());
+            courseIdRequest.setCourseid(15L);
             try {
                 List<MoodleRecourseClassResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
+
                 List<MoodleRecourseClassResponse> moodleRecourseClassResponseList = new ArrayList<>();
                 resourceCourse.stream().peek(moodleRecourseClassResponse -> {
                     MoodleRecourseClassResponse setResource = ObjectUtil.copyProperties(moodleRecourseClassResponse, new MoodleRecourseClassResponse() , MoodleRecourseClassResponse.class);
@@ -302,11 +306,10 @@ public class CourseServiceImpl implements ICourseService {
 
                     moodleRecourseClassResponseList.add(setResource);
                 }).collect(Collectors.toList());
-                courseDetailResponse.setRecourses(moodleRecourseClassResponseList);
+                courseDetailResponse.setResources(moodleRecourseClassResponseList);
             }catch (Exception e){
                 e.printStackTrace();
             }
-
 
         }
 
@@ -473,6 +476,23 @@ public class CourseServiceImpl implements ICourseService {
         List<MoodleRecourseClassResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
         System.out.println(resourceCourse);
         return resourceCourse;
+    }
+
+    @Override
+    public Boolean createCourse(CourseRequest courseRequest) {
+        Course course = new Course();
+        course.setName(courseRequest.getName());
+        if (courseRepository.existsByCode(courseRequest.getCode())){
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("course code da ton tai"));
+        }
+        course.setCode(courseRequest.getCode());
+        course.setGrade(courseRequest.getGradeType());
+        course.setTitle(courseRequest.getTitle());
+        course.setDescription(courseRequest.getDescription());
+        course.setIsActive(false);
+        courseRepository.save(course);
+        return true;
     }
 
 //

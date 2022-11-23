@@ -16,5 +16,7 @@ public interface ClassRepository extends JpaRepository<Class, Long> {
 
    Optional<Class> findByIdAndCourse(long course , Course account );
 
+    boolean existsByCode(String code);
+
 //    List<Class> findClassByAccount (Account account );
 }

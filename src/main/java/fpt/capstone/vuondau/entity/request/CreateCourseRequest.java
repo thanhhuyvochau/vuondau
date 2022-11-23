@@ -8,7 +8,7 @@ import java.util.List;
 
 public class CreateCourseRequest {
 
-    private Long subjectId ;
+//    private Long subjectId ;
 
     private String name;
 
@@ -21,13 +21,13 @@ public class CreateCourseRequest {
     private MultipartFile file ;
 
 
-    public Long getSubjectId() {
-        return subjectId;
-    }
-
-    public void setSubjectId(Long subjectId) {
-        this.subjectId = subjectId;
-    }
+//    public Long getSubjectId() {
+//        return subjectId;
+//    }
+//
+//    public void setSubjectId(Long subjectId) {
+//        this.subjectId = subjectId;
+//    }
 
     public String getName() {
         return name;

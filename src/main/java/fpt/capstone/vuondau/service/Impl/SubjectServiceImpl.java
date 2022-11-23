@@ -11,6 +11,7 @@ import fpt.capstone.vuondau.repository.StudentAnswerRepository;
 import fpt.capstone.vuondau.repository.SubjectRepository;
 import fpt.capstone.vuondau.service.ISubjectService;
 import fpt.capstone.vuondau.util.MessageUtil;
+import fpt.capstone.vuondau.util.ObjectUtil;
 import fpt.capstone.vuondau.util.PageUtil;
 import fpt.capstone.vuondau.util.specification.SuggestSubjectSpecificationBuilder;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -130,6 +132,17 @@ public class SubjectServiceImpl implements ISubjectService {
         return PageUtil.convert(subjectPage.map(this::convertSubjectToSubjectResponse));
     }
 
+    @Override
+    public List<SubjectResponse> getListSubject() {
+        List<SubjectResponse>subjectResponseList = new ArrayList<>();
+        List<Subject> all = subjectRepository.findAll();
+        all.stream().map(subject -> {
+            subjectResponseList.add(ObjectUtil.copyProperties(subject , new SubjectResponse() , SubjectResponse.class)) ;
+            return subject ;
+        }).collect(Collectors.toList());
+        return subjectResponseList;
+    }
+
     public SubjectResponse convertSubjectToSubjectResponse(Subject subject) {
         SubjectResponse subjectResponse = new SubjectResponse();
         subjectResponse.setId(subject.getId());
@@ -139,4 +152,6 @@ public class SubjectServiceImpl implements ISubjectService {
         subjectResponse.setCourseIds(idCourse);
         return subjectResponse;
     }
+
+
 }

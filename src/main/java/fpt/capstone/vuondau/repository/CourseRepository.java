@@ -18,7 +18,7 @@ import java.util.Optional;
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
     List<Course> searchCourseByNameContainsIgnoreCase(String name);
-
+    boolean existsByCode(String code);
     Optional<Course> findByIdAndIsActiveTrue ( Long id) ;
     Page<Course> findAll(Specification<Course> spec, Pageable pageable);
 

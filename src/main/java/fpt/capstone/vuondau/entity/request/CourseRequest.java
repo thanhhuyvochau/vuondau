@@ -9,13 +9,32 @@ public class CourseRequest {
 
     private String name;
 
+    private String title;
+
+    private String description ;
     private String code;
 
     private EGradeType gradeType;
 
     private Long subjectId;
 
-    private List<Long> teacherIds = new ArrayList<>();
+    private List<Long>teacherIds = new ArrayList<>();
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public String getName() {
         return name;

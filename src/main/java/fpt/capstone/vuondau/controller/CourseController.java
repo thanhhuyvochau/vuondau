@@ -79,7 +79,7 @@ public class CourseController {
     }
 
     @Operation(summary = "sửa course")
-    @PostMapping("/{id}/update-course")
+    @PutMapping("/{id}/update-course")
     public ResponseEntity<ApiResponse<CourseDetailResponse>> updateCourse(@PathVariable long id , @RequestBody CourseRequest subjectRequest) {
         return ResponseEntity.ok(ApiResponse.success(courseService.updateCourse(id, subjectRequest)));
     }
@@ -95,6 +95,13 @@ public class CourseController {
     public ResponseEntity<ApiResponse<ClassCourseResponse>> studentEnrollCourse(@PathVariable long studentId , long courseId,  long classId ) {
         return ResponseEntity.ok(ApiResponse.success(courseService.studentEnrollCourse(studentId, courseId,classId)));
     }
+
+    @Operation(description = "Tạo khóa học")
+    @PostMapping("/create-course")
+    public ResponseEntity<ApiResponse<Boolean>> createCourse(@RequestBody CourseRequest courseRequest) {
+        return ResponseEntity.ok(ApiResponse.success(courseService.createCourse(courseRequest)));
+    }
+
 
 //    @Operation(description = "Lấy tất cả khóa học")
 //    @GetMapping
