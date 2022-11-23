@@ -6,6 +6,7 @@ import fpt.capstone.vuondau.entity.request.SubjectRequest;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ISubjectService {
@@ -18,4 +19,6 @@ public interface ISubjectService {
     SubjectResponse getSubject(Long subjectId);
 
     ApiPage<SubjectResponse> suggestSubjectForStudent(Long studentId, Pageable pageable );
+
+    List<SubjectResponse> getListSubject();
 }

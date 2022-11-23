@@ -1,10 +1,17 @@
 package fpt.capstone.vuondau;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
+import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCategoryRequest;
+import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCourseDataRequest;
+import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCreateCategoryRequest;
+import fpt.capstone.vuondau.MoodleRepository.Request.S1CourseRequest;
+import fpt.capstone.vuondau.MoodleRepository.Response.CategoryResponse;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
 import fpt.capstone.vuondau.entity.RequestType;
 import fpt.capstone.vuondau.entity.Role;
 import fpt.capstone.vuondau.entity.Subject;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
-import fpt.capstone.vuondau.entity.common.EResourceType;
 import fpt.capstone.vuondau.entity.common.ESubjectCode;
 import fpt.capstone.vuondau.repository.RequestTypeRepository;
 import fpt.capstone.vuondau.repository.RoleRepository;
@@ -15,7 +22,10 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static fpt.capstone.vuondau.entity.common.EAccountRole.STUDENT;
 import static fpt.capstone.vuondau.entity.common.EAccountRole.TEACHER;
@@ -29,14 +39,19 @@ public class HatdauApplication {
 
     private final RoleRepository roleRepository;
 
+
+
     private final SubjectRepository subjectRepository;
 
     private final RequestTypeRepository requestTypeRepository ;
 
-    public HatdauApplication(RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository) {
+    private final MoodleCourseRepository moodleCourseRepository;
+
+    public HatdauApplication(RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository, MoodleCourseRepository moodleCourseRepository) {
         this.roleRepository = roleRepository;
         this.subjectRepository = subjectRepository;
         this.requestTypeRepository = requestTypeRepository;
+        this.moodleCourseRepository = moodleCourseRepository;
     }
 
     public static void main(String[] args) {
@@ -112,7 +127,7 @@ public class HatdauApplication {
     }
 
     @EventListener(ApplicationReadyEvent.class)
-    public void intiDataSubject() {
+    public void intiDataSubject() throws JsonProcessingException {
         List<Subject> allSubject = subjectRepository.findAll();
         Boolean existToan = false;
         Boolean existVatLy= false;
@@ -121,6 +136,8 @@ public class HatdauApplication {
         Boolean existSinhHoc= false;
         Boolean existNguVan= false;
         Boolean existTinHoc = false;
+
+
 
         for (Subject subject : allSubject) {
             if (subject.getCode().equals(Toan)) {
@@ -188,6 +205,85 @@ public class HatdauApplication {
             subject.setName(TinHoc.label);
             subjectList.add(subject);
         }
+
+
+
         subjectRepository.saveAll(subjectList);
     }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void intiSubjectToMoodle() throws JsonProcessingException {
+
+        MoodleCategoryRequest request = new MoodleCategoryRequest();
+        List< MoodleCategoryRequest.MoodleCategoryBody> moodleCategoryBodyList = new ArrayList<>() ;
+        MoodleCategoryRequest.MoodleCategoryBody moodleCategoryBody = new MoodleCategoryRequest.MoodleCategoryBody() ;
+        moodleCategoryBody.setKey("id");
+        moodleCategoryBody.setValue("");
+        moodleCategoryBodyList.add(moodleCategoryBody) ;
+        request.setCriteria(moodleCategoryBodyList);
+        List<CategoryResponse> category = moodleCourseRepository.getCategory(request);
+
+        List<String> allNameCategory = category.stream().map(CategoryResponse::getName).collect(Collectors.toList());
+
+
+        List<Subject> allSubject = subjectRepository.findAll();
+        List<String> allNameSubject = allSubject.stream().map(subject -> subject.getCode().name()).collect(Collectors.toList());
+
+        List<String> collect = allNameSubject.stream().filter(s -> !allNameCategory.contains(s)).filter(Objects::nonNull).collect(Collectors.toList());
+
+        MoodleCreateCategoryRequest moodleCreateCategoryRequest = new MoodleCreateCategoryRequest() ;
+
+        List<MoodleCreateCategoryRequest.MoodleCreateCategoryBody> moodleCreateCategoryBodyList = new ArrayList<>() ;
+
+        for (String s : collect) {
+            MoodleCreateCategoryRequest.MoodleCreateCategoryBody set = new MoodleCreateCategoryRequest.MoodleCreateCategoryBody();
+            set.setName(s);
+            set.setParent(0L);
+            set.setIdnumber("");
+            set.setDescription("");
+            set.setDescriptionformat(0L);
+
+            moodleCreateCategoryBodyList.add(set) ;
+        }
+
+
+
+        moodleCreateCategoryRequest.setCategories(moodleCreateCategoryBodyList) ;
+        moodleCourseRepository.postCategory(moodleCreateCategoryRequest);
+
+    }
+    @EventListener(ApplicationReadyEvent.class)
+    public void intiMoodleCategoryIdToSubject() throws JsonProcessingException {
+        MoodleCategoryRequest request = new MoodleCategoryRequest();
+        List< MoodleCategoryRequest.MoodleCategoryBody> moodleCategoryBodyList = new ArrayList<>() ;
+        MoodleCategoryRequest.MoodleCategoryBody moodleCategoryBody = new MoodleCategoryRequest.MoodleCategoryBody() ;
+        moodleCategoryBody.setKey("id");
+        moodleCategoryBody.setValue("");
+        moodleCategoryBodyList.add(moodleCategoryBody) ;
+        request.setCriteria(moodleCategoryBodyList);
+        List<CategoryResponse> category = moodleCourseRepository.getCategory(request);
+
+        List<String> allNameCategory = category.stream().map(CategoryResponse::getName).collect(Collectors.toList());
+
+
+        List<Subject> allSubject = subjectRepository.findAll();
+        List<String> allNameSubject = allSubject.stream().map(subject -> subject.getCode().name()).collect(Collectors.toList());
+
+        List<String> collect = allNameSubject.stream().filter(allNameCategory::contains).filter(Objects::nonNull).collect(Collectors.toList());
+
+        List<Subject>subjectList = new ArrayList<>() ;
+        for (String s : collect) {
+            ESubjectCode eSubjectCode = ESubjectCode.valueOf(s) ;
+            Subject byCode = subjectRepository.findByCode(eSubjectCode);
+            for (CategoryResponse categoryResponse : category){
+                if (categoryResponse.getName().equals(byCode.getCode().name())){
+                    byCode.setCategoryMoodleId(categoryResponse.getId());
+                    subjectList.add(byCode) ;
+                }
+            }
+
+        }
+        subjectRepository.saveAll(subjectList) ;
+    }
+
 }

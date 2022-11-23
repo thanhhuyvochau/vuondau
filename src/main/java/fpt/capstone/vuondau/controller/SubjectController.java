@@ -12,12 +12,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/subjects")
 public class SubjectController {
 
-    private final ISubjectService subjectService;
+    private final ISubjectService subjectService ;
 
     public SubjectController(ISubjectService subjectService) {
         this.subjectService = subjectService;
@@ -53,6 +54,13 @@ public class SubjectController {
     @Operation(summary = "Gợi ý subject cho học sinh")
     public ResponseEntity<ApiResponse<ApiPage<SubjectResponse>>> suggestSubjectForStudent(@PathVariable Long studentId, Pageable pageable ) {
         return ResponseEntity.ok(ApiResponse.success(subjectService.suggestSubjectForStudent(studentId, pageable)));
+    }
+
+
+    @Operation(summary = "Lấy list tất cả subject ")
+    @GetMapping("/get-list-subject")
+    public ResponseEntity<ApiResponse<List<SubjectResponse>>> getListSubject( ) {
+        return ResponseEntity.ok(ApiResponse.success(subjectService.getListSubject( )));
     }
 
 }

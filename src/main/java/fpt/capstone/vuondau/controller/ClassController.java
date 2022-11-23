@@ -6,13 +6,18 @@ import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCourseDataRequest;
 import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.Subject;
+import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
+import fpt.capstone.vuondau.entity.dto.ClassDto;
 import fpt.capstone.vuondau.entity.request.CreateClassRequest;
+import fpt.capstone.vuondau.entity.response.SubjectResponse;
 import fpt.capstone.vuondau.service.IClassService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,13 +33,18 @@ public class ClassController {
     }
 
 
-    @Operation(summary = "Giáo viên quest tao class + subject - course")
+    @Operation(summary = "Giáo viên quest tao class ( subject - course) chờ admin phê duyệt ")
     @PostMapping({"/{teacherId}"})
-    public ResponseEntity<ApiResponse<Boolean>> teacherRequestCreateClass(@PathVariable Long teacherId, @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException {
+    public ResponseEntity<ApiResponse<Boolean>> teacherRequestCreateClass(@PathVariable Long teacherId,@Nullable @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClass(teacherId, createClassRequest)));
 
     }
 
+    @Operation(summary = "Admin phê duyệt request tao class của teacher ")
+    @PostMapping({"/{id}/approve-class"})
+    public ResponseEntity<ApiResponse<ClassDto>> adminApproveRequestCreateClass(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.adminApproveRequestCreateClass(id)));
+    }
 
     @Operation(summary = "Tạo class qua moodle")
     @PostMapping({"/create-class-to-moodle"})
@@ -42,11 +52,8 @@ public class ClassController {
         return ResponseEntity.ok(ApiResponse.success(iClassService.synchronizedClassToMoodle(moodleCourseDataRequest)));
     }
 
-//    @Operation(summary = "Get class từ moodle")
-//    @GetMapping("get-class-from-moodle")
-//    public ResponseEntity<ApiResponse<  List<MoodleClassResponse> >> synchronizedClass() throws JsonProcessingException {
-//        return ResponseEntity.ok(ApiResponse.success(iClassService.synchronizedClass()));
-//    }
+
+
 
 
 }
