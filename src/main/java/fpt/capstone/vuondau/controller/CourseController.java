@@ -98,10 +98,16 @@ public class CourseController {
 
     @Operation(description = "Tạo khóa học")
     @PostMapping("/create-course")
-    public ResponseEntity<ApiResponse<Boolean>> createCourse(@RequestBody CourseRequest courseRequest) {
+    public ResponseEntity<ApiResponse<CourseResponse>> createCourse(@RequestBody CourseRequest courseRequest) {
         return ResponseEntity.ok(ApiResponse.success(courseService.createCourse(courseRequest)));
     }
 
+
+    @Operation(summary = "lấy course theo subject")
+    @GetMapping("/{subjectId}/subject")
+    public ResponseEntity<ApiResponse<ApiPage<CourseDetailResponse>>> getCourseBySubject(@PathVariable long subjectId ) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(courseService.getCourseBySubject(subjectId )));
+    }
 
 //    @Operation(description = "Lấy tất cả khóa học")
 //    @GetMapping

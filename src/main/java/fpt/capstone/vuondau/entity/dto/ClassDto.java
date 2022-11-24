@@ -11,6 +11,8 @@ public class ClassDto {
     private String name;
     private String code;
 
+    private EClassStatus status ;
+
     private Instant startDate ;
 
     private Instant endDate ;
@@ -19,7 +21,7 @@ public class ClassDto {
 
     private Long numberStudent ;
 
-    private EClassStatus status ;
+
 
     private Long maxNumberStudent ;
 

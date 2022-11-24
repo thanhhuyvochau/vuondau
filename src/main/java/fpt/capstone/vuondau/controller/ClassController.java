@@ -9,7 +9,9 @@ import fpt.capstone.vuondau.entity.Subject;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.dto.ClassDto;
+import fpt.capstone.vuondau.entity.request.ClassSearchRequest;
 import fpt.capstone.vuondau.entity.request.CreateClassRequest;
+import fpt.capstone.vuondau.entity.request.SubjectSearchRequest;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
 import fpt.capstone.vuondau.service.IClassService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,9 +42,16 @@ public class ClassController {
 
     }
 
+    @Operation(summary = "lấy tất cả class chờ duyệt")
+    @GetMapping({"/class-request"})
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getClassRequesting(@Nullable ClassSearchRequest query, Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.getClassRequesting(query, pageable)));
+    }
+
+
     @Operation(summary = "Admin phê duyệt request tao class của teacher ")
     @PostMapping({"/{id}/approve-class"})
-    public ResponseEntity<ApiResponse<ClassDto>> adminApproveRequestCreateClass(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<ClassDto>> adminApproveRequestCreateClass(@PathVariable Long id) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.adminApproveRequestCreateClass(id)));
     }
 
@@ -53,6 +62,11 @@ public class ClassController {
     }
 
 
+    @Operation(summary = "Hoc sinh đăng ký vào class")
+    @PostMapping({"/{studentId}/student-enroll-class"})
+    public ResponseEntity<ApiResponse<Boolean>> studentEnrollClass(@PathVariable Long studentId , Long classId ) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.studentEnrollClass(studentId , classId)));
+    }
 
 
 

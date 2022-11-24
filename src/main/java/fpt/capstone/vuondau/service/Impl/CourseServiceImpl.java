@@ -23,6 +23,7 @@ import fpt.capstone.vuondau.util.ObjectUtil;
 import fpt.capstone.vuondau.util.PageUtil;
 import fpt.capstone.vuondau.util.specification.CourseSpecificationBuilder;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -479,7 +480,7 @@ public class CourseServiceImpl implements ICourseService {
     }
 
     @Override
-    public Boolean createCourse(CourseRequest courseRequest) {
+    public CourseResponse createCourse(CourseRequest courseRequest) {
         Course course = new Course();
         course.setName(courseRequest.getName());
         if (courseRepository.existsByCode(courseRequest.getCode())){
@@ -492,8 +493,38 @@ public class CourseServiceImpl implements ICourseService {
         course.setDescription(courseRequest.getDescription());
         course.setIsActive(false);
 
-        courseRepository.save(course);
-        return true;
+        Course save = courseRepository.save(course);
+        CourseResponse response = ObjectUtil.copyProperties(save, new CourseResponse() , CourseResponse.class);
+        return  response ;
+    }
+
+    @Override
+    public ApiPage<CourseDetailResponse> getCourseBySubject(long subjectId) {
+        Subject subject = subjectRepository.findById(subjectId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay subject"));
+        List<CourseDetailResponse> courseDetailResponseList= new ArrayList<>() ;
+        List<Course> courses = subject.getCourses();
+        courses.stream().map(course -> {
+            if (course.getIsActive()) {
+                CourseDetailResponse courseDetailResponse = new CourseDetailResponse();
+                courseDetailResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class, true);
+
+                courseDetailResponse.setActive(course.getIsActive());
+
+                courseDetailResponse.setTitle(course.getTitle());
+                courseDetailResponse.setGrade(course.getGrade());
+                if (course.getResource() != null) {
+                    courseDetailResponse.setImage(course.getResource().getUrl());
+                }
+                courseDetailResponse.setUnitPrice(course.getUnitPrice());
+
+                courseDetailResponseList.add(courseDetailResponse);
+
+            }
+            return course;
+        }).collect(Collectors.toList());
+        Page<CourseDetailResponse> page = new PageImpl<>(courseDetailResponseList);
+        ApiPage<CourseDetailResponse> convert = PageUtil.convert(page);
+        return convert ;
     }
 
 //

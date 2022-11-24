@@ -3,14 +3,17 @@ package fpt.capstone.vuondau.controller;
 import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.dto.RequestFormDto;
+import fpt.capstone.vuondau.entity.request.AccountEditRequest;
 import fpt.capstone.vuondau.entity.request.AccountExistedTeacherRequest;
 import fpt.capstone.vuondau.entity.request.AccountRequest;
 import fpt.capstone.vuondau.entity.request.UploadAvatarRequest;
+import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
 import fpt.capstone.vuondau.entity.response.AccountTokenResponse;
 import fpt.capstone.vuondau.service.IAccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
@@ -49,5 +52,12 @@ public class AccountController {
     public ResponseEntity<Boolean> uploadAvatar (@PathVariable long id,  @ModelAttribute UploadAvatarRequest uploadAvatarRequest) throws IOException {
         return ResponseEntity.ok(accountService.uploadAvatar(id, uploadAvatarRequest));
     }
+
+    @Operation(summary = "Giáo viên / học sinh edit profile ")
+    @PutMapping("/{id}/edit-profile")
+    public ResponseEntity<AccountResponse> editProfile (@PathVariable long id, @RequestBody AccountEditRequest accountEditRequest) throws IOException {
+        return ResponseEntity.ok(accountService.editProfile(id, accountEditRequest));
+    }
+
 
 }
