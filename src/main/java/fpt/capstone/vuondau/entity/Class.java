@@ -68,6 +68,7 @@ public class Class {
 
 
 
+
     public Long getId() {
         return id;
     }
@@ -188,4 +189,6 @@ public class Class {
     public void setMaxNumberStudent(Long maxNumberStudent) {
         this.maxNumberStudent = maxNumberStudent;
     }
+
+
 }

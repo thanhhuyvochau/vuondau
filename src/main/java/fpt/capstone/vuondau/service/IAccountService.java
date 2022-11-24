@@ -4,10 +4,7 @@ import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.Role;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
-import fpt.capstone.vuondau.entity.request.AccountExistedTeacherRequest;
-import fpt.capstone.vuondau.entity.request.AccountRequest;
-import fpt.capstone.vuondau.entity.request.StudentRequest;
-import fpt.capstone.vuondau.entity.request.UploadAvatarRequest;
+import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
 import fpt.capstone.vuondau.entity.response.StudentResponse;
@@ -30,4 +27,6 @@ public interface IAccountService {
     StudentResponse studentCreateAccount(StudentRequest studentRequest);
 
     Boolean uploadAvatar(long id, UploadAvatarRequest uploadAvatarRequest) throws IOException;
+
+    AccountResponse editProfile(long id, AccountEditRequest accountEditRequest);
 }

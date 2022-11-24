@@ -21,7 +21,10 @@ public interface IClassService {
 
     Boolean synchronizedClassToMoodle( MoodleCourseDataRequest moodleCourseDataRequest) throws JsonProcessingException;
 
-    ClassDto adminApproveRequestCreateClass(Long id);
+    ClassDto adminApproveRequestCreateClass(Long id) throws JsonProcessingException;
 
 
+    ApiPage<ClassDto> getClassRequesting(ClassSearchRequest query , Pageable pageable);
+
+    Boolean studentEnrollClass(Long studentId, Long classId);
 }

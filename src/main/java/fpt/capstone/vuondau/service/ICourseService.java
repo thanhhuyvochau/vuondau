@@ -29,5 +29,7 @@ public interface ICourseService {
 
     List<MoodleRecourseClassResponse> synchronizedResource(Long classId) throws JsonProcessingException;
 
-    Boolean createCourse(CourseRequest courseRequest);
+    CourseResponse createCourse(CourseRequest courseRequest);
+
+    ApiPage<CourseDetailResponse> getCourseBySubject(long subjectId);
 }

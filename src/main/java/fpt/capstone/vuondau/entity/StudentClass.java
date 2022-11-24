@@ -25,6 +25,9 @@ public class StudentClass {
     @Column(name = "enroll_date")
     private Instant enrollDate;
 
+    @Column(name = "is_enrolled")
+    private boolean is_enrolled;
+
     public StudentClassKey getId() {
         return id;
     }
@@ -55,5 +58,13 @@ public class StudentClass {
 
     public void setEnrollDate(Instant enrollDate) {
         this.enrollDate = enrollDate;
+    }
+
+    public boolean isIs_enrolled() {
+        return is_enrolled;
+    }
+
+    public void setIs_enrolled(boolean is_enrolled) {
+        this.is_enrolled = is_enrolled;
     }
 }

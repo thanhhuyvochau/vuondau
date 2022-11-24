@@ -9,28 +9,31 @@ import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiException;
+import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.dto.ClassDto;
+import fpt.capstone.vuondau.entity.request.ClassSearchRequest;
 import fpt.capstone.vuondau.entity.request.CreateClassRequest;
-import fpt.capstone.vuondau.entity.request.CreateCourseRequest;
-import fpt.capstone.vuondau.repository.AccountRepository;
-import fpt.capstone.vuondau.repository.ClassRepository;
-import fpt.capstone.vuondau.repository.CourseRepository;
-import fpt.capstone.vuondau.repository.SubjectRepository;
+import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IClassService;
 import fpt.capstone.vuondau.util.MessageUtil;
 import fpt.capstone.vuondau.util.ObjectUtil;
+import fpt.capstone.vuondau.util.PageUtil;
 import fpt.capstone.vuondau.util.RequestUtil;
+import fpt.capstone.vuondau.util.specification.ClassSpecificationBuilder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
 public class ClassServiceImpl implements IClassService {
+
 
     final private RequestUtil requestUtil;
     private final AccountRepository accountRepository;
@@ -41,15 +44,17 @@ public class ClassServiceImpl implements IClassService {
 
     private final MoodleCourseRepository moodleCourseRepository;
 
+    private final StudentClassRepository studentClassRepository ;
     private final MessageUtil messageUtil;
 
-    public ClassServiceImpl(RequestUtil requestUtil, AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, MessageUtil messageUtil) {
+    public ClassServiceImpl(RequestUtil requestUtil, AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, StudentClassRepository studentClassRepository, MessageUtil messageUtil) {
         this.requestUtil = requestUtil;
         this.accountRepository = accountRepository;
         this.subjectRepository = subjectRepository;
         this.classRepository = classRepository;
         this.courseRepository = courseRepository;
         this.moodleCourseRepository = moodleCourseRepository;
+        this.studentClassRepository = studentClassRepository;
         this.messageUtil = messageUtil;
     }
 
@@ -63,7 +68,7 @@ public class ClassServiceImpl implements IClassService {
         // set class bên vườn đậu
         Class clazz = new Class();
         clazz.setName(createClassRequest.getName());
-        if (classRepository.existsByCode(createClassRequest.getCode())){
+        if (classRepository.existsByCode(createClassRequest.getCode())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("class code da ton tai"));
         }
@@ -73,10 +78,11 @@ public class ClassServiceImpl implements IClassService {
         clazz.setEndDate(createClassRequest.getEndDate());
         clazz.setNumberStudent(createClassRequest.getNumberStudent());
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
-        clazz.setStatus(EClassStatus.NOTSTART);
+        clazz.setStatus(EClassStatus.REQUESTING);
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
         clazz.setActive(false);
+
         clazz.setAccount(teacher);
 
 
@@ -107,7 +113,6 @@ public class ClassServiceImpl implements IClassService {
 //            courseRepository.save(course);
 //            clazz.setCourse(course);
 //        }
-
 
 
 //        teacher.setTeacherCourses(teacherCourseList);
@@ -164,17 +169,98 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
-    public ClassDto adminApproveRequestCreateClass(Long id) {
+    public ClassDto adminApproveRequestCreateClass(Long id) throws JsonProcessingException {
         Class aClass = classRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
+        if (!aClass.getStatus().equals(EClassStatus.REQUESTING)) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("class khong phai trang thai de Active"));
+        }
+
 
         aClass.setActive(true);
+        aClass.setStatus(EClassStatus.NOTSTART);
         Class save = classRepository.save(aClass);
+
+        S1CourseRequest s1CourseRequest = new S1CourseRequest();
+        List<MoodleCourseDataRequest.MoodleCourseBody> moodleCourseBodyList = new ArrayList<>();
+
+        MoodleCourseDataRequest.MoodleCourseBody moodleCourseBody = new MoodleCourseDataRequest.MoodleCourseBody();
+        moodleCourseBody.setFullname(save.getName());
+        moodleCourseBody.setShortname(save.getCode());
+        Course course = save.getCourse();
+        if (course != null) {
+            moodleCourseBody.setCategoryid(course.getSubject().getCategoryMoodleId());
+        }
+        if (save.getStartDate()!= null) {
+            moodleCourseBody.setStartdate(save.getStartDate().toEpochMilli());
+        }
+        if (save.getEndDate()!= null) {
+            moodleCourseBody.setEnddate(save.getEndDate().toEpochMilli());
+        }
+        moodleCourseBodyList.add(moodleCourseBody);
+        s1CourseRequest.setCourses(moodleCourseBodyList);
+
+        List<MoodleClassResponse> moodleClassResponses = moodleCourseRepository.postCourse(s1CourseRequest);
+
+
         ClassDto classDto = ObjectUtil.copyProperties(save, new ClassDto(), ClassDto.class);
+
+
         return classDto;
     }
 
+    @Override
+    public ApiPage<ClassDto> getClassRequesting(ClassSearchRequest query, Pageable pageable) {
+        ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
+                .queryStatusClass(query.getStatus());
 
+        Page<Class> classesPage = classRepository.findAll(builder.build(), pageable);
+
+        return PageUtil.convert(classesPage.map(this::convertClassToClassResponse));
+
+
+    }
+
+    @Override
+    public Boolean studentEnrollClass(Long studentId, Long classId) {
+        Account student = accountRepository.findById(studentId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay student" + studentId));
+
+        Class aClass = classRepository.findById(classId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
+
+        List<StudentClass> studentClasses = student.getStudentClasses();
+        studentClasses.stream().map(studentClass -> {
+            if (studentClass.getaClass().equals(aClass)){
+                throw ApiException.create(HttpStatus.BAD_REQUEST)
+                        .withMessage(messageUtil.getLocalMessage("student dang trong class nay roi"));
+            }
+            return studentClass ;
+        }).collect(Collectors.toList());
+
+        StudentClass studentClass = new StudentClass() ;
+        StudentClassKey key = new StudentClassKey() ;
+        key.setClassId(aClass.getId());
+        key.setStudentId(studentId);
+
+        studentClass.setId(key);
+        studentClass.setAClass(aClass);
+        studentClass.setAccount(student);
+        studentClass.setIs_enrolled(false);
+//        Long numberStudent = aClass.getNumberStudent();
+//        aClass.setNumberStudent(numberStudent  + 1);
+        student.getStudentClasses().add(studentClass) ;
+        accountRepository.save(student) ;
+
+
+        return true;
+    }
+
+    public ClassDto convertClassToClassResponse(Class aclass) {
+        ClassDto classDto = ObjectUtil.copyProperties(aclass, new ClassDto(), ClassDto.class);
+        return classDto;
+    }
 
 //    @Override
 //    public  List<MoodleClassResponse>  synchronizedClass() throws JsonProcessingException {
