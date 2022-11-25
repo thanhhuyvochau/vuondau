@@ -11,9 +11,11 @@ import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
-import fpt.capstone.vuondau.entity.dto.ClassDto;
+import fpt.capstone.vuondau.entity.dto.*;
 import fpt.capstone.vuondau.entity.request.ClassSearchRequest;
 import fpt.capstone.vuondau.entity.request.CreateClassRequest;
+import fpt.capstone.vuondau.entity.response.AccountResponse;
+import fpt.capstone.vuondau.entity.response.CourseResponse;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IClassService;
 import fpt.capstone.vuondau.util.MessageUtil;
@@ -255,6 +257,115 @@ public class ClassServiceImpl implements IClassService {
 
 
         return true;
+    }
+
+    @Override
+    public List<ClassStudentDto> getStudentWaitingIntoClass(Long classId) {
+        Class aClass = classRepository.findById(classId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
+        List<StudentClass> studentClasses = aClass.getStudentClasses();
+
+        ClassStudentDto classStudentDto = new ClassStudentDto();
+        List<ClassStudentDto>classStudentDtos = new ArrayList<>() ;
+        classStudentDto.setClassId(classId);
+        List<StudentDto> studentList = new ArrayList<>() ;
+        studentClasses.stream().map(studentClass -> {
+            StudentDto studentDto = new StudentDto();
+            Account account = studentClass.getAccount();
+            if (account!= null){
+                studentDto  = ObjectUtil.copyProperties(account, new StudentDto() , StudentDto.class);
+                studentDto.setRole(ObjectUtil.copyProperties(account.getRole(), new RoleDto(), RoleDto.class));
+//                studentDto.setPhoneNumber(account.getPhoneNumber());
+//                studentDto.setBirthday();
+            }
+
+            studentList.add(studentDto) ;
+            return studentClass ;
+        }).collect(Collectors.toList());
+
+        classStudentDto.setStudents(studentList);
+        classStudentDtos.add(classStudentDto);
+        return classStudentDtos;
+    }
+
+    @Override
+    public List<ClassDto> searchClass(ClassSearchRequest query) {
+        ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
+                .queryLike(query.getQ()) ;
+
+        List<Class> classList = classRepository.findAll(builder.build());
+        List<ClassDto>  classDtoList = new ArrayList<>() ;
+        classList.stream().map(aClass -> {
+            ClassDto classDto= ObjectUtil.copyProperties(aClass, new ClassDto() , ClassDto.class) ;
+            classDtoList.add(classDto) ;
+            return aClass ;
+        }).collect(Collectors.toList());
+        return classDtoList;
+    }
+
+    @Override
+    public ClassDetailDto classDetail(Long id) {
+        Class aClass = classRepository.findById(id)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
+        ClassDetailDto classDetail = ObjectUtil.copyProperties(aClass, new ClassDetailDto(), ClassDetailDto.class) ;
+
+        Course course = aClass.getCourse();
+        if (course!= null) {
+            CourseResponse  courseResponse = new CourseResponse();
+            courseResponse.setId(course.getId());
+            courseResponse.setCourseName(course.getName());
+            courseResponse.setCourseTitle(course.getTitle());
+            if (course.getResource()!= null){
+                courseResponse.setImage(course.getResource().getUrl());
+            }
+            courseResponse.setUnitPriceCourse(course.getUnitPrice());
+            courseResponse.setFinalPriceCourse(course.getFinalPrice());
+            Subject subject = course.getSubject();
+            if (subject!= null) {
+                courseResponse.setSubject(ObjectUtil.copyProperties(subject , new SubjectDto() , SubjectDto.class));
+            }
+            classDetail.setCourse(courseResponse);
+        }
+
+
+        Account account = aClass.getAccount();
+        if (account!= null){
+            AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class) ;
+            accountResponse.setRole(ObjectUtil.copyProperties(account.getRole(), new RoleDto(), RoleDto.class));
+            Resource resource = account.getResource();
+            if (resource!=null){
+                accountResponse.setAvatar(resource.getUrl());
+            }
+            classDetail.setTeacher(accountResponse);
+        }
+
+
+
+        List<Account> studentList = aClass.getStudentClasses().stream().map(StudentClass::getAccount).collect(Collectors.toList());
+
+        List<AccountResponse> accountResponses = new ArrayList<>() ;
+        studentList.stream().map(studentMap -> {
+            AccountResponse student = ObjectUtil.copyProperties(studentMap , new AccountResponse(), AccountResponse.class) ;
+            student.setRole(ObjectUtil.copyProperties(studentMap.getRole(), new RoleDto(), RoleDto.class));
+            if (studentMap.getRequests()!=null){
+                student.setAvatar(studentMap.getResource().getUrl());
+            }
+
+            accountResponses.add(student) ;
+            return studentMap ;
+        }).collect(Collectors.toList()) ;
+        classDetail.setStudents(accountResponses);
+
+
+        return classDetail;
+    }
+
+    @Override
+    public ApiPage<ClassDto> getAllClass( Pageable pageable) {
+        Page<Class> classesPage = classRepository.findAll(pageable);
+
+        return PageUtil.convert(classesPage.map(this::convertClassToClassResponse));
+
     }
 
     public ClassDto convertClassToClassResponse(Class aclass) {

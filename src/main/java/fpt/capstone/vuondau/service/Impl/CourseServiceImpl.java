@@ -491,7 +491,9 @@ public class CourseServiceImpl implements ICourseService {
         course.setGrade(courseRequest.getGradeType());
         course.setTitle(courseRequest.getTitle());
         course.setDescription(courseRequest.getDescription());
-        course.setIsActive(false);
+        course.setIsActive(true);
+        Subject subject = subjectRepository.findById(courseRequest.getSubjectId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay subject"));
+        course.setSubject(subject);
 
         Course save = courseRepository.save(course);
         CourseResponse response = ObjectUtil.copyProperties(save, new CourseResponse() , CourseResponse.class);
@@ -503,7 +505,7 @@ public class CourseServiceImpl implements ICourseService {
         Subject subject = subjectRepository.findById(subjectId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay subject"));
         List<CourseDetailResponse> courseDetailResponseList= new ArrayList<>() ;
         List<Course> courses = subject.getCourses();
-        courses.stream().map(course -> {
+        courses.stream().peek(course -> {
             if (course.getIsActive()) {
                 CourseDetailResponse courseDetailResponse = new CourseDetailResponse();
                 courseDetailResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class, true);
@@ -520,11 +522,35 @@ public class CourseServiceImpl implements ICourseService {
                 courseDetailResponseList.add(courseDetailResponse);
 
             }
-            return course;
         }).collect(Collectors.toList());
         Page<CourseDetailResponse> page = new PageImpl<>(courseDetailResponseList);
         ApiPage<CourseDetailResponse> convert = PageUtil.convert(page);
         return convert ;
+    }
+
+    @Override
+    public List<CourseDetailResponse> getListCourseBySubject(long subjectId) {
+        Subject subject = subjectRepository.findById(subjectId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay subject"));
+
+        List<CourseDetailResponse> courseDetailResponseList= new ArrayList<>() ;
+        List<Course> courses = subject.getCourses();
+        for (Course course: courses){
+
+            CourseDetailResponse courseDetailResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class, true);
+
+            courseDetailResponse.setActive(course.getIsActive());
+
+            courseDetailResponse.setTitle(course.getTitle());
+            courseDetailResponse.setGrade(course.getGrade());
+            if (course.getResource() != null) {
+                courseDetailResponse.setImage(course.getResource().getUrl());
+            }
+            courseDetailResponse.setUnitPrice(course.getUnitPrice());
+
+            courseDetailResponseList.add(courseDetailResponse);
+        }
+
+        return courseDetailResponseList;
     }
 
 //

@@ -19,6 +19,8 @@ public class AccountResponse {
 
     private RoleDto role;
 
+    private String avatar ;
+
     private Boolean active;
 
     public Long getId() {
@@ -39,6 +41,14 @@ public class AccountResponse {
 
     public Boolean getActive() {
         return active;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public void setActive(Boolean active) {

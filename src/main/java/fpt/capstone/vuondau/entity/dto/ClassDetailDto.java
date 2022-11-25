@@ -1,11 +1,16 @@
 package fpt.capstone.vuondau.entity.dto;
 
 
+import fpt.capstone.vuondau.entity.TeacherCourseKey;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
+import fpt.capstone.vuondau.entity.response.AccountResponse;
+import fpt.capstone.vuondau.entity.response.CourseResponse;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
+import java.util.List;
 
-public class ClassDto {
+public class ClassDetailDto {
 
     private Long id ;
     private String name;
@@ -20,8 +25,16 @@ public class ClassDto {
     private String level;
 
     private Long numberStudent ;
-
+    
     private Long maxNumberStudent ;
+
+    private  boolean isActive ;
+
+    private CourseResponse course ;
+
+    private AccountResponse teacher ;
+
+    private List<AccountResponse> students ;
 
     public Long getId() {
         return id;
@@ -93,5 +106,38 @@ public class ClassDto {
 
     public void setMaxNumberStudent(Long maxNumberStudent) {
         this.maxNumberStudent = maxNumberStudent;
+    }
+
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public CourseResponse getCourse() {
+        return course;
+    }
+
+    public void setCourse(CourseResponse course) {
+        this.course = course;
+    }
+
+    public AccountResponse getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(AccountResponse teacher) {
+        this.teacher = teacher;
+    }
+
+    public List<AccountResponse> getStudents() {
+        return students;
+    }
+
+    public void setStudents(List<AccountResponse> students) {
+        this.students = students;
     }
 }

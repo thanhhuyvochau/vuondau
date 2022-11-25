@@ -1,12 +1,24 @@
 package fpt.capstone.vuondau.entity.dto;
 
+import java.time.Instant;
+
 public class StudentDto {
 
 
     private Long id ;
-    private String firstName;
-    private String lastName;
+
+    private String name;
     private String username ;
+
+    private String email ;
+
+    private Instant birthday ;
+
+    private RoleDto role ;
+
+    private String phoneNumber ;
+
+
 
     public Long getId() {
         return id;
@@ -16,20 +28,44 @@ public class StudentDto {
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getEmail() {
+        return email;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Instant getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Instant birthday) {
+        this.birthday = birthday;
+    }
+
+    public RoleDto getRole() {
+        return role;
+    }
+
+    public void setRole(RoleDto role) {
+        this.role = role;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public String getUsername() {
