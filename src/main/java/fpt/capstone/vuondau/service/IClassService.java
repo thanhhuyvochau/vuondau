@@ -6,7 +6,10 @@ import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCourseDataRequest;
 import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiPage;
+import fpt.capstone.vuondau.entity.dto.ClassDetailDto;
 import fpt.capstone.vuondau.entity.dto.ClassDto;
+import fpt.capstone.vuondau.entity.dto.ClassStudentDto;
+import fpt.capstone.vuondau.entity.dto.StudentDto;
 import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
 import org.springframework.data.domain.Pageable;
@@ -27,4 +30,12 @@ public interface IClassService {
     ApiPage<ClassDto> getClassRequesting(ClassSearchRequest query , Pageable pageable);
 
     Boolean studentEnrollClass(Long studentId, Long classId);
+
+    List<ClassStudentDto> getStudentWaitingIntoClass(Long classId);
+
+    List<ClassDto> searchClass(ClassSearchRequest query);
+
+    ClassDetailDto classDetail(Long id);
+
+    ApiPage<ClassDto> getAllClass( Pageable pageable);
 }

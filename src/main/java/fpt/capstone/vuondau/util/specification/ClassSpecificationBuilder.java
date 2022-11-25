@@ -30,28 +30,22 @@ public class ClassSpecificationBuilder {
         return this;
     }
 
-//    public ClassSpecificationBuilder queryLike(String q) {
-//        if (q == null || q.trim().isEmpty()) {
-//            return this;
-//        }
-//
-//        specifications.add((root, query, criteriaBuilder) -> {
-//            Expression<String> courseCode = root.get(Course_.CODE);
-//            Expression<String> courseName = root.get(Course_.NAME);
-//            Join<Course, TeacherCourse> teacherCourseJoin = root.join(Course_.teacherCourses, JoinType.INNER);
-//            Join<TeacherCourse, Account> teacherCourseAccountJoin = teacherCourseJoin.join(TeacherCourse_.ACCOUNT, JoinType.INNER);
-//            Expression<String> fullName = teacherCourseAccountJoin.get(Account_.NAME);
-//
-//            Join<Course, Subject> courseSubjectJoin = root.join(Course_.subject, JoinType.INNER);
-//            Expression<String> subject = courseSubjectJoin.get(Subject_.name);
-//
-//            Expression<String> stringExpression = SpecificationUtil.concat(criteriaBuilder, " " ,courseCode, courseName, fullName, subject);
-//            return criteriaBuilder.like(stringExpression, '%' + q + '%');
-//        });
-//
-//
-//        return this;
-//    }
+    public ClassSpecificationBuilder queryLike(String q) {
+        if (q == null || q.trim().isEmpty()) {
+            return this;
+        }
+
+        specifications.add((root, query, criteriaBuilder) -> {
+            Expression<String> classname  = root.get(Class_.name);
+
+
+            Expression<String> stringExpression = SpecificationUtil.concat(criteriaBuilder, " " ,classname);
+            return criteriaBuilder.like(stringExpression, '%' + q + '%');
+        });
+
+
+        return this;
+    }
 
     public Specification<Class> build() {
         return specifications.stream().filter(Objects::nonNull)

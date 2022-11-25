@@ -108,36 +108,14 @@ public class CourseController {
     public ResponseEntity<ApiResponse<ApiPage<CourseDetailResponse>>> getCourseBySubject(@PathVariable long subjectId ) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(courseService.getCourseBySubject(subjectId )));
     }
+    @Operation(summary = "lấy course theo subject khong phân trang")
 
-//    @Operation(description = "Lấy tất cả khóa học")
-//    @GetMapping
-//    public ResponseEntity<ApiResponse<List<CourseDetailResponse>>> getAll() {
-//        return ResponseEntity.ok(ApiResponse.success(courseService.getAll()));
-//    }
-//
-//
-//    @Operation(description = "Tìm kiếm khóa học bằng ")
-//    @GetMapping("/search")
-//    public ResponseEntity<ApiResponse<List<CourseDetailResponse>>> searchByName(@RequestParam String name) {
-//        return ResponseEntity.ok(ApiResponse.success(courseService.searchCourseByName(name)));
-//    }
-//
-//
-//    @Operation(description = "Tạo khóa học")
-//    @PostMapping
-//    public ResponseEntity<ApiResponse<CourseDetailResponse>> create(@RequestBody CourseRequest courseRequest) {
-//        return ResponseEntity.ok(ApiResponse.success(courseService.create(courseRequest)));
-//    }
-//
-//    @Operation(description = "Cập nhật khóa học")
-//    @PutMapping("/{id}")
-//    public ResponseEntity<ApiResponse<CourseDetailResponse>> update(@RequestBody CourseRequest courseRequest, Long id) {
-//        return ResponseEntity.ok(ApiResponse.success(courseService.update(courseRequest, id)));
-//    }
-//    @Operation(description = "Xóa khóa ")
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<ApiResponse<Boolean>> delete(@PathVariable Long id) {
-//        return ResponseEntity.ok(ApiResponse.success(courseService.delete(id)));
-//    }
+    @GetMapping("/{subjectId}/courses-subject")
+    public ResponseEntity<ApiResponse<List<CourseDetailResponse>>> getListCourseBySubject(@PathVariable long subjectId )  {
+        return ResponseEntity.ok(ApiResponse.success(courseService.getListCourseBySubject(subjectId)));
+
+    }
+
+
 
 }
