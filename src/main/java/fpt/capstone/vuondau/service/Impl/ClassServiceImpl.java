@@ -6,14 +6,20 @@ import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
 import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCourseDataRequest;
 import fpt.capstone.vuondau.MoodleRepository.Request.S1CourseRequest;
 import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleRecourseClassResponse;
+import fpt.capstone.vuondau.MoodleRepository.Response.ResourceMoodleResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
-import fpt.capstone.vuondau.entity.dto.ClassDto;
+import fpt.capstone.vuondau.entity.dto.*;
 import fpt.capstone.vuondau.entity.request.ClassSearchRequest;
+import fpt.capstone.vuondau.entity.request.CourseIdRequest;
 import fpt.capstone.vuondau.entity.request.CreateClassRequest;
+import fpt.capstone.vuondau.entity.response.AccountResponse;
+import fpt.capstone.vuondau.entity.response.CourseDetailResponse;
+import fpt.capstone.vuondau.entity.response.CourseResponse;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IClassService;
 import fpt.capstone.vuondau.util.MessageUtil;
@@ -44,16 +50,18 @@ public class ClassServiceImpl implements IClassService {
 
     private final MoodleCourseRepository moodleCourseRepository;
 
-    private final StudentClassRepository studentClassRepository ;
+    private final CourseServiceImpl courseServiceImpl;
+    private final StudentClassRepository studentClassRepository;
     private final MessageUtil messageUtil;
 
-    public ClassServiceImpl(RequestUtil requestUtil, AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, StudentClassRepository studentClassRepository, MessageUtil messageUtil) {
+    public ClassServiceImpl(RequestUtil requestUtil, AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil) {
         this.requestUtil = requestUtil;
         this.accountRepository = accountRepository;
         this.subjectRepository = subjectRepository;
         this.classRepository = classRepository;
         this.courseRepository = courseRepository;
         this.moodleCourseRepository = moodleCourseRepository;
+        this.courseServiceImpl = courseServiceImpl;
         this.studentClassRepository = studentClassRepository;
         this.messageUtil = messageUtil;
     }
@@ -192,10 +200,10 @@ public class ClassServiceImpl implements IClassService {
         if (course != null) {
             moodleCourseBody.setCategoryid(course.getSubject().getCategoryMoodleId());
         }
-        if (save.getStartDate()!= null) {
+        if (save.getStartDate() != null) {
             moodleCourseBody.setStartdate(save.getStartDate().toEpochMilli());
         }
-        if (save.getEndDate()!= null) {
+        if (save.getEndDate() != null) {
             moodleCourseBody.setEnddate(save.getEndDate().toEpochMilli());
         }
         moodleCourseBodyList.add(moodleCourseBody);
@@ -232,16 +240,15 @@ public class ClassServiceImpl implements IClassService {
 
         List<StudentClass> studentClasses = student.getStudentClasses();
         studentClasses.stream().map(studentClass -> {
-            if (studentClass.getaClass().equals(aClass)){
+            if (studentClass.getaClass().equals(aClass)) {
                 throw ApiException.create(HttpStatus.BAD_REQUEST)
                         .withMessage(messageUtil.getLocalMessage("student dang trong class nay roi"));
             }
-            return studentClass ;
+            return studentClass;
         }).collect(Collectors.toList());
 
-
-        StudentClass studentClass = new StudentClass() ;
-        StudentClassKey key = new StudentClassKey() ;
+        StudentClass studentClass = new StudentClass();
+        StudentClassKey key = new StudentClassKey();
         key.setClassId(aClass.getId());
         key.setStudentId(studentId);
 
@@ -249,14 +256,10 @@ public class ClassServiceImpl implements IClassService {
         studentClass.setAClass(aClass);
         studentClass.setAccount(student);
         studentClass.setIs_enrolled(false);
-
-
-
-
 //        Long numberStudent = aClass.getNumberStudent();
 //        aClass.setNumberStudent(numberStudent  + 1);
-        student.getStudentClasses().add(studentClass) ;
-        accountRepository.save(student) ;
+        student.getStudentClasses().add(studentClass);
+        accountRepository.save(student);
 
 
         return true;
@@ -267,9 +270,190 @@ public class ClassServiceImpl implements IClassService {
         return null;
     }
 
+    @Override
+    public List<ClassStudentDto> getStudentWaitingIntoClass(Long classId) {
+        Class aClass = classRepository.findById(classId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
+        List<StudentClass> studentClasses = aClass.getStudentClasses();
+
+        ClassStudentDto classStudentDto = new ClassStudentDto();
+        List<ClassStudentDto> classStudentDtos = new ArrayList<>();
+        classStudentDto.setClassId(classId);
+        List<StudentDto> studentList = new ArrayList<>();
+        studentClasses.stream().map(studentClass -> {
+            StudentDto studentDto = new StudentDto();
+            Account account = studentClass.getAccount();
+            if (account != null) {
+                studentDto = ObjectUtil.copyProperties(account, new StudentDto(), StudentDto.class);
+                studentDto.setRole(ObjectUtil.copyProperties(account.getRole(), new RoleDto(), RoleDto.class));
+//                studentDto.setPhoneNumber(account.getPhoneNumber());
+//                studentDto.setBirthday();
+            }
+
+            studentList.add(studentDto);
+            return studentClass;
+        }).collect(Collectors.toList());
+
+        classStudentDto.setStudents(studentList);
+        classStudentDtos.add(classStudentDto);
+        return classStudentDtos;
+    }
+
+    @Override
+    public List<ClassDto> searchClass(ClassSearchRequest query) {
+        ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
+                .queryLike(query.getQ());
+
+        List<Class> classList = classRepository.findAll(builder.build());
+        List<ClassDto> classDtoList = new ArrayList<>();
+        classList.stream().map(aClass -> {
+            ClassDto classDto = ObjectUtil.copyProperties(aClass, new ClassDto(), ClassDto.class);
+            classDtoList.add(classDto);
+            return aClass;
+        }).collect(Collectors.toList());
+        return classDtoList;
+    }
+
+    @Override
+    public ClassDetailDto classDetail(Long id) throws JsonProcessingException {
+        Class aClass = classRepository.findById(id)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
+        ClassDetailDto classDetail = ObjectUtil.copyProperties(aClass, new ClassDetailDto(), ClassDetailDto.class);
+        classDetail.setUnitPrice(aClass.getUnitPrice());
+        classDetail.setFinalPrice(aClass.getFinalPrice());
+        Course course = aClass.getCourse();
+        if (course != null) {
+
+            CourseDetailResponse courseDetailResponse = new CourseDetailResponse();
+
+
+            // set course
+            // set course detail
+
+            courseDetailResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class, true);
+            if (course.getResource() != null) {
+                courseDetailResponse.setImage(course.getResource().getUrl());
+            }
+            courseDetailResponse.setActive(course.getIsActive());
+            courseDetailResponse.setTitle(course.getTitle());
+
+            // set subject
+            Subject subject = course.getSubject();
+            if (subject != null) {
+                SubjectDto subjectDto = new SubjectDto();
+                subjectDto.setId(subject.getId());
+                subjectDto.setName(subject.getName());
+                subjectDto.setCode(subject.getCode());
+                courseDetailResponse.setSubject(subjectDto);
+            }
+
+
+            CourseIdRequest courseIdRequest = new CourseIdRequest();
+
+            courseIdRequest.setCourseid(aClass.getId());
+            try {
+                List<MoodleRecourseClassResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
+
+                List<MoodleRecourseClassResponse> moodleRecourseClassResponseList = new ArrayList<>();
+                resourceCourse.stream().peek(moodleRecourseClassResponse -> {
+                    MoodleRecourseClassResponse setResource = ObjectUtil.copyProperties(moodleRecourseClassResponse, new MoodleRecourseClassResponse(), MoodleRecourseClassResponse.class);
+
+                    List<ResourceMoodleResponse> modules = moodleRecourseClassResponse.getModules();
+                    List<ResourceMoodleResponse> resourceMoodleResponseList = new ArrayList<>();
+                    modules.stream().peek(moodleResponse -> {
+
+                        ResourceMoodleResponse resourceMoodleResponse = ObjectUtil.copyProperties(moodleResponse, new ResourceMoodleResponse(), ResourceMoodleResponse.class);
+
+                        resourceMoodleResponseList.add(resourceMoodleResponse);
+                    }).collect(Collectors.toList());
+
+                    setResource.setModules(resourceMoodleResponseList);
+
+                    moodleRecourseClassResponseList.add(setResource);
+                }).collect(Collectors.toList());
+                courseDetailResponse.setRecourses(moodleRecourseClassResponseList);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+            classDetail.setCourse(courseDetailResponse);
+
+        }
+
+
+        Account account = aClass.getAccount();
+        if (account != null) {
+            AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class);
+            accountResponse.setRole(ObjectUtil.copyProperties(account.getRole(), new RoleDto(), RoleDto.class));
+            Resource resource = account.getResource();
+            if (resource != null) {
+                accountResponse.setAvatar(resource.getUrl());
+            }
+            classDetail.setTeacher(accountResponse);
+        }
+
+
+        List<Account> studentList = aClass.getStudentClasses().stream().map(StudentClass::getAccount).collect(Collectors.toList());
+
+        List<AccountResponse> accountResponses = new ArrayList<>();
+        studentList.stream().map(studentMap -> {
+            AccountResponse student = ObjectUtil.copyProperties(studentMap, new AccountResponse(), AccountResponse.class);
+            student.setRole(ObjectUtil.copyProperties(studentMap.getRole(), new RoleDto(), RoleDto.class));
+            if (studentMap.getRequests() != null) {
+                student.setAvatar(studentMap.getResource().getUrl());
+            }
+
+            accountResponses.add(student);
+            return studentMap;
+        }).collect(Collectors.toList());
+        classDetail.setStudents(accountResponses);
+
+
+        return classDetail;
+    }
+
+    @Override
+    public ApiPage<ClassDto> getAllClass(Pageable pageable) {
+        Page<Class> classesPage = classRepository.findAllByIsActiveIsTrue(pageable);
+
+        return PageUtil.convert(classesPage.map(this::convertClassToClassResponse));
+
+    }
+
     public ClassDto convertClassToClassResponse(Class aclass) {
         ClassDto classDto = ObjectUtil.copyProperties(aclass, new ClassDto(), ClassDto.class);
+        Course course = aclass.getCourse();
 
+
+        CourseResponse courseResponse = new CourseResponse();
+        courseResponse.setId(course.getId());
+
+        courseResponse.setCourseName(course.getName());
+
+
+        courseResponse.setCourseTitle(course.getTitle());
+
+
+        if (aclass.getAccount() != null) {
+            courseResponse.setTeacherName(aclass.getAccount().getName());
+        }
+
+
+        courseResponse.setUnitPriceCourse(aclass.getUnitPrice());
+        courseResponse.setFinalPriceCourse(aclass.getFinalPrice());
+
+
+        if (course.getResource() != null) {
+            courseResponse.setImage(course.getResource().getUrl());
+        }
+        Subject subject = course.getSubject();
+        if (subject != null) {
+            courseResponse.setSubject(ObjectUtil.copyProperties(subject, new SubjectDto(), SubjectDto.class));
+        }
+
+
+        classDto.setCourse(courseResponse);
         return classDto;
     }
 
@@ -286,7 +470,7 @@ public class ClassServiceImpl implements IClassService {
 //        }).collect(Collectors.toList()) ;
 //        return classList;
 //    }
-
+//
 
 
 }

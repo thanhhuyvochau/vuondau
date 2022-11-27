@@ -3,26 +3,20 @@ package fpt.capstone.vuondau;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
 import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCategoryRequest;
-import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCourseDataRequest;
 import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCreateCategoryRequest;
-import fpt.capstone.vuondau.MoodleRepository.Request.S1CourseRequest;
 import fpt.capstone.vuondau.MoodleRepository.Response.CategoryResponse;
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
-import fpt.capstone.vuondau.entity.RequestType;
-import fpt.capstone.vuondau.entity.Role;
-import fpt.capstone.vuondau.entity.Subject;
+import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
+import fpt.capstone.vuondau.entity.common.EDayOfWeekCode;
+import fpt.capstone.vuondau.entity.common.ESlotCode;
 import fpt.capstone.vuondau.entity.common.ESubjectCode;
-import fpt.capstone.vuondau.repository.RequestTypeRepository;
-import fpt.capstone.vuondau.repository.RoleRepository;
-import fpt.capstone.vuondau.repository.SubjectRepository;
+import fpt.capstone.vuondau.repository.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -40,18 +34,23 @@ public class HatdauApplication {
     private final RoleRepository roleRepository;
 
 
-
     private final SubjectRepository subjectRepository;
 
-    private final RequestTypeRepository requestTypeRepository ;
+    private final RequestTypeRepository requestTypeRepository;
 
     private final MoodleCourseRepository moodleCourseRepository;
 
-    public HatdauApplication(RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository, MoodleCourseRepository moodleCourseRepository) {
+    private final SlotRepository slotRepository;
+
+    private final DayOfWeekRepository dayOfWeekRepository ;
+
+    public HatdauApplication(RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository, MoodleCourseRepository moodleCourseRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository) {
         this.roleRepository = roleRepository;
         this.subjectRepository = subjectRepository;
         this.requestTypeRepository = requestTypeRepository;
         this.moodleCourseRepository = moodleCourseRepository;
+        this.slotRepository = slotRepository;
+        this.dayOfWeekRepository = dayOfWeekRepository;
     }
 
     public static void main(String[] args) {
@@ -107,7 +106,7 @@ public class HatdauApplication {
             }
         }
 
-        List<RequestType> requestTypeList= new ArrayList<>();
+        List<RequestType> requestTypeList = new ArrayList<>();
         if (!existTypeAvatar) {
             RequestType requestType = new RequestType();
             requestType.setCode(AVATAR);
@@ -130,13 +129,12 @@ public class HatdauApplication {
     public void intiDataSubject() throws JsonProcessingException {
         List<Subject> allSubject = subjectRepository.findAll();
         Boolean existToan = false;
-        Boolean existVatLy= false;
-        Boolean existHoaHoc= false;
-        Boolean existTiengAnh= false;
-        Boolean existSinhHoc= false;
-        Boolean existNguVan= false;
+        Boolean existVatLy = false;
+        Boolean existHoaHoc = false;
+        Boolean existTiengAnh = false;
+        Boolean existSinhHoc = false;
+        Boolean existNguVan = false;
         Boolean existTinHoc = false;
-
 
 
         for (Subject subject : allSubject) {
@@ -207,7 +205,6 @@ public class HatdauApplication {
         }
 
 
-
         subjectRepository.saveAll(subjectList);
     }
 
@@ -215,11 +212,11 @@ public class HatdauApplication {
     public void intiSubjectToMoodle() throws JsonProcessingException {
 
         MoodleCategoryRequest request = new MoodleCategoryRequest();
-        List< MoodleCategoryRequest.MoodleCategoryBody> moodleCategoryBodyList = new ArrayList<>() ;
-        MoodleCategoryRequest.MoodleCategoryBody moodleCategoryBody = new MoodleCategoryRequest.MoodleCategoryBody() ;
+        List<MoodleCategoryRequest.MoodleCategoryBody> moodleCategoryBodyList = new ArrayList<>();
+        MoodleCategoryRequest.MoodleCategoryBody moodleCategoryBody = new MoodleCategoryRequest.MoodleCategoryBody();
         moodleCategoryBody.setKey("id");
         moodleCategoryBody.setValue("");
-        moodleCategoryBodyList.add(moodleCategoryBody) ;
+        moodleCategoryBodyList.add(moodleCategoryBody);
         request.setCriteria(moodleCategoryBodyList);
         List<CategoryResponse> category = moodleCourseRepository.getCategory(request);
 
@@ -231,9 +228,9 @@ public class HatdauApplication {
 
         List<String> collect = allNameSubject.stream().filter(s -> !allNameCategory.contains(s)).filter(Objects::nonNull).collect(Collectors.toList());
 
-        MoodleCreateCategoryRequest moodleCreateCategoryRequest = new MoodleCreateCategoryRequest() ;
+        MoodleCreateCategoryRequest moodleCreateCategoryRequest = new MoodleCreateCategoryRequest();
 
-        List<MoodleCreateCategoryRequest.MoodleCreateCategoryBody> moodleCreateCategoryBodyList = new ArrayList<>() ;
+        List<MoodleCreateCategoryRequest.MoodleCreateCategoryBody> moodleCreateCategoryBodyList = new ArrayList<>();
 
         for (String s : collect) {
             MoodleCreateCategoryRequest.MoodleCreateCategoryBody set = new MoodleCreateCategoryRequest.MoodleCreateCategoryBody();
@@ -243,23 +240,23 @@ public class HatdauApplication {
             set.setDescription("");
             set.setDescriptionformat(0L);
 
-            moodleCreateCategoryBodyList.add(set) ;
+            moodleCreateCategoryBodyList.add(set);
         }
 
 
-
-        moodleCreateCategoryRequest.setCategories(moodleCreateCategoryBodyList) ;
+        moodleCreateCategoryRequest.setCategories(moodleCreateCategoryBodyList);
         moodleCourseRepository.postCategory(moodleCreateCategoryRequest);
 
     }
+
     @EventListener(ApplicationReadyEvent.class)
     public void intiMoodleCategoryIdToSubject() throws JsonProcessingException {
         MoodleCategoryRequest request = new MoodleCategoryRequest();
-        List< MoodleCategoryRequest.MoodleCategoryBody> moodleCategoryBodyList = new ArrayList<>() ;
-        MoodleCategoryRequest.MoodleCategoryBody moodleCategoryBody = new MoodleCategoryRequest.MoodleCategoryBody() ;
+        List<MoodleCategoryRequest.MoodleCategoryBody> moodleCategoryBodyList = new ArrayList<>();
+        MoodleCategoryRequest.MoodleCategoryBody moodleCategoryBody = new MoodleCategoryRequest.MoodleCategoryBody();
         moodleCategoryBody.setKey("id");
         moodleCategoryBody.setValue("");
-        moodleCategoryBodyList.add(moodleCategoryBody) ;
+        moodleCategoryBodyList.add(moodleCategoryBody);
         request.setCriteria(moodleCategoryBodyList);
         List<CategoryResponse> category = moodleCourseRepository.getCategory(request);
 
@@ -271,19 +268,236 @@ public class HatdauApplication {
 
         List<String> collect = allNameSubject.stream().filter(allNameCategory::contains).filter(Objects::nonNull).collect(Collectors.toList());
 
-        List<Subject>subjectList = new ArrayList<>() ;
+        List<Subject> subjectList = new ArrayList<>();
         for (String s : collect) {
-            ESubjectCode eSubjectCode = ESubjectCode.valueOf(s) ;
+            ESubjectCode eSubjectCode = ESubjectCode.valueOf(s);
             Subject byCode = subjectRepository.findByCode(eSubjectCode);
-            for (CategoryResponse categoryResponse : category){
-                if (categoryResponse.getName().equals(byCode.getCode().name())){
+            for (CategoryResponse categoryResponse : category) {
+                if (categoryResponse.getName().equals(byCode.getCode().name())) {
                     byCode.setCategoryMoodleId(categoryResponse.getId());
-                    subjectList.add(byCode) ;
+                    subjectList.add(byCode);
                 }
             }
 
         }
-        subjectRepository.saveAll(subjectList) ;
+        subjectRepository.saveAll(subjectList);
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void intiDatSlot() {
+
+        List<Slot> allSlot = slotRepository.findAll();
+        Boolean existSlot1 = false;
+        Boolean existSlot2 = false;
+        Boolean existSlot3 = false;
+        Boolean existSlot4 = false;
+        Boolean existSlot5 = false;
+        Boolean existSlot6 = false;
+        Boolean existSlot7 = false;
+        Boolean existSlot8 = false;
+        Boolean existSlot9 = false;
+        Boolean existSlot10 = false;
+        for (Slot slot : allSlot) {
+            if (slot.getCode().equals(ESlotCode.SLOT1)) {
+                existSlot1 = true;
+            }
+            if (slot.getCode().equals(ESlotCode.SLOT2)) {
+                existSlot2 = true;
+            }
+            if (slot.getCode().equals(ESlotCode.SLOT3)) {
+                existSlot1 = true;
+            }
+            if (slot.getCode().equals(ESlotCode.SLOT4)) {
+                existSlot1 = true;
+            }
+            if (slot.getCode().equals(ESlotCode.SLOT5)) {
+                existSlot1 = true;
+            }
+            if (slot.getCode().equals(ESlotCode.SLOT6)) {
+                existSlot1 = true;
+            }
+            if (slot.getCode().equals(ESlotCode.SLOT7)) {
+                existSlot1 = true;
+            }
+            if (slot.getCode().equals(ESlotCode.SLOT8)) {
+                existSlot1 = true;
+            }
+            if (slot.getCode().equals(ESlotCode.SLOT9)) {
+                existSlot1 = true;
+            }
+            if (slot.getCode().equals(ESlotCode.SLOT10)) {
+                existSlot1 = true;
+            }
+        }
+
+        List<Slot> slotList = new ArrayList<>();
+        if (!existSlot1) {
+            Slot slotOne = new Slot();
+            slotOne.setCode(ESlotCode.SLOT1);
+            slotOne.setName("slot One");
+            slotOne.setStartTime("07:00");
+            slotOne.setEndTime("08:30");
+            slotList.add(slotOne);
+        }
+        if (!existSlot2) {
+            Slot slotTwo = new Slot();
+            slotTwo.setCode(ESlotCode.SLOT2);
+            slotTwo.setName("slot Two");
+            slotTwo.setStartTime("08:30");
+            slotTwo.setEndTime("10:00");
+            slotList.add(slotTwo);
+        }
+
+        if (!existSlot3) {
+            Slot slotThree = new Slot();
+            slotThree.setCode(ESlotCode.SLOT3);
+            slotThree.setName("slot Three");
+            slotThree.setStartTime("10:00");
+            slotThree.setEndTime("11:30");
+            slotList.add(slotThree);
+        }
+
+        if (!existSlot4) {
+            Slot slotFour = new Slot();
+            slotFour.setCode(ESlotCode.SLOT4);
+            slotFour.setName("slot Four");
+            slotFour.setStartTime("11:30");
+            slotFour.setEndTime("13:00");
+            slotList.add(slotFour);
+        }
+
+        if (!existSlot5) {
+            Slot slotFive = new Slot();
+            slotFive.setCode(ESlotCode.SLOT5);
+            slotFive.setName("slot Fine");
+            slotFive.setStartTime("13:00");
+            slotFive.setEndTime("14:30");
+            slotList.add(slotFive);
+        }
+
+        if (!existSlot6) {
+            Slot slotSix = new Slot();
+            slotSix.setCode(ESlotCode.SLOT6);
+            slotSix.setName("slot Six");
+            slotSix.setStartTime("14:30");
+            slotSix.setEndTime("16:00");
+            slotList.add(slotSix);
+        }
+
+        if (!existSlot7) {
+            Slot slotTwo = new Slot();
+            slotTwo.setCode(ESlotCode.SLOT7);
+            slotTwo.setName("slot Seven");
+            slotTwo.setStartTime("16:00");
+            slotTwo.setEndTime("17:30");
+            slotList.add(slotTwo);
+        }
+
+
+        if (!existSlot8) {
+            Slot slotEight = new Slot();
+            slotEight.setCode(ESlotCode.SLOT8);
+            slotEight.setName("slot Eight");
+            slotEight.setStartTime("17:30");
+            slotEight.setEndTime("19:00");
+            slotList.add(slotEight);
+        }
+
+
+        if (!existSlot9) {
+            Slot slotTwo = new Slot();
+            slotTwo.setCode(ESlotCode.SLOT9);
+            slotTwo.setName("slot Nine");
+            slotTwo.setStartTime("19:00");
+            slotTwo.setEndTime("20:30");
+            slotList.add(slotTwo);
+        }
+        slotRepository.saveAll(slotList);
+
+
+    }
+    @EventListener(ApplicationReadyEvent.class)
+    public void intiDataDateOfWeek() {
+
+        List<DayOfWeek> allDayOfWeeks = dayOfWeekRepository.findAll();
+
+        Boolean existDay2 = false;
+        Boolean existDay3 = false;
+        Boolean existDay4 = false;
+        Boolean existDay5 = false;
+        Boolean existDay6 = false;
+        Boolean existDay7 = false;
+        for (DayOfWeek dayOfWeek : allDayOfWeeks) {
+            if (dayOfWeek.getCode().equals(EDayOfWeekCode.ThuHai)) {
+                existDay2 = true;
+            }
+            if (dayOfWeek.getCode().equals(EDayOfWeekCode.ThuBa)) {
+                existDay3 = true;
+            }
+            if (dayOfWeek.getCode().equals(EDayOfWeekCode.ThuTu)) {
+                existDay4 = true;
+            }
+            if (dayOfWeek.getCode().equals(EDayOfWeekCode.ThuNam)) {
+                existDay5 = true;
+            }
+            if (dayOfWeek.getCode().equals(EDayOfWeekCode.ThuSau)) {
+                existDay6 = true;
+            }
+            if (dayOfWeek.getCode().equals(EDayOfWeekCode.ThuBay)) {
+                existDay7 = true;
+            }
+
+
+        }
+
+        List<DayOfWeek> dayOfWeekList = new ArrayList<>();
+        if (!existDay2) {
+            DayOfWeek dayOfWeek = new DayOfWeek() ;
+            dayOfWeek.setCode(EDayOfWeekCode.ThuHai);
+            dayOfWeek.setName("Thứ hai");
+            dayOfWeekList.add(dayOfWeek);
+        }
+        if (!existDay3) {
+            DayOfWeek dayOfWeek = new DayOfWeek() ;
+            dayOfWeek.setCode(EDayOfWeekCode.ThuBa);
+            dayOfWeek.setName("Thứ Ba");
+            dayOfWeekList.add(dayOfWeek);
+        }
+
+        if (!existDay4) {
+            DayOfWeek dayOfWeek = new DayOfWeek() ;
+            dayOfWeek.setCode(EDayOfWeekCode.ThuTu);
+            dayOfWeek.setName("Thứ Tư");
+            dayOfWeekList.add(dayOfWeek);
+        }
+
+        if (!existDay5) {
+            DayOfWeek dayOfWeek = new DayOfWeek() ;
+            dayOfWeek.setCode(EDayOfWeekCode.ThuNam);
+            dayOfWeek.setName("Thứ Năm");
+            dayOfWeekList.add(dayOfWeek);
+        }
+
+        if (!existDay6) {
+            DayOfWeek dayOfWeek = new DayOfWeek() ;
+            dayOfWeek.setCode(EDayOfWeekCode.ThuSau);
+            dayOfWeek.setName("Thứ Sáu");
+            dayOfWeekList.add(dayOfWeek);
+        }
+
+        if (!existDay7) {
+            DayOfWeek dayOfWeek = new DayOfWeek() ;
+            dayOfWeek.setCode(EDayOfWeekCode.ThuBay);
+            dayOfWeek.setName("Thứ Bảy");
+            dayOfWeekList.add(dayOfWeek);
+        }
+
+
+
+
+        dayOfWeekRepository.saveAll(dayOfWeekList);
+
+
     }
 
 }

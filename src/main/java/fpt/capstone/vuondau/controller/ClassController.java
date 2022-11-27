@@ -8,7 +8,10 @@ import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.Subject;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
+import fpt.capstone.vuondau.entity.dto.ClassDetailDto;
 import fpt.capstone.vuondau.entity.dto.ClassDto;
+import fpt.capstone.vuondau.entity.dto.ClassStudentDto;
+import fpt.capstone.vuondau.entity.dto.StudentDto;
 import fpt.capstone.vuondau.entity.request.ClassSearchRequest;
 import fpt.capstone.vuondau.entity.request.CreateClassRequest;
 import fpt.capstone.vuondau.entity.request.SubjectSearchRequest;
@@ -48,6 +51,11 @@ public class ClassController {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getClassRequesting(query, pageable)));
     }
 
+    @Operation(summary = "lấy tất cả class có phân trang")
+    @GetMapping({"/all-class"})
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getAllClass( Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.getAllClass( pageable)));
+    }
 
     @Operation(summary = "Admin phê duyệt request tao class của teacher ")
     @PostMapping({"/{id}/approve-class"})
@@ -68,7 +76,26 @@ public class ClassController {
         return ResponseEntity.ok(ApiResponse.success(iClassService.studentEnrollClass(studentId , classId)));
     }
 
+    @Operation(summary = "lấy danh sachs tất cả hoc sinh dang  chờ duyệt để vào class")
+    @GetMapping({"/{classId}/student-waiting-approve"})
+    public ResponseEntity<ApiResponse<List<ClassStudentDto>>> getStudentWaitingIntoClass(@PathVariable Long classId) {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.getStudentWaitingIntoClass(classId)));
+    }
 
+    @Operation(summary = "Tìm Kiếm class")
+    @GetMapping("/search-class")
+    public ResponseEntity<ApiResponse<List<ClassDto>>> searchClass(@Nullable ClassSearchRequest query
+           ) {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.searchClass(query)));
+    }
+
+
+
+    @Operation(summary = "chi tiết class")
+    @GetMapping("/{id}/class-detail")
+    public ResponseEntity<ApiResponse<ClassDetailDto>> classDetail(@PathVariable Long id) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.classDetail(id)));
+    }
 
     @Operation(summary = "lấy tất cả hoc sinh request vao lớp ")
     @GetMapping({"{classId}/students-approve-class"})

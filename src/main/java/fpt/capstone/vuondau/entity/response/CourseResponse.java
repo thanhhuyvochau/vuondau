@@ -37,6 +37,8 @@ public class CourseResponse {
     private SubjectDto subject ;
 
 
+    private Long totalClass ;
+
 
     public Long getId() {
         return id;
@@ -100,5 +102,13 @@ public class CourseResponse {
 
     public void setSubject(SubjectDto subject) {
         this.subject = subject;
+    }
+
+    public Long getTotalClass() {
+        return totalClass;
+    }
+
+    public void setTotalClass(Long totalClass) {
+        this.totalClass = totalClass;
     }
 }

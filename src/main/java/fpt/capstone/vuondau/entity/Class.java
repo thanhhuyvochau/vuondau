@@ -4,6 +4,7 @@ package fpt.capstone.vuondau.entity;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +68,17 @@ public class Class {
     private boolean isActive ;
 
 
+    @Column(name = "unit_price")
+    private BigDecimal unitPrice;
+
+    @Column(name = "final_price")
+    private BigDecimal finalPrice;
+
+    @OneToMany(mappedBy = "clazz", cascade = CascadeType.ALL)
+    private List<TimeTable> timeTables;
+
+    @Column(name = "resource_mooodle_id")
+    private BigDecimal resourceMoodleId;
 
 
     public Long getId() {
@@ -190,5 +202,35 @@ public class Class {
         this.maxNumberStudent = maxNumberStudent;
     }
 
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
+    }
 
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public BigDecimal getFinalPrice() {
+        return finalPrice;
+    }
+
+    public void setFinalPrice(BigDecimal finalPrice) {
+        this.finalPrice = finalPrice;
+    }
+
+    public List<TimeTable> getTimeTables() {
+        return timeTables;
+    }
+
+    public void setTimeTables(List<TimeTable> timeTables) {
+        this.timeTables = timeTables;
+    }
+
+    public BigDecimal getResourceMoodleId() {
+        return resourceMoodleId;
+    }
+
+    public void setResourceMoodleId(BigDecimal resourceMoodleId) {
+        this.resourceMoodleId = resourceMoodleId;
+    }
 }

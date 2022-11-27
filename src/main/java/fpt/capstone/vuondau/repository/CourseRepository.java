@@ -22,5 +22,6 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     Optional<Course> findByIdAndIsActiveTrue ( Long id) ;
     Page<Course> findAll(Specification<Course> spec, Pageable pageable);
 
+    Page<Course> findAllByIsActiveIsTrue( Pageable pageable);
 
 }
