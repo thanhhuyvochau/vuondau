@@ -31,11 +31,15 @@ public interface IClassService {
 
     Boolean studentEnrollClass(Long studentId, Long classId);
 
+
+    List<ClassDto> studentWaitingApproveIntoClass(Long classId);
+
     List<ClassStudentDto> getStudentWaitingIntoClass(Long classId);
 
     List<ClassDto> searchClass(ClassSearchRequest query);
 
-    ClassDetailDto classDetail(Long id);
+    ClassDetailDto classDetail(Long id) throws JsonProcessingException;
 
     ApiPage<ClassDto> getAllClass( Pageable pageable);
+
 }

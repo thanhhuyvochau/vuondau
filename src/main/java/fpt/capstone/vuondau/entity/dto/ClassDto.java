@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.entity.dto;
 
 
 import fpt.capstone.vuondau.entity.common.EClassStatus;
+import fpt.capstone.vuondau.entity.response.CourseResponse;
 
 import java.time.Instant;
 
@@ -22,6 +23,8 @@ public class ClassDto {
     private Long numberStudent ;
 
     private Long maxNumberStudent ;
+
+    private CourseResponse course ;
 
     public Long getId() {
         return id;
@@ -93,5 +96,13 @@ public class ClassDto {
 
     public void setMaxNumberStudent(Long maxNumberStudent) {
         this.maxNumberStudent = maxNumberStudent;
+    }
+
+    public CourseResponse getCourse() {
+        return course;
+    }
+
+    public void setCourse(CourseResponse course) {
+        this.course = course;
     }
 }

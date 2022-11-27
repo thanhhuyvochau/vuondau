@@ -124,16 +124,16 @@ public class CartServiceImpl implements ICartService {
                         if (course.getResource() != null) {
                             courseResponse.setImage(course.getResource().getUrl());
                         }
-                        courseResponse.setUnitPriceCourse(course.getUnitPrice());
-                        courseResponse.setFinalPriceCourse(course.getFinalPrice());
+//                        courseResponse.setUnitPriceCourse(course.getUnitPrice());
+//                        courseResponse.setFinalPriceCourse(course.getFinalPrice());
                         if (!course.getTeacherCourses().isEmpty()) {
                             Account account = course.getTeacherCourses().stream().map(TeacherCourse::getAccount).findFirst().get();
 
                             courseResponse.setTeacherName(account.getName());
                         }
-                        if (course.getFinalPrice()!= null){
-                            totalPrice = totalPrice.add(course.getFinalPrice());
-                        }
+//                        if (course.getFinalPrice()!= null){
+//                            totalPrice = totalPrice.add(course.getFinalPrice());
+//                        }
                         quantity+= 1 ;
 
                         courseResponse.setSubject(ObjectUtil.copyProperties(course.getSubject(), new SubjectDto() , SubjectDto.class));

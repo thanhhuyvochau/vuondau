@@ -4,9 +4,12 @@ package fpt.capstone.vuondau.entity.dto;
 import fpt.capstone.vuondau.entity.TeacherCourseKey;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
+import fpt.capstone.vuondau.entity.response.CourseDetailResponse;
 import fpt.capstone.vuondau.entity.response.CourseResponse;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.jetbrains.annotations.Nullable;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
@@ -24,17 +27,27 @@ public class ClassDetailDto {
 
     private String level;
 
+
+    private BigDecimal unitPrice;
+
+
+    private BigDecimal finalPrice;
+
     private Long numberStudent ;
     
     private Long maxNumberStudent ;
 
     private  boolean isActive ;
 
-    private CourseResponse course ;
+//    private CourseResponse course ;
+
+    private CourseDetailResponse  course ;
 
     private AccountResponse teacher ;
 
     private List<AccountResponse> students ;
+
+
 
     public Long getId() {
         return id;
@@ -58,6 +71,22 @@ public class ClassDetailDto {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public BigDecimal getFinalPrice() {
+        return finalPrice;
+    }
+
+    public void setFinalPrice(BigDecimal finalPrice) {
+        this.finalPrice = finalPrice;
     }
 
     public Instant getStartDate() {
@@ -116,12 +145,21 @@ public class ClassDetailDto {
     public void setActive(boolean active) {
         isActive = active;
     }
+//
+//    public CourseResponse getCourse() {
+//        return course;
+//    }
+//
+//    public void setCourse(CourseResponse course) {
+//        this.course = course;
+//    }
 
-    public CourseResponse getCourse() {
+
+    public CourseDetailResponse getCourse() {
         return course;
     }
 
-    public void setCourse(CourseResponse course) {
+    public void setCourse(CourseDetailResponse course) {
         this.course = course;
     }
 
