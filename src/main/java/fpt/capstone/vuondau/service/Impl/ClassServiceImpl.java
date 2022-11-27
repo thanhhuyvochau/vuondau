@@ -239,6 +239,7 @@ public class ClassServiceImpl implements IClassService {
             return studentClass ;
         }).collect(Collectors.toList());
 
+
         StudentClass studentClass = new StudentClass() ;
         StudentClassKey key = new StudentClassKey() ;
         key.setClassId(aClass.getId());
@@ -248,6 +249,10 @@ public class ClassServiceImpl implements IClassService {
         studentClass.setAClass(aClass);
         studentClass.setAccount(student);
         studentClass.setIs_enrolled(false);
+
+
+
+
 //        Long numberStudent = aClass.getNumberStudent();
 //        aClass.setNumberStudent(numberStudent  + 1);
         student.getStudentClasses().add(studentClass) ;
@@ -257,8 +262,14 @@ public class ClassServiceImpl implements IClassService {
         return true;
     }
 
+    @Override
+    public List<ClassDto> studentWaitingApproveIntoClass(Long classId) {
+        return null;
+    }
+
     public ClassDto convertClassToClassResponse(Class aclass) {
         ClassDto classDto = ObjectUtil.copyProperties(aclass, new ClassDto(), ClassDto.class);
+
         return classDto;
     }
 
@@ -275,7 +286,7 @@ public class ClassServiceImpl implements IClassService {
 //        }).collect(Collectors.toList()) ;
 //        return classList;
 //    }
-//
+
 
 
 }

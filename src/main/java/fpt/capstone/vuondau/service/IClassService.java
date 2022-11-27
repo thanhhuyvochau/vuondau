@@ -27,4 +27,6 @@ public interface IClassService {
     ApiPage<ClassDto> getClassRequesting(ClassSearchRequest query , Pageable pageable);
 
     Boolean studentEnrollClass(Long studentId, Long classId);
+
+    List<ClassDto> studentWaitingApproveIntoClass(Long classId);
 }
