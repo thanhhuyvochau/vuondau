@@ -4,21 +4,25 @@ import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.request.SubjectRequest;
+import fpt.capstone.vuondau.entity.request.SubjectSearchRequest;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
 import fpt.capstone.vuondau.repository.AccountRepository;
 import fpt.capstone.vuondau.repository.CourseRepository;
 import fpt.capstone.vuondau.repository.StudentAnswerRepository;
 import fpt.capstone.vuondau.repository.SubjectRepository;
 import fpt.capstone.vuondau.service.ISubjectService;
+import fpt.capstone.vuondau.util.ConvertUtil;
 import fpt.capstone.vuondau.util.MessageUtil;
 import fpt.capstone.vuondau.util.ObjectUtil;
 import fpt.capstone.vuondau.util.PageUtil;
+import fpt.capstone.vuondau.util.specification.SubjectSpecificationBuilder;
 import fpt.capstone.vuondau.util.specification.SuggestSubjectSpecificationBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.Convert;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -111,7 +115,7 @@ public class SubjectServiceImpl implements ISubjectService {
         List<Answer> answer = studentAnswers.stream().map(StudentAnswer::getAnswer).collect(Collectors.toList());
 
         List<String> stringAnswer = answer.stream().map(Answer::getAnswer).collect(Collectors.toList());
-        String queryString= String.join(" ", stringAnswer) ;
+        String queryString = String.join(" ", stringAnswer);
 
 
 //        SuggestSubjectSpecificationBuilder builder = SuggestSubjectSpecificationBuilder.specification()
@@ -129,29 +133,33 @@ public class SubjectServiceImpl implements ISubjectService {
 
         Page<Subject> subjectPage = subjectRepository.findAll(builder.build(), pageable);
 
-        return PageUtil.convert(subjectPage.map(this::convertSubjectToSubjectResponse));
+        return PageUtil.convert(subjectPage.map(ConvertUtil::doConvertEntityToResponse));
     }
 
     @Override
-    public List<SubjectResponse> getListSubject() {
-        List<SubjectResponse>subjectResponseList = new ArrayList<>();
-        List<Subject> all = subjectRepository.findAll();
-        all.stream().map(subject -> {
-            subjectResponseList.add(ObjectUtil.copyProperties(subject , new SubjectResponse() , SubjectResponse.class)) ;
-            return subject ;
-        }).collect(Collectors.toList());
-        return subjectResponseList;
-    }
+    public List<SubjectResponse> getAllWithoutPaging() {
 
-    public SubjectResponse convertSubjectToSubjectResponse(Subject subject) {
-        SubjectResponse subjectResponse = new SubjectResponse();
-        subjectResponse.setId(subject.getId());
-        subjectResponse.setCode(subject.getCode());
-        subjectResponse.setName(subject.getName());
-        List<Long> idCourse = subject.getCourses().stream().map(Course::getId).collect(Collectors.toList());
-        subjectResponse.setCourseIds(idCourse);
-        return subjectResponse;
+        List<Subject> subjects = subjectRepository.findAll();
+        return subjects.stream()
+                .map(ConvertUtil::doConvertEntityToResponse)
+                .collect(Collectors.toList());
     }
 
 
+    @Override
+    public ApiPage<SubjectResponse> getAllWithPaging(Pageable pageable) {
+        Page<Subject> allSubjects = subjectRepository.findAll(pageable);
+        return PageUtil.convert(allSubjects.map(ConvertUtil::doConvertEntityToResponse));
+    }
+
+    @Override
+    public ApiPage<SubjectResponse> searchSubject(SubjectSearchRequest query, Pageable pageable) {
+        SubjectSpecificationBuilder builder = SubjectSpecificationBuilder.specification()
+                .queryLike(query.getQ());
+
+        Page<Subject> coursePage = subjectRepository.findAll(builder.build(), pageable);
+
+        return PageUtil.convert(coursePage.map(ConvertUtil::doConvertEntityToResponse));
+
+    }
 }

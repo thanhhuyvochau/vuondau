@@ -18,12 +18,16 @@ import java.util.Optional;
 public interface AccountRepository extends JpaRepository<Account, Long> {
 //    Optional<Account> findByUsername(String username);
 
-    List<Account> findAccountByRole(EAccountRole eAccountRole);
+    Page<Account> findAccountByRole(Pageable pageable, EAccountRole eAccountRole);
 
 
     Page<Account> findAll(Specification<Account> spec, Pageable pageable);
 
     Boolean existsAccountByUsername(String username);
+
     Boolean existsAccountByEmail(String email);
+
     Account findByUsername(String username);
+
+
 }

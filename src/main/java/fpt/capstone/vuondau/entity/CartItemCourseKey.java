@@ -15,7 +15,6 @@ public class CartItemCourseKey implements Serializable {
     private Long courseId;
 
 
-
     public Long getCartItemId() {
         return cartItemId;
     }
@@ -30,5 +29,18 @@ public class CartItemCourseKey implements Serializable {
 
     public void setCourseId(Long courseId) {
         this.courseId = courseId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CartItemCourseKey that = (CartItemCourseKey) o;
+        return Objects.equals(cartItemId, that.cartItemId) && Objects.equals(courseId, that.courseId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(cartItemId, courseId);
     }
 }

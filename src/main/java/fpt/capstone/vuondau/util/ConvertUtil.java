@@ -1,13 +1,13 @@
 package fpt.capstone.vuondau.util;
 
-import fpt.capstone.vuondau.entity.Account;
-import fpt.capstone.vuondau.entity.Comment;
-import fpt.capstone.vuondau.entity.Question;
-import fpt.capstone.vuondau.entity.Role;
+import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.dto.CommentDto;
 import fpt.capstone.vuondau.entity.dto.QuestionDto;
+import fpt.capstone.vuondau.entity.dto.RequestTypeDto;
 import fpt.capstone.vuondau.entity.dto.RoleDto;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
+import fpt.capstone.vuondau.entity.response.RequestFormResponese;
+import fpt.capstone.vuondau.entity.response.SubjectResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,5 +57,21 @@ public class ConvertUtil {
 
     public static RoleDto doConvertEntityToResponse(Role role) {
         return ObjectUtil.copyProperties(role, new RoleDto(), RoleDto.class, true);
+    }
+
+    public static SubjectResponse doConvertEntityToResponse(Subject subject) {
+        SubjectResponse subjectResponse = new SubjectResponse();
+        subjectResponse.setId(subject.getId());
+        subjectResponse.setCode(subject.getCode());
+        subjectResponse.setName(subject.getName());
+        List<Long> idCourse = subject.getCourses().stream().map(Course::getId).collect(Collectors.toList());
+        subjectResponse.setCourseIds(idCourse);
+        return subjectResponse;
+    }
+
+    public static RequestFormResponese doConvertEntityToResponse(Request request) {
+        RequestFormResponese requestFormResponese = ObjectUtil.copyProperties(request, new RequestFormResponese(), RequestFormResponese.class);
+        requestFormResponese.setRequestType(ObjectUtil.copyProperties(request.getRequestType(), new RequestTypeDto(), RequestTypeDto.class));
+        return requestFormResponese;
     }
 }
