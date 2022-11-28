@@ -12,19 +12,21 @@ public class ArchetypeTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "archetype_id")
     private Archetype archetype;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "dow_id")
     private DayOfWeek dayOfWeek;
 
-    @ManyToOne
+
+
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "slot_id")
     private Slot slot;
 
-    @OneToMany(mappedBy = "archetypeTime", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "archetypeTime",cascade = CascadeType.ALL , fetch = FetchType.LAZY, orphanRemoval = true)
     private List<TimeTable> timeTables;
 
     public Long getId() {

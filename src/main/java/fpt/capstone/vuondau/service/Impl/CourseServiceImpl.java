@@ -205,13 +205,13 @@ public class CourseServiceImpl implements ICourseService {
 
             List<Class> classes = course.getClasses();
             courseResponse.setTotalClass((long) classes.size());
-            classes.stream().map(aClass -> {
-                if (aClass.getAccount().equals(teacherCourse.getAccount())) {
-                    courseResponse.setUnitPriceCourse(aClass.getUnitPrice());
-                    courseResponse.setFinalPriceCourse(aClass.getFinalPrice());
-                }
-                return aClass;
-            }).collect(Collectors.toList());
+//            classes.stream().map(aClass -> {
+//                if (aClass.getAccount().equals(teacherCourse.getAccount())) {
+//                    courseResponse.setUnitPriceCourse(aClass.getUnitPrice());
+//                    courseResponse.setFinalPriceCourse(aClass.getFinalPrice());
+//                }
+//                return aClass;
+//            }).collect(Collectors.toList());
             return teacherCourse;
         }).collect(Collectors.toList());
 
@@ -265,6 +265,8 @@ public class CourseServiceImpl implements ICourseService {
                 classDto.setEndDate(aClass.getEndDate());
                 classDto.setNumberStudent(aClass.getNumberStudent());
                 classDto.setMaxNumberStudent(aClass.getMaxNumberStudent());
+                classDto.setUnitPrice(aClass.getUnitPrice());
+                classDto.setFinalPrice(aClass.getFinalPrice());
                 classDtoList.add(classDto) ;
             }
 
@@ -293,7 +295,7 @@ public class CourseServiceImpl implements ICourseService {
 
 
         CourseIdRequest courseIdRequest = new CourseIdRequest();
-        courseIdRequest.setCourseid(1L);
+        courseIdRequest.setCourseid(24L);
         try {
             List<MoodleRecourseClassResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
 
@@ -314,7 +316,7 @@ public class CourseServiceImpl implements ICourseService {
 
                 moodleRecourseClassResponseList.add(setResource);
             }).collect(Collectors.toList());
-            courseDetailResponse.setRecourses(moodleRecourseClassResponseList);
+            courseDetailResponse.setResources(moodleRecourseClassResponseList);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -30,6 +30,11 @@ public interface IAccountService {
 
     Boolean uploadAvatar(long id, UploadAvatarRequest uploadAvatarRequest) throws IOException;
 
+
+    AccountResponse editProfile(long id, AccountEditRequest accountEditRequest);
+
+    AccountResponse getInfoTeacher(long id);
+
     AccountResponse editTeacherProfile(long id, AccountEditRequest accountEditRequest);
 
     AccountResponse editStudentProfile(long id, AccountEditRequest accountEditRequest);
@@ -37,4 +42,5 @@ public interface IAccountService {
     Boolean banAndUbBanAccount(long id);
 
     ApiPage<AccountResponse> searchAccount(AccountSearchRequest query, Pageable pageable);
+
 }

@@ -74,7 +74,7 @@ public class Class {
     @Column(name = "final_price")
     private BigDecimal finalPrice;
 
-    @OneToMany(mappedBy = "clazz", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "clazz", cascade = CascadeType.ALL , fetch = FetchType.LAZY, orphanRemoval = true)
     private List<TimeTable> timeTables;
 
     @Column(name = "resource_mooodle_id")

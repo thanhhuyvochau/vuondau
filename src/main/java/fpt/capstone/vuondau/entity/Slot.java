@@ -27,7 +27,7 @@ public class Slot {
     @Column(name = "end_time")
     private String endTime  ;
 
-    @OneToMany(mappedBy = "dayOfWeek", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "slot", cascade = CascadeType.ALL , fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ArchetypeTime> archetypeTimes;
 
     public Long getId() {

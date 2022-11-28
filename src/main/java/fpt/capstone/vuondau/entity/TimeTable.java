@@ -23,12 +23,12 @@ public class TimeTable {
     @Column(name = "slot_number")
     private int slotNumber ;
 
-    @ManyToOne
-    @JoinColumn(name = "class_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "class_id" )
     private Class clazz;
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
     @JoinColumn(name = "archetype_time_id")
     private ArchetypeTime archetypeTime;
 

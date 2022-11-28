@@ -189,6 +189,11 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
+    public AccountResponse editProfile(long id, AccountEditRequest accountEditRequest) {
+        return null;
+    }
+
+    @Override
     public AccountResponse editTeacherProfile(long id, AccountEditRequest accountEditRequest) {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
@@ -259,5 +264,17 @@ public class AccountServiceImpl implements IAccountService {
         Page<Account> accountPage = accountRepository.findAll(builder.build(), pageable);
         return PageUtil.convert(accountPage.map(ConvertUtil::doConvertEntityToResponse));
 
+    }
+
+    @Override
+    public AccountResponse getInfoTeacher(long id) {
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
+        AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class);
+        accountResponse.setRole(ObjectUtil.copyProperties(account.getRole(), new RoleDto() , RoleDto.class));
+        if(account.getResource()!=null){
+            accountResponse.setAvatar(account.getResource().getUrl());
+        }
+        return accountResponse;
     }
 }
