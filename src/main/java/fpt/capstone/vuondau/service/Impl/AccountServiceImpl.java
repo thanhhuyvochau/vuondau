@@ -6,10 +6,9 @@ import fpt.capstone.vuondau.entity.Resource;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.common.EResourceType;
-import fpt.capstone.vuondau.entity.request.AccountExistedTeacherRequest;
-import fpt.capstone.vuondau.entity.request.AccountRequest;
-import fpt.capstone.vuondau.entity.request.StudentRequest;
-import fpt.capstone.vuondau.entity.request.UploadAvatarRequest;
+import fpt.capstone.vuondau.entity.dto.RoleDto;
+import fpt.capstone.vuondau.entity.request.*;
+import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
 import fpt.capstone.vuondau.entity.response.StudentResponse;
 import fpt.capstone.vuondau.repository.AccountRepository;
@@ -98,8 +97,9 @@ public class AccountServiceImpl implements IAccountService {
                     .withMessage(messageUtil.getLocalMessage("Email đã tòn tạo"));
         }
         account.setUsername(accountRequest.getUsername());
-        account.setFirstName(accountRequest.getFirstName());
-        account.setLastName(accountRequest.getLastName());
+        account.setName(accountRequest.getName());
+//        account.setFirstName(accountRequest.getFirstName());
+//        account.setLastName(accountRequest.getLastName());
         account.setPhoneNumber(accountRequest.getPhone());
 
         Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER)
@@ -133,8 +133,9 @@ public class AccountServiceImpl implements IAccountService {
             }
             account.setUsername(studentRequestAccount.getUsername());
             account.setPassword(studentRequestAccount.getPassword());
-            account.setFirstName(studentRequest.getFirstName());
-            account.setLastName(studentRequest.getLastName());
+            account.setName(studentRequest.getName());
+//            account.setFirstName(studentRequest.getFirstName());
+//            account.setLastName(studentRequest.getLastName());
             account.setActive(true);
             account.setEmail(studentRequest.getEmail());
             account.setPhoneNumber(studentRequest.getPhoneNumber());
@@ -180,5 +181,24 @@ public class AccountServiceImpl implements IAccountService {
 
 
         return true;
+    }
+
+    @Override
+    public AccountResponse editProfile(long id, AccountEditRequest accountEditRequest) {
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
+        account.setBirthday(accountEditRequest.getBirthDay());
+        account.setEmail(accountEditRequest.getMail());
+        account.setName(accountEditRequest.getName());
+        account.setPhoneNumber(accountEditRequest.getPhone());
+
+
+        Account save = accountRepository.save(account);
+        AccountResponse  response = ObjectUtil.copyProperties(save , new AccountResponse() , AccountResponse.class ) ;
+        if (save.getRole()!= null) {
+            response.setRole(ObjectUtil.copyProperties(save.getRole() , new RoleDto() , RoleDto.class));
+        }
+
+            return response;
     }
 }

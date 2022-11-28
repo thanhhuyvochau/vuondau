@@ -27,11 +27,10 @@ public class Account {
     @Column(name = "is_active")
     private Boolean isActive = false;
 
-    @Column(name = "first_name")
-    private String firstName;
 
-    @Column(name = "last_name")
-    private String lastName;
+    @Column(name = "name")
+    private String name;
+
 
     @Column(name = "email")
     private String email;
@@ -55,10 +54,10 @@ public class Account {
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @OneToMany(mappedBy = "account")
+    @OneToMany(mappedBy = "account" ,cascade = CascadeType.ALL,  orphanRemoval = true)
     private List<TeacherCourse> teacherCourses;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL,  orphanRemoval = true)
     private List<StudentClass> studentClasses;
 
 
@@ -82,6 +81,10 @@ public class Account {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "avatar_id")
     private Resource resource ;
+
+
+    @OneToOne(mappedBy = "student")
+    private Cart cart;
 
     public Long getId() {
         return id;
@@ -115,20 +118,29 @@ public class Account {
         isActive = active;
     }
 
-    public String getFirstName() {
-        return firstName;
+//    public String getFirstName() {
+//        return firstName;
+//    }
+//
+//    public void setFirstName(String firstName) {
+//        this.firstName = firstName;
+//    }
+//
+//    public String getLastName() {
+//        return lastName;
+//    }
+//
+//    public void setLastName(String lastName) {
+//        this.lastName = lastName;
+//    }
+
+
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Instant getBirthday() {
@@ -179,6 +191,13 @@ public class Account {
         this.phoneNumber = phoneNumber;
     }
 
+    public Cart getCart() {
+        return cart;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
+    }
 
     public Role getRole() {
         return role;

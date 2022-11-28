@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.entity.dto;
 
 
+import fpt.capstone.vuondau.entity.common.ESubjectCode;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.io.Serializable;
@@ -10,7 +11,7 @@ public class SubjectDto implements Serializable {
     @Schema(description = "ID subject")
     private Long id;
     @Schema(description = "Mã  subject")
-    private String code;
+    private ESubjectCode code;
     @Schema(description = "Tên subject")
     private String name ;
 
@@ -24,11 +25,11 @@ public class SubjectDto implements Serializable {
         this.id = id;
     }
 
-    public String getCode() {
+    public ESubjectCode getCode() {
         return code;
     }
 
-    public void setCode(String code) {
+    public void setCode(ESubjectCode code) {
         this.code = code;
     }
 

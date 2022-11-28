@@ -6,22 +6,28 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import fpt.capstone.vuondau.util.Constants;
+import org.checkerframework.checker.units.qual.A;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @JsonPropertyOrder({"status", "message", "data"})
 public class ApiResponse<T> {
     @JsonProperty(value = "status")
     private String statusCode;
 
     @JsonProperty("message")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String message;
 
     @JsonProperty("data")
     private T data;
 
     @JsonProperty("error_message")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private String errorMessage;
 
     public static <T> ApiResponse<T> success(T data) {
@@ -30,6 +36,7 @@ public class ApiResponse<T> {
         ret.data = data;
         return ret;
     }
+
 
     public static <T> ApiResponse<T> success() {
         ApiResponse<T> ret = new ApiResponse<>();

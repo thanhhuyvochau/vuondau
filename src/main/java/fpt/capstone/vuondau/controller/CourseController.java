@@ -1,18 +1,25 @@
 package fpt.capstone.vuondau.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleRecourseClassResponse;
+import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 
 
-import fpt.capstone.vuondau.entity.request.ClassRequest;
-import fpt.capstone.vuondau.entity.request.TopicsSubjectRequest;
+import fpt.capstone.vuondau.entity.request.*;
+import fpt.capstone.vuondau.entity.response.ClassCourseResponse;
 import fpt.capstone.vuondau.entity.response.ClassSubjectResponse;
+import fpt.capstone.vuondau.entity.response.CourseDetailResponse;
+import fpt.capstone.vuondau.entity.response.CourseResponse;
 import fpt.capstone.vuondau.service.ICourseService;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
-
-import javax.validation.Valid;
+import java.util.List;
 
 
 @RestController
@@ -44,35 +51,71 @@ public class CourseController {
     }
 
 
-//    @Operation(description = "Lấy tất cả khóa học")
-//    @GetMapping
-//    public ResponseEntity<ApiResponse<List<CourseResponse>>> getAll() {
-//        return ResponseEntity.ok(ApiResponse.success(courseService.getAll()));
-//    }
-//
-//
-//    @Operation(description = "Tìm kiếm khóa học bằng ")
-//    @GetMapping("/search")
-//    public ResponseEntity<ApiResponse<List<CourseResponse>>> searchByName(@RequestParam String name) {
-//        return ResponseEntity.ok(ApiResponse.success(courseService.searchCourseByName(name)));
-//    }
-//
-//
-//    @Operation(description = "Tạo khóa học")
-//    @PostMapping
-//    public ResponseEntity<ApiResponse<CourseResponse>> create(@RequestBody CourseRequest courseRequest) {
-//        return ResponseEntity.ok(ApiResponse.success(courseService.create(courseRequest)));
-//    }
-//
-//    @Operation(description = "Cập nhật khóa học")
-//    @PutMapping("/{id}")
-//    public ResponseEntity<ApiResponse<CourseResponse>> update(@RequestBody CourseRequest courseRequest, Long id) {
-//        return ResponseEntity.ok(ApiResponse.success(courseService.update(courseRequest, id)));
-//    }
-//    @Operation(description = "Xóa khóa ")
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<ApiResponse<Boolean>> delete(@PathVariable Long id) {
-//        return ResponseEntity.ok(ApiResponse.success(courseService.delete(id)));
-//    }
+
+    // MANGER COURSE
+    @Operation(summary = "Tìm Kiếm course")
+    @GetMapping("/search-cource")
+    public ResponseEntity<ApiResponse<ApiPage<CourseResponse>>> searchCourse(@Nullable CourseSearchRequest query,
+                                                                                   Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(courseService.searchCourse(query, pageable)));
+    }
+
+    @Operation(summary = "Lấy tất cả course ")
+    @GetMapping("/get-all-course")
+    public ResponseEntity<ApiResponse<ApiPage<CourseResponse>>> viewAllCourse(Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(courseService.viewAllCourse( pageable)));
+    }
+
+    @Operation(summary = "xem chi tiết course ")
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<CourseDetailResponse>> viewSubjectCourse(@PathVariable long id ) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(courseService.viewCourseDetail(id )));
+    }
+
+    @Operation(summary = "Get resource course từ moodle")
+    @GetMapping("get-resource-from-moodle")
+    public ResponseEntity<ApiResponse<  List<MoodleRecourseClassResponse>>> synchronizedResource(@RequestParam Long classId) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(courseService.synchronizedResource(classId)));
+    }
+
+    @Operation(summary = "sửa course")
+    @PutMapping("/{id}/update-course")
+    public ResponseEntity<ApiResponse<CourseDetailResponse>> updateCourse(@PathVariable long id , @RequestBody CourseRequest subjectRequest) {
+        return ResponseEntity.ok(ApiResponse.success(courseService.updateCourse(id, subjectRequest)));
+    }
+
+    @Operation(summary = "Học sinh xem lich sử course")
+    @GetMapping("/{studentId}/histoty-course")
+    public ResponseEntity<ApiResponse<List<ClassCourseResponse>>> viewHistoryCourse(@PathVariable long studentId ) {
+        return ResponseEntity.ok(ApiResponse.success(courseService.viewHistoryCourse(studentId)));
+    }
+
+    @Operation(summary = "Học sinh enroll vao class - course")
+    @PostMapping("/{studentId}/enroll-course")
+    public ResponseEntity<ApiResponse<ClassCourseResponse>> studentEnrollCourse(@PathVariable long studentId , long courseId,  long classId ) {
+        return ResponseEntity.ok(ApiResponse.success(courseService.studentEnrollCourse(studentId, courseId,classId)));
+    }
+
+    @Operation(description = "Tạo khóa học")
+    @PostMapping("/create-course")
+    public ResponseEntity<ApiResponse<CourseResponse>> createCourse(@RequestBody CourseRequest courseRequest) {
+        return ResponseEntity.ok(ApiResponse.success(courseService.createCourse(courseRequest)));
+    }
+
+
+    @Operation(summary = "lấy course theo subject")
+    @GetMapping("/{subjectId}/subject")
+    public ResponseEntity<ApiResponse<ApiPage<CourseDetailResponse>>> getCourseBySubject(@PathVariable long subjectId ) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(courseService.getCourseBySubject(subjectId )));
+    }
+    @Operation(summary = "lấy course theo subject khong phân trang")
+
+    @GetMapping("/{subjectId}/courses-subject")
+    public ResponseEntity<ApiResponse<List<CourseDetailResponse>>> getListCourseBySubject(@PathVariable long subjectId )  {
+        return ResponseEntity.ok(ApiResponse.success(courseService.getListCourseBySubject(subjectId)));
+
+    }
+
+
 
 }

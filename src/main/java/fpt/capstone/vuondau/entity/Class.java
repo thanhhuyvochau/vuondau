@@ -1,7 +1,10 @@
 package fpt.capstone.vuondau.entity;
 
 
+import fpt.capstone.vuondau.entity.common.EClassStatus;
+
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +24,9 @@ public class Class {
     @Column(name = "code")
     private String code;
 
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private EClassStatus status ;
 
     @Column(name = "start_date")
     private Instant startDate;
@@ -40,8 +46,11 @@ public class Class {
     @JoinColumn(name="teacher_id")
     private Account account ;
 
+
     @OneToMany(mappedBy = "aClass"  ,cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<StudentClass> studentClasses ;
+
+
 
     @OneToMany(mappedBy = "clazz"  ,cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FeedBack> feedBacks ;
@@ -49,11 +58,27 @@ public class Class {
     @Column(name = "number_student")
     private Long numberStudent ;
 
+    @Column(name = "max_number_student")
+    private Long maxNumberStudent ;
+
     @Column(name = "level")
     private String level ;
 
     @Column(name = "is_avtive")
     private boolean isActive ;
+
+
+    @Column(name = "unit_price")
+    private BigDecimal unitPrice;
+
+    @Column(name = "final_price")
+    private BigDecimal finalPrice;
+
+    @OneToMany(mappedBy = "clazz", cascade = CascadeType.ALL)
+    private List<TimeTable> timeTables;
+
+    @Column(name = "resource_mooodle_id")
+    private BigDecimal resourceMoodleId;
 
 
     public Long getId() {
@@ -78,6 +103,14 @@ public class Class {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public EClassStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(EClassStatus status) {
+        this.status = status;
     }
 
     public Instant getStartDate() {
@@ -158,5 +191,46 @@ public class Class {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+
+    public Long getMaxNumberStudent() {
+        return maxNumberStudent;
+    }
+
+    public void setMaxNumberStudent(Long maxNumberStudent) {
+        this.maxNumberStudent = maxNumberStudent;
+    }
+
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public BigDecimal getFinalPrice() {
+        return finalPrice;
+    }
+
+    public void setFinalPrice(BigDecimal finalPrice) {
+        this.finalPrice = finalPrice;
+    }
+
+    public List<TimeTable> getTimeTables() {
+        return timeTables;
+    }
+
+    public void setTimeTables(List<TimeTable> timeTables) {
+        this.timeTables = timeTables;
+    }
+
+    public BigDecimal getResourceMoodleId() {
+        return resourceMoodleId;
+    }
+
+    public void setResourceMoodleId(BigDecimal resourceMoodleId) {
+        this.resourceMoodleId = resourceMoodleId;
     }
 }

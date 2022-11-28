@@ -26,8 +26,8 @@ public class AccountSpecificationBuilder {
         }
 
         specifications.add((root, query, criteriaBuilder) ->
-                criteriaBuilder.like(criteriaBuilder.concat(criteriaBuilder.coalesce(root.get(Account_.FIRST_NAME), Strings.EMPTY),
-                                criteriaBuilder.coalesce(root.get(Account_.LAST_NAME), Strings.EMPTY)),
+                criteriaBuilder.like(criteriaBuilder.concat(criteriaBuilder.coalesce(root.get(Account_.NAME), Strings.EMPTY) ,
+                                criteriaBuilder.coalesce(root.get(Account_.USERNAME), Strings.EMPTY)),
                         "%" + q + "%"));
 
 

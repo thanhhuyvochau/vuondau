@@ -1,17 +1,18 @@
 package fpt.capstone.vuondau.entity.dto;
 
 
+import fpt.capstone.vuondau.entity.common.EClassStatus;
+import fpt.capstone.vuondau.entity.response.CourseResponse;
+
 import java.time.Instant;
 
 public class ClassDto {
 
+    private Long id ;
+    private String name;
+    private String code;
 
-    private String className;
-    private String classCode;
-
-    private long teacherId ;
-
-    private long courseId ;
+    private EClassStatus status ;
 
     private Instant startDate ;
 
@@ -21,41 +22,33 @@ public class ClassDto {
 
     private Long numberStudent ;
 
+    private Long maxNumberStudent ;
 
+    private CourseResponse course ;
 
-
-    public String getClassName() {
-        return className;
+    public Long getId() {
+        return id;
     }
 
-    public void setClassName(String className) {
-        this.className = className;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public String getClassCode() {
-        return classCode;
+    public String getName() {
+        return name;
     }
 
-    public void setClassCode(String classCode) {
-        this.classCode = classCode;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public long getTeacherId() {
-        return teacherId;
+    public String getCode() {
+        return code;
     }
 
-    public void setTeacherId(long teacherId) {
-        this.teacherId = teacherId;
+    public void setCode(String code) {
+        this.code = code;
     }
-
-    public long getCourseId() {
-        return courseId;
-    }
-
-    public void setCourseId(long courseId) {
-        this.courseId = courseId;
-    }
-
 
     public Instant getStartDate() {
         return startDate;
@@ -87,5 +80,29 @@ public class ClassDto {
 
     public void setNumberStudent(Long numberStudent) {
         this.numberStudent = numberStudent;
+    }
+
+    public EClassStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(EClassStatus status) {
+        this.status = status;
+    }
+
+    public Long getMaxNumberStudent() {
+        return maxNumberStudent;
+    }
+
+    public void setMaxNumberStudent(Long maxNumberStudent) {
+        this.maxNumberStudent = maxNumberStudent;
+    }
+
+    public CourseResponse getCourse() {
+        return course;
+    }
+
+    public void setCourse(CourseResponse course) {
+        this.course = course;
     }
 }

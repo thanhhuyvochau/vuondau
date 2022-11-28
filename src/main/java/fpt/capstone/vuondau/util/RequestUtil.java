@@ -3,21 +3,16 @@ package fpt.capstone.vuondau.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
+import fpt.capstone.vuondau.MoodleRepository.MoodleCaller;
+import fpt.capstone.vuondau.MoodleRepository.Request.MoodleMasterDataRequest;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleLoginResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
-import java.io.IOException;
-import java.util.List;
 
 @Component
 public class RequestUtil {
@@ -26,11 +21,28 @@ public class RequestUtil {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
+    private final MoodleCaller s1Caller;
+
     @Autowired
-    public RequestUtil(RestTemplateBuilder restTemplateBuilder, ObjectMapper objectMapper) {
+    public RequestUtil(RestTemplateBuilder restTemplateBuilder, ObjectMapper objectMapper, MoodleCaller s1Caller) {
         this.restTemplateBuilder = restTemplateBuilder;
         this.restTemplate = restTemplateBuilder.build();
         this.objectMapper = objectMapper;
+        this.s1Caller = s1Caller;
+    }
+
+    public String getS1Token() {
+        MoodleLoginResponse s1LoginResponse = s1Caller.login();
+        return s1LoginResponse.getData().get(0).getToken();
+    }
+
+    public MoodleMasterDataRequest getIdentifyRequest(String type) {
+        MoodleMasterDataRequest s1MasterDataRequest = new MoodleMasterDataRequest();
+        String token = getS1Token();
+        s1MasterDataRequest.setToken(token);
+        s1MasterDataRequest.setType(type);
+
+        return s1MasterDataRequest;
     }
 
     public <RequestType, ResponseType> ResponseType post(String uri, RequestType request, Class<ResponseType> responseTypeClass) {

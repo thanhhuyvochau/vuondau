@@ -2,6 +2,8 @@ package fpt.capstone.vuondau.entity;
 
 
 
+import fpt.capstone.vuondau.entity.common.ERequestStatus;
+
 import javax.persistence.*;
 
 
@@ -33,6 +35,10 @@ public class Request {
     @ManyToOne
     @JoinColumn(name = "request_type_id")
     private RequestType requestType;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private ERequestStatus status;
 
     public Long getId() {
         return id;
@@ -91,4 +97,11 @@ public class Request {
         this.reason = reason;
     }
 
+    public ERequestStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ERequestStatus status) {
+        this.status = status;
+    }
 }

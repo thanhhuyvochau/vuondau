@@ -14,9 +14,11 @@ public class AccountExistedTeacherRequest implements Serializable {
     @JsonIgnore
     private boolean isActive = false ;
 
-    private String firstName ;
+    private String name ;
 
-    private String lastName ;
+//    private String firstName ;
+//
+//    private String lastName ;
 
     private String  phone ;
 
@@ -52,21 +54,29 @@ public class AccountExistedTeacherRequest implements Serializable {
         this.password = password;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+    //    public String getFirstName() {
+//        return firstName;
+//    }
+//
+//    public void setFirstName(String firstName) {
+//        this.firstName = firstName;
+//    }
+//
+//    public String getLastName() {
+//        return lastName;
+//    }
+//
+//    public void setLastName(String lastName) {
+//        this.lastName = lastName;
+//    }
 
     public String  getPhone() {
         return phone;

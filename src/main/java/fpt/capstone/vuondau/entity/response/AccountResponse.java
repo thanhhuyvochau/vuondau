@@ -2,21 +2,26 @@ package fpt.capstone.vuondau.entity.response;
 
 import fpt.capstone.vuondau.entity.dto.RoleDto;
 
+import java.time.Instant;
+
 public class AccountResponse {
 
     private Long id;
 
     private String username;
 
-    private String firstName ;
+    private String name;
 
-    private String lastName ;
+    private Instant  birthday;
 
-    private String phoneNumber ;
+    private String email ;
+    private String phoneNumber;
 
-    private RoleDto role ;
+    private RoleDto role;
 
-    private Boolean isActive;
+    private String avatar ;
+
+    private Boolean active;
 
     public Long getId() {
         return id;
@@ -35,28 +40,46 @@ public class AccountResponse {
     }
 
     public Boolean getActive() {
-        return isActive;
+        return active;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public void setActive(Boolean active) {
-        isActive = active;
+        this.active = active;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getLastName() {
-        return lastName;
+    public Instant getBirthday() {
+        return birthday;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setBirthday(Instant birthday) {
+        this.birthday = birthday;
     }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+
 
     public String getPhoneNumber() {
         return phoneNumber;
