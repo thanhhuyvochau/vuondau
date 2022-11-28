@@ -13,14 +13,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface IAdminService {
 
-    ApiPage<AccountResponse> searchAccount(AccountSearchRequest query, Pageable pageable);
-
-    ApiPage<AccountResponse> viewAllAccountDetail(Pageable pageable);
-
-    AccountResponse viewAccountDetail(long id);
-
-    Boolean banAndUbBanAccount(long id);
-
     AccountResponse updateRoleAccount(long id, EAccountRole eAccountRole);
 
     ApiPage<CourseDetailResponse> searchCourse(CourseSearchRequest query, Pageable pageable);
@@ -29,15 +21,7 @@ public interface IAdminService {
 
     FeedBackDto viewStudentFeedbackClass(Long classId) ;
 
-    ApiPage<SubjectResponse> searchSubject(SubjectSearchRequest query , Pageable pageable);
 
-    ApiPage<SubjectResponse> viewAllSubject(Pageable pageable);
-
-    SubjectResponse viewSubjectDetail(long subjectId);
-
-    Boolean deleteSubject(long subjectId);
-
-    SubjectResponse updateSubject(long subjectId,  SubjectRequest subjectRequest);
 
     ApiPage <RequestFormResponese> searchRequestForm(RequestSearchRequest query, Pageable pageable);
 }

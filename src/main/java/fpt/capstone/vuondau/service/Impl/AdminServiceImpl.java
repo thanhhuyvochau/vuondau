@@ -4,7 +4,6 @@ import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 
 
-
 import fpt.capstone.vuondau.entity.dto.*;
 
 import fpt.capstone.vuondau.entity.common.ApiException;
@@ -17,6 +16,7 @@ import fpt.capstone.vuondau.entity.response.RequestFormResponese;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IAdminService;
+import fpt.capstone.vuondau.util.ConvertUtil;
 import fpt.capstone.vuondau.util.MessageUtil;
 import fpt.capstone.vuondau.util.ObjectUtil;
 
@@ -71,64 +71,6 @@ public class AdminServiceImpl implements IAdminService {
         this.teacherCourseRepository = teacherCourseRepository;
 
         this.requestRepository = requestRepository;
-    }
-
-
-
-    @Override
-    public ApiPage<AccountResponse> viewAllAccountDetail(Pageable pageable) {
-        Page<Account> allAccount = accountRepository.findAll(pageable);
-        return PageUtil.convert(allAccount
-                .map(account -> {
-                    AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class);
-                    if (account.getRole() != null) {
-                        accountResponse.setRole(ObjectUtil.copyProperties(account.getRole(), new RoleDto(), RoleDto.class));
-                    }
-                    return accountResponse;
-                }));
-    }
-
-    @Override
-    public AccountResponse viewAccountDetail(long id) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
-        AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class);
-        if (account.getRole() != null) {
-            accountResponse.setRole(ObjectUtil.copyProperties(account.getRole(), new RoleDto(), RoleDto.class));
-        }
-        return accountResponse;
-    }
-
-    @Override
-    public Boolean banAndUbBanAccount(long id) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
-        if (account.getActive() == true) {
-            account.setActive(false);
-        } else {
-            account.setActive(true);
-        }
-        accountRepository.save(account);
-        return true;
-    }
-
-    @Override
-    public ApiPage<AccountResponse> searchAccount(AccountSearchRequest query, Pageable pageable) {
-        AccountSpecificationBuilder builder = AccountSpecificationBuilder.specification()
-                .queryLike(query.getQ());
-
-        Page<Account> accountPage = accountRepository.findAll(builder.build(), pageable);
-        return PageUtil.convert(accountPage.map(this::convertAccountToAccountResponse));
-
-    }
-
-
-    public AccountResponse convertAccountToAccountResponse(Account account) {
-        AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class);
-        if (account.getRole() != null) {
-            accountResponse.setRole(ObjectUtil.copyProperties(account.getRole(), new RoleDto(), RoleDto.class));
-        }
-        return accountResponse;
     }
 
     @Override
@@ -194,80 +136,14 @@ public class AdminServiceImpl implements IAdminService {
         return feedBackDto;
     }
 
-    @Override
-    public ApiPage<SubjectResponse> searchSubject(SubjectSearchRequest query, Pageable pageable) {
-        SubjectSpecificationBuilder builder = SubjectSpecificationBuilder.specification()
-                .queryLike(query.getQ());
-
-        Page<Subject> coursePage = subjectRepository.findAll(builder.build(), pageable);
-
-        return PageUtil.convert(coursePage.map(this::convertSubjectToSubjectResponse));
-
-    }
-
-    public SubjectResponse convertSubjectToSubjectResponse(Subject subject) {
-        SubjectResponse courseResponse = ObjectUtil.copyProperties(subject, new SubjectResponse(), SubjectResponse.class);
-        return courseResponse;
-    }
-
-
-    @Override
-    public ApiPage<SubjectResponse> viewAllSubject(Pageable pageable) {
-        Page<Subject> allSubjects = subjectRepository.findAll(pageable);
-        return PageUtil.convert(allSubjects
-                .map(subject -> {
-                    SubjectResponse subjectResponse = ObjectUtil.copyProperties(subject, new SubjectResponse(), SubjectResponse.class);
-
-                    return subjectResponse;
-                }));
-
-    }
-
-    @Override
-    public SubjectResponse viewSubjectDetail(long subjectId) {
-        Subject subject = subjectRepository.findById(subjectId)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(("Khong tim thay account") + subjectId));
-        SubjectResponse subjectResponse = ObjectUtil.copyProperties(subject, new SubjectResponse(), SubjectResponse.class);
-        return subjectResponse;
-    }
-
-    @Override
-    public Boolean deleteSubject(long subjectId) {
-        Subject subject = subjectRepository.findById(subjectId)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(("Khong tim thay account") + subjectId));
-        subjectRepository.delete(subject);
-        return true;
-    }
-
-    @Override
-    public SubjectResponse updateSubject(long subjectId, SubjectRequest subjectRequest) {
-        Subject subject = subjectRepository.findById(subjectId)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(("Khong tim thay account") + subjectId));
-        subject.setCode(subjectRequest.getCode());
-        subject.setName(subject.getName());
-        List<Course> courses = courseRepository.findAllById(subjectRequest.getCourseIds());
-        if (!courses.isEmpty()) {
-            subject.setCourses(courses);
-        }
-        Subject save = subjectRepository.save(subject);
-        return ObjectUtil.copyProperties(save, new SubjectResponse(), SubjectResponse.class);
-
-    }
-
 
     @Override
     public ApiPage<RequestFormResponese> searchRequestForm(RequestSearchRequest query, Pageable pageable) {
         RequestFormSpecificationBuilder builder = RequestFormSpecificationBuilder.specification()
                 .queryLike(query.getQ());
         Page<Request> requestPage = requestRepository.findAll(builder.build(), pageable);
-        return PageUtil.convert(requestPage.map(this::convertRequestToRequestResponse));
+        return PageUtil.convert(requestPage.map(ConvertUtil::doConvertEntityToResponse));
     }
-    public RequestFormResponese convertRequestToRequestResponse(Request request) {
-        RequestFormResponese requestFormResponese = ObjectUtil.copyProperties(request, new RequestFormResponese(), RequestFormResponese.class);
-        requestFormResponese.setRequestType(ObjectUtil.copyProperties(request.getRequestType(), new RequestTypeDto(), RequestTypeDto.class));
-        return requestFormResponese;
-    }
-
 
 
 }
