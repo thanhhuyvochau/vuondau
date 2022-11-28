@@ -1,15 +1,13 @@
 package fpt.capstone.vuondau.service;
 
 import fpt.capstone.vuondau.entity.Account;
-import fpt.capstone.vuondau.entity.Role;
-import fpt.capstone.vuondau.entity.common.ApiException;
-import fpt.capstone.vuondau.entity.common.EAccountRole;
+import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
 import fpt.capstone.vuondau.entity.response.StudentResponse;
-import fpt.capstone.vuondau.util.ObjectUtil;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,13 +20,27 @@ public interface IAccountService {
 
     AccountTeacherResponse createTeacherAccount(AccountExistedTeacherRequest accountRequest);
 
-    List<Account> getAccount();
+    ApiPage<AccountResponse> getAccounts(Pageable pageable);
 
-    StudentResponse studentCreateAccount(StudentRequest studentRequest);
+    ApiPage<AccountResponse> getTeacherAccounts(Pageable pageable);
+
+    ApiPage<AccountResponse> getStudentAccounts(Pageable pageable);
+
+    StudentResponse createStudentAccount(StudentRequest studentRequest);
 
     Boolean uploadAvatar(long id, UploadAvatarRequest uploadAvatarRequest) throws IOException;
+
 
     AccountResponse editProfile(long id, AccountEditRequest accountEditRequest);
 
     AccountResponse getInfoTeacher(long id);
+
+    AccountResponse editTeacherProfile(long id, AccountEditRequest accountEditRequest);
+
+    AccountResponse editStudentProfile(long id, AccountEditRequest accountEditRequest);
+
+    Boolean banAndUbBanAccount(long id);
+
+    ApiPage<AccountResponse> searchAccount(AccountSearchRequest query, Pageable pageable);
+
 }

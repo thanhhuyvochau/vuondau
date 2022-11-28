@@ -21,6 +21,8 @@ password: cyZc9Kz5BD6brG
 url: jdbc:mysql://103.173.255.39:3306/vuondau
 username: root
 password: test
+docker cli: docker run -v mysql_data:/var/lib/mysql --rm --network moodle-network  --name mysql8 -e MYSQL_ROOT_PASSWORD=test -p 3306:3306 -d mysql:8
+
 ```
 ## MinIO Server
 
@@ -37,8 +39,6 @@ api:s3v4
 
 ```
 
-
-
 ## Swagger
 
 
@@ -46,7 +46,6 @@ api:s3v4
 ```bash
 http://103.173.255.39:8889/swagger-ui/index.html#/
 ```
-
 
 ## Tech Stack
 
