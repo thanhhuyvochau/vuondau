@@ -339,10 +339,7 @@ public class ClassServiceImpl implements IClassService {
             classDetail.setTeacher(accountResponse);
         }
 
-
-
         List<Account> studentList = aClass.getStudentClasses().stream().map(StudentClass::getAccount).collect(Collectors.toList());
-
         List<AccountResponse> accountResponses = new ArrayList<>() ;
         studentList.stream().map(studentMap -> {
             AccountResponse student = ObjectUtil.copyProperties(studentMap , new AccountResponse(), AccountResponse.class) ;
@@ -350,7 +347,6 @@ public class ClassServiceImpl implements IClassService {
             if (studentMap.getRequests()!=null){
                 student.setAvatar(studentMap.getResource().getUrl());
             }
-
             accountResponses.add(student) ;
             return studentMap ;
         }).collect(Collectors.toList()) ;
@@ -363,9 +359,7 @@ public class ClassServiceImpl implements IClassService {
     @Override
     public ApiPage<ClassDto> getAllClass( Pageable pageable) {
         Page<Class> classesPage = classRepository.findAll(pageable);
-
         return PageUtil.convert(classesPage.map(this::convertClassToClassResponse));
-
     }
 
     public ClassDto convertClassToClassResponse(Class aclass) {
