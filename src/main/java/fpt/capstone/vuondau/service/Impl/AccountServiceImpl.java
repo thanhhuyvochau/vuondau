@@ -201,4 +201,16 @@ public class AccountServiceImpl implements IAccountService {
 
             return response;
     }
+
+    @Override
+    public AccountResponse getInfoTeacher(long id) {
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
+        AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class);
+        accountResponse.setRole(ObjectUtil.copyProperties(account.getRole(), new RoleDto() , RoleDto.class));
+        if(account.getResource()!=null){
+            accountResponse.setAvatar(account.getResource().getUrl());
+        }
+        return accountResponse;
+    }
 }

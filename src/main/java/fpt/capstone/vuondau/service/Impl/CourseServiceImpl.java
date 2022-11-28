@@ -188,7 +188,7 @@ public class CourseServiceImpl implements ICourseService {
 
     @Override
     public ApiPage<CourseResponse> viewAllCourse(Pageable pageable) {
-        Page<Course> allCourse = courseRepository.findAll(pageable);
+        Page<Course> allCourse = courseRepository.findAllByIsActiveIsTrue(pageable);
         return PageUtil.convert(allCourse.map(this::convertCourseToCourseResponse));
     }
 
@@ -196,15 +196,25 @@ public class CourseServiceImpl implements ICourseService {
         CourseResponse courseResponse = new CourseResponse();
         courseResponse.setId(course.getId());
         courseResponse.setCourseName(course.getName());
-        courseResponse.setUnitPriceCourse(course.getUnitPrice());
-        courseResponse.setFinalPriceCourse(course.getFinalPrice());
+
+
         courseResponse.setCourseTitle(course.getTitle());
         List<TeacherCourse> teacherCourses = course.getTeacherCourses();
         teacherCourses.stream().map(teacherCourse -> {
             courseResponse.setTeacherName(teacherCourse.getAccount().getName());
+
+            List<Class> classes = course.getClasses();
+            courseResponse.setTotalClass((long) classes.size());
+//            classes.stream().map(aClass -> {
+//                if (aClass.getAccount().equals(teacherCourse.getAccount())) {
+//                    courseResponse.setUnitPriceCourse(aClass.getUnitPrice());
+//                    courseResponse.setFinalPriceCourse(aClass.getFinalPrice());
+//                }
+//                return aClass;
+//            }).collect(Collectors.toList());
             return teacherCourse;
         }).collect(Collectors.toList());
-        courseResponse.setUnitPriceCourse(course.getUnitPrice());
+
         if (course.getResource() != null) {
             courseResponse.setImage(course.getResource().getUrl());
         }
@@ -229,7 +239,7 @@ public class CourseServiceImpl implements ICourseService {
             courseDetailResponse.setImage(course.getResource().getUrl());
         }
         courseDetailResponse.setActive(course.getIsActive());
-        courseDetailResponse.setUnitPrice(course.getUnitPrice());
+//        courseDetailResponse.setUnitPrice(course.getUnitPrice());
         courseDetailResponse.setTitle(course.getTitle());
 
         // set subject
@@ -241,30 +251,30 @@ public class CourseServiceImpl implements ICourseService {
             subjectDto.setCode(subject.getCode());
             courseDetailResponse.setSubject(subjectDto);
         }
-        Class classes = null ;
-        // set Class
-        if (!course.getTeacherCourses().isEmpty()){
-            try {
-                Account account = course.getTeacherCourses().stream().map(TeacherCourse::getAccount).findFirst().get();
-                classes = classRepository.findByCourseAndAccount(course, account);
-                if (classes != null) {
-                    ClassDto classDto = new ClassDto();
-                    classDto.setId(classes.getId());
-                    classDto.setName(classes.getName());
-                    classDto.setCode(classes.getCode());
-                    classDto.setLevel(classes.getLevel());
-                    classDto.setStartDate(classes.getStartDate());
-                    classDto.setEndDate(classes.getEndDate());
-                    classDto.setNumberStudent(classes.getNumberStudent());
-                    classDto.setMaxNumberStudent(classes.getMaxNumberStudent());
 
-                    courseDetailResponse.setClazz(classDto);
-                }
-            }catch (Exception e){
-                e.printStackTrace();
+            List<ClassDto> classDtoList = new ArrayList<>( );
+        List<Class> classes = course.getClasses();
+        classes.stream().map(aClass -> {
+            if (aClass.isActive()){
+                ClassDto classDto = new ClassDto();
+                classDto.setId(aClass.getId());
+                classDto.setName(aClass.getName());
+                classDto.setCode(aClass.getCode());
+                classDto.setLevel(aClass.getLevel());
+                classDto.setStartDate(aClass.getStartDate());
+                classDto.setEndDate(aClass.getEndDate());
+                classDto.setNumberStudent(aClass.getNumberStudent());
+                classDto.setMaxNumberStudent(aClass.getMaxNumberStudent());
+                classDto.setUnitPrice(aClass.getUnitPrice());
+                classDto.setFinalPrice(aClass.getFinalPrice());
+                classDtoList.add(classDto) ;
             }
 
-        }
+
+            return aClass;
+        }).collect(Collectors.toList());
+
+        courseDetailResponse.setClazz(classDtoList);
 
 
         // set teacher course
@@ -285,37 +295,35 @@ public class CourseServiceImpl implements ICourseService {
 
 
         CourseIdRequest courseIdRequest = new CourseIdRequest();
-        if (classes!= null) {
-            courseIdRequest.setCourseid(15L);
-            try {
-                List<MoodleRecourseClassResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
+        courseIdRequest.setCourseid(24L);
+        try {
+            List<MoodleRecourseClassResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
 
-                List<MoodleRecourseClassResponse> moodleRecourseClassResponseList = new ArrayList<>();
-                resourceCourse.stream().peek(moodleRecourseClassResponse -> {
-                    MoodleRecourseClassResponse setResource = ObjectUtil.copyProperties(moodleRecourseClassResponse, new MoodleRecourseClassResponse() , MoodleRecourseClassResponse.class);
+            List<MoodleRecourseClassResponse> moodleRecourseClassResponseList = new ArrayList<>();
+            resourceCourse.stream().peek(moodleRecourseClassResponse -> {
+                MoodleRecourseClassResponse setResource = ObjectUtil.copyProperties(moodleRecourseClassResponse, new MoodleRecourseClassResponse(), MoodleRecourseClassResponse.class);
 
-                    List<ResourceMoodleResponse> modules = moodleRecourseClassResponse.getModules();
-                    List<ResourceMoodleResponse> resourceMoodleResponseList = new ArrayList<>() ;
-                    modules.stream().peek(moodleResponse -> {
+                List<ResourceMoodleResponse> modules = moodleRecourseClassResponse.getModules();
+                List<ResourceMoodleResponse> resourceMoodleResponseList = new ArrayList<>();
+                modules.stream().peek(moodleResponse -> {
 
-                        ResourceMoodleResponse resourceMoodleResponse = ObjectUtil.copyProperties(moodleResponse, new ResourceMoodleResponse(), ResourceMoodleResponse.class);
+                    ResourceMoodleResponse resourceMoodleResponse = ObjectUtil.copyProperties(moodleResponse, new ResourceMoodleResponse(), ResourceMoodleResponse.class);
 
-                        resourceMoodleResponseList.add(resourceMoodleResponse) ;
-                    }).collect(Collectors.toList());
-
-                    setResource.setModules(resourceMoodleResponseList);
-
-                    moodleRecourseClassResponseList.add(setResource);
+                    resourceMoodleResponseList.add(resourceMoodleResponse);
                 }).collect(Collectors.toList());
-                courseDetailResponse.setResources(moodleRecourseClassResponseList);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
 
+                setResource.setModules(resourceMoodleResponseList);
+
+                moodleRecourseClassResponseList.add(setResource);
+            }).collect(Collectors.toList());
+            courseDetailResponse.setResources(moodleRecourseClassResponseList);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return courseDetailResponse;
     }
+
     @Override
     public CourseDetailResponse viewCourseDetail(long courseID) throws JsonProcessingException {
 
@@ -394,9 +402,9 @@ public class CourseServiceImpl implements ICourseService {
             if (aClass != null) {
                 Course course = aClass.getCourse();
                 courseResponse.setCourse(ObjectUtil.copyProperties(course, new CourseDto(), CourseDto.class));
-                CourseDto courseDto = new CourseDto() ;
-                courseDto.setUnitPrice(course.getUnitPrice());
-                courseDto.setFinalPrice(course.getFinalPrice());
+                CourseDto courseDto = new CourseDto();
+//                courseDto.setUnitPrice(course.getUnitPrice());
+//                courseDto.setFinalPrice(course.getFinalPrice());
                 if (course != null) {
                     Subject subject = course.getSubject();
                     if (subject != null) {
@@ -426,13 +434,13 @@ public class CourseServiceImpl implements ICourseService {
 
         Class aClass = classRepository.findById(classId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
 
-        ClassCourseResponse classCourseResponse = null ;
+        ClassCourseResponse classCourseResponse = null;
 
-        if (aClass.getMaxNumberStudent() < aClass.getNumberStudent()){
+        if (aClass.getMaxNumberStudent() < aClass.getNumberStudent()) {
 
-            classCourseResponse  = new ClassCourseResponse() ;
-            StudentClass studentClass = new StudentClass() ;
-            StudentClassKey studentClassKey = new StudentClassKey() ;
+            classCourseResponse = new ClassCourseResponse();
+            StudentClass studentClass = new StudentClass();
+            StudentClassKey studentClassKey = new StudentClassKey();
             studentClassKey.setClassId(aClass.getId());
             studentClassKey.setStudentId(account.getId());
             studentClass.setId(studentClassKey);
@@ -441,8 +449,8 @@ public class CourseServiceImpl implements ICourseService {
             studentClass.setEnrollDate(Instant.now());
 
             aClass.getStudentClasses().add(studentClass);
-            aClass.setNumberStudent(aClass.getNumberStudent()+1 );
-            classRepository.save(aClass) ;
+            aClass.setNumberStudent(aClass.getNumberStudent() + 1);
+            classRepository.save(aClass);
 
 
             // response
@@ -452,9 +460,9 @@ public class CourseServiceImpl implements ICourseService {
             if (aClass1 != null) {
                 Course course1 = aClass.getCourse();
                 classCourseResponse.setCourse(ObjectUtil.copyProperties(course1, new CourseDto(), CourseDto.class));
-                CourseDto courseDto = new CourseDto() ;
-                courseDto.setUnitPrice(course1.getUnitPrice());
-                courseDto.setFinalPrice(course1.getFinalPrice());
+                CourseDto courseDto = new CourseDto();
+//                courseDto.setUnitPrice(course1.getUnitPrice());
+//                courseDto.setFinalPrice(course1.getFinalPrice());
                 if (course1 != null) {
                     Subject subject = course1.getSubject();
                     if (subject != null) {
@@ -472,8 +480,8 @@ public class CourseServiceImpl implements ICourseService {
     @Override
     public List<MoodleRecourseClassResponse> synchronizedResource(Long classId) throws JsonProcessingException {
         CourseIdRequest courseIdRequest = new CourseIdRequest();
-        courseIdRequest.setCourseid(classId );
-        MoodleMasterDataRequest s1MasterDataRequest = new MoodleMasterDataRequest() ;
+        courseIdRequest.setCourseid(classId);
+        MoodleMasterDataRequest s1MasterDataRequest = new MoodleMasterDataRequest();
         List<MoodleRecourseClassResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
         System.out.println(resourceCourse);
         return resourceCourse;
@@ -483,7 +491,7 @@ public class CourseServiceImpl implements ICourseService {
     public CourseResponse createCourse(CourseRequest courseRequest) {
         Course course = new Course();
         course.setName(courseRequest.getName());
-        if (courseRepository.existsByCode(courseRequest.getCode())){
+        if (courseRepository.existsByCode(courseRequest.getCode())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("course code da ton tai"));
         }
@@ -496,14 +504,14 @@ public class CourseServiceImpl implements ICourseService {
         course.setSubject(subject);
 
         Course save = courseRepository.save(course);
-        CourseResponse response = ObjectUtil.copyProperties(save, new CourseResponse() , CourseResponse.class);
-        return  response ;
+        CourseResponse response = ObjectUtil.copyProperties(save, new CourseResponse(), CourseResponse.class);
+        return response;
     }
 
     @Override
     public ApiPage<CourseDetailResponse> getCourseBySubject(long subjectId) {
         Subject subject = subjectRepository.findById(subjectId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay subject"));
-        List<CourseDetailResponse> courseDetailResponseList= new ArrayList<>() ;
+        List<CourseDetailResponse> courseDetailResponseList = new ArrayList<>();
         List<Course> courses = subject.getCourses();
         courses.stream().peek(course -> {
             if (course.getIsActive()) {
@@ -517,7 +525,7 @@ public class CourseServiceImpl implements ICourseService {
                 if (course.getResource() != null) {
                     courseDetailResponse.setImage(course.getResource().getUrl());
                 }
-                courseDetailResponse.setUnitPrice(course.getUnitPrice());
+//                courseDetailResponse.setUnitPrice(course.getUnitPrice());
 
                 courseDetailResponseList.add(courseDetailResponse);
 
@@ -525,16 +533,16 @@ public class CourseServiceImpl implements ICourseService {
         }).collect(Collectors.toList());
         Page<CourseDetailResponse> page = new PageImpl<>(courseDetailResponseList);
         ApiPage<CourseDetailResponse> convert = PageUtil.convert(page);
-        return convert ;
+        return convert;
     }
 
     @Override
     public List<CourseDetailResponse> getListCourseBySubject(long subjectId) {
         Subject subject = subjectRepository.findById(subjectId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay subject"));
 
-        List<CourseDetailResponse> courseDetailResponseList= new ArrayList<>() ;
+        List<CourseDetailResponse> courseDetailResponseList = new ArrayList<>();
         List<Course> courses = subject.getCourses();
-        for (Course course: courses){
+        for (Course course : courses) {
 
             CourseDetailResponse courseDetailResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class, true);
 
@@ -545,7 +553,7 @@ public class CourseServiceImpl implements ICourseService {
             if (course.getResource() != null) {
                 courseDetailResponse.setImage(course.getResource().getUrl());
             }
-            courseDetailResponse.setUnitPrice(course.getUnitPrice());
+//            courseDetailResponse.setUnitPrice(course.getUnitPrice());
 
             courseDetailResponseList.add(courseDetailResponse);
         }

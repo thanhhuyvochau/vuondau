@@ -29,4 +29,6 @@ public interface IAccountService {
     Boolean uploadAvatar(long id, UploadAvatarRequest uploadAvatarRequest) throws IOException;
 
     AccountResponse editProfile(long id, AccountEditRequest accountEditRequest);
+
+    AccountResponse getInfoTeacher(long id);
 }

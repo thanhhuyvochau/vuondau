@@ -32,11 +32,6 @@ public class Course {
     @Column(name = "is_active")
     private Boolean isActive;
 
-    @Column(name = "unit_price")
-    private BigDecimal unitPrice;
-
-    @Column(name = "final_price")
-    private BigDecimal finalPrice;
 
 
     @JoinColumn(name = "grade")
@@ -71,13 +66,7 @@ public class Course {
         this.id = id;
     }
 
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
-    }
 
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
-    }
 
     public String getName() {
         return name;
@@ -169,11 +158,4 @@ public class Course {
         this.cartItemCourses = cartItemCourses;
     }
 
-    public BigDecimal getFinalPrice() {
-        return finalPrice;
-    }
-
-    public void setFinalPrice(BigDecimal finalPrice) {
-        this.finalPrice = finalPrice;
-    }
 }

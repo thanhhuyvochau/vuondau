@@ -59,5 +59,12 @@ public class AccountController {
         return ResponseEntity.ok(accountService.editProfile(id, accountEditRequest));
     }
 
+    @Operation(summary = "Xem thông tin giáo viên giáo viên")
+    @GetMapping("/{id}")
+    public ResponseEntity<AccountResponse> getInfoTeacher (@PathVariable long id ) {
+
+        return ResponseEntity.ok(accountService.getInfoTeacher(id)) ;
+    }
+
 
 }

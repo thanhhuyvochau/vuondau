@@ -32,7 +32,7 @@ public class CourseDetailResponse {
     private BigDecimal unitPrice;
 
 
-    private ClassDto clazz ;
+    private List<ClassDto> clazz ;
 
     private SubjectDto subject;
 
@@ -47,14 +47,6 @@ public class CourseDetailResponse {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        isActive = active;
     }
 
     public String getName() {
@@ -115,11 +107,11 @@ public class CourseDetailResponse {
         this.description = description;
     }
 
-    public ClassDto getClazz() {
+    public List<ClassDto> getClazz() {
         return clazz;
     }
 
-    public void setClazz(ClassDto clazz) {
+    public void setClazz(List<ClassDto> clazz) {
         this.clazz = clazz;
     }
 
@@ -139,11 +131,20 @@ public class CourseDetailResponse {
         this.unitPrice = unitPrice;
     }
 
+
     public List<MoodleRecourseClassResponse> getResources() {
         return resources;
     }
 
     public void setResources(List<MoodleRecourseClassResponse> resources) {
         this.resources = resources;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }

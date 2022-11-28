@@ -28,14 +28,16 @@ public class CourseResponse {
     private String teacherName;
 
 
-    @Schema(description = "Giá tiền của course")
-    private BigDecimal unitPriceCourse;
-
-    @Schema(description = "Giá tiền của course")
-    private BigDecimal finalPriceCourse;
+//    @Schema(description = "Giá tiền của course")
+//    private BigDecimal unitPriceCourse;
+//
+//    @Schema(description = "Giá tiền của course")
+//    private BigDecimal finalPriceCourse;
 
     private SubjectDto subject ;
 
+
+    private Long totalClass ;
 
 
     public Long getId() {
@@ -78,21 +80,21 @@ public class CourseResponse {
         this.teacherName = teacherName;
     }
 
-    public BigDecimal getUnitPriceCourse() {
-        return unitPriceCourse;
-    }
-
-    public void setUnitPriceCourse(BigDecimal unitPriceCourse) {
-        this.unitPriceCourse = unitPriceCourse;
-    }
-
-    public BigDecimal getFinalPriceCourse() {
-        return finalPriceCourse;
-    }
-
-    public void setFinalPriceCourse(BigDecimal finalPriceCourse) {
-        this.finalPriceCourse = finalPriceCourse;
-    }
+//    public BigDecimal getUnitPriceCourse() {
+//        return unitPriceCourse;
+//    }
+//
+//    public void setUnitPriceCourse(BigDecimal unitPriceCourse) {
+//        this.unitPriceCourse = unitPriceCourse;
+//    }
+//
+//    public BigDecimal getFinalPriceCourse() {
+//        return finalPriceCourse;
+//    }
+//
+//    public void setFinalPriceCourse(BigDecimal finalPriceCourse) {
+//        this.finalPriceCourse = finalPriceCourse;
+//    }
 
     public SubjectDto getSubject() {
         return subject;
@@ -100,5 +102,13 @@ public class CourseResponse {
 
     public void setSubject(SubjectDto subject) {
         this.subject = subject;
+    }
+
+    public Long getTotalClass() {
+        return totalClass;
+    }
+
+    public void setTotalClass(Long totalClass) {
+        this.totalClass = totalClass;
     }
 }
