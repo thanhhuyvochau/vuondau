@@ -13,15 +13,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface IAdminService {
 
-    AccountResponse updateRoleAccount(long id, EAccountRole eAccountRole);
-
-    ApiPage<CourseDetailResponse> searchCourse(CourseSearchRequest query, Pageable pageable);
-
-    AccountResponse ApproveAccountTeacher(long id);
-
     FeedBackDto viewStudentFeedbackClass(Long classId) ;
-
-
 
     ApiPage <RequestFormResponese> searchRequestForm(RequestSearchRequest query, Pageable pageable);
 }

@@ -267,14 +267,34 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
+    public AccountResponse updateRoleAccount(long id, EAccountRole eAccountRole) {
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
+        Role role = roleRepository.findRoleByCode(eAccountRole)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay role"));
+        account.setRole(role);
+        Account save = accountRepository.save(account);
+        return ConvertUtil.doConvertEntityToResponse(save);
+    }
+
+    @Override
+    public AccountResponse approveTeacherAccount(long id) {
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(("Khong tim thay account") + id));
+        account.setActive(true);
+        Account save = accountRepository.save(account);
+        return ConvertUtil.doConvertEntityToResponse(save);
+    }
+
     public AccountResponse getInfoTeacher(long id) {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
         AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class);
-        accountResponse.setRole(ObjectUtil.copyProperties(account.getRole(), new RoleDto() , RoleDto.class));
-        if(account.getResource()!=null){
+        accountResponse.setRole(ObjectUtil.copyProperties(account.getRole(), new RoleDto(), RoleDto.class));
+        if (account.getResource() != null) {
             accountResponse.setAvatar(account.getResource().getUrl());
         }
         return accountResponse;
+
     }
 }
