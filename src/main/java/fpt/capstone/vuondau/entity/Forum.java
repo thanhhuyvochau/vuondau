@@ -88,4 +88,12 @@ public class Forum {
     public void setForumLessons(List<ForumLesson> forumLessons) {
         this.forumLessons = forumLessons;
     }
+
+    public List<Question> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
+    }
 }

@@ -20,10 +20,6 @@ public class Subject {
     private ESubjectCode code;
     @OneToMany(mappedBy = "subject")
     private List<Course> courses;
-
-    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
-    private List<Question> questions;
-
     @Column(name = "moodle_category_id")
     private Long categoryMoodleId;
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -61,14 +57,6 @@ public class Subject {
         this.courses = courses;
     }
 
-    public List<Question> getQuestions() {
-        return questions;
-    }
-
-    public void setQuestions(List<Question> questions) {
-        this.questions = questions;
-    }
-
     public Long getCategoryMoodleId() {
         return categoryMoodleId;
     }
@@ -82,11 +70,11 @@ public class Subject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Subject subject = (Subject) o;
-        return Objects.equals(id, subject.id) && Objects.equals(name, subject.name) && code == subject.code && Objects.equals(courses, subject.courses) && Objects.equals(questions, subject.questions) && Objects.equals(categoryMoodleId, subject.categoryMoodleId);
+        return Objects.equals(id, subject.id) && Objects.equals(name, subject.name) && code == subject.code && Objects.equals(courses, subject.courses) && Objects.equals(categoryMoodleId, subject.categoryMoodleId) && Objects.equals(forums, subject.forums);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, code, courses, questions, categoryMoodleId);
+        return Objects.hash(id, name, code, courses, categoryMoodleId, forums);
     }
 }
