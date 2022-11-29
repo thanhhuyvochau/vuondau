@@ -5,5 +5,11 @@ public enum EResourceType {
     AVATAR ,
     FILE ,
 
+    CARTPHOTO ,
+
+    DEGREE ,
+
+    CCCD
+
 
 }
