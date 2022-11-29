@@ -7,11 +7,9 @@ import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
 import fpt.capstone.vuondau.entity.response.StudentResponse;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 public interface IAccountService {
@@ -34,7 +32,7 @@ public interface IAccountService {
 
     AccountResponse editProfile(long id, AccountEditRequest accountEditRequest);
 
-    AccountResponse getInfoTeacher(long id);
+    AccountResponse getAccountById(long id);
 
     AccountResponse editTeacherProfile(long id, AccountEditRequest accountEditRequest);
 

@@ -26,7 +26,7 @@ public class Class {
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private EClassStatus status ;
+    private EClassStatus status;
 
     @Column(name = "start_date")
     private Instant startDate;
@@ -39,33 +39,32 @@ public class Class {
     private ClassType classType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="course_id")
-    private Course course ;
+    @JoinColumn(name = "course_id")
+    private Course course;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="teacher_id")
-    private Account account ;
+    @JoinColumn(name = "teacher_id")
+    private Account account;
 
 
-    @OneToMany(mappedBy = "aClass"  ,cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<StudentClass> studentClasses ;
+    @OneToMany(mappedBy = "aClass", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<StudentClass> studentClasses;
 
 
-
-    @OneToMany(mappedBy = "clazz"  ,cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<FeedBack> feedBacks ;
+    @OneToMany(mappedBy = "clazz", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<FeedBack> feedBacks;
 
     @Column(name = "number_student")
-    private Long numberStudent ;
+    private Long numberStudent;
 
     @Column(name = "max_number_student")
-    private Long maxNumberStudent ;
+    private Long maxNumberStudent;
 
     @Column(name = "level")
-    private String level ;
+    private String level;
 
     @Column(name = "is_avtive")
-    private boolean isActive ;
+    private boolean isActive;
 
 
     @Column(name = "unit_price")
@@ -74,12 +73,14 @@ public class Class {
     @Column(name = "final_price")
     private BigDecimal finalPrice;
 
-    @OneToMany(mappedBy = "clazz", cascade = CascadeType.ALL , fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "clazz", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<TimeTable> timeTables;
 
     @Column(name = "resource_mooodle_id")
     private BigDecimal resourceMoodleId;
 
+    @OneToMany(mappedBy = "aClass", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Forum> forums = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -232,5 +233,13 @@ public class Class {
 
     public void setResourceMoodleId(BigDecimal resourceMoodleId) {
         this.resourceMoodleId = resourceMoodleId;
+    }
+
+    public List<Forum> getForums() {
+        return forums;
+    }
+
+    public void setForums(List<Forum> forums) {
+        this.forums = forums;
     }
 }

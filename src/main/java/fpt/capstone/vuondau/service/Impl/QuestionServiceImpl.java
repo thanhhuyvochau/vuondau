@@ -1,14 +1,12 @@
 package fpt.capstone.vuondau.service.Impl;
 
-import fpt.capstone.vuondau.entity.Account;
+import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
-import fpt.capstone.vuondau.entity.Question;
-import fpt.capstone.vuondau.entity.StudentClass;
-import fpt.capstone.vuondau.entity.Subject;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.dto.QuestionDto;
 import fpt.capstone.vuondau.entity.request.CreateQuestionRequest;
+import fpt.capstone.vuondau.repository.ForumRepository;
 import fpt.capstone.vuondau.repository.QuestionRepository;
 import fpt.capstone.vuondau.repository.SubjectRepository;
 import fpt.capstone.vuondau.service.IQuestionService;
@@ -19,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,11 +26,13 @@ public class QuestionServiceImpl implements IQuestionService {
     private final QuestionRepository questionRepository;
     private final SubjectRepository subjectRepository;
     private final SecurityUtil securityUtil;
+    private final ForumRepository forumRepository;
 
-    public QuestionServiceImpl(QuestionRepository questionRepository, SubjectRepository subjectRepository, SecurityUtil securityUtil) {
+    public QuestionServiceImpl(QuestionRepository questionRepository, SubjectRepository subjectRepository, SecurityUtil securityUtil, ForumRepository forumRepository) {
         this.questionRepository = questionRepository;
         this.subjectRepository = subjectRepository;
         this.securityUtil = securityUtil;
+        this.forumRepository = forumRepository;
     }
 
     @Override
@@ -78,10 +77,10 @@ public class QuestionServiceImpl implements IQuestionService {
     public QuestionDto createQuestion(CreateQuestionRequest createQuestionRequest) {
         Question question = ObjectUtil.copyProperties(createQuestionRequest, new Question(), Question.class, true);
         Account student = securityUtil.getCurrentUser();
-        Subject subject = subjectRepository.findById(createQuestionRequest.getSubjectId())
+        Forum forum = forumRepository.findById(createQuestionRequest.getForumId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
-                        .withMessage("Subject not found with id:" + createQuestionRequest.getSubjectId()));
-        question.setSubject(subject);
+                        .withMessage("Subject not found with id:" + createQuestionRequest.getForumId()));
+        question.setForum(forum);
         question.setStudent(student);
         questionRepository.save(question);
         return ConvertUtil.doConvertEntityToResponse(question);
@@ -94,10 +93,10 @@ public class QuestionServiceImpl implements IQuestionService {
                         .withMessage("Question not found with id:" + questionId));
         Question newQuestion = ObjectUtil.copyProperties(createQuestionRequest, question, Question.class, true);
         Account student = securityUtil.getCurrentUser();
-        Subject subject = subjectRepository.findById(createQuestionRequest.getSubjectId())
+        Forum forum = forumRepository.findById(createQuestionRequest.getForumId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
-                        .withMessage("Subject not found with id:" + createQuestionRequest.getSubjectId()));
-        newQuestion.setSubject(subject);
+                        .withMessage("Forum not found with id:" + createQuestionRequest.getForumId()));
+        newQuestion.setForum(forum);
         newQuestion.setStudent(student);
         questionRepository.save(newQuestion);
         return ConvertUtil.doConvertEntityToResponse(newQuestion);

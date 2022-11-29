@@ -3,6 +3,7 @@ package fpt.capstone.vuondau.entity;
 import fpt.capstone.vuondau.entity.common.ESubjectCode;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,6 +26,8 @@ public class Subject {
 
     @Column(name = "moodle_category_id")
     private Long categoryMoodleId;
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Forum> forums = new ArrayList<>();
 
     public Long getId() {
         return id;
