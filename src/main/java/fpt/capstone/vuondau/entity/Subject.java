@@ -26,6 +26,10 @@ public class Subject {
     @Column(name = "moodle_category_id")
     private Long categoryMoodleId;
 
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AccountDetailSubject> accountDetailSubjects;
+
+
     public Long getId() {
         return id;
     }
@@ -74,6 +78,14 @@ public class Subject {
         this.categoryMoodleId = categoryMoodleId;
     }
 
+    public List<AccountDetailSubject> getAccountDetailSubjects() {
+        return accountDetailSubjects;
+    }
+
+    public void setAccountDetailSubjects(List<AccountDetailSubject> accountDetailSubjects) {
+        this.accountDetailSubjects = accountDetailSubjects;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -86,4 +98,6 @@ public class Subject {
     public int hashCode() {
         return Objects.hash(id, name, code, courses, questions, categoryMoodleId);
     }
+
+
 }

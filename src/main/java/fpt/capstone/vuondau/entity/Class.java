@@ -78,7 +78,7 @@ public class Class {
     private List<TimeTable> timeTables;
 
     @Column(name = "resource_mooodle_id")
-    private BigDecimal resourceMoodleId;
+    private Long resourceMoodleId;
 
 
     public Long getId() {
@@ -226,11 +226,11 @@ public class Class {
         this.timeTables = timeTables;
     }
 
-    public BigDecimal getResourceMoodleId() {
+    public Long getResourceMoodleId() {
         return resourceMoodleId;
     }
 
-    public void setResourceMoodleId(BigDecimal resourceMoodleId) {
+    public void setResourceMoodleId(Long resourceMoodleId) {
         this.resourceMoodleId = resourceMoodleId;
     }
 }
