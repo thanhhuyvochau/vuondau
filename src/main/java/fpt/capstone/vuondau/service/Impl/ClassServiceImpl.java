@@ -295,10 +295,10 @@ public class ClassServiceImpl implements IClassService {
                 courseDetailResponse.setSubject(subjectDto);
             }
 
-
+        if (aClass.getResourceMoodleId()!=null){
             CourseIdRequest courseIdRequest = new CourseIdRequest();
 
-            courseIdRequest.setCourseid(1L);
+            courseIdRequest.setCourseid(aClass.getResourceMoodleId());
             try {
                 List<MoodleRecourseClassResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
 
@@ -323,6 +323,8 @@ public class ClassServiceImpl implements IClassService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
 
 
             classDetail.setCourse(courseDetailResponse);

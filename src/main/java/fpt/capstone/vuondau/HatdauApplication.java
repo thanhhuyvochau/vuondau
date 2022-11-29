@@ -4,8 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
 import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCategoryRequest;
 import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCreateCategoryRequest;
+import fpt.capstone.vuondau.MoodleRepository.Request.MoodleMasterDataRequest;
 import fpt.capstone.vuondau.MoodleRepository.Response.CategoryResponse;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
 import fpt.capstone.vuondau.entity.*;
+import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.common.EDayOfWeekCode;
 import fpt.capstone.vuondau.entity.common.ESlotCode;
@@ -44,13 +47,16 @@ public class HatdauApplication {
 
     private final DayOfWeekRepository dayOfWeekRepository ;
 
-    public HatdauApplication(RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository, MoodleCourseRepository moodleCourseRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository) {
+    private final ClassRepository classRepository ;
+
+    public HatdauApplication(RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository, MoodleCourseRepository moodleCourseRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ClassRepository classRepository) {
         this.roleRepository = roleRepository;
         this.subjectRepository = subjectRepository;
         this.requestTypeRepository = requestTypeRepository;
         this.moodleCourseRepository = moodleCourseRepository;
         this.slotRepository = slotRepository;
         this.dayOfWeekRepository = dayOfWeekRepository;
+        this.classRepository = classRepository;
     }
 
     public static void main(String[] args) {
@@ -283,6 +289,29 @@ public class HatdauApplication {
         subjectRepository.saveAll(subjectList);
     }
 
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void intiClassMoodleOntoToClass() throws JsonProcessingException {
+
+        MoodleMasterDataRequest request = new MoodleMasterDataRequest();
+
+        List<MoodleClassResponse> courseMoodle = moodleCourseRepository.getCourse(request);
+
+        List<Class> allClass = classRepository.findAll();
+        List<Class> classList = new ArrayList<>() ;
+        courseMoodle.stream().map(moodleClassResponse -> {
+            for (Class aClass : allClass){
+                if (aClass.getCode().equals(moodleClassResponse.getShortname())){
+                    aClass.setResourceMoodleId(moodleClassResponse.getId());
+                    classList.add(aClass) ;
+                }
+            }
+            return moodleClassResponse ;
+        }).collect(Collectors.toList());
+
+        classRepository.saveAll(classList) ;
+    }
+
     @EventListener(ApplicationReadyEvent.class)
     public void intiDatSlot() {
 
@@ -491,9 +520,6 @@ public class HatdauApplication {
             dayOfWeek.setName("Thứ Bảy");
             dayOfWeekList.add(dayOfWeek);
         }
-
-
-
 
         dayOfWeekRepository.saveAll(dayOfWeekList);
 
