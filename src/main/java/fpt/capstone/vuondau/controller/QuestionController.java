@@ -4,7 +4,6 @@ import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.dto.QuestionDto;
 import fpt.capstone.vuondau.entity.request.CreateQuestionRequest;
 import fpt.capstone.vuondau.service.IQuestionService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

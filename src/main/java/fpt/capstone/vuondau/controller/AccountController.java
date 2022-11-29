@@ -2,12 +2,12 @@ package fpt.capstone.vuondau.controller;
 
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
+import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
-import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
-import fpt.capstone.vuondau.entity.response.StudentResponse;
 import fpt.capstone.vuondau.service.IAccountService;
 import fpt.capstone.vuondau.service.IAdminService;
+import fpt.capstone.vuondau.service.IRoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -15,17 +15,18 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequestMapping("api/accounts")
 public class AccountController {
     private final IAccountService accountService;
     private final IAdminService adminService;
+    private final IRoleService roleService;
 
-    public AccountController(IAccountService userService, IAdminService adminService) {
+    public AccountController(IAccountService userService, IAdminService adminService, IRoleService roleService) {
         this.accountService = userService;
         this.adminService = adminService;
+        this.roleService = roleService;
     }
 
 
@@ -61,5 +62,16 @@ public class AccountController {
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Boolean>> banAndUbBanAccount(@PathVariable long id) {
         return ResponseEntity.ok(ApiResponse.success(accountService.banAndUbBanAccount(id)));
+    }
+
+    @Operation(summary = "cập nhật role cho account")
+    @PutMapping("/{id}/role")
+    public ResponseEntity<ApiResponse<AccountResponse>> updateAccountRole(@PathVariable long id, @RequestParam EAccountRole eAccountRole) {
+        return ResponseEntity.ok(ApiResponse.success(accountService.updateRoleAccount(id, eAccountRole)));
+    }
+    @Operation(summary = "phê duyệt tài khoản giáo viên")
+    @PutMapping("/{id}/active")
+    public ResponseEntity<ApiResponse<AccountResponse>> ApproveAccountTeacher(@PathVariable long id) {
+        return ResponseEntity.ok(ApiResponse.success(accountService.approveTeacherAccount(id)));
     }
 }

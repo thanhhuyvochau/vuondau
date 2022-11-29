@@ -64,56 +64,12 @@ public class AdminServiceImpl implements IAdminService {
         this.messageUtil = messageUtil;
         this.roleRepository = roleRepository;
         this.courseRepository = courseRepository;
-
         this.classRepository = classRepository;
         this.feedbackRepository = feedbackRepository;
         this.subjectRepository = subjectRepository;
         this.teacherCourseRepository = teacherCourseRepository;
-
         this.requestRepository = requestRepository;
     }
-
-    @Override
-    public AccountResponse updateRoleAccount(long id, EAccountRole eAccountRole) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
-        Role role = roleRepository.findRoleByCode(eAccountRole)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay role"));
-        account.setRole(role);
-        Account save = accountRepository.save(account);
-        AccountResponse accountResponse = ObjectUtil.copyProperties(save, new AccountResponse(), AccountResponse.class);
-        accountResponse.setRole(ObjectUtil.copyProperties(role, new RoleDto(), RoleDto.class));
-        return accountResponse;
-    }
-
-    @Override
-    public ApiPage<CourseDetailResponse> searchCourse(CourseSearchRequest query, Pageable pageable) {
-        CourseSpecificationBuilder builder = CourseSpecificationBuilder.specification()
-                .queryLike(query.getQ());
-
-        Page<Course> coursePage = courseRepository.findAll(builder.build(), pageable);
-
-        return PageUtil.convert(coursePage.map(this::convertCourseToCourseResponse));
-
-    }
-
-    public CourseDetailResponse convertCourseToCourseResponse(Course course) {
-        CourseDetailResponse courseDetailResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class);
-        courseDetailResponse.setGrade(course.getGrade());
-        return courseDetailResponse;
-    }
-
-    @Override
-    public AccountResponse ApproveAccountTeacher(long id) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(("Khong tim thay account") + id));
-        account.setActive(true);
-        Account save = accountRepository.save(account);
-        AccountResponse accountResponse = ObjectUtil.copyProperties(save, new AccountResponse(), AccountResponse.class);
-        accountResponse.setRole(ObjectUtil.copyProperties(account.getRole(), new RoleDto(), RoleDto.class));
-        return accountResponse;
-    }
-
     @Override
     public FeedBackDto viewStudentFeedbackClass(Long classId) {
         Class fbclass = classRepository.findById(classId)

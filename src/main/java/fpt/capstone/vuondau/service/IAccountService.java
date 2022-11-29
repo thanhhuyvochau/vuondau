@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.service;
 
 import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.common.ApiPage;
+import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
@@ -37,4 +38,6 @@ public interface IAccountService {
     Boolean banAndUbBanAccount(long id);
 
     ApiPage<AccountResponse> searchAccount(AccountSearchRequest query, Pageable pageable);
+    AccountResponse updateRoleAccount(long id, EAccountRole eAccountRole);
+    AccountResponse approveTeacherAccount(long id);
 }

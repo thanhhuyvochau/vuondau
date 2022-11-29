@@ -1,6 +1,5 @@
 package fpt.capstone.vuondau.service;
 
-import fpt.capstone.vuondau.entity.Question;
 import fpt.capstone.vuondau.entity.dto.QuestionDto;
 import fpt.capstone.vuondau.entity.request.CreateQuestionRequest;
 
