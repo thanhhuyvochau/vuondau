@@ -115,6 +115,18 @@ public class QuestionServiceImpl implements IQuestionService {
         return true;
     }
 
+    @Override
+    public Boolean openQuestion(Long id) {
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Question not found by id:" + id));
+        if (!question.getClosed()) {
+            throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Question has already opened!");
+        } else {
+            question.setClosed(false);
+        }
+        return true;
+    }
+
     private Boolean isEnrolledToSubject(Account account, Subject subject) {
         List<Class> enrolledClass = account.getStudentClasses().stream().map(StudentClass::getaClass).collect(Collectors.toList());
         Class classMatchSubject = enrolledClass.stream()

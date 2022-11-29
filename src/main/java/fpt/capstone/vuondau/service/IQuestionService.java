@@ -17,4 +17,6 @@ public interface IQuestionService {
     QuestionDto updateQuestion(Long questionId, CreateQuestionRequest createQuestionRequest);
 
     Boolean closeQuestion(Long questionId);
+
+    Boolean openQuestion(Long id);
 }
