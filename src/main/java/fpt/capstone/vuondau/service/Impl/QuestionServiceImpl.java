@@ -18,6 +18,7 @@ import fpt.capstone.vuondau.util.SecurityUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +45,15 @@ public class QuestionServiceImpl implements IQuestionService {
 
     @Override
     public List<QuestionDto> getQuestions() {
-        List<Question> questions = questionRepository.findAll();
+        Account account = securityUtil.getCurrentUser();
+        List<Question> questions = new ArrayList<>();
+        if (account.getRole().getCode().name().equals(EAccountRole.STUDENT.name())) {
+            List<Class> enrolledClass = account.getStudentClasses().stream().map(StudentClass::getaClass).collect(Collectors.toList());
+            List<Subject> enrolledSubjects = enrolledClass.stream().map(aClass -> aClass.getCourse().getSubject()).distinct().collect(Collectors.toList());
+            questions = questionRepository.findAllBySubjectIn(enrolledSubjects);
+        } else {
+            questions = questionRepository.findAll();
+        }
         return questions.stream().map(ConvertUtil::doConvertEntityToResponse).collect(Collectors.toList());
     }
 

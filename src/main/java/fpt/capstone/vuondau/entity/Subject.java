@@ -4,6 +4,7 @@ import fpt.capstone.vuondau.entity.common.ESubjectCode;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "subject")
@@ -71,5 +72,18 @@ public class Subject {
 
     public void setCategoryMoodleId(Long categoryMoodleId) {
         this.categoryMoodleId = categoryMoodleId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Subject subject = (Subject) o;
+        return Objects.equals(id, subject.id) && Objects.equals(name, subject.name) && code == subject.code && Objects.equals(courses, subject.courses) && Objects.equals(questions, subject.questions) && Objects.equals(categoryMoodleId, subject.categoryMoodleId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, code, courses, questions, categoryMoodleId);
     }
 }
