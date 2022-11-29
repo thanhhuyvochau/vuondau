@@ -23,6 +23,8 @@ public class AccountResponse {
 
     private Boolean active;
 
+    private String gender;
+
     public Long getId() {
         return id;
     }
@@ -95,5 +97,13 @@ public class AccountResponse {
 
     public void setRole(RoleDto role) {
         this.role = role;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 }

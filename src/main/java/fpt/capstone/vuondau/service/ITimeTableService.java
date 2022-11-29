@@ -9,6 +9,7 @@ import fpt.capstone.vuondau.entity.dto.ClassDto;
 import fpt.capstone.vuondau.entity.dto.ClassStudentDto;
 import fpt.capstone.vuondau.entity.request.ClassSearchRequest;
 import fpt.capstone.vuondau.entity.request.CreateClassRequest;
+import fpt.capstone.vuondau.entity.request.TimeTableRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -16,5 +17,5 @@ import java.util.List;
 public interface ITimeTableService {
 
 
-    Long createTimeTableClass(Long classId);
+    Long createTimeTableClass(Long classId, TimeTableRequest timeTableRequest );
 }

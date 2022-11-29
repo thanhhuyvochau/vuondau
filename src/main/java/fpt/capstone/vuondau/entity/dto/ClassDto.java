@@ -4,6 +4,7 @@ package fpt.capstone.vuondau.entity.dto;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.response.CourseResponse;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 public class ClassDto {
@@ -25,6 +26,10 @@ public class ClassDto {
     private Long maxNumberStudent ;
 
     private CourseResponse course ;
+
+    private BigDecimal unitPrice ;
+
+    private BigDecimal finalPrice ;
 
     public Long getId() {
         return id;
@@ -48,6 +53,22 @@ public class ClassDto {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public BigDecimal getFinalPrice() {
+        return finalPrice;
+    }
+
+    public void setFinalPrice(BigDecimal finalPrice) {
+        this.finalPrice = finalPrice;
     }
 
     public Instant getStartDate() {

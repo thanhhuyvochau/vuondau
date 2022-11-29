@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.entity.dto;
 
 
 import fpt.capstone.vuondau.entity.TeacherCourseKey;
+import fpt.capstone.vuondau.entity.TimeTable;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.CourseDetailResponse;
@@ -46,6 +47,9 @@ public class ClassDetailDto {
     private AccountResponse teacher ;
 
     private List<AccountResponse> students ;
+
+
+    private List<TimeTableDto> timeTable ;
 
 
 
@@ -177,5 +181,13 @@ public class ClassDetailDto {
 
     public void setStudents(List<AccountResponse> students) {
         this.students = students;
+    }
+
+    public List<TimeTableDto> getTimeTable() {
+        return timeTable;
+    }
+
+    public void setTimeTable(List<TimeTableDto> timeTable) {
+        this.timeTable = timeTable;
     }
 }

@@ -350,7 +350,7 @@ public class ClassServiceImpl implements IClassService {
 
             CourseIdRequest courseIdRequest = new CourseIdRequest();
 
-            courseIdRequest.setCourseid(aClass.getId());
+            courseIdRequest.setCourseid(1L);
             try {
                 List<MoodleRecourseClassResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
 
@@ -371,7 +371,7 @@ public class ClassServiceImpl implements IClassService {
 
                     moodleRecourseClassResponseList.add(setResource);
                 }).collect(Collectors.toList());
-                courseDetailResponse.setRecourses(moodleRecourseClassResponseList);
+                courseDetailResponse.setResources(moodleRecourseClassResponseList);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -409,7 +409,37 @@ public class ClassServiceImpl implements IClassService {
         }).collect(Collectors.toList());
         classDetail.setStudents(accountResponses);
 
+        List<TimeTableDto> timeTableDtoList = new ArrayList<>();
 
+        List<TimeTable> timeTables = aClass.getTimeTables();
+        timeTables.stream().map(timeTable -> {
+            TimeTableDto timeTableDto = new TimeTableDto();
+            timeTableDto.setId(timeTable.getId());
+            timeTableDto.setDate(timeTable.getDate());
+            timeTableDto.setSlotNumber(timeTable.getSlotNumber());
+            ArchetypeTimeDto archetypeTimeDto = new ArchetypeTimeDto();
+            ArchetypeTime archetypeTime = timeTable.getArchetypeTime();
+            if (archetypeTime!=null) {
+                Archetype archetype = archetypeTime.getArchetype();
+                if (archetype!=null){
+                    archetypeTimeDto.setArchetype(ObjectUtil.copyProperties(archetype, new ArchetypeDto() , ArchetypeDto.class));
+                }
+                Slot slot = archetypeTime.getSlot();
+                if (slot!= null){
+                    archetypeTimeDto.setSlot(ObjectUtil.copyProperties(slot , new SlotDto() , SlotDto.class));
+                }
+                DayOfWeek dayOfWeek = archetypeTime.getDayOfWeek();
+                if (dayOfWeek!=null) {
+                    archetypeTimeDto.setDayOfWeek(ObjectUtil.copyProperties(dayOfWeek, new DayOfWeekDto() , DayOfWeekDto.class));
+                }
+            }
+
+
+            timeTableDto.setArchetypeTime(archetypeTimeDto);
+            timeTableDtoList.add(timeTableDto) ;
+            return timeTable;
+        }).collect(Collectors.toList());
+        classDetail.setTimeTable(timeTableDtoList);
         return classDetail;
     }
 
@@ -438,10 +468,6 @@ public class ClassServiceImpl implements IClassService {
         if (aclass.getAccount() != null) {
             courseResponse.setTeacherName(aclass.getAccount().getName());
         }
-
-
-        courseResponse.setUnitPriceCourse(aclass.getUnitPrice());
-        courseResponse.setFinalPriceCourse(aclass.getFinalPrice());
 
 
         if (course.getResource() != null) {

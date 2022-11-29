@@ -38,7 +38,7 @@ public class CourseDetailResponse {
 
     private List<TeacherCourseDto> teacherCourse ;
 
-    private  List<MoodleRecourseClassResponse> recourses ;
+    private  List<MoodleRecourseClassResponse> resources ;
 
 
     public Long getId() {
@@ -131,12 +131,13 @@ public class CourseDetailResponse {
         this.unitPrice = unitPrice;
     }
 
-    public List<MoodleRecourseClassResponse> getRecourses() {
-        return recourses;
+
+    public List<MoodleRecourseClassResponse> getResources() {
+        return resources;
     }
 
-    public void setRecourses(List<MoodleRecourseClassResponse> recourses) {
-        this.recourses = recourses;
+    public void setResources(List<MoodleRecourseClassResponse> resources) {
+        this.resources = resources;
     }
 
     public boolean isActive() {

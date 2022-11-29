@@ -305,28 +305,28 @@ public class HatdauApplication {
                 existSlot2 = true;
             }
             if (slot.getCode().equals(ESlotCode.SLOT3)) {
-                existSlot1 = true;
+                existSlot3 = true;
             }
             if (slot.getCode().equals(ESlotCode.SLOT4)) {
-                existSlot1 = true;
+                existSlot4 = true;
             }
             if (slot.getCode().equals(ESlotCode.SLOT5)) {
-                existSlot1 = true;
+                existSlot5 = true;
             }
             if (slot.getCode().equals(ESlotCode.SLOT6)) {
-                existSlot1 = true;
+                existSlot6 = true;
             }
             if (slot.getCode().equals(ESlotCode.SLOT7)) {
-                existSlot1 = true;
+                existSlot7 = true;
             }
             if (slot.getCode().equals(ESlotCode.SLOT8)) {
-                existSlot1 = true;
+                existSlot8 = true;
             }
             if (slot.getCode().equals(ESlotCode.SLOT9)) {
-                existSlot1 = true;
+                existSlot9 = true;
             }
             if (slot.getCode().equals(ESlotCode.SLOT10)) {
-                existSlot1 = true;
+                existSlot10 = true;
             }
         }
 
@@ -385,12 +385,12 @@ public class HatdauApplication {
         }
 
         if (!existSlot7) {
-            Slot slotTwo = new Slot();
-            slotTwo.setCode(ESlotCode.SLOT7);
-            slotTwo.setName("slot Seven");
-            slotTwo.setStartTime("16:00");
-            slotTwo.setEndTime("17:30");
-            slotList.add(slotTwo);
+            Slot slotSeven = new Slot();
+            slotSeven.setCode(ESlotCode.SLOT7);
+            slotSeven.setName("slot Seven");
+            slotSeven.setStartTime("16:00");
+            slotSeven.setEndTime("17:30");
+            slotList.add(slotSeven);
         }
 
 
@@ -405,12 +405,12 @@ public class HatdauApplication {
 
 
         if (!existSlot9) {
-            Slot slotTwo = new Slot();
-            slotTwo.setCode(ESlotCode.SLOT9);
-            slotTwo.setName("slot Nine");
-            slotTwo.setStartTime("19:00");
-            slotTwo.setEndTime("20:30");
-            slotList.add(slotTwo);
+            Slot slotNine = new Slot();
+            slotNine.setCode(ESlotCode.SLOT9);
+            slotNine.setName("slot Nine");
+            slotNine.setStartTime("19:00");
+            slotNine.setEndTime("20:30");
+            slotList.add(slotNine);
         }
         slotRepository.saveAll(slotList);
 

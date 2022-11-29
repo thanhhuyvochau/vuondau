@@ -14,7 +14,7 @@ public class Archetype {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "title")
+    @Column(name = "code")
     private String code;
 
     @Column(name = "created_by_teacher_id")

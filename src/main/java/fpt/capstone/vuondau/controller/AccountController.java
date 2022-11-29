@@ -58,6 +58,13 @@ public class AccountController {
         return ResponseEntity.ok(ApiResponse.success(accountService.searchAccount(query, pageable)));
     }
 
+
+    @Operation(summary = "Xem thông tin giáo viên giáo viên")
+    @GetMapping("/{id}")
+    public ResponseEntity<AccountResponse> getInfoTeacher (@PathVariable long id ) {
+
+        return ResponseEntity.ok(accountService.getInfoTeacher(id)) ;
+    }
     @Operation(summary = "Ban / Unban account")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Boolean>> banAndUbBanAccount(@PathVariable long id) {

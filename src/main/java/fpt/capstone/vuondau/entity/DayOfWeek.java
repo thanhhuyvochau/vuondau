@@ -20,7 +20,7 @@ public class DayOfWeek {
     @Enumerated(EnumType.STRING)
     private EDayOfWeekCode code ;
 
-    @OneToMany(mappedBy = "slot", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "dayOfWeek",cascade = CascadeType.ALL , fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ArchetypeTime> archetypeTimes;
 
 
