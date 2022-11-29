@@ -38,7 +38,7 @@ public class ClassController {
     }
 
 
-    @Operation(summary = "Giáo viên quest tao class ( subject - course) chờ admin phê duyệt ")
+    @Operation(summary = "Giáo viên yêu cầu tạo class ( subject - course) chờ admin phê duyệt ")
     @PostMapping({"/{teacherId}"})
     public ResponseEntity<ApiResponse<Boolean>> teacherRequestCreateClass(@PathVariable Long teacherId,@Nullable @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClass(teacherId, createClassRequest)));
@@ -52,7 +52,7 @@ public class ClassController {
     }
 
     @Operation(summary = "lấy tất cả class có phân trang")
-    @GetMapping({"/all-class"})
+    @GetMapping
     public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getAllClass( Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getAllClass( pageable)));
     }

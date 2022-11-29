@@ -28,21 +28,9 @@ public class AdminController {
     // MANGER ACCOUNT
 
 
-    @Operation(summary = "cập nhật role cho account")
-    @PostMapping("/{accountId}/update-role")
-    public ResponseEntity<ApiResponse<AccountResponse>> updateRoleAccount(@PathVariable long accountId, @RequestParam EAccountRole eAccountRole) {
-        return ResponseEntity.ok(ApiResponse.success(iAdminService.updateRoleAccount(accountId, eAccountRole)));
-    }
-
-    @Operation(summary = "cập nhật active cho account")
-    @PostMapping("/{accountId}/approve-teacher-account")
-    public ResponseEntity<ApiResponse<AccountResponse>> ApproveAccountTeacher(@PathVariable long accountId) {
-        return ResponseEntity.ok(ApiResponse.success(iAdminService.ApproveAccountTeacher(accountId)));
-    }
-
 
     @Operation(summary = "xem hoc sinh feedback lớp ")
-    @GetMapping("/{classId}/-view-feadback")
+    @GetMapping("/{classId}/view-feadback")
     public ResponseEntity<ApiResponse<FeedBackDto>> viewStudentFeedbackClass(@PathVariable long classId) {
         return ResponseEntity.ok(ApiResponse.success(iAdminService.viewStudentFeedbackClass(classId)));
     }
@@ -53,6 +41,8 @@ public class AdminController {
                                                                                         Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iAdminService.searchRequestForm(query, pageable)));
     }
+
+
 
 
 }

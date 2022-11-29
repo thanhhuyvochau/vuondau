@@ -1,9 +1,12 @@
 package fpt.capstone.vuondau.service.Impl;
 
 import fpt.capstone.vuondau.entity.Account;
+import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.Question;
+import fpt.capstone.vuondau.entity.StudentClass;
 import fpt.capstone.vuondau.entity.Subject;
 import fpt.capstone.vuondau.entity.common.ApiException;
+import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.dto.QuestionDto;
 import fpt.capstone.vuondau.entity.request.CreateQuestionRequest;
 import fpt.capstone.vuondau.repository.QuestionRepository;
@@ -15,6 +18,9 @@ import fpt.capstone.vuondau.util.SecurityUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,14 +45,33 @@ public class QuestionServiceImpl implements IQuestionService {
 
     @Override
     public List<QuestionDto> getQuestions() {
-        List<Question> questions = questionRepository.findAll();
+        Account account = securityUtil.getCurrentUser();
+        List<Question> questions = new ArrayList<>();
+        if (account.getRole().getCode().name().equals(EAccountRole.STUDENT.name())) {
+            List<Class> enrolledClass = account.getStudentClasses().stream().map(StudentClass::getaClass).collect(Collectors.toList());
+            List<Subject> enrolledSubjects = enrolledClass.stream().map(aClass -> aClass.getCourse().getSubject()).distinct().collect(Collectors.toList());
+            questions = questionRepository.findAllBySubjectIn(enrolledSubjects);
+        } else {
+            questions = questionRepository.findAll();
+        }
         return questions.stream().map(ConvertUtil::doConvertEntityToResponse).collect(Collectors.toList());
     }
 
     @Override
     public List<QuestionDto> getQuestionsBySubject(Long subjectId) {
-        List<Question> questions = questionRepository.findAllBySubject_Id(subjectId);
-        return questions.stream().map(ConvertUtil::doConvertEntityToResponse).collect(Collectors.toList());
+        Account account = securityUtil.getCurrentUser();
+        Subject subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
+                        .withMessage("Subject not found with id:" + subjectId));
+        boolean isValidToViewQuestion = true;
+        if (account.getRole().getCode().name().equals(EAccountRole.STUDENT.name())) {
+            isValidToViewQuestion = isEnrolledToSubject(account, subject);
+        }
+        if (isValidToViewQuestion) {
+            List<Question> questions = questionRepository.findAllBySubject_Id(subjectId);
+            return questions.stream().map(ConvertUtil::doConvertEntityToResponse).collect(Collectors.toList());
+        }
+        return Collections.emptyList();
     }
 
     @Override
@@ -87,6 +112,27 @@ public class QuestionServiceImpl implements IQuestionService {
         } else {
             question.setClosed(true);
         }
+        return true;
+    }
+
+    @Override
+    public Boolean openQuestion(Long id) {
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Question not found by id:" + id));
+        if (!question.getClosed()) {
+            throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Question has already opened!");
+        } else {
+            question.setClosed(false);
+        }
+        return true;
+    }
+
+    private Boolean isEnrolledToSubject(Account account, Subject subject) {
+        List<Class> enrolledClass = account.getStudentClasses().stream().map(StudentClass::getaClass).collect(Collectors.toList());
+        Class classMatchSubject = enrolledClass.stream()
+                .filter(aClass -> aClass.getCourse().getSubject() != null)
+                .filter(aClass -> aClass.getCourse().getSubject().getId().equals(subject.getId()))
+                .findFirst().orElseThrow(() -> ApiException.create(HttpStatus.CONFLICT).withMessage("Student not enrolled to this subject!!"));
         return true;
     }
 }

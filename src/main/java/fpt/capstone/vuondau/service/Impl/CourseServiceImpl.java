@@ -18,6 +18,7 @@ import fpt.capstone.vuondau.entity.response.CourseDetailResponse;
 import fpt.capstone.vuondau.entity.response.CourseResponse;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.ICourseService;
+import fpt.capstone.vuondau.util.ConvertUtil;
 import fpt.capstone.vuondau.util.MessageUtil;
 import fpt.capstone.vuondau.util.ObjectUtil;
 import fpt.capstone.vuondau.util.PageUtil;
@@ -178,7 +179,6 @@ public class CourseServiceImpl implements ICourseService {
         return PageUtil.convert(coursePage.map(this::convertCourseToCourseResponse));
 
     }
-
 //    public CourseDetailResponse convertCourseToCourseResponse(Course course) {
 //        CourseDetailResponse courseResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class);
 //        courseResponse.setGrade(course.getGrade());

@@ -391,6 +391,8 @@ public class ClassServiceImpl implements IClassService {
         return classDetail;
     }
 
+
+
     @Override
     public ApiPage<ClassDto> getAllClass(Pageable pageable) {
         Page<Class> classesPage = classRepository.findAllByIsActiveIsTrue(pageable);
