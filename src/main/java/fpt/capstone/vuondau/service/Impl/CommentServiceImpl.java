@@ -55,6 +55,10 @@ public class CommentServiceImpl implements ICommentService {
         Question question = questionRepository.findById(createCommentRequest.getQuestionId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
                         .withMessage("Question not found with id:" + createCommentRequest.getQuestionId()));
+        if (question.getClosed()) {
+            throw ApiException.create(HttpStatus.CONFLICT)
+                    .withMessage("Question has closed!!");
+        }
         comment.setQuestion(question);
         comment.setAccount(account);
         if (createCommentRequest.getParentCommentId() != null) {
