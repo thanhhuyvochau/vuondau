@@ -24,7 +24,7 @@ public class ArchetypeController {
         this.iArchetypeService = iArchetypeService;
     }
 
-    @Operation(summary = "Lấy thời khóa biểu có sẵn của giáo viên")
+    @Operation(summary = "Lấy thời khóa biểu có sẵn của giáo viên ne")
     @GetMapping("/{teacherId}/archetype")
     public ResponseEntity<ApiResponse<List<ArchetypeTeacherDto>>> getArchetypeOfTeacher(@PathVariable long teacherId) {
         return ResponseEntity.ok(ApiResponse.success(iArchetypeService.getArchetypeOfTeacher(teacherId)));
