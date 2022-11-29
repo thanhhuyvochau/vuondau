@@ -29,10 +29,6 @@ public class AdminController {
 
 
 
-
-
-
-
     @Operation(summary = "xem hoc sinh feedback lớp ")
     @GetMapping("/{classId}/view-feadback")
     public ResponseEntity<ApiResponse<FeedBackDto>> viewStudentFeedbackClass(@PathVariable long classId) {
@@ -45,6 +41,8 @@ public class AdminController {
                                                                                         Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iAdminService.searchRequestForm(query, pageable)));
     }
+
+
 
 
 }

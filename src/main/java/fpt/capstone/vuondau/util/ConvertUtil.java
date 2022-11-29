@@ -53,6 +53,10 @@ public class ConvertUtil {
         AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class, true);
         RoleDto roleDto = doConvertEntityToResponse(account.getRole());
         accountResponse.setRole(roleDto);
+        if (account.getResource()!= null){
+            accountResponse.setAvatar(account.getResource().getUrl());
+        }
+
         return accountResponse;
     }
 
