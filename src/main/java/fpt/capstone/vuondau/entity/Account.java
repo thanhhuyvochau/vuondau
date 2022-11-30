@@ -80,6 +80,9 @@ public class Account {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
+    @OneToOne(mappedBy = "account")
+    private AccountDetail accountDetail;
+
     public String getGender() {
         return gender;
     }

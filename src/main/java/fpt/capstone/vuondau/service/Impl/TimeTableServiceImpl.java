@@ -63,8 +63,6 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
 
 
-        List<Long> allDayOfWeekDuplicate = new ArrayList<>();
-
         // Check Dow
         List<Long> allDayOfWeekId = timeTableRequest.getSlotDow().stream().map(SlotDowDto::getDayOfWeekId).collect(Collectors.toList());
         Set<Long> countDow = new HashSet<>();
@@ -78,18 +76,17 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
 
 
+        // Dạy 2 ngày trong 1 tuần
+//
+//        if (timeTableRequest.getSlotDow().size()==2){ //day 2 ngay trong tuần
+//                if (checkDuplicatesDow.size()>=1) {
+//                    throw ApiException.create(HttpStatus.BAD_REQUEST)
+//                            .withMessage(messageUtil.getLocalMessage("Số buổi dạy trong tuần là 2. Bạn không thể dạy 2 slot trong 1 ngày được. ")) ;
+//                }
+//        }
 
-        if (timeTableRequest.getSlotDow().size()==2){ //day 2 ngay trong tuần
-                if (checkDuplicatesDow.size()>=1) {
-                    throw ApiException.create(HttpStatus.BAD_REQUEST)
-                            .withMessage(messageUtil.getLocalMessage("Số buổi dạy trong tuần là 2. Bạn không thể dạy 2 slot trong 1 ngày được. ")) ;
-                }
-        }
 
 
-
-//        Set<Long> duplicatesDayOfWeek = collect.stream().filter(n-> !allDayOfWeekDuplicate.add(n)).collect(Collectors.toSet()) ;
-        System.out.println(allDayOfWeekDuplicate);
 
 
         //Set Archetype
@@ -145,8 +142,6 @@ public class TimeTableServiceImpl implements ITimeTableService {
         }
         aClass.getTimeTables().clear();
         aClass.getTimeTables().addAll(timeTableList) ;
-//        aClass.setTimeTables(timeTableList);
-
 
 
 

@@ -30,6 +30,10 @@ public class Resource {
     @OneToMany(mappedBy = "resource", cascade = CascadeType.ALL)
     private List<Course> course ;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_detail_id")
+    private AccountDetail accountDetail ;
+
 
     public Long getId() {
         return id;
@@ -85,5 +89,13 @@ public class Resource {
 
     public void setCourse(List<Course> course) {
         this.course = course;
+    }
+
+    public AccountDetail getAccountDetail() {
+        return accountDetail;
+    }
+
+    public void setAccountDetail(AccountDetail accountDetail) {
+        this.accountDetail = accountDetail;
     }
 }

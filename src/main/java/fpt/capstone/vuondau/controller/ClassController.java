@@ -97,6 +97,7 @@ public class ClassController {
         return ResponseEntity.ok(ApiResponse.success(iClassService.classDetail(id)));
     }
 
+
     @Operation(summary = "lấy tất cả hoc sinh request vao lớp ")
     @GetMapping({"{classId}/students-approve-class"})
     public ResponseEntity<ApiResponse<List<ClassDto>>> studentWaitingApproveIntoClass(@PathVariable Long classId) {

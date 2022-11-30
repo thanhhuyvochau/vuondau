@@ -90,64 +90,10 @@ public class ClassServiceImpl implements IClassService {
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
         clazz.setActive(false);
-
         clazz.setAccount(teacher);
-
-
-//        CreateCourseRequest createCourseRequest = createClassRequest.getCourseRequest();
-        Subject subject = subjectRepository.findById(createClassRequest.getSubjectId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay subject"));
-
-
-        //set course chp class
-//        if (createClassRequest.getCourseRequest()!= null){
-//            Course course = new Course();
-//            course.setName(createClassRequest.getCourseRequest().getName());
-//            course.setCode(createClassRequest.getCourseRequest().getCode());
-//            course.setTitle(createClassRequest.getCourseRequest().getTitle());
-//            course.setDescription(createClassRequest.getCourseRequest().getDescription());
-//            List<TeacherCourse> teacherCourseList = new ArrayList<>();
-//            TeacherCourse teacherCourse = new TeacherCourse();
-//            TeacherCourseKey teacherCourseKey = new TeacherCourseKey();
-//            teacherCourseKey.setTeachId(teacherId);
-//            teacherCourseKey.setCourseId(course.getId());
-//            teacherCourse.setId(teacherCourseKey);
-//            teacherCourse.setAccount(teacher);
-//            teacherCourse.setCourse(course);
-//            teacherCourseList.add(teacherCourse);
-//            course.setTeacherCourses(teacherCourseList);
-//            course.setIsActive(false);
-//            course.setSubject(subject);
-//
-//            courseRepository.save(course);
-//            clazz.setCourse(course);
-//        }
-
-
-//        teacher.setTeacherCourses(teacherCourseList);
-
-
         classRepository.save(clazz);
 
 
-        // set class từ vườn đậu moodle (source)
-
-//        S1CourseRequest s1CourseRequest = new S1CourseRequest();
-//
-//        List<MoodleCourseDataRequest.MoodleCourseBody> moodleCourseBodyList = new ArrayList<>();
-//
-//
-//        MoodleCourseDataRequest.MoodleCourseBody moodleCourseBody = new MoodleCourseDataRequest.MoodleCourseBody();
-//        moodleCourseBody.setFullname(createClassRequest.getName());
-//        moodleCourseBody.setShortname(createClassRequest.getCode());
-//        moodleCourseBody.setCategoryid(subject.getCategoryMoodleId());
-//        moodleCourseBody.setStartdate(Instant.now().getEpochSecond());
-//        moodleCourseBody.setEnddate(Instant.now().getEpochSecond());
-//        moodleCourseBodyList.add(moodleCourseBody);
-//
-//
-//        s1CourseRequest.setCourses(moodleCourseBodyList);
-//
-//        List<MoodleClassResponse> moodleClassResponses = moodleCourseRepository.postCourse(s1CourseRequest);
 
         return true;
     }
@@ -238,6 +184,7 @@ public class ClassServiceImpl implements IClassService {
         Class aClass = classRepository.findById(classId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
 
+
         List<StudentClass> studentClasses = student.getStudentClasses();
         studentClasses.stream().map(studentClass -> {
             if (studentClass.getaClass().equals(aClass)) {
@@ -246,6 +193,7 @@ public class ClassServiceImpl implements IClassService {
             }
             return studentClass;
         }).collect(Collectors.toList());
+
 
         StudentClass studentClass = new StudentClass();
         StudentClassKey key = new StudentClassKey();
@@ -302,7 +250,8 @@ public class ClassServiceImpl implements IClassService {
     @Override
     public List<ClassDto> searchClass(ClassSearchRequest query) {
         ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
-                .queryLike(query.getQ());
+                .queryLike(query.getQ())
+                .queryStatusClass(query.getStatus());
 
         List<Class> classList = classRepository.findAll(builder.build());
         List<ClassDto> classDtoList = new ArrayList<>();
@@ -347,10 +296,10 @@ public class ClassServiceImpl implements IClassService {
                 courseDetailResponse.setSubject(subjectDto);
             }
 
-
+        if (aClass.getResourceMoodleId()!=null){
             CourseIdRequest courseIdRequest = new CourseIdRequest();
 
-            courseIdRequest.setCourseid(1L);
+            courseIdRequest.setCourseid(aClass.getResourceMoodleId());
             try {
                 List<MoodleRecourseClassResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
 
@@ -375,6 +324,8 @@ public class ClassServiceImpl implements IClassService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
 
 
             classDetail.setCourse(courseDetailResponse);
