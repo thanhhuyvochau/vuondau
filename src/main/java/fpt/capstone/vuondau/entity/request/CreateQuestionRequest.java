@@ -1,17 +1,11 @@
 package fpt.capstone.vuondau.entity.request;
 
-import fpt.capstone.vuondau.entity.Comment;
-import fpt.capstone.vuondau.entity.response.AccountResponse;
-import fpt.capstone.vuondau.entity.response.SubjectResponse;
-
-import java.util.ArrayList;
-import java.util.List;
-
 
 public class CreateQuestionRequest {
     private String content;
 
-    private Long subjectId;
+    private Long forumId;
+    private Long forumLessonId;
 
     public String getContent() {
         return content;
@@ -21,11 +15,19 @@ public class CreateQuestionRequest {
         this.content = content;
     }
 
-    public Long getSubjectId() {
-        return subjectId;
+    public Long getForumId() {
+        return forumId;
     }
 
-    public void setSubjectId(Long subjectId) {
-        this.subjectId = subjectId;
+    public void setForumId(Long forumId) {
+        this.forumId = forumId;
+    }
+
+    public Long getForumLessonId() {
+        return forumLessonId;
+    }
+
+    public void setForumLessonId(Long forumLessonId) {
+        this.forumLessonId = forumLessonId;
     }
 }

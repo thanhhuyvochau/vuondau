@@ -31,16 +31,19 @@ public class AccountController {
 
 
     @GetMapping
+    @Operation(summary = "Lấy tất cả tài khoản")
     public ResponseEntity<ApiResponse<ApiPage<AccountResponse>>> getAccounts(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(accountService.getAccounts(pageable)));
     }
 
     @GetMapping("/students")
+    @Operation(summary = "Lấy tất cả tài khoản học sinh")
     public ResponseEntity<ApiResponse<ApiPage<AccountResponse>>> getStudentAccounts(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(accountService.getStudentAccounts(pageable)));
     }
 
     @GetMapping("/teachers")
+    @Operation(summary = "Lấy tất cả tài khoản giáo viên")
     public ResponseEntity<ApiResponse<ApiPage<AccountResponse>>> getTeacherAccounts(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(accountService.getTeacherAccounts(pageable)));
     }
@@ -61,30 +64,38 @@ public class AccountController {
 
     @Operation(summary = "Xem thông tin giáo viên giáo viên")
     @GetMapping("/{id}")
-    public ResponseEntity<AccountResponse> getInfoTeacher (@PathVariable long id ) {
-
-        return ResponseEntity.ok(accountService.getInfoTeacher(id)) ;
+    public ResponseEntity<AccountResponse> getInfoTeacher(@PathVariable long id) {
+        return ResponseEntity.ok(accountService.getAccountById(id));
     }
+
     @Operation(summary = "Ban / Unban account")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Boolean>> banAndUbBanAccount(@PathVariable long id) {
         return ResponseEntity.ok(ApiResponse.success(accountService.banAndUbBanAccount(id)));
     }
 
+
+//    @Operation(summary = "Cập nhật role cho account")
+//    @PutMapping("/{id}/role")
+//    public ResponseEntity<ApiResponse<AccountResponse>> updateAccountRole(@PathVariable long id, @RequestParam EAccountRole eAccountRole) {
+//        return ResponseEntity.ok(ApiResponse.success(accountService.updateRoleAccount(id, eAccountRole)));
+//    }
     @Operation(summary = "cập nhật role-active cho account")
     @PutMapping("/{id}/role-active")
-    public ResponseEntity<ApiResponse<AccountResponse>> updateAccountRole(@PathVariable long id,@Nullable @RequestBody AccountEditRequest accountEditRequest) {
+    public ResponseEntity<ApiResponse<AccountResponse>> updateAccountRole ( @PathVariable long id,
+                                                                            @Nullable @RequestBody AccountEditRequest accountEditRequest){
         return ResponseEntity.ok(ApiResponse.success(accountService.updateRoleAndActiveAccount(id, accountEditRequest)));
     }
-    @Operation(summary = "phê duyệt tài khoản giáo viên")
+    @Operation(summary = "Chê duyệt tài khoản giáo viên")
     @PutMapping("/{id}/active")
-    public ResponseEntity<ApiResponse<AccountResponse>> ApproveAccountTeacher(@PathVariable long id) {
+    public ResponseEntity<ApiResponse<AccountResponse>> ApproveAccountTeacher ( @PathVariable long id){
         return ResponseEntity.ok(ApiResponse.success(accountService.approveTeacherAccount(id)));
     }
 
     @Operation(summary = "Cập nhật hồ sơ account")
     @PutMapping("/{id}/account/profile")
-    public ResponseEntity<AccountResponse> editProfile(@PathVariable long id, @RequestBody AccountEditRequest accountEditRequest) {
+    public ResponseEntity<AccountResponse> editProfile ( @PathVariable long id,
+                                                         @RequestBody AccountEditRequest accountEditRequest){
         return ResponseEntity.ok(accountService.editStudentProfile(id, accountEditRequest));
     }
 }

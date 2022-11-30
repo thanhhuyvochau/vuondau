@@ -7,11 +7,6 @@ import java.util.List;
 
 public interface IQuestionService {
     QuestionDto getQuestion(Long id);
-
-    List<QuestionDto> getQuestions();
-
-    List<QuestionDto> getQuestionsBySubject(Long subjectId);
-
     QuestionDto createQuestion(CreateQuestionRequest createQuestionRequest);
 
     QuestionDto updateQuestion(Long questionId, CreateQuestionRequest createQuestionRequest);
