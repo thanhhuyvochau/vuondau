@@ -3,9 +3,9 @@ package fpt.capstone.vuondau.service.Impl;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiException;
-import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.dto.QuestionDto;
 import fpt.capstone.vuondau.entity.request.CreateQuestionRequest;
+import fpt.capstone.vuondau.repository.ForumLessonRepository;
 import fpt.capstone.vuondau.repository.ForumRepository;
 import fpt.capstone.vuondau.repository.QuestionRepository;
 import fpt.capstone.vuondau.repository.SubjectRepository;
@@ -16,8 +16,6 @@ import fpt.capstone.vuondau.util.SecurityUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,12 +25,14 @@ public class QuestionServiceImpl implements IQuestionService {
     private final SubjectRepository subjectRepository;
     private final SecurityUtil securityUtil;
     private final ForumRepository forumRepository;
+    private final ForumLessonRepository forumLessonRepository;
 
-    public QuestionServiceImpl(QuestionRepository questionRepository, SubjectRepository subjectRepository, SecurityUtil securityUtil, ForumRepository forumRepository) {
+    public QuestionServiceImpl(QuestionRepository questionRepository, SubjectRepository subjectRepository, SecurityUtil securityUtil, ForumRepository forumRepository, ForumLessonRepository forumLessonRepository) {
         this.questionRepository = questionRepository;
         this.subjectRepository = subjectRepository;
         this.securityUtil = securityUtil;
         this.forumRepository = forumRepository;
+        this.forumLessonRepository = forumLessonRepository;
     }
 
     @Override
@@ -43,43 +43,19 @@ public class QuestionServiceImpl implements IQuestionService {
     }
 
     @Override
-    public List<QuestionDto> getQuestions() {
-        Account account = securityUtil.getCurrentUser();
-        List<Question> questions = new ArrayList<>();
-        if (account.getRole().getCode().name().equals(EAccountRole.STUDENT.name())) {
-            List<Class> enrolledClass = account.getStudentClasses().stream().map(StudentClass::getaClass).collect(Collectors.toList());
-            List<Subject> enrolledSubjects = enrolledClass.stream().map(aClass -> aClass.getCourse().getSubject()).distinct().collect(Collectors.toList());
-            questions = questionRepository.findAllBySubjectIn(enrolledSubjects);
-        } else {
-            questions = questionRepository.findAll();
-        }
-        return questions.stream().map(ConvertUtil::doConvertEntityToResponse).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<QuestionDto> getQuestionsBySubject(Long subjectId) {
-        Account account = securityUtil.getCurrentUser();
-        Subject subject = subjectRepository.findById(subjectId)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
-                        .withMessage("Subject not found with id:" + subjectId));
-        boolean isValidToViewQuestion = true;
-        if (account.getRole().getCode().name().equals(EAccountRole.STUDENT.name())) {
-            isValidToViewQuestion = isEnrolledToSubject(account, subject);
-        }
-        if (isValidToViewQuestion) {
-            List<Question> questions = questionRepository.findAllBySubject_Id(subjectId);
-            return questions.stream().map(ConvertUtil::doConvertEntityToResponse).collect(Collectors.toList());
-        }
-        return Collections.emptyList();
-    }
-
-    @Override
     public QuestionDto createQuestion(CreateQuestionRequest createQuestionRequest) {
         Question question = ObjectUtil.copyProperties(createQuestionRequest, new Question(), Question.class, true);
         Account student = securityUtil.getCurrentUser();
+
         Forum forum = forumRepository.findById(createQuestionRequest.getForumId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
                         .withMessage("Subject not found with id:" + createQuestionRequest.getForumId()));
+
+        ForumLesson forumLesson = forumLessonRepository.findById(createQuestionRequest
+                .getForumLessonId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
+                .withMessage("Lesson not found with id:" + createQuestionRequest.getForumLessonId()));
+
+        question.setForumLesson(forumLesson);
         question.setForum(forum);
         question.setStudent(student);
         questionRepository.save(question);

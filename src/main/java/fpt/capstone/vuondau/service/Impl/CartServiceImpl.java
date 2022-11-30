@@ -136,7 +136,7 @@ public class CartServiceImpl implements ICartService {
 //                        }
                         quantity+= 1 ;
 
-                        courseResponse.setSubject(ObjectUtil.copyProperties(course.getSubject(), new SubjectDto() , SubjectDto.class));
+                        courseResponse.setSubject(ObjectUtil.copyProperties(course.getSubject(), new SubjectResponse() , SubjectResponse.class));
 
                         courseResponseList.add(courseResponse);
 

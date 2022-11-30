@@ -25,7 +25,7 @@ public class Forum {
     private Subject subject;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id")
-    private Class aClass;
+    private Class clazz;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "forum")
     private List<ForumLesson> forumLessons = new ArrayList<>();
@@ -73,12 +73,12 @@ public class Forum {
         this.subject = subject;
     }
 
-    public Class getaClass() {
-        return aClass;
+    public Class getaClazz() {
+        return clazz;
     }
 
-    public void setaClass(Class aClass) {
-        this.aClass = aClass;
+    public void setaClazz(Class aClass) {
+        this.clazz = aClass;
     }
 
     public List<ForumLesson> getForumLessons() {

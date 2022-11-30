@@ -79,7 +79,7 @@ public class Class {
     @Column(name = "resource_mooodle_id")
     private BigDecimal resourceMoodleId;
 
-    @OneToMany(mappedBy = "aClass", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "clazz", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Forum> forums = new ArrayList<>();
 
     public Long getId() {

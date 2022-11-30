@@ -12,10 +12,7 @@ import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.dto.*;
 import fpt.capstone.vuondau.entity.request.*;
-import fpt.capstone.vuondau.entity.response.ClassCourseResponse;
-import fpt.capstone.vuondau.entity.response.ClassSubjectResponse;
-import fpt.capstone.vuondau.entity.response.CourseDetailResponse;
-import fpt.capstone.vuondau.entity.response.CourseResponse;
+import fpt.capstone.vuondau.entity.response.*;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.ICourseService;
 import fpt.capstone.vuondau.util.ConvertUtil;
@@ -220,7 +217,7 @@ public class CourseServiceImpl implements ICourseService {
         }
         Subject subject = course.getSubject();
         if (subject != null) {
-            courseResponse.setSubject(ObjectUtil.copyProperties(subject, new SubjectDto(), SubjectDto.class));
+            courseResponse.setSubject(ObjectUtil.copyProperties(subject, new SubjectResponse(), SubjectResponse.class));
         }
 
 

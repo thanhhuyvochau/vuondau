@@ -4,6 +4,7 @@ import fpt.capstone.vuondau.MoodleRepository.Response.MoodleRecourseClassRespons
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiException;
+import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.common.EForumType;
 import fpt.capstone.vuondau.entity.dto.ForumDto;
@@ -12,7 +13,11 @@ import fpt.capstone.vuondau.repository.ForumRepository;
 import fpt.capstone.vuondau.repository.SubjectRepository;
 import fpt.capstone.vuondau.service.IForumService;
 import fpt.capstone.vuondau.util.ConvertUtil;
+import fpt.capstone.vuondau.util.PageUtil;
 import fpt.capstone.vuondau.util.SecurityUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +42,7 @@ public class ForumServiceImpl implements IForumService {
     public ForumDto createForumForClass(Long classId, MoodleRecourseClassResponse moodleRecourseClassResponse) {
         Class clazz = classRepository.findById(classId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Class not found with id:" + classId));
-        Forum existedForum = forumRepository.findForumByAClass(clazz).orElse(null);
+        Forum existedForum = forumRepository.findForumByClazz(clazz).orElse(null);
         if (existedForum != null) {
             throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage("A class at most one forum");
         }
@@ -84,10 +89,14 @@ public class ForumServiceImpl implements IForumService {
 
     @Override
     public ForumDto getForumByClass(Long classId) {
+        Account account = securityUtil.getCurrentUser();
         Class clazz = classRepository.findById(classId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Class not found with id:" + classId));
 
-        Forum forum = forumRepository.findForumByAClass(clazz)
+        if (!isEnrolledToClass(account, clazz)) {
+            throw ApiException.create(HttpStatus.CONFLICT).withMessage("Student not enrolled to this class or some error happened!!");
+        }
+        Forum forum = forumRepository.findForumByClazz(clazz)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
                         .withMessage("Forum not found with class:" + clazz.getName()));
 
@@ -102,7 +111,7 @@ public class ForumServiceImpl implements IForumService {
         Forum forum = null;
         boolean isValidToViewQuestion = true;
         if (account.getRole().getCode().name().equals(EAccountRole.STUDENT.name())) {
-            isValidToViewQuestion = isEnrolledToSubject(account, subject);
+            isValidToViewQuestion = isEnrolledToClassBelongToSubject(account, subject);
         }
         if (isValidToViewQuestion) {
             forum = forumRepository.findForumBySubject(subject)
@@ -112,12 +121,41 @@ public class ForumServiceImpl implements IForumService {
         return ConvertUtil.doConvertEntityToResponse(forum);
     }
 
-    private Boolean isEnrolledToSubject(Account account, Subject subject) {
+    public ApiPage<ForumDto> getAllClassForumsOfStudent(Pageable pageable) {
+        Account account = securityUtil.getCurrentUser();
+        List<ForumDto> forumClass = account.getStudentClasses().stream()
+                .map(StudentClass::getaClass).distinct()
+                .map(aClass -> this.getForumByClass(aClass.getId()))
+                .collect(Collectors.toList());
+        Page<ForumDto> page = new PageImpl<>(forumClass, pageable, forumClass.size());
+        return PageUtil.convert(page);
+    }
+
+    private Boolean isEnrolledToClassBelongToSubject(Account account, Subject subject) {
         List<Class> enrolledClass = account.getStudentClasses().stream().map(StudentClass::getaClass).collect(Collectors.toList());
         Class classMatchSubject = enrolledClass.stream()
                 .filter(aClass -> aClass.getCourse().getSubject() != null)
                 .filter(aClass -> aClass.getCourse().getSubject().getId().equals(subject.getId()))
                 .findFirst().orElseThrow(() -> ApiException.create(HttpStatus.CONFLICT).withMessage("Student not enrolled to this subject!!"));
         return true;
+    }
+
+    private Boolean isEnrolledToClass(Account account, Class clazz) {
+        long enrolled = clazz.getStudentClasses().stream().filter(studentClass -> studentClass.getAccount().getId().equals(account.getId())).count();
+        if (enrolled != 1) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public ApiPage<ForumDto> getAllSubjectForumsOfStudent(Pageable pageable) {
+        Account account = securityUtil.getCurrentUser();
+        List<ForumDto> forumClass = account.getStudentClasses().stream()
+                .map(StudentClass::getaClass).map(Class::getCourse).map(Course::getSubject).distinct()
+                .map(subject -> this.getForumBySubject(subject.getId()))
+                .collect(Collectors.toList());
+        Page<ForumDto> page = new PageImpl<>(forumClass, pageable, forumClass.size());
+        return PageUtil.convert(page);
     }
 }

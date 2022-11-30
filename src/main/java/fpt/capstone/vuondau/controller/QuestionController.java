@@ -24,16 +24,6 @@ public class QuestionController {
         return ResponseEntity.ok(ApiResponse.success(iQuestionService.getQuestion(id)));
     }
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<QuestionDto>>> getQuestions() {
-        return ResponseEntity.ok(ApiResponse.success(iQuestionService.getQuestions()));
-    }
-
-    @GetMapping("/{subjectId}")
-    public ResponseEntity<ApiResponse<List<QuestionDto>>> getQuestionsBySubject(@PathVariable Long subjectId) {
-        return ResponseEntity.ok(ApiResponse.success(iQuestionService.getQuestionsBySubject(subjectId)));
-    }
-
     @PostMapping
     public ResponseEntity<ApiResponse<QuestionDto>> createQuestion(@RequestBody CreateQuestionRequest createQuestionRequest) {
         return ResponseEntity.ok(ApiResponse.success(iQuestionService.createQuestion(createQuestionRequest)));
@@ -47,5 +37,10 @@ public class QuestionController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Boolean>> closeQuestion(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success(iQuestionService.closeQuestion(id)));
+    }
+
+    @PutMapping("/{id}/open")
+    public ResponseEntity<ApiResponse<Boolean>> openQuestion(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success(iQuestionService.openQuestion(id)));
     }
 }

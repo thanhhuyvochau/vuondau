@@ -5,6 +5,7 @@ public class CreateQuestionRequest {
     private String content;
 
     private Long forumId;
+    private Long forumLessonId;
 
     public String getContent() {
         return content;
@@ -20,5 +21,13 @@ public class CreateQuestionRequest {
 
     public void setForumId(Long forumId) {
         this.forumId = forumId;
+    }
+
+    public Long getForumLessonId() {
+        return forumLessonId;
+    }
+
+    public void setForumLessonId(Long forumLessonId) {
+        this.forumLessonId = forumLessonId;
     }
 }

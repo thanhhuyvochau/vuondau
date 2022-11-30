@@ -81,7 +81,7 @@ public class ConvertUtil {
     public static ForumDto doConvertEntityToResponse(Forum forum) {
         ForumDto forumDto = ObjectUtil.copyProperties(forum, new ForumDto(), ForumDto.class, true);
         if (forum.getType().name().equals(EForumType.CLASS.name())) {
-            ClassDto classDto = doConvertEntityToResponse(forum.getaClass());
+            ClassDto classDto = doConvertEntityToResponse(forum.getaClazz());
             forumDto.setaClass(classDto);
             List<ForumLessonDto> lessonDtos = forum.getForumLessons().stream().map(ConvertUtil::doConvertEntityToResponse).collect(Collectors.toList());
             forumDto.setForumLessonDtos(lessonDtos);
