@@ -42,6 +42,6 @@ public interface IAccountService {
 
     ApiPage<AccountResponse> searchAccount(AccountSearchRequest query, Pageable pageable);
 
-    AccountResponse updateRoleAccount(long id, EAccountRole eAccountRole);
+    AccountResponse updateRoleAndActiveAccount(long id,AccountEditRequest accountEditRequest);
     AccountResponse approveTeacherAccount(long id);
 }

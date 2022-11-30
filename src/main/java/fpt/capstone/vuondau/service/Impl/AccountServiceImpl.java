@@ -267,12 +267,13 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    public AccountResponse updateRoleAccount(long id, EAccountRole eAccountRole) {
+    public AccountResponse updateRoleAndActiveAccount(long id,AccountEditRequest accountEditRequest) {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
-        Role role = roleRepository.findRoleByCode(eAccountRole)
+        Role role = roleRepository.findRoleByCode(accountEditRequest.getRole())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay role"));
         account.setRole(role);
+        account.setActive(accountEditRequest.isActive());
         Account save = accountRepository.save(account);
         return ConvertUtil.doConvertEntityToResponse(save);
     }

@@ -1,6 +1,8 @@
 package fpt.capstone.vuondau.entity.request;
 
 
+import fpt.capstone.vuondau.entity.common.EAccountRole;
+
 import java.io.Serializable;
 import java.time.Instant;
 
@@ -11,6 +13,10 @@ public class AccountEditRequest implements Serializable {
     private String phone ;
 
     private String mail ;
+
+    private EAccountRole role ;
+
+    private boolean isActive ;
 
 
 
@@ -46,5 +52,19 @@ public class AccountEditRequest implements Serializable {
         this.phone = phone;
     }
 
+    public EAccountRole getRole() {
+        return role;
+    }
 
+    public void setRole(EAccountRole role) {
+        this.role = role;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
 }

@@ -25,6 +25,10 @@ public class Subject {
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Forum> forums = new ArrayList<>();
 
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AccountDetailSubject> accountDetailSubjects;
+
+
     public Long getId() {
         return id;
     }
@@ -65,6 +69,14 @@ public class Subject {
         this.categoryMoodleId = categoryMoodleId;
     }
 
+    public List<AccountDetailSubject> getAccountDetailSubjects() {
+        return accountDetailSubjects;
+    }
+
+    public void setAccountDetailSubjects(List<AccountDetailSubject> accountDetailSubjects) {
+        this.accountDetailSubjects = accountDetailSubjects;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -77,4 +89,6 @@ public class Subject {
     public int hashCode() {
         return Objects.hash(id, name, code, courses, categoryMoodleId, forums);
     }
+
+
 }

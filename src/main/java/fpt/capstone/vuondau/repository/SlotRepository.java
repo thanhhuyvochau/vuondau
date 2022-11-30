@@ -5,6 +5,7 @@ import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.Course;
 import fpt.capstone.vuondau.entity.Slot;
+import fpt.capstone.vuondau.entity.dto.SlotDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,5 +17,6 @@ import java.util.Optional;
 
 @Repository
 public interface SlotRepository extends JpaRepository<Slot, Long> {
+
 
 }
