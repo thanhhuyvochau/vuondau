@@ -3,6 +3,7 @@ package fpt.capstone.vuondau.config.security;
 import fpt.capstone.vuondau.config.security.converter.JwtGrantedAuthoritiesConverterCustom;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -22,7 +23,7 @@ import java.util.Collections;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        /**Config for development */
+/**Config for development */
         http.cors().configurationSource(corsConfigurationSource())
                 .and().csrf().disable()
                 .authorizeRequests().anyRequest().permitAll();
@@ -30,7 +31,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         /**Config for deployment */
 //        http.cors().configurationSource(corsConfigurationSource())
 //                .and().csrf().disable()
-//                .authorizeRequests().antMatchers("/api/*").authenticated()
+//                .authorizeRequests()
+//                .antMatchers(HttpMethod.POST, "/api/*").authenticated()
+//                .antMatchers(HttpMethod.DELETE, "/api/*").authenticated()
+//                .antMatchers(HttpMethod.PUT, "/api/*").authenticated()
+//                .antMatchers("/api/accounts").authenticated()
+//                .antMatchers(HttpMethod.GET, "/api/*").permitAll()
+//                .antMatchers(HttpMethod.POST, "api/teachers/account").permitAll()
+//                .antMatchers(HttpMethod.POST, "api/students/account").permitAll()
 //                .and().oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter())
 //                .and().authenticationEntryPoint(new BasicAuthenticationEntryPoint());
     }
@@ -56,8 +64,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
     @Bean
-    public JwtGrantedAuthoritiesConverterCustom grantedAuthoritiesConverterCustom(){
+    public JwtGrantedAuthoritiesConverterCustom grantedAuthoritiesConverterCustom() {
         return new JwtGrantedAuthoritiesConverterCustom();
     }
 }

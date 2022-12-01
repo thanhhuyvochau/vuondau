@@ -1,11 +1,9 @@
-
 server:
   port: 8080
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://mysql8:3306/vuondau
-#    url: jdbc:mysql://103.173.255.39:3306/vuondau
     username: root
     password: test
   jpa:
@@ -18,21 +16,40 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://vuondau-keycloak.amazingtech.vn/auth/realms/vuondau-application
+  servlet:
+    multipart:
+      enabled: 'true'
+      max-request-size: 10MB
+      file-size-threshold: 2KB
+      max-file-size: 5MB
 minio:
   bucket: requestformstudent
   url: http://103.173.255.39:9000
   access-key: mGUnihw7IeJ3C6EQ
   secret-key: KLXCOA4g71xV5SChU3f278AYH3HqKE7I
 
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+# Keycloak settings
 keycloak:
   realm: vuondau-application
   resource: springboot-admin-client
   app-client: vuondau
-  auth-server-url: http://vuondau-keycloak.amazingtech.vn/auth
+  auth-server-url: http://keycloak:8080/auth
   credentials:
     secret: 0Z8fWR17uURSeTWmKd4EdapEUF8ck9ku
-
-
-
-
-
+# VnPay settings
+vnp_product_type: 25
+vnp_PayUrl: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+vnp_HashSecret: NSZFYQQMCHFKNHOUKYIJLUQVZTCWBUZR
+vnp_Returnurl: http://103.173.255.39:8889/payment-result
+vnp_TmnCode: 76E1ZE8I
+vnp_apiUrl: https://sandbox.vnpayment.vn/merchant_webapi/merchant.html

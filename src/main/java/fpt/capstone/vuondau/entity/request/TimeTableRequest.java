@@ -1,7 +1,6 @@
 package fpt.capstone.vuondau.entity.request;
 
 import fpt.capstone.vuondau.entity.dto.SlotDowDto;
-import jdk.internal.dynalink.linker.LinkerServices;
 
 import java.io.Serializable;
 import java.time.Instant;

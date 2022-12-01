@@ -4,6 +4,7 @@ package fpt.capstone.vuondau.entity;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
+import java.util.Objects;
 
 
 @Embeddable
@@ -29,5 +30,18 @@ public class AccountDetailClassLevelKey implements Serializable {
 
     public void setClassLevelId(Long classLevelId) {
         this.classLevelId = classLevelId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AccountDetailClassLevelKey that = (AccountDetailClassLevelKey) o;
+        return Objects.equals(accountDetailId, that.accountDetailId) && Objects.equals(classLevelId, that.classLevelId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(accountDetailId, classLevelId);
     }
 }
