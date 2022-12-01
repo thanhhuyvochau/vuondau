@@ -133,7 +133,7 @@ public class VnpConfig {
         } catch (Exception e) {
             ipAdress = "Invalid IP:" + e.getMessage();
         }
-        return ipAdress;
+        return "0:0:0:0:0:0:0:1";
     }
 
     public String getRandomNumber(int len) {

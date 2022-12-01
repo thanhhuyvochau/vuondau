@@ -84,16 +84,18 @@ public class TransactionServiceImpl implements ITransactionService {
         }
         vnp_Params.put("vnp_ReturnUrl", vnpConfig.getVnp_Returnurl());
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
-        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
 
+        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT-7"));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         String vnp_CreateDate = formatter.format(cld.getTime());
 
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
-        cld.add(Calendar.MINUTE, 15);
+        cld.add(Calendar.YEAR, 1);
         String vnp_ExpireDate = formatter.format(cld.getTime());
         //Add Params of 2.0.1 Version
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
+        SimpleDateFormat formatterCheck = new SimpleDateFormat("dd-MM-yyyy");
+        System.out.println("EXPIRED:"+formatterCheck.format(cld.getTime()));
         //Billing
         vnp_Params.put("vnp_Bill_Mobile", request.getTxt_billing_mobile());
         vnp_Params.put("vnp_Bill_Email", request.getTxt_billing_email());
