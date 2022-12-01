@@ -296,7 +296,6 @@ public class Account {
     public void setTransactions(List<Transaction> transactions) {
         this.transactions = transactions;
     }
-
     public AccountDetail getAccountDetail() {
         return accountDetail;
     }

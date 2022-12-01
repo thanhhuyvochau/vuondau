@@ -1,8 +1,10 @@
 package fpt.capstone.vuondau.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import fpt.capstone.vuondau.entity.common.EResourceType;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -33,6 +35,10 @@ public class Resource {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_detail_id")
     private AccountDetail accountDetail ;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "resource", cascade = CascadeType.ALL)
+    private List<Pano> panos = new ArrayList<>();
 
 
     public Long getId() {
@@ -97,5 +103,13 @@ public class Resource {
 
     public void setAccountDetail(AccountDetail accountDetail) {
         this.accountDetail = accountDetail;
+    }
+
+    public List<Pano> getPanos() {
+        return panos;
+    }
+
+    public void setPanos(List<Pano> panos) {
+        this.panos = panos;
     }
 }
