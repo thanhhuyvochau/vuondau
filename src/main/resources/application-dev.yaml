@@ -4,8 +4,8 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://mysql8:3306/vuondau
-    url: jdbc:mysql://103.173.255.39:3306/vuondau
+    url: jdbc:mysql://mysql8:3306/vuondau
+#    url: jdbc:mysql://103.173.255.39:3306/vuondau
     username: root
     password: test
   jpa:
@@ -17,7 +17,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: keycloak:8080/auth/realms/vuondau-application
+          issuer-uri: http://vuondau-keycloak.amazingtech.vn/auth/realms/vuondau-application
 minio:
   bucket: requestformstudent
   url: http://103.173.255.39:9000
