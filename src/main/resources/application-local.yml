@@ -47,9 +47,9 @@ keycloak:
   credentials:
     secret: 0Z8fWR17uURSeTWmKd4EdapEUF8ck9ku
 
-vnp_product_type: 25
+vnp_product_type: 250000
 vnp_PayUrl: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
 vnp_HashSecret: NSZFYQQMCHFKNHOUKYIJLUQVZTCWBUZR
-vnp_Returnurl: http://localhost:8082/payment-result
+vnp_Returnurl: http://localhost:8082/api/payment/payment-result
 vnp_TmnCode: 76E1ZE8I
 vnp_apiUrl: https://sandbox.vnpayment.vn/merchant_webapi/merchant.html
