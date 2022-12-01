@@ -39,7 +39,7 @@ public class Account {
     private String cvUrl;
 
     @Column(name = "birthday")
-    private Instant  birthday;
+    private Instant birthday;
 
     @Column(name = "introduce")
     private String introduce;
@@ -56,20 +56,21 @@ public class Account {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
     private Role role;
-
-    @OneToMany(mappedBy = "account" ,cascade = CascadeType.ALL,  orphanRemoval = true)
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+    private List<Transaction> transactions = new ArrayList<>();
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TeacherCourse> teacherCourses;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL,  orphanRemoval = true)
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudentClass> studentClasses;
 
 
-    @OneToMany(mappedBy = "account",  cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Request> requests ;
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Request> requests;
 
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
-    private List<StudentAnswer >studentAnswers;
+    private List<StudentAnswer> studentAnswers;
 
     @Column(name = "keycloak_id")
     private String keycloakId;
@@ -93,7 +94,7 @@ public class Account {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "avatar_id")
-    private Resource resource ;
+    private Resource resource;
 
 
     @OneToOne(mappedBy = "student")
@@ -255,7 +256,6 @@ public class Account {
     }
 
 
-
     public List<StudentAnswer> getStudentAnswers() {
         return studentAnswers;
     }
@@ -287,5 +287,21 @@ public class Account {
 
     public void setResource(Resource resource) {
         this.resource = resource;
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
+    }
+
+    public AccountDetail getAccountDetail() {
+        return accountDetail;
+    }
+
+    public void setAccountDetail(AccountDetail accountDetail) {
+        this.accountDetail = accountDetail;
     }
 }

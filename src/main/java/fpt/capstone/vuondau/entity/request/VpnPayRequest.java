@@ -16,6 +16,16 @@ public class VpnPayRequest {
     private String txt_inv_taxcode = "0102182292";
     private String cbo_inv_type = "I";
 
+    private Long classId;
+
+    public Long getClassId() {
+        return classId;
+    }
+
+    public void setClassId(Long classId) {
+        this.classId = classId;
+    }
+
     public String getVnp_OrderInfo() {
         return vnp_OrderInfo;
     }
