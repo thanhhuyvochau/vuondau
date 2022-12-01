@@ -247,7 +247,8 @@ public class ClassServiceImpl implements IClassService {
     @Override
     public List<ClassDto> searchClass(ClassSearchRequest query) {
         ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
-                .queryLike(query.getQ());
+                .queryLike(query.getQ())
+                .queryStatusClass(query.getStatus());
 
         List<Class> classList = classRepository.findAll(builder.build());
         List<ClassDto> classDtoList = new ArrayList<>();
