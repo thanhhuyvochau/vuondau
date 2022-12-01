@@ -1,14 +1,10 @@
 package fpt.capstone.vuondau.util;
 
 import fpt.capstone.vuondau.entity.*;
-import fpt.capstone.vuondau.entity.dto.CommentDto;
-import fpt.capstone.vuondau.entity.dto.QuestionDto;
-import fpt.capstone.vuondau.entity.dto.RequestTypeDto;
-import fpt.capstone.vuondau.entity.dto.RoleDto;
-import fpt.capstone.vuondau.entity.response.AccountResponse;
-import fpt.capstone.vuondau.entity.response.CourseDetailResponse;
-import fpt.capstone.vuondau.entity.response.RequestFormResponese;
-import fpt.capstone.vuondau.entity.response.SubjectResponse;
+import fpt.capstone.vuondau.entity.Class;
+import fpt.capstone.vuondau.entity.common.EForumType;
+import fpt.capstone.vuondau.entity.dto.*;
+import fpt.capstone.vuondau.entity.response.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -79,9 +75,52 @@ public class ConvertUtil {
         requestFormResponese.setRequestType(ObjectUtil.copyProperties(request.getRequestType(), new RequestTypeDto(), RequestTypeDto.class));
         return requestFormResponese;
     }
+
     public static CourseDetailResponse doConvertEntityToResponse(Course course) {
         CourseDetailResponse courseDetailResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class);
         courseDetailResponse.setGrade(course.getGrade());
         return courseDetailResponse;
+    }
+
+    public static ForumDto doConvertEntityToResponse(Forum forum) {
+        ForumDto forumDto = ObjectUtil.copyProperties(forum, new ForumDto(), ForumDto.class, true);
+        if (forum.getType().name().equals(EForumType.CLASS.name())) {
+            ClassDto classDto = doConvertEntityToResponse(forum.getaClazz());
+            forumDto.setaClass(classDto);
+            List<ForumLessonDto> lessonDtos = forum.getForumLessons().stream().map(ConvertUtil::doConvertEntityToResponse).collect(Collectors.toList());
+            forumDto.setForumLessonDtos(lessonDtos);
+        } else {
+            List<QuestionDto> questionDtos = forum.getQuestions().stream().map(ConvertUtil::doConvertEntityToResponse).collect(Collectors.toList());
+            forumDto.setQuestions(questionDtos);
+        }
+        return forumDto;
+    }
+
+    public static ClassDto doConvertEntityToResponse(Class aclass) {
+        ClassDto classDto = ObjectUtil.copyProperties(aclass, new ClassDto(), ClassDto.class);
+        Course course = aclass.getCourse();
+        CourseResponse courseResponse = new CourseResponse();
+        courseResponse.setId(course.getId());
+        courseResponse.setCourseName(course.getName());
+        courseResponse.setCourseTitle(course.getTitle());
+        if (aclass.getAccount() != null) {
+            courseResponse.setTeacherName(aclass.getAccount().getName());
+        }
+        if (course.getResource() != null) {
+            courseResponse.setImage(course.getResource().getUrl());
+        }
+        Subject subject = course.getSubject();
+        if (subject != null) {
+            courseResponse.setSubject(doConvertEntityToResponse(subject));
+        }
+        classDto.setCourse(courseResponse);
+        return classDto;
+    }
+
+    public static ForumLessonDto doConvertEntityToResponse(ForumLesson forumLesson) {
+        ForumLessonDto forumLessonDto = ObjectUtil.copyProperties(forumLesson, new ForumLessonDto(), ForumLessonDto.class, true);
+        List<QuestionDto> questionDtos = forumLesson.getQuestions().stream().map(ConvertUtil::doConvertEntityToResponse).collect(Collectors.toList());
+        forumLessonDto.setQuestions(questionDtos);
+        return forumLessonDto;
     }
 }

@@ -1,8 +1,11 @@
 package fpt.capstone.vuondau.service;
 
 import fpt.capstone.vuondau.entity.Account;
+import fpt.capstone.vuondau.entity.AccountDetail;
 import fpt.capstone.vuondau.entity.common.ApiPage;
+import fpt.capstone.vuondau.entity.dto.ResourceDto;
 import fpt.capstone.vuondau.entity.request.*;
+import fpt.capstone.vuondau.entity.response.AccountDetailResponse;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
 import fpt.capstone.vuondau.entity.response.StudentResponse;
@@ -16,4 +19,10 @@ public interface IAccountDetailService {
 
 
      boolean registerTutor(AccountDetailRequest accountDetailRequest);
+
+    List<ResourceDto> uploadImageRegisterProfile(long id , UploadAvatarRequest uploadAvatarRequest);
+
+    AccountResponse approveRegisterAccount(long id);
+
+    ApiPage<AccountDetailResponse>  getRequestToActiveAccount(Pageable pageable);
 }

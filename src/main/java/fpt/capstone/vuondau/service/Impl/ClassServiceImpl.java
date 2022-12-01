@@ -22,12 +22,10 @@ import fpt.capstone.vuondau.entity.response.CourseDetailResponse;
 import fpt.capstone.vuondau.entity.response.CourseResponse;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IClassService;
-import fpt.capstone.vuondau.util.MessageUtil;
-import fpt.capstone.vuondau.util.ObjectUtil;
-import fpt.capstone.vuondau.util.PageUtil;
-import fpt.capstone.vuondau.util.RequestUtil;
+import fpt.capstone.vuondau.util.*;
 import fpt.capstone.vuondau.util.specification.ClassSpecificationBuilder;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -171,7 +169,7 @@ public class ClassServiceImpl implements IClassService {
 
         Page<Class> classesPage = classRepository.findAll(builder.build(), pageable);
 
-        return PageUtil.convert(classesPage.map(this::convertClassToClassResponse));
+        return PageUtil.convert(classesPage.map(ConvertUtil::doConvertEntityToResponse));
 
 
     }
@@ -263,6 +261,8 @@ public class ClassServiceImpl implements IClassService {
         return classDtoList;
     }
 
+
+
     @Override
     public ClassDetailDto classDetail(Long id) throws JsonProcessingException {
         Class aClass = classRepository.findById(id)
@@ -326,13 +326,8 @@ public class ClassServiceImpl implements IClassService {
             }
         }
 
-
-
             classDetail.setCourse(courseDetailResponse);
-
         }
-
-
         Account account = aClass.getAccount();
         if (account != null) {
             AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class);
@@ -370,24 +365,24 @@ public class ClassServiceImpl implements IClassService {
             timeTableDto.setSlotNumber(timeTable.getSlotNumber());
             ArchetypeTimeDto archetypeTimeDto = new ArchetypeTimeDto();
             ArchetypeTime archetypeTime = timeTable.getArchetypeTime();
-            if (archetypeTime!=null) {
+            if (archetypeTime != null) {
                 Archetype archetype = archetypeTime.getArchetype();
-                if (archetype!=null){
-                    archetypeTimeDto.setArchetype(ObjectUtil.copyProperties(archetype, new ArchetypeDto() , ArchetypeDto.class));
+                if (archetype != null) {
+                    archetypeTimeDto.setArchetype(ObjectUtil.copyProperties(archetype, new ArchetypeDto(), ArchetypeDto.class));
                 }
                 Slot slot = archetypeTime.getSlot();
-                if (slot!= null){
-                    archetypeTimeDto.setSlot(ObjectUtil.copyProperties(slot , new SlotDto() , SlotDto.class));
+                if (slot != null) {
+                    archetypeTimeDto.setSlot(ObjectUtil.copyProperties(slot, new SlotDto(), SlotDto.class));
                 }
                 DayOfWeek dayOfWeek = archetypeTime.getDayOfWeek();
-                if (dayOfWeek!=null) {
-                    archetypeTimeDto.setDayOfWeek(ObjectUtil.copyProperties(dayOfWeek, new DayOfWeekDto() , DayOfWeekDto.class));
+                if (dayOfWeek != null) {
+                    archetypeTimeDto.setDayOfWeek(ObjectUtil.copyProperties(dayOfWeek, new DayOfWeekDto(), DayOfWeekDto.class));
                 }
             }
 
 
             timeTableDto.setArchetypeTime(archetypeTimeDto);
-            timeTableDtoList.add(timeTableDto) ;
+            timeTableDtoList.add(timeTableDto);
             return timeTable;
         }).collect(Collectors.toList());
         classDetail.setTimeTable(timeTableDtoList);
@@ -400,41 +395,10 @@ public class ClassServiceImpl implements IClassService {
     public ApiPage<ClassDto> getAllClass(Pageable pageable) {
         Page<Class> classesPage = classRepository.findAllByIsActiveIsTrue(pageable);
 
-        return PageUtil.convert(classesPage.map(this::convertClassToClassResponse));
+        return PageUtil.convert(classesPage.map(ConvertUtil::doConvertEntityToResponse));
 
     }
 
-    public ClassDto convertClassToClassResponse(Class aclass) {
-        ClassDto classDto = ObjectUtil.copyProperties(aclass, new ClassDto(), ClassDto.class);
-        Course course = aclass.getCourse();
-
-
-        CourseResponse courseResponse = new CourseResponse();
-        courseResponse.setId(course.getId());
-
-        courseResponse.setCourseName(course.getName());
-
-
-        courseResponse.setCourseTitle(course.getTitle());
-
-
-        if (aclass.getAccount() != null) {
-            courseResponse.setTeacherName(aclass.getAccount().getName());
-        }
-
-
-        if (course.getResource() != null) {
-            courseResponse.setImage(course.getResource().getUrl());
-        }
-        Subject subject = course.getSubject();
-        if (subject != null) {
-            courseResponse.setSubject(ObjectUtil.copyProperties(subject, new SubjectDto(), SubjectDto.class));
-        }
-
-
-        classDto.setCourse(courseResponse);
-        return classDto;
-    }
 
 //    @Override
 //    public  List<MoodleClassResponse>  synchronizedClass() throws JsonProcessingException {

@@ -21,7 +21,7 @@ public class AccountDetail {
     private String fullName;
 
     @Column(name = "birthDay")
-    private String birthDay;
+    private Instant birthDay;
 
     @Column(name = "email")
     private String email ;
@@ -40,6 +40,9 @@ public class AccountDetail {
     @Column(name = "voice")
     private String voice;
 
+    @Column(name = "gender")
+    private String gender;
+
     @Column(name = "current_address")
     private String currentAddress ;
 
@@ -57,6 +60,9 @@ public class AccountDetail {
     @Column(name = "level")
     private String  level;
 
+    @Column(name = "is_active")
+    private Boolean isActive;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id")
     private Account account;
@@ -70,6 +76,14 @@ public class AccountDetail {
     @OneToMany(mappedBy = "accountDetail")
     List<Resource> resources;
 
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
 
     public Long getId() {
         return id;
@@ -151,6 +165,14 @@ public class AccountDetail {
         this.account = account;
     }
 
+    public Boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
     public List<AccountDetailSubject> getAccountDetailSubjects() {
         return accountDetailSubjects;
     }
@@ -175,11 +197,11 @@ public class AccountDetail {
         this.fullName = fullName;
     }
 
-    public String getBirthDay() {
+    public Instant getBirthDay() {
         return birthDay;
     }
 
-    public void setBirthDay(String birthDay) {
+    public void setBirthDay(Instant birthDay) {
         this.birthDay = birthDay;
     }
 

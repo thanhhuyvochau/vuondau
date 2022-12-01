@@ -288,4 +288,12 @@ public class Account {
     public void setResource(Resource resource) {
         this.resource = resource;
     }
+
+    public AccountDetail getAccountDetail() {
+        return accountDetail;
+    }
+
+    public void setAccountDetail(AccountDetail accountDetail) {
+        this.accountDetail = accountDetail;
+    }
 }
