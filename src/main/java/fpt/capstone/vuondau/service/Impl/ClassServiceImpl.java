@@ -25,6 +25,7 @@ import fpt.capstone.vuondau.service.IClassService;
 import fpt.capstone.vuondau.util.*;
 import fpt.capstone.vuondau.util.specification.ClassSpecificationBuilder;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -260,6 +261,8 @@ public class ClassServiceImpl implements IClassService {
         return classDtoList;
     }
 
+
+
     @Override
     public ClassDetailDto classDetail(Long id) throws JsonProcessingException {
         Class aClass = classRepository.findById(id)
@@ -323,13 +326,8 @@ public class ClassServiceImpl implements IClassService {
             }
         }
 
-
-
             classDetail.setCourse(courseDetailResponse);
-
         }
-
-
         Account account = aClass.getAccount();
         if (account != null) {
             AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class);

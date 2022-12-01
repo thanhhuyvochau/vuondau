@@ -91,6 +91,8 @@ public class ClassController {
 
 
 
+
+
     @Operation(summary = "chi tiết class")
     @GetMapping("/{id}/class-detail")
     public ResponseEntity<ApiResponse<ClassDetailDto>> classDetail(@PathVariable Long id) throws JsonProcessingException {

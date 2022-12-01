@@ -23,16 +23,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         /**Config for development */
-//        http.cors().configurationSource(corsConfigurationSource())
-//                .and().csrf().disable()
-//                .authorizeRequests().anyRequest().permitAll();
-
-        /**Config for deployment */
         http.cors().configurationSource(corsConfigurationSource())
                 .and().csrf().disable()
-                .authorizeRequests().antMatchers("/api/*").authenticated()
-                .and().oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter())
-                .and().authenticationEntryPoint(new BasicAuthenticationEntryPoint());
+                .authorizeRequests().anyRequest().permitAll();
+
+        /**Config for deployment */
+//        http.cors().configurationSource(corsConfigurationSource())
+//                .and().csrf().disable()
+//                .authorizeRequests().antMatchers("/api/*").authenticated()
+//                .and().oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter())
+//                .and().authenticationEntryPoint(new BasicAuthenticationEntryPoint());
     }
 
 

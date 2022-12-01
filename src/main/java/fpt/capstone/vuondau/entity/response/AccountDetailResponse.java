@@ -1,14 +1,21 @@
-package fpt.capstone.vuondau.entity.request;
+package fpt.capstone.vuondau.entity.response;
 
+import fpt.capstone.vuondau.entity.Account;
+import fpt.capstone.vuondau.entity.AccountDetailClassLevel;
+import fpt.capstone.vuondau.entity.AccountDetailSubject;
+import fpt.capstone.vuondau.entity.Resource;
+import fpt.capstone.vuondau.entity.dto.ResourceDto;
+import fpt.capstone.vuondau.entity.dto.SubjectDto;
 
-import fpt.capstone.vuondau.entity.common.EAccountRole;
-
-import javax.persistence.Column;
-import java.io.Serializable;
+import javax.persistence.*;
 import java.time.Instant;
 import java.util.List;
 
-public class AccountDetailRequest implements Serializable {
+
+
+public class AccountDetailResponse {
+
+    private Long id;
 
 
     private String fullName;
@@ -21,23 +28,60 @@ public class AccountDetailRequest implements Serializable {
 
 
     private String phone ;
-    private String gender ;
+
+
 
     private String domicile;
-    private String voice ;
+
 
     private String  teachingProvince;
+
+
+
+    private String voice;
+
+
+    private String gender;
+
+
     private String currentAddress ;
 
-    private String idCard ;
 
-    private String trainingSchoolName ;
 
-    private String majors ;
+    private String idCard;
 
-    private String level ;
 
-//    private List<UploadAvatarRequest> uploadFiles ;
+
+    private String trainingSchoolName;
+
+
+    private String majors;
+
+
+    private String  level;
+
+
+    private Boolean isActive;
+
+
+//    private Account account;
+
+
+    private List<SubjectDto> subjects;
+
+
+//    private List<Class> accountDetailClassLevels;
+
+//    @OneToMany(mappedBy = "accountDetail")
+    private  List<ResourceDto> resources;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getFullName() {
         return fullName;
@@ -53,14 +97,6 @@ public class AccountDetailRequest implements Serializable {
 
     public void setBirthDay(Instant birthDay) {
         this.birthDay = birthDay;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
     }
 
     public String getEmail() {
@@ -87,6 +123,14 @@ public class AccountDetailRequest implements Serializable {
         this.domicile = domicile;
     }
 
+    public String getTeachingProvince() {
+        return teachingProvince;
+    }
+
+    public void setTeachingProvince(String teachingProvince) {
+        this.teachingProvince = teachingProvince;
+    }
+
     public String getVoice() {
         return voice;
     }
@@ -95,12 +139,12 @@ public class AccountDetailRequest implements Serializable {
         this.voice = voice;
     }
 
-    public String getTeachingProvince() {
-        return teachingProvince;
+    public String getGender() {
+        return gender;
     }
 
-    public void setTeachingProvince(String teachingProvince) {
-        this.teachingProvince = teachingProvince;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public String getCurrentAddress() {
@@ -143,11 +187,28 @@ public class AccountDetailRequest implements Serializable {
         this.level = level;
     }
 
-//    public List<UploadAvatarRequest> getUploadFiles() {
-//        return uploadFiles;
-//    }
-//
-//    public void setUploadFiles(List<UploadAvatarRequest> uploadFiles) {
-//        this.uploadFiles = uploadFiles;
-//    }
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
+
+    public List<SubjectDto> getSubjects() {
+        return subjects;
+    }
+
+    public void setSubjects(List<SubjectDto> subjects) {
+        this.subjects = subjects;
+    }
+
+    public List<ResourceDto> getResources() {
+        return resources;
+    }
+
+    public void setResources(List<ResourceDto> resources) {
+        this.resources = resources;
+    }
 }
