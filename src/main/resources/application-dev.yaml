@@ -17,7 +17,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: keycloak:8080/auth/realms/vuondau-application
+          issuer-uri: http://vuondau-keycloak.amazingtech.vn/auth/realms/vuondau-application
 minio:
   bucket: requestformstudent
   url: http://103.173.255.39:9000
