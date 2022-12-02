@@ -1,10 +1,7 @@
 package fpt.capstone.vuondau.service.Impl;
 
 import fpt.capstone.vuondau.entity.*;
-import fpt.capstone.vuondau.entity.common.ApiException;
-import fpt.capstone.vuondau.entity.common.ApiPage;
-import fpt.capstone.vuondau.entity.common.EAccountRole;
-import fpt.capstone.vuondau.entity.common.EResourceType;
+import fpt.capstone.vuondau.entity.common.*;
 import fpt.capstone.vuondau.entity.dto.ResourceDto;
 import fpt.capstone.vuondau.entity.dto.SubjectDto;
 import fpt.capstone.vuondau.entity.request.AccountDetailRequest;
@@ -18,10 +15,11 @@ import fpt.capstone.vuondau.repository.RoleRepository;
 import fpt.capstone.vuondau.service.IAccountDetailService;
 import fpt.capstone.vuondau.util.*;
 import fpt.capstone.vuondau.util.adapter.MinioAdapter;
+import fpt.capstone.vuondau.util.keycloak.KeycloakRoleUtil;
+import fpt.capstone.vuondau.util.keycloak.KeycloakUserUtil;
 import io.minio.ObjectWriteResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -31,7 +29,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,6 +41,9 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
     private final AccountDetailRepository accountDetailRepository;
 
 
+    private final KeycloakUserUtil keycloakUserUtil;
+    private final KeycloakRoleUtil keycloakRoleUtil;
+
     private final MinioAdapter minioAdapter;
 
     private final ResourceRepository resourceRepository;
@@ -55,10 +55,12 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
     String minioUrl;
 
 
-    public AccountDetailServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, AccountDetailRepository accountDetailRepository, MinioAdapter minioAdapter, ResourceRepository resourceRepository, RoleRepository roleRepository) {
+    public AccountDetailServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, AccountDetailRepository accountDetailRepository, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, RoleRepository roleRepository) {
         this.accountRepository = accountRepository;
         this.messageUtil = messageUtil;
         this.accountDetailRepository = accountDetailRepository;
+        this.keycloakUserUtil = keycloakUserUtil;
+        this.keycloakRoleUtil = keycloakRoleUtil;
         this.minioAdapter = minioAdapter;
         this.resourceRepository = resourceRepository;
         this.roleRepository = roleRepository;
@@ -90,7 +92,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
         // tên trươnng đh / cao đang đã học
         accountDetail.setTrainingSchoolName(accountDetailRequest.getTrainingSchoolName());
-
+        accountDetail.setStatus(EAccountDetailStatus.REQUESTED);
         accountDetail.setActive(false);
 
         // trinh độ : h , cao đẳng
@@ -159,10 +161,15 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         account.setRole(role);
         account.setBirthday(accountDetail.getBirthDay());
         account.setAccountDetail(accountDetail);
-        Account save = accountRepository.save(account);
-        accountDetailRepository.save(accountDetail);
 
+
+        Boolean saveAccountSuccess = keycloakUserUtil.create(account);
+        Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getCode().name(), account);
+        Account save = accountRepository.save(account);
+
+        accountDetail.setStatus(EAccountDetailStatus.REQUESTED);
         accountDetail.setAccount(account);
+        accountDetailRepository.save(accountDetail);
         AccountResponse accountResponse = ObjectUtil.copyProperties(save, new AccountResponse(), AccountResponse.class);
 
         return accountResponse;
@@ -170,7 +177,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
     @Override
     public ApiPage<AccountDetailResponse> getRequestToActiveAccount(Pageable pageable) {
-        Page<AccountDetail> accountDetailPage = accountDetailRepository.findAllByIsActiveIsFalse(pageable);
+        Page<AccountDetail> accountDetailPage = accountDetailRepository.findAll(pageable);
 
         return PageUtil.convert(accountDetailPage.map(accountDetail -> {
             AccountDetailResponse accountDetailResponse = ObjectUtil.copyProperties(accountDetail, new AccountDetailResponse(), AccountDetailResponse.class);
@@ -186,6 +193,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
             resources.forEach(resource -> {
                 resourceDtoList.add(ObjectUtil.copyProperties(resource, new ResourceDto(), ResourceDto.class));
             });
+
             accountDetailResponse.setResources(resourceDtoList);
             accountDetailResponse.setActive(accountDetail.isActive());
             return accountDetailResponse;
