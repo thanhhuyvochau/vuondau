@@ -3,12 +3,16 @@ package fpt.capstone.vuondau.service.Impl;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiException;
-import fpt.capstone.vuondau.entity.dto.SlotDowDto;
+import fpt.capstone.vuondau.entity.common.EAccountRole;
+import fpt.capstone.vuondau.entity.dto.*;
 import fpt.capstone.vuondau.entity.request.TimeTableRequest;
+import fpt.capstone.vuondau.entity.request.TimeTableSearchRequest;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.ITimeTableService;
 import fpt.capstone.vuondau.util.HashMapUtil;
 import fpt.capstone.vuondau.util.MessageUtil;
+import fpt.capstone.vuondau.util.ObjectUtil;
+import fpt.capstone.vuondau.util.specification.TimeTableSpecificationBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -30,9 +34,11 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
     private final MessageUtil messageUtil;
 
-    private final TimeTableRepository timeTableRepository ;
+    private final TimeTableRepository timeTableRepository;
 
-    public TimeTableServiceImpl(ClassRepository classRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ArchetypeRepository archetypeRepository, ArchetypeTimeRepository archetypeTimeRepository, MessageUtil messageUtil, TimeTableRepository timeTableRepository) {
+    private final AccountRepository accountRepository;
+
+    public TimeTableServiceImpl(ClassRepository classRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ArchetypeRepository archetypeRepository, ArchetypeTimeRepository archetypeTimeRepository, MessageUtil messageUtil, TimeTableRepository timeTableRepository, AccountRepository accountRepository) {
         this.classRepository = classRepository;
         this.slotRepository = slotRepository;
         this.dayOfWeekRepository = dayOfWeekRepository;
@@ -40,6 +46,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
         this.archetypeTimeRepository = archetypeTimeRepository;
         this.messageUtil = messageUtil;
         this.timeTableRepository = timeTableRepository;
+        this.accountRepository = accountRepository;
     }
 
     @Override
@@ -51,16 +58,15 @@ public class TimeTableServiceImpl implements ITimeTableService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("class đã có thời khoá biểu"));
         }
-        if (timeTableRequest.getSlotDow().size()> 3){
+        if (timeTableRequest.getSlotDow().size() > 3) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Đã vượt quá số buổi trong tuần"));
         }
 
-        if (archetypeRepository.existsByIdAndCode(aClass.getId(),timeTableRequest.getArchetypeCode())) {
+        if (archetypeRepository.existsByIdAndCode(aClass.getId(), timeTableRequest.getArchetypeCode())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("time table code da ton tai"));
         }
-
 
 
         // Check Dow
@@ -75,7 +81,6 @@ public class TimeTableServiceImpl implements ITimeTableService {
         Set<Long> checkSlotDow = allDayOfWeekId.stream().filter(n -> !countDow.add(n)).collect(Collectors.toSet());
 
 
-
         // Dạy 2 ngày trong 1 tuần
 //
 //        if (timeTableRequest.getSlotDow().size()==2){ //day 2 ngay trong tuần
@@ -86,9 +91,6 @@ public class TimeTableServiceImpl implements ITimeTableService {
 //        }
 
 
-
-
-
         //Set Archetype
         Archetype archetype = new Archetype();
         archetype.setCode(timeTableRequest.getArchetypeCode());
@@ -96,8 +98,6 @@ public class TimeTableServiceImpl implements ITimeTableService {
         if (aClass.getAccount() != null) {
             archetype.setCreatedByTeacherId(aClass.getAccount().getId());
         }
-
-
 
 
         List<SlotDowDto> slotDows = timeTableRequest.getSlotDow();
@@ -115,8 +115,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
         for (SlotDowDto slotDowDto : slotDows) {
 
 
-
-          // Set  Archetype_Time
+            // Set  Archetype_Time
             Slot slot = slotMap.get(slotDowDto.getSlotId());
             ArchetypeTime archetypeTime = new ArchetypeTime();
             archetypeTime.setSlot(slot);
@@ -124,7 +123,6 @@ public class TimeTableServiceImpl implements ITimeTableService {
             DayOfWeek dayOfWeek = dayOfWeekMap.get(slotDowDto.getDayOfWeekId());
             archetypeTime.setDayOfWeek(dayOfWeek);
             archetypeTime.setArchetype(archetype);
-
 
 
             //Set TimeTable
@@ -141,12 +139,71 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
         }
         aClass.getTimeTables().clear();
-        aClass.getTimeTables().addAll(timeTableList) ;
-
+        aClass.getTimeTables().addAll(timeTableList);
 
 
         classRepository.save(aClass);
 
         return aClass.getId();
+    }
+
+    @Override
+    public List<TimeTableDto> getTimeTableInDay(TimeTableSearchRequest timeTableSearchRequest) {
+
+        Class aClass = classRepository.findById(timeTableSearchRequest.getClassId())
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + timeTableSearchRequest.getClassId()));
+
+
+        Account account = accountRepository.findById(timeTableSearchRequest.getAccountId())
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + timeTableSearchRequest.getAccountId()));
+
+        List<StudentClass> studentClasses = aClass.getStudentClasses();
+        List<Account> studentAccount = studentClasses.stream().map(studentClass -> studentClass.getAccount()).collect(Collectors.toList());
+
+
+        if (account.getRole().getCode().equals(EAccountRole.STUDENT)) {
+            if (!studentAccount.contains(account)) {
+                throw ApiException.create(HttpStatus.BAD_REQUEST)
+                        .withMessage(messageUtil.getLocalMessage("Bạn không có trong lớp nay"));
+            }
+        }
+
+
+        List<TimeTableDto> timeTableDtoList = new ArrayList<>();
+
+        TimeTableSpecificationBuilder timeTableSpecificationBuilder = TimeTableSpecificationBuilder.specification()
+                .queryTeacherInClass(account)
+//                .queryStudentInClass(account)
+                .queryClass(aClass)
+                .date(timeTableSearchRequest.getDateFrom(), timeTableSearchRequest.getDateTo());
+
+
+        List<TimeTable> timeTableInDay = timeTableRepository.findAll(timeTableSpecificationBuilder.build());
+
+        timeTableInDay.forEach(timeTable -> {
+            TimeTableDto timeTableDto = ObjectUtil.copyProperties(timeTable, new TimeTableDto(), TimeTableDto.class);
+            ArchetypeTimeDto archetypeTimeDto = new ArchetypeTimeDto();
+            ArchetypeTime archetypeTime = timeTable.getArchetypeTime();
+            if (archetypeTime != null) {
+                Archetype archetype = archetypeTime.getArchetype();
+                if (archetype != null) {
+                    archetypeTimeDto.setArchetype(ObjectUtil.copyProperties(archetype, new ArchetypeDto(), ArchetypeDto.class));
+                }
+                Slot slot = archetypeTime.getSlot();
+                if (slot != null) {
+                    archetypeTimeDto.setSlot(ObjectUtil.copyProperties(slot, new SlotDto(), SlotDto.class));
+                }
+                DayOfWeek dayOfWeek = archetypeTime.getDayOfWeek();
+                if (dayOfWeek != null) {
+                    archetypeTimeDto.setDayOfWeek(ObjectUtil.copyProperties(dayOfWeek, new DayOfWeekDto(), DayOfWeekDto.class));
+                }
+            }
+
+
+            timeTableDto.setArchetypeTime(archetypeTimeDto);
+            timeTableDtoList.add(timeTableDto);
+        });
+
+        return timeTableDtoList;
     }
 }
