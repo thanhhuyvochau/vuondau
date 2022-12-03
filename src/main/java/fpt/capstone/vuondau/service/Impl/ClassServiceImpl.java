@@ -92,7 +92,6 @@ public class ClassServiceImpl implements IClassService {
         classRepository.save(clazz);
 
 
-
         return true;
     }
 
@@ -262,7 +261,6 @@ public class ClassServiceImpl implements IClassService {
     }
 
 
-
     @Override
     public ClassDetailDto classDetail(Long id) throws JsonProcessingException {
         Class aClass = classRepository.findById(id)
@@ -296,35 +294,35 @@ public class ClassServiceImpl implements IClassService {
                 courseDetailResponse.setSubject(subjectDto);
             }
 
-        if (aClass.getResourceMoodleId()!=null){
-            CourseIdRequest courseIdRequest = new CourseIdRequest();
+            if (aClass.getResourceMoodleId() != null) {
+                CourseIdRequest courseIdRequest = new CourseIdRequest();
 
-            courseIdRequest.setCourseid(aClass.getResourceMoodleId());
-            try {
-                List<MoodleRecourseClassResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
+                courseIdRequest.setCourseid(aClass.getResourceMoodleId());
+                try {
+                    List<MoodleRecourseClassResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
 
-                List<MoodleRecourseClassResponse> moodleRecourseClassResponseList = new ArrayList<>();
-                resourceCourse.stream().peek(moodleRecourseClassResponse -> {
-                    MoodleRecourseClassResponse setResource = ObjectUtil.copyProperties(moodleRecourseClassResponse, new MoodleRecourseClassResponse(), MoodleRecourseClassResponse.class);
+                    List<MoodleRecourseClassResponse> moodleRecourseClassResponseList = new ArrayList<>();
+                    resourceCourse.stream().peek(moodleRecourseClassResponse -> {
+                        MoodleRecourseClassResponse setResource = ObjectUtil.copyProperties(moodleRecourseClassResponse, new MoodleRecourseClassResponse(), MoodleRecourseClassResponse.class);
 
-                    List<ResourceMoodleResponse> modules = moodleRecourseClassResponse.getModules();
-                    List<ResourceMoodleResponse> resourceMoodleResponseList = new ArrayList<>();
-                    modules.stream().peek(moodleResponse -> {
+                        List<ResourceMoodleResponse> modules = moodleRecourseClassResponse.getModules();
+                        List<ResourceMoodleResponse> resourceMoodleResponseList = new ArrayList<>();
+                        modules.stream().peek(moodleResponse -> {
 
-                        ResourceMoodleResponse resourceMoodleResponse = ObjectUtil.copyProperties(moodleResponse, new ResourceMoodleResponse(), ResourceMoodleResponse.class);
+                            ResourceMoodleResponse resourceMoodleResponse = ObjectUtil.copyProperties(moodleResponse, new ResourceMoodleResponse(), ResourceMoodleResponse.class);
 
-                        resourceMoodleResponseList.add(resourceMoodleResponse);
+                            resourceMoodleResponseList.add(resourceMoodleResponse);
+                        }).collect(Collectors.toList());
+
+                        setResource.setModules(resourceMoodleResponseList);
+
+                        moodleRecourseClassResponseList.add(setResource);
                     }).collect(Collectors.toList());
-
-                    setResource.setModules(resourceMoodleResponseList);
-
-                    moodleRecourseClassResponseList.add(setResource);
-                }).collect(Collectors.toList());
-                courseDetailResponse.setResources(moodleRecourseClassResponseList);
-            } catch (Exception e) {
-                e.printStackTrace();
+                    courseDetailResponse.setResources(moodleRecourseClassResponseList);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-        }
 
             classDetail.setCourse(courseDetailResponse);
         }
@@ -346,7 +344,7 @@ public class ClassServiceImpl implements IClassService {
         studentList.stream().map(studentMap -> {
             AccountResponse student = ObjectUtil.copyProperties(studentMap, new AccountResponse(), AccountResponse.class);
             student.setRole(ObjectUtil.copyProperties(studentMap.getRole(), new RoleDto(), RoleDto.class));
-            if (studentMap.getRequests() != null) {
+            if (studentMap.getResource() != null) {
                 student.setAvatar(studentMap.getResource().getUrl());
             }
 
@@ -388,7 +386,6 @@ public class ClassServiceImpl implements IClassService {
         classDetail.setTimeTable(timeTableDtoList);
         return classDetail;
     }
-
 
 
     @Override
