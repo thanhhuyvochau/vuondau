@@ -44,4 +44,5 @@ public interface IClassService {
 
     ApiPage<ClassDto> getAllClass( Pageable pageable);
 
+    ApiPage<ClassDto> accountFilterClass(Long accountId, ClassSearchRequest query, Pageable pageable);
 }

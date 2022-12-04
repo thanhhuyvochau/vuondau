@@ -106,5 +106,11 @@ public class ClassController {
         return ResponseEntity.ok(ApiResponse.success(iClassService.studentWaitingApproveIntoClass(classId)));
     }
 
+    @Operation(summary = "học sinh / giáo viên xem lớp bằng thời gian (was study, is studying, will study) ")
+    @GetMapping("/{accountId}/class-of-account")
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> accountFilterClass(@PathVariable Long accountId, @Nullable ClassSearchRequest query, Pageable pageable) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.accountFilterClass(accountId,query, pageable)));
+    }
+
 
 }

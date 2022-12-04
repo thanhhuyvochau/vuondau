@@ -18,4 +18,8 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
     Page<Subject> findAll(Specification<Subject>spec, Pageable pageable);
 
     Subject findByCode(ESubjectCode code);
+
+    Boolean existsByCode(ESubjectCode code);
+
+    Subject findByCategoryMoodleId(Long idSubjectMoodle);
 }
