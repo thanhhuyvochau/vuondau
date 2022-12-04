@@ -1,5 +1,6 @@
 package fpt.capstone.vuondau.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.request.SubjectRequest;
 import fpt.capstone.vuondau.entity.request.SubjectSearchRequest;
@@ -10,7 +11,7 @@ import java.util.List;
 
 public interface ISubjectService {
 
-    SubjectResponse createNewSubject(SubjectRequest subjectRequest);
+    SubjectResponse createNewSubject(SubjectRequest subjectRequest) throws JsonProcessingException;
 
     SubjectResponse updateSubject(Long subjectId, SubjectRequest subjectRequest);
 
