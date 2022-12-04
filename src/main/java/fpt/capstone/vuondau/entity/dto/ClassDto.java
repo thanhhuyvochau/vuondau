@@ -1,7 +1,11 @@
 package fpt.capstone.vuondau.entity.dto;
 
 
+import fpt.capstone.vuondau.entity.Account;
+import fpt.capstone.vuondau.entity.common.EClassLevelCode;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
+import fpt.capstone.vuondau.entity.common.EClassType;
+import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.CourseResponse;
 
 import java.math.BigDecimal;
@@ -15,11 +19,14 @@ public class ClassDto {
 
     private EClassStatus status ;
 
+    private ClassTypeDto classType ;
+
+
     private Instant startDate ;
 
     private Instant endDate ;
 
-    private String level;
+//    private EClassLevelCode classLevel;
 
     private Long numberStudent ;
 
@@ -31,12 +38,22 @@ public class ClassDto {
 
     private BigDecimal finalPrice ;
 
+    private AccountResponse teacher  ;
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public AccountResponse getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(AccountResponse teacher) {
+        this.teacher = teacher;
     }
 
     public String getName() {
@@ -87,13 +104,23 @@ public class ClassDto {
         this.endDate = endDate;
     }
 
-    public String getLevel() {
-        return level;
+
+//    public EClassLevelCode getClassLevel() {
+//        return classLevel;
+//    }
+
+    public ClassTypeDto getClassType() {
+        return classType;
     }
 
-    public void setLevel(String level) {
-        this.level = level;
+    public void setClassType(ClassTypeDto classType) {
+        this.classType = classType;
     }
+
+
+//    public void setClassLevel(EClassLevelCode classLevel) {
+//        this.classLevel = classLevel;
+//    }
 
     public Long getNumberStudent() {
         return numberStudent;

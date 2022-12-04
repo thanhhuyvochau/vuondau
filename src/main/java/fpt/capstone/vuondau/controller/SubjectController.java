@@ -29,7 +29,7 @@ public class SubjectController {
 
     @Operation(summary = "Tạo mới subject")
     @PostMapping
-    public ResponseEntity<ApiResponse<SubjectResponse>> createNewSubject(@Valid @RequestBody SubjectRequest subjectRequest) throws JsonProcessingException {
+    public ResponseEntity<ApiResponse<SubjectResponse>> createNewSubject(@Nullable @RequestBody SubjectRequest subjectRequest) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(subjectService.createNewSubject(subjectRequest)));
     }
 

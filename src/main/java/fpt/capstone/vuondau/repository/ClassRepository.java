@@ -27,6 +27,9 @@ public interface ClassRepository extends JpaRepository<Class, Long> {
 
     Page<Class> findAll(Specification<Class> spec, Pageable pageable);
     Page<Class> findAllByIsActiveIsTrue(Pageable pageable);
+
+//    Page<Class> findAllByActiveIsTrue(Pageable pageable);
+
     List<Class> findAll(Specification<Class> spec);
     boolean existsByCode(String code);
 

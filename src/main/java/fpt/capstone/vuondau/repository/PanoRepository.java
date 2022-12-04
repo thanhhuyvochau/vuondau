@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PanoRepository extends JpaRepository<Pano, Long> {
-
+    boolean existsByName(String name);
 
 }
