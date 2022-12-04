@@ -12,6 +12,7 @@ import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
+import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.dto.*;
 import fpt.capstone.vuondau.entity.request.ClassSearchRequest;
@@ -393,6 +394,35 @@ public class ClassServiceImpl implements IClassService {
         Page<Class> classesPage = classRepository.findAllByIsActiveIsTrue(pageable);
 
         return PageUtil.convert(classesPage.map(ConvertUtil::doConvertEntityToResponse));
+
+    }
+
+    @Override
+    public ApiPage<ClassDto> accountFilterClass(Long accountId, ClassSearchRequest query, Pageable pageable) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + accountId));
+
+        List<Class> classAccount = null ;
+        List<Long> classId = new ArrayList<>() ;
+        if (account.getRole().getCode().equals(EAccountRole.TEACHER)){
+            classAccount = classRepository.findByAccountAndStatus(account , query.getStatus());
+        } else if (account.getRole().getCode().equals(EAccountRole.STUDENT)) {
+            List<StudentClass> studentClasses = account.getStudentClasses();
+            studentClasses.forEach(studentClass -> {
+                Class aClass = studentClass.getaClass();
+                classId.add(aClass.getId()) ;
+
+            });
+            classAccount  = classRepository.findAllByIdAndStatus(classId ,query.getStatus());
+        }
+        List<ClassDto> classDtoList = new ArrayList<>();
+        classAccount.forEach(aClass -> {
+            classDtoList.add( ObjectUtil.copyProperties(aClass, new ClassDto() , ClassDto.class) );
+        });
+
+        Page<ClassDto> page = new PageImpl<>(classDtoList, pageable, classDtoList.size());
+
+        return PageUtil.convert(page);
 
     }
 

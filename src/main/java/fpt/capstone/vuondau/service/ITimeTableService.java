@@ -23,5 +23,5 @@ public interface ITimeTableService {
 
     Long createTimeTableClass(Long classId, TimeTableRequest timeTableRequest );
 
-    List<TimeTableDto> getTimeTableInDay(TimeTableSearchRequest timeTableSearchRequest) ;
+    ApiPage<TimeTableDto> getTimeTableInDay(TimeTableSearchRequest timeTableSearchRequest, Pageable pageable) ;
 }

@@ -3,6 +3,7 @@ package fpt.capstone.vuondau.service.Impl;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiException;
+import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.dto.*;
 import fpt.capstone.vuondau.entity.request.TimeTableRequest;
@@ -12,7 +13,11 @@ import fpt.capstone.vuondau.service.ITimeTableService;
 import fpt.capstone.vuondau.util.HashMapUtil;
 import fpt.capstone.vuondau.util.MessageUtil;
 import fpt.capstone.vuondau.util.ObjectUtil;
+import fpt.capstone.vuondau.util.PageUtil;
 import fpt.capstone.vuondau.util.specification.TimeTableSpecificationBuilder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -148,7 +153,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
     }
 
     @Override
-    public List<TimeTableDto> getTimeTableInDay(TimeTableSearchRequest timeTableSearchRequest) {
+    public ApiPage<TimeTableDto> getTimeTableInDay(TimeTableSearchRequest timeTableSearchRequest , Pageable pageable) {
 
         Class aClass = classRepository.findById(timeTableSearchRequest.getClassId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + timeTableSearchRequest.getClassId()));
@@ -169,16 +174,13 @@ public class TimeTableServiceImpl implements ITimeTableService {
         }
 
 
-        List<TimeTableDto> timeTableDtoList = new ArrayList<>();
-
         TimeTableSpecificationBuilder timeTableSpecificationBuilder = TimeTableSpecificationBuilder.specification()
                 .queryTeacherInClass(account)
-//                .queryStudentInClass(account)
                 .queryClass(aClass)
                 .date(timeTableSearchRequest.getDateFrom(), timeTableSearchRequest.getDateTo());
 
-
         List<TimeTable> timeTableInDay = timeTableRepository.findAll(timeTableSpecificationBuilder.build());
+        List<TimeTableDto> timeTableDtoList = new ArrayList<>();
 
         timeTableInDay.forEach(timeTable -> {
             TimeTableDto timeTableDto = ObjectUtil.copyProperties(timeTable, new TimeTableDto(), TimeTableDto.class);
@@ -203,7 +205,8 @@ public class TimeTableServiceImpl implements ITimeTableService {
             timeTableDto.setArchetypeTime(archetypeTimeDto);
             timeTableDtoList.add(timeTableDto);
         });
+        Page<TimeTableDto> page = new PageImpl<>(timeTableDtoList, pageable, timeTableDtoList.size());
 
-        return timeTableDtoList;
+        return PageUtil.convert(page);
     }
 }
