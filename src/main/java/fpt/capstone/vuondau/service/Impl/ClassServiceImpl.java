@@ -413,7 +413,7 @@ public class ClassServiceImpl implements IClassService {
                 classId.add(aClass.getId()) ;
 
             });
-            classAccount  = classRepository.findAllByIdAndStatus(classId ,query.getStatus());
+            classAccount  = classRepository.findByIdInAndStatus(classId ,query.getStatus());
         }
         List<ClassDto> classDtoList = new ArrayList<>();
         classAccount.forEach(aClass -> {

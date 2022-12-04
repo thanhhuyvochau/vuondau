@@ -17,6 +17,8 @@ import java.util.Optional;
 @Repository
 public interface ClassRepository extends JpaRepository<Class, Long> {
 
+    Class findByCode(String code );
+
     Class findByCourseAndAccount(Course course , Account account );
 
    List<Class> findByAccountAndStatus(Account account , EClassStatus status);
@@ -28,7 +30,7 @@ public interface ClassRepository extends JpaRepository<Class, Long> {
     List<Class> findAll(Specification<Class> spec);
     boolean existsByCode(String code);
 
-    List<Class> findAllByIdAndStatus(List<Long> classId, EClassStatus status);
+    List<Class> findByIdInAndStatus(List<Long> classId, EClassStatus status);
 
 //    List<Class> findClassByAccount (Account account );
 }

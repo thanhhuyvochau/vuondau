@@ -309,8 +309,28 @@ public class HatdauApplication {
             return moodleClassResponse ;
         }).collect(Collectors.toList());
 
+        courseMoodle.forEach(moodleClassResponse -> {
+            Class byCode = classRepository.findByCode(moodleClassResponse.getShortname());
+            if (byCode!= null){
+                byCode.setResourceMoodleId(moodleClassResponse.getId());
+
+                classList.add(byCode) ;
+            }
+            if (byCode == null){
+//                Subject byCategoryMoodleId = subjectRepository.findByCategoryMoodleId(moodleClassResponse.getCategoryid());
+                Class aClass = new Class() ;
+                aClass.setCode(moodleClassResponse.getShortname());
+                aClass.setName(moodleClassResponse.getFullname());
+
+                aClass.setActive(true);
+                classList.add(aClass) ;
+            }
+        });
+
         classRepository.saveAll(classList) ;
     }
+
+
 
     @EventListener(ApplicationReadyEvent.class)
     public void intiDatSlot() {

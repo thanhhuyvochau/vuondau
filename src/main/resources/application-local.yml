@@ -5,7 +5,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://103.173.255.39:3306/vuondau
     username: root
-    password: test
+    password: OOiyw5qptYd6xXDl
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     show-sql: 'true'
