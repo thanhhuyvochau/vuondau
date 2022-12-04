@@ -1,5 +1,6 @@
 package fpt.capstone.vuondau.entity;
 
+import fpt.capstone.vuondau.entity.common.EClassLevelCode;
 import fpt.capstone.vuondau.entity.common.EClassType;
 
 import javax.persistence.*;

@@ -38,7 +38,7 @@ public class CourseDetailResponse {
 
     private List<TeacherCourseDto> teacherCourse ;
 
-    private  List<MoodleRecourseClassResponse> resources ;
+//    private  List<MoodleRecourseClassResponse> resources ;
 
 
     public Long getId() {
@@ -132,13 +132,13 @@ public class CourseDetailResponse {
     }
 
 
-    public List<MoodleRecourseClassResponse> getResources() {
-        return resources;
-    }
-
-    public void setResources(List<MoodleRecourseClassResponse> resources) {
-        this.resources = resources;
-    }
+//    public List<MoodleRecourseClassResponse> getResources() {
+//        return resources;
+//    }
+//
+//    public void setResources(List<MoodleRecourseClassResponse> resources) {
+//        this.resources = resources;
+//    }
 
     public boolean isActive() {
         return isActive;
