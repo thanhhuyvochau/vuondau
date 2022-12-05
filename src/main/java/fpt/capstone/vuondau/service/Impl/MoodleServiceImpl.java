@@ -72,6 +72,5 @@ public class MoodleServiceImpl implements IMoodleService {
         List<MoodleClassResponse> course = moodleCourseRepository.getCourse(request);
         Page<MoodleClassResponse> page = new PageImpl<>(course);
         return PageUtil.convert(page.map(moodleClassResponse -> ObjectUtil.copyProperties(moodleClassResponse, new MoodleClassResponse(), MoodleClassResponse.class)));
-
     }
 }

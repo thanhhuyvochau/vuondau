@@ -22,4 +22,5 @@ public interface IForumService {
 
     ApiPage<ForumDto> getAllClassForumsOfStudent(Pageable pageable);
     ApiPage<ForumDto> getAllSubjectForumsOfStudent(Pageable pageable);
+    ApiPage<ForumDto> getAllClassForumsOfTeacher(Pageable pageable);
 }

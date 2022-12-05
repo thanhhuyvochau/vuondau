@@ -158,4 +158,15 @@ public class ForumServiceImpl implements IForumService {
         Page<ForumDto> page = new PageImpl<>(forumClass, pageable, forumClass.size());
         return PageUtil.convert(page);
     }
+
+    @Override
+    public ApiPage<ForumDto> getAllClassForumsOfTeacher(Pageable pageable) {
+        Account account = securityUtil.getCurrentUser();
+        List<ForumDto> forumClass = account.getTeacherClass().stream()
+                .map(subject -> this.getForumBySubject(subject.getId()))
+                .collect(Collectors.toList());
+        Page<ForumDto> page = new PageImpl<>(forumClass, pageable, forumClass.size());
+        return PageUtil.convert(page);
+    }
+
 }

@@ -64,6 +64,8 @@ public class Account {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudentClass> studentClasses;
 
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Class> teacherClass;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Request> requests;
@@ -296,11 +298,20 @@ public class Account {
     public void setTransactions(List<Transaction> transactions) {
         this.transactions = transactions;
     }
+
     public AccountDetail getAccountDetail() {
         return accountDetail;
     }
 
     public void setAccountDetail(AccountDetail accountDetail) {
         this.accountDetail = accountDetail;
+    }
+
+    public List<Class> getTeacherClass() {
+        return teacherClass;
+    }
+
+    public void setTeacherClass(List<Class> teacherClass) {
+        this.teacherClass = teacherClass;
     }
 }
