@@ -3,7 +3,9 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
+
     url: jdbc:mysql://mysql8:3306/vuondau
+#    url: jdbc:mysql://103.173.255.39:3306/vuondau
     username: root
     password: OOiyw5qptYd6xXDl
   jpa:
@@ -46,6 +48,25 @@ keycloak:
   auth-server-url: http://keycloak:8080/auth
   credentials:
     secret: 0Z8fWR17uURSeTWmKd4EdapEUF8ck9ku
+
+
+
+
+
+
+  mail:
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: 'true'
+          auth: 'true'
+    host: smtp.gmail.com
+    username: <login user to smtp server>
+    password: <login password to smtp server>
+    port: '587'
+
+
 # VnPay settings
 vnp_product_type: 250000
 vnp_PayUrl: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
@@ -53,3 +74,4 @@ vnp_HashSecret: NSZFYQQMCHFKNHOUKYIJLUQVZTCWBUZR
 vnp_Returnurl: http://103.173.255.39:8889/api/payment/payment-result
 vnp_TmnCode: 76E1ZE8I
 vnp_apiUrl: https://sandbox.vnpayment.vn/merchant_webapi/merchant.html
+

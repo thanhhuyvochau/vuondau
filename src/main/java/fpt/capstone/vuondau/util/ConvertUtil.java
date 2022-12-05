@@ -98,21 +98,38 @@ public class ConvertUtil {
 
     public static ClassDto doConvertEntityToResponse(Class aclass) {
         ClassDto classDto = ObjectUtil.copyProperties(aclass, new ClassDto(), ClassDto.class);
-        Course course = aclass.getCourse();
+
         CourseResponse courseResponse = new CourseResponse();
-        courseResponse.setId(course.getId());
-        courseResponse.setCourseName(course.getName());
-        courseResponse.setCourseTitle(course.getTitle());
+        Course course = aclass.getCourse();
+        if (course!= null){
+            courseResponse.setId(course.getId());
+            courseResponse.setCourseName(course.getName());
+            courseResponse.setCourseTitle(course.getTitle());
+            if (course.getResource() != null) {
+                courseResponse.setImage(course.getResource().getUrl());
+            }
+            Subject subject = course.getSubject();
+            if (subject != null) {
+                courseResponse.setSubject(doConvertEntityToResponse(subject));
+            }
+        }
+
         if (aclass.getAccount() != null) {
             courseResponse.setTeacherName(aclass.getAccount().getName());
         }
-        if (course.getResource() != null) {
-            courseResponse.setImage(course.getResource().getUrl());
+        classDto.setStatus(aclass.getStatus());
+        classDto.setStartDate(aclass.getStartDate());
+        classDto.setEndDate(aclass.getEndDate());
+        classDto.setNumberStudent(aclass.getNumberStudent());
+        classDto.setMaxNumberStudent(aclass.getMaxNumberStudent());
+        classDto.setUnitPrice(aclass.getUnitPrice());
+        classDto.setFinalPrice(aclass.getFinalPrice());
+        classDto.setTeacher(ObjectUtil.copyProperties(aclass.getAccount(), new AccountResponse() , AccountResponse.class));
+        if (aclass.getClassType()!= null){
+
+            classDto.setClassType(ObjectUtil.copyProperties(aclass.getClassType(), new ClassTypeDto() , ClassTypeDto.class));
         }
-        Subject subject = course.getSubject();
-        if (subject != null) {
-            courseResponse.setSubject(doConvertEntityToResponse(subject));
-        }
+
         classDto.setCourse(courseResponse);
         return classDto;
     }

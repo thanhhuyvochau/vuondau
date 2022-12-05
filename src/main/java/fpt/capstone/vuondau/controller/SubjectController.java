@@ -1,5 +1,6 @@
 package fpt.capstone.vuondau.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.request.SubjectRequest;
@@ -28,14 +29,14 @@ public class SubjectController {
 
     @Operation(summary = "Tạo mới subject")
     @PostMapping
-    public ResponseEntity<ApiResponse<SubjectResponse>> createNewSubject(@Valid @RequestBody SubjectRequest subjectRequest) {
+    public ResponseEntity<ApiResponse<SubjectResponse>> createNewSubject(@Nullable @RequestBody SubjectRequest subjectRequest) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(subjectService.createNewSubject(subjectRequest)));
     }
 
 
     @Operation(summary = "Sửa subject bằng id ")
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<SubjectResponse>> updateSubject(@PathVariable Long id, @Valid @RequestBody SubjectRequest subjectRequest) {
+    public ResponseEntity<ApiResponse<SubjectResponse>> updateSubject(@PathVariable Long id, @Nullable @RequestBody SubjectRequest subjectRequest) {
         return ResponseEntity.ok(ApiResponse.success(subjectService.updateSubject(id, subjectRequest)));
     }
 

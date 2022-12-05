@@ -39,9 +39,9 @@ public class ClassController {
 
 
     @Operation(summary = "Giáo viên yêu cầu tạo class ( subject - course) chờ admin phê duyệt ")
-    @PostMapping({"/{teacherId}"})
-    public ResponseEntity<ApiResponse<Boolean>> teacherRequestCreateClass(@PathVariable Long teacherId,@Nullable @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClass(teacherId, createClassRequest)));
+    @PostMapping({"/teacher-request-create-class"})
+    public ResponseEntity<ApiResponse<Boolean>> teacherRequestCreateClass(@Nullable @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClass( createClassRequest)));
 
     }
 
@@ -90,9 +90,6 @@ public class ClassController {
     }
 
 
-
-
-
     @Operation(summary = "chi tiết class")
     @GetMapping("/{id}/class-detail")
     public ResponseEntity<ApiResponse<ClassDetailDto>> classDetail(@PathVariable Long id) throws JsonProcessingException {
@@ -104,6 +101,12 @@ public class ClassController {
     @GetMapping({"{classId}/students-approve-class"})
     public ResponseEntity<ApiResponse<List<ClassDto>>> studentWaitingApproveIntoClass(@PathVariable Long classId) {
         return ResponseEntity.ok(ApiResponse.success(iClassService.studentWaitingApproveIntoClass(classId)));
+    }
+
+    @Operation(summary = "học sinh / giáo viên xem lớp bằng thời gian (was study, is studying, will study) ")
+    @GetMapping("/{accountId}/class-of-account")
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> accountFilterClass( @Nullable ClassSearchRequest query, Pageable pageable) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.accountFilterClass(query, pageable)));
     }
 
 

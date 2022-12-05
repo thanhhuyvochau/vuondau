@@ -1,45 +1,27 @@
-package fpt.capstone.vuondau.entity.response;
+package fpt.capstone.vuondau.entity.dto;
 
-import fpt.capstone.vuondau.entity.dto.ResourceDto;
 import io.swagger.v3.oas.annotations.media.Schema;
-
 
 import java.io.Serializable;
 import java.time.Instant;
 
-public class GetPanoResponse implements Serializable {
-
+public class PanoDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private Long id;
 
+    @Schema(description = "Mã của pano")
     private String name;
-
     @Schema(description = "Ngày phát hành")
     private Instant publishDate;
-
     @Schema(description = "Ngày hết hạn")
     private Instant expirationDate;
 
-    private String status ;
 
+    @Schema(description = "Mã hình ảnh pano")
+    private Long imageId;
 
-    @Schema(description = "Đường dẫn liên kết trong pano")
-    private String linkUrl;
-
-
-//    private ResourceDto resource ;
-
-
+    @Schema(description = "Hiển thị")
     private Boolean isVisible;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -47,14 +29,6 @@ public class GetPanoResponse implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public Instant getPublishDate() {
@@ -73,21 +47,14 @@ public class GetPanoResponse implements Serializable {
         this.expirationDate = expirationDate;
     }
 
-    public String getLinkUrl() {
-        return linkUrl;
+
+    public Long getImageId() {
+        return imageId;
     }
 
-    public void setLinkUrl(String linkUrl) {
-        this.linkUrl = linkUrl;
+    public void setImageId(Long imageId) {
+        this.imageId = imageId;
     }
-
-//    public ResourceDto getResource() {
-//        return resource;
-//    }
-//
-//    public void setResource(ResourceDto resource) {
-//        this.resource = resource;
-//    }
 
     public Boolean getVisible() {
         return isVisible;

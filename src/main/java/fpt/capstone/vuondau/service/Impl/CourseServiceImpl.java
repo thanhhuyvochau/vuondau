@@ -139,7 +139,7 @@ public class CourseServiceImpl implements ICourseService {
         clazz.setEndDate(classRequest.getEndDate());
         clazz.setCourse(course);
         clazz.setAccount(account);
-        clazz.setLevel(classRequest.getLevel());
+
         clazz.setNumberStudent(30L);
         clazz.setActive(false);
 
@@ -157,7 +157,7 @@ public class CourseServiceImpl implements ICourseService {
         classDto.setName(classSave.getName());
         classDto.setCode(classSave.getCode());
 
-        classDto.setLevel(classSave.getLevel());
+
         classDto.setEndDate(classSave.getEndDate());
         classDto.setStartDate(classSave.getStartDate());
         classDto.setNumberStudent(classSave.getNumberStudent());
@@ -257,7 +257,7 @@ public class CourseServiceImpl implements ICourseService {
                 classDto.setId(aClass.getId());
                 classDto.setName(aClass.getName());
                 classDto.setCode(aClass.getCode());
-                classDto.setLevel(aClass.getLevel());
+
                 classDto.setStartDate(aClass.getStartDate());
                 classDto.setEndDate(aClass.getEndDate());
                 classDto.setNumberStudent(aClass.getNumberStudent());
@@ -313,7 +313,7 @@ public class CourseServiceImpl implements ICourseService {
 
                 moodleRecourseClassResponseList.add(setResource);
             }).collect(Collectors.toList());
-            courseDetailResponse.setResources(moodleRecourseClassResponseList);
+//            courseDetailResponse.setResources(moodleRecourseClassResponseList);
         } catch (Exception e) {
             e.printStackTrace();
         }
