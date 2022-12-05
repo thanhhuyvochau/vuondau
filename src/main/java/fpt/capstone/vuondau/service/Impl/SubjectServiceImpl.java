@@ -1,8 +1,15 @@
 package fpt.capstone.vuondau.service.Impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
+import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCategoryRequest;
+import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCreateCategoryRequest;
+import fpt.capstone.vuondau.MoodleRepository.Response.CategoryResponse;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleRecourseClassResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
+import fpt.capstone.vuondau.entity.request.CourseIdRequest;
 import fpt.capstone.vuondau.entity.request.SubjectRequest;
 import fpt.capstone.vuondau.entity.request.SubjectSearchRequest;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
@@ -22,14 +29,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.Convert;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -44,28 +50,69 @@ public class SubjectServiceImpl implements ISubjectService {
 
     private final StudentAnswerRepository studentAnswerRepository;
 
-    public SubjectServiceImpl(CourseRepository courseRepository, SubjectRepository subjectRepository, AccountRepository accountRepository, MessageUtil messageUtil, StudentAnswerRepository studentAnswerRepository) {
+    private final MoodleCourseRepository moodleCourseRepository;
+
+    public SubjectServiceImpl(CourseRepository courseRepository, SubjectRepository subjectRepository, AccountRepository accountRepository, MessageUtil messageUtil, StudentAnswerRepository studentAnswerRepository, MoodleCourseRepository moodleCourseRepository) {
         this.courseRepository = courseRepository;
         this.subjectRepository = subjectRepository;
         this.accountRepository = accountRepository;
         this.messageUtil = messageUtil;
         this.studentAnswerRepository = studentAnswerRepository;
+        this.moodleCourseRepository = moodleCourseRepository;
     }
 
     @Override
-    public SubjectResponse createNewSubject(SubjectRequest subjectRequest) {
+    public SubjectResponse createNewSubject(SubjectRequest subjectRequest) throws JsonProcessingException {
         Subject subject = new Subject();
+
+        if (subjectRepository.existsByCode(subjectRequest.getCode())) throw ApiException.create(HttpStatus.BAD_REQUEST)
+                .withMessage(messageUtil.getLocalMessage("code subject   đã tòn tạo"));
         subject.setCode(subjectRequest.getCode());
-        subject.setName(subject.getName());
-        List<Course> allCourse = courseRepository.findAllById(subjectRequest.getCourseIds());
-//        subject.setCourses(allCourse);
+        subject.setName(subjectRequest.getName());
+
+
+
+
+
+        MoodleCategoryRequest moodleCategoryRequest = new MoodleCategoryRequest();
+        List<CategoryResponse> categoryList = moodleCourseRepository.getCategory(moodleCategoryRequest);
+        List<MoodleCreateCategoryRequest.MoodleCreateCategoryBody> moodleCreateCategoryRequestList = new ArrayList<>();
+
+
+
+        List<String> stringList = new ArrayList<>() ;
+
+        for (CategoryResponse categoryResponse : categoryList) {
+             if(categoryResponse.getName().equals(subjectRequest.getCode().name())){
+                 stringList.add(subjectRequest.getCode().name());
+             }
+        }
+
+         if (stringList.isEmpty()) {
+
+             MoodleCreateCategoryRequest request = new MoodleCreateCategoryRequest();
+             MoodleCreateCategoryRequest.MoodleCreateCategoryBody moodleCreateCategoryBody = new MoodleCreateCategoryRequest.MoodleCreateCategoryBody();
+             moodleCreateCategoryBody.setName(subjectRequest.getCode().name());
+             moodleCreateCategoryRequestList.add(moodleCreateCategoryBody);
+             request.setCategories(moodleCreateCategoryRequestList);
+             try {
+                 moodleCourseRepository.postCategory(request);
+             } catch (JsonProcessingException e) {
+                 throw new RuntimeException(e);
+             }
+         }
+
+
+
+
+
 
         Subject subjectSaved = subjectRepository.save(subject);
         SubjectResponse response = new SubjectResponse();
         response.setId(subjectSaved.getId());
         response.setName(subjectSaved.getName());
         response.setCode(subjectSaved.getCode());
-//        response.setCourseIds(subjectSaved.getCourses());
+
 
         return response;
     }
@@ -75,15 +122,12 @@ public class SubjectServiceImpl implements ISubjectService {
         Subject subject = subjectRepository.findById(subjectId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay subject"));
         subject.setCode(subjectRequest.getCode());
         subject.setName(subject.getName());
-        List<Course> allCourse = courseRepository.findAllById(subjectRequest.getCourseIds());
-//        subject.setCourses(allCourse);
         Subject subjectSaved = subjectRepository.save(subject);
-
         SubjectResponse response = new SubjectResponse();
         response.setId(subjectSaved.getId());
         response.setName(subjectSaved.getName());
         response.setCode(subjectSaved.getCode());
-//        response.setCourseIds(subjectSaved.getCourses());
+
         return response;
     }
 

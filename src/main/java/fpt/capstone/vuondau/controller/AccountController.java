@@ -92,6 +92,8 @@ public class AccountController {
         return ResponseEntity.ok(ApiResponse.success(accountService.approveTeacherAccount(id)));
     }
 
+
+
     @Operation(summary = "Cập nhật hồ sơ account")
     @PutMapping("/{id}/account/profile")
     public ResponseEntity<AccountResponse> editProfile ( @PathVariable long id,

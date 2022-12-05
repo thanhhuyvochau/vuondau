@@ -1,5 +1,6 @@
 package fpt.capstone.vuondau.entity;
 
+import fpt.capstone.vuondau.entity.common.EAccountDetailStatus;
 import fpt.capstone.vuondau.entity.common.EDegreeType;
 
 import javax.persistence.*;
@@ -21,27 +22,30 @@ public class AccountDetail {
     private String fullName;
 
     @Column(name = "birthDay")
-    private String birthDay;
+    private Instant birthDay;
 
     @Column(name = "email")
-    private String email ;
+    private String email;
 
     @Column(name = "phone")
-    private String phone ;
+    private String phone;
 
 
     @Column(name = "domicile")
     private String domicile;
 
     @Column(name = "teaching_province")
-    private String  teachingProvince;
+    private String teachingProvince;
 
 
     @Column(name = "voice")
     private String voice;
 
+    @Column(name = "gender")
+    private String gender;
+
     @Column(name = "current_address")
-    private String currentAddress ;
+    private String currentAddress;
 
 
     @Column(name = "id_card")
@@ -54,8 +58,15 @@ public class AccountDetail {
     @Column(name = "majors")
     private String majors;
 
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private EAccountDetailStatus status ;
+
     @Column(name = "level")
-    private String  level;
+    private String level;
+
+    @Column(name = "is_active")
+    private Boolean isActive;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id")
@@ -71,12 +82,28 @@ public class AccountDetail {
     List<Resource> resources;
 
 
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public EAccountDetailStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(EAccountDetailStatus status) {
+        this.status = status;
     }
 
     public String getDomicile() {
@@ -151,6 +178,14 @@ public class AccountDetail {
         this.account = account;
     }
 
+    public Boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
     public List<AccountDetailSubject> getAccountDetailSubjects() {
         return accountDetailSubjects;
     }
@@ -175,11 +210,11 @@ public class AccountDetail {
         this.fullName = fullName;
     }
 
-    public String getBirthDay() {
+    public Instant getBirthDay() {
         return birthDay;
     }
 
-    public void setBirthDay(String birthDay) {
+    public void setBirthDay(Instant birthDay) {
         this.birthDay = birthDay;
     }
 

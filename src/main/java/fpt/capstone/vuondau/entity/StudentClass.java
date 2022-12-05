@@ -7,8 +7,7 @@ import java.time.Instant;
 @Table(name = "student_class")
 public class StudentClass {
     @EmbeddedId
-    private StudentClassKey id;
-
+    private StudentClassKey id = new StudentClassKey();
 
     @ManyToOne
     @MapsId("studentId")
@@ -19,7 +18,6 @@ public class StudentClass {
     @MapsId("classId")
     @JoinColumn(name = "class_id")
     private Class aClass;
-
 
 
     @Column(name = "enroll_date")

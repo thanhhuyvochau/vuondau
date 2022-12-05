@@ -5,7 +5,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://103.173.255.39:3306/vuondau
     username: root
-    password: test
+    password: OOiyw5qptYd6xXDl
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     show-sql: 'true'
@@ -47,9 +47,9 @@ keycloak:
   credentials:
     secret: 0Z8fWR17uURSeTWmKd4EdapEUF8ck9ku
 
-vnp_product_type: 25
+vnp_product_type: 250000
 vnp_PayUrl: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
 vnp_HashSecret: NSZFYQQMCHFKNHOUKYIJLUQVZTCWBUZR
-vnp_Returnurl: http://localhost:8082/payment-result
+vnp_Returnurl: http://localhost:8082/api/payment/payment-result
 vnp_TmnCode: 76E1ZE8I
 vnp_apiUrl: https://sandbox.vnpayment.vn/merchant_webapi/merchant.html

@@ -1,51 +1,77 @@
-package fpt.capstone.vuondau.controller;
+package fpt.capstone.vuondau.service.Impl;
 
-
-import fpt.capstone.vuondau.entity.common.ApiPage;
-import fpt.capstone.vuondau.entity.common.ApiResponse;
+import fpt.capstone.vuondau.entity.Account;
+import fpt.capstone.vuondau.entity.Class;
+import fpt.capstone.vuondau.entity.StudentClass;
+import fpt.capstone.vuondau.entity.Transaction;
+import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.request.VpnPayRequest;
 import fpt.capstone.vuondau.entity.response.VpnPayResponse;
+import fpt.capstone.vuondau.repository.ClassRepository;
+import fpt.capstone.vuondau.repository.TransactionRepository;
+import fpt.capstone.vuondau.service.ITransactionService;
+import fpt.capstone.vuondau.util.SecurityUtil;
 import fpt.capstone.vuondau.util.vnpay.VnpConfig;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import javax.transaction.Transactional;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.*;
 
-@RestController
-public class VpnController {
+@Service
+@Transactional
+public class TransactionServiceImpl implements ITransactionService {
     private final VnpConfig vnpConfig;
+    private final SecurityUtil securityUtil;
+    private final TransactionRepository transactionRepository;
+    private final ClassRepository classRepository;
 
-    public VpnController(VnpConfig vnpConfig) {
+    public TransactionServiceImpl(VnpConfig vnpConfig, SecurityUtil securityUtil, TransactionRepository transactionRepository, ClassRepository classRepository) {
         this.vnpConfig = vnpConfig;
+        this.securityUtil = securityUtil;
+        this.transactionRepository = transactionRepository;
+        this.classRepository = classRepository;
     }
 
-    @PostMapping("/payment")
-    public VpnPayResponse getPayment(HttpServletRequest req, @RequestBody VpnPayRequest request) throws ServletException, IOException {
+    @Override
+    public VpnPayResponse startPayment(HttpServletRequest req, VpnPayRequest request) throws UnsupportedEncodingException {
+        Class clazz = classRepository.findById(request.getClassId())
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
+                        .withMessage("Class not found with id:" + request.getClassId()));
+        if (clazz.getNumberStudent() >= clazz.getMaxNumberStudent()) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage("Class got maximum number of student :(( !");
+        }
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String vnp_OrderInfo = request.getVnp_OrderInfo();
         String orderType = request.getOrdertype();
-        String vnp_TxnRef = vnpConfig.getRandomNumber(8);
         String vnp_IpAddr = vnpConfig.getIpAddress(req);
         String vnp_TmnCode = vnpConfig.getVnp_TmnCode();
 
-        int amount = Integer.parseInt(request.getAmount()) * 100;
+        int amount = clazz.getFinalPrice().intValue() * 100;
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
         vnp_Params.put("vnp_Amount", String.valueOf(amount));
         vnp_Params.put("vnp_CurrCode", "VND");
+
+        Transaction transaction = new Transaction();
+        Account account = securityUtil.getCurrentUser();
+        transaction.setAccount(account);
+        transaction.setAmount(BigDecimal.valueOf(amount));
+        transaction.setVpnCommand(vnp_Command);
+        transaction.setOrderInfo(vnp_OrderInfo);
+        transaction.setPaymentClass(clazz);
+        transactionRepository.save(transaction);
+        String vnp_TxnRef = transaction.getId().toString();
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
         vnp_Params.put("vnp_OrderInfo", vnp_OrderInfo);
         vnp_Params.put("vnp_OrderType", orderType);
@@ -58,16 +84,18 @@ public class VpnController {
         }
         vnp_Params.put("vnp_ReturnUrl", vnpConfig.getVnp_Returnurl());
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
-        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
 
+        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT-7"));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         String vnp_CreateDate = formatter.format(cld.getTime());
 
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
-        cld.add(Calendar.MINUTE, 15);
+        cld.add(Calendar.YEAR, 1);
         String vnp_ExpireDate = formatter.format(cld.getTime());
         //Add Params of 2.0.1 Version
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
+        SimpleDateFormat formatterCheck = new SimpleDateFormat("dd-MM-yyyy");
+        System.out.println("EXPIRED:"+formatterCheck.format(cld.getTime()));
         //Billing
         vnp_Params.put("vnp_Bill_Mobile", request.getTxt_billing_mobile());
         vnp_Params.put("vnp_Bill_Email", request.getTxt_billing_email());
@@ -123,15 +151,42 @@ public class VpnController {
         vpnPayResponse.setCode("00");
         vpnPayResponse.setMessage("success");
         vpnPayResponse.setPaymentUrl(paymentUrl);
-
         return vpnPayResponse;
     }
 
-    @GetMapping("/payment-result")
-    public ResponseEntity<ApiResponse<Boolean>> executeAfterPayment(HttpServletRequest request, HttpServletResponse response) {
+    @Override
+    public Boolean executeAfterPayment(HttpServletRequest request) {
         Map<String, String[]> parameterMap = request.getParameterMap();
-        return ResponseEntity.ok(ApiResponse.success(true));
+        String transactionNo = request.getParameter("vnp_TransactionNo");
+        String responseCode = request.getParameter("vnp_ResponseCode");
+        String transactionStatus = request.getParameter("vnp_TransactionStatus");
+        String transactionId = request.getParameter("vnp_TxnRef");
+
+        Transaction transaction = transactionRepository
+                .findById(Long.valueOf(transactionId)).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
+                        .withMessage("Transaction not found with id:" + transactionId));
+        boolean result = false;
+        if (transactionStatus.equals("00") && responseCode.equals("00")) {
+            Class paymentClass = transaction.getPaymentClass();
+            if (paymentClass.getNumberStudent() < paymentClass.getMaxNumberStudent()) {
+                result = true;
+                transaction.setTransactionNo(transactionNo);
+                transaction.setSuccess(true);
+                StudentClass studentClass = new StudentClass();
+                studentClass.setAClass(paymentClass);
+                studentClass.setAccount(transaction.getAccount());
+                studentClass.setEnrollDate(Instant.now());
+                studentClass.setIs_enrolled(true);
+                paymentClass.getStudentClasses().add(studentClass);
+                paymentClass.setNumberStudent(paymentClass.getNumberStudent() + 1);
+                classRepository.save(paymentClass);
+            } else {
+                throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage("Class got maximum number of student :(( !");
+            }
+        } else {
+            transaction.setSuccess(false);
+        }
+        transactionRepository.save(transaction);
+        return result;
     }
-
-
 }

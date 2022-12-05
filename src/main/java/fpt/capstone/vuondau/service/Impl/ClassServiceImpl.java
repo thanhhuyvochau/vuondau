@@ -5,13 +5,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
 import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCourseDataRequest;
 import fpt.capstone.vuondau.MoodleRepository.Request.S1CourseRequest;
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleRecourseClassResponse;
-import fpt.capstone.vuondau.MoodleRepository.Response.ResourceMoodleResponse;
+import fpt.capstone.vuondau.MoodleRepository.Response.*;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
+import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.dto.*;
 import fpt.capstone.vuondau.entity.request.ClassSearchRequest;
@@ -25,6 +24,7 @@ import fpt.capstone.vuondau.service.IClassService;
 import fpt.capstone.vuondau.util.*;
 import fpt.capstone.vuondau.util.specification.ClassSpecificationBuilder;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -89,7 +89,6 @@ public class ClassServiceImpl implements IClassService {
         clazz.setActive(false);
         clazz.setAccount(teacher);
         classRepository.save(clazz);
-
 
 
         return true;
@@ -260,6 +259,7 @@ public class ClassServiceImpl implements IClassService {
         return classDtoList;
     }
 
+
     @Override
     public ClassDetailDto classDetail(Long id) throws JsonProcessingException {
         Class aClass = classRepository.findById(id)
@@ -267,15 +267,10 @@ public class ClassServiceImpl implements IClassService {
         ClassDetailDto classDetail = ObjectUtil.copyProperties(aClass, new ClassDetailDto(), ClassDetailDto.class);
         classDetail.setUnitPrice(aClass.getUnitPrice());
         classDetail.setFinalPrice(aClass.getFinalPrice());
+        classDetail.setClassType(ObjectUtil.copyProperties(aClass.getClassType(), new ClassTypeDto() , ClassTypeDto.class));
         Course course = aClass.getCourse();
         if (course != null) {
-
             CourseDetailResponse courseDetailResponse = new CourseDetailResponse();
-
-
-            // set course
-            // set course detail
-
             courseDetailResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class, true);
             if (course.getResource() != null) {
                 courseDetailResponse.setImage(course.getResource().getUrl());
@@ -292,44 +287,49 @@ public class ClassServiceImpl implements IClassService {
                 subjectDto.setCode(subject.getCode());
                 courseDetailResponse.setSubject(subjectDto);
             }
-
-        if (aClass.getResourceMoodleId()!=null){
-            CourseIdRequest courseIdRequest = new CourseIdRequest();
-
-            courseIdRequest.setCourseid(aClass.getResourceMoodleId());
-            try {
-                List<MoodleRecourseClassResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
-
-                List<MoodleRecourseClassResponse> moodleRecourseClassResponseList = new ArrayList<>();
-                resourceCourse.stream().peek(moodleRecourseClassResponse -> {
-                    MoodleRecourseClassResponse setResource = ObjectUtil.copyProperties(moodleRecourseClassResponse, new MoodleRecourseClassResponse(), MoodleRecourseClassResponse.class);
-
-                    List<ResourceMoodleResponse> modules = moodleRecourseClassResponse.getModules();
-                    List<ResourceMoodleResponse> resourceMoodleResponseList = new ArrayList<>();
-                    modules.stream().peek(moodleResponse -> {
-
-                        ResourceMoodleResponse resourceMoodleResponse = ObjectUtil.copyProperties(moodleResponse, new ResourceMoodleResponse(), ResourceMoodleResponse.class);
-
-                        resourceMoodleResponseList.add(resourceMoodleResponse);
-                    }).collect(Collectors.toList());
-
-                    setResource.setModules(resourceMoodleResponseList);
-
-                    moodleRecourseClassResponseList.add(setResource);
-                }).collect(Collectors.toList());
-                courseDetailResponse.setResources(moodleRecourseClassResponseList);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-
-
             classDetail.setCourse(courseDetailResponse);
 
+            if (aClass.getResourceMoodleId() != null) {
+                CourseIdRequest courseIdRequest = new CourseIdRequest();
+
+                courseIdRequest.setCourseid(aClass.getResourceMoodleId());
+                try {
+
+
+                    List<MoodleRecourseDtoResponse> resources = new ArrayList<>();
+
+                    List<MoodleRecourseClassResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
+
+
+                    resourceCourse.stream().skip(1).forEach(moodleRecourseClassResponse -> {
+                        MoodleRecourseDtoResponse recourseDtoResponse = new MoodleRecourseDtoResponse();
+                        recourseDtoResponse.setId(moodleRecourseClassResponse.getId());
+                        recourseDtoResponse.setName(moodleRecourseClassResponse.getName());
+                        List<ResourceMoodleResponse> modules = moodleRecourseClassResponse.getModules();
+
+                        List<ResourceDtoMoodleResponse> resourceDtoMoodleResponseList = new ArrayList<>();
+
+                        modules.forEach(moodleResponse -> {
+                            ResourceDtoMoodleResponse resourceDtoMoodleResponse = new ResourceDtoMoodleResponse();
+                            resourceDtoMoodleResponse.setId(moodleResponse.getId());
+                            resourceDtoMoodleResponse.setUrl(moodleResponse.getUrl());
+                            resourceDtoMoodleResponse.setName(moodleResponse.getName());
+                            resourceDtoMoodleResponse.setType(moodleResponse.getModname());
+                            resourceDtoMoodleResponseList.add(resourceDtoMoodleResponse);
+                        });
+                        recourseDtoResponse.setModules(resourceDtoMoodleResponseList);
+                        resources.add(recourseDtoResponse);
+                    });
+                    classDetail.setResources(resources);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+
+
         }
-
-
         Account account = aClass.getAccount();
         if (account != null) {
             AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class);
@@ -348,7 +348,7 @@ public class ClassServiceImpl implements IClassService {
         studentList.stream().map(studentMap -> {
             AccountResponse student = ObjectUtil.copyProperties(studentMap, new AccountResponse(), AccountResponse.class);
             student.setRole(ObjectUtil.copyProperties(studentMap.getRole(), new RoleDto(), RoleDto.class));
-            if (studentMap.getRequests() != null) {
+            if (studentMap.getResource() != null) {
                 student.setAvatar(studentMap.getResource().getUrl());
             }
 
@@ -392,15 +392,40 @@ public class ClassServiceImpl implements IClassService {
     }
 
 
-
     @Override
     public ApiPage<ClassDto> getAllClass(Pageable pageable) {
         Page<Class> classesPage = classRepository.findAllByIsActiveIsTrue(pageable);
-
         return PageUtil.convert(classesPage.map(ConvertUtil::doConvertEntityToResponse));
-
     }
 
+    @Override
+    public ApiPage<ClassDto> accountFilterClass(Long accountId, ClassSearchRequest query, Pageable pageable) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + accountId));
+
+        List<Class> classAccount = null ;
+        List<Long> classId = new ArrayList<>() ;
+        if (account.getRole().getCode().equals(EAccountRole.TEACHER)){
+            classAccount = classRepository.findByAccountAndStatus(account , query.getStatus());
+        } else if (account.getRole().getCode().equals(EAccountRole.STUDENT)) {
+            List<StudentClass> studentClasses = account.getStudentClasses();
+            studentClasses.forEach(studentClass -> {
+                Class aClass = studentClass.getaClass();
+                classId.add(aClass.getId()) ;
+
+            });
+            classAccount  = classRepository.findByIdInAndStatus(classId ,query.getStatus());
+        }
+        List<ClassDto> classDtoList = new ArrayList<>();
+        classAccount.forEach(aClass -> {
+            classDtoList.add( ObjectUtil.copyProperties(aClass, new ClassDto() , ClassDto.class) );
+        });
+
+        Page<ClassDto> page = new PageImpl<>(classDtoList, pageable, classDtoList.size());
+
+        return PageUtil.convert(page);
+
+    }
 
 //    @Override
 //    public  List<MoodleClassResponse>  synchronizedClass() throws JsonProcessingException {

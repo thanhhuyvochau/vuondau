@@ -38,8 +38,11 @@ public interface IClassService {
 
     List<ClassDto> searchClass(ClassSearchRequest query);
 
+
+
     ClassDetailDto classDetail(Long id) throws JsonProcessingException;
 
     ApiPage<ClassDto> getAllClass( Pageable pageable);
 
+    ApiPage<ClassDto> accountFilterClass(Long accountId, ClassSearchRequest query, Pageable pageable);
 }
