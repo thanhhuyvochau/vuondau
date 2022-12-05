@@ -11,7 +11,7 @@ public class TimeTableSearchRequest implements Serializable {
 
     private Long classId ;
 
-    private Long accountId ;
+//    private Long accountId ;
 
     private Instant dateTo;
 
@@ -35,13 +35,13 @@ public class TimeTableSearchRequest implements Serializable {
     }
 
 
-    public Long getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
-    }
+//    public Long getAccountId() {
+//        return accountId;
+//    }
+//
+//    public void setAccountId(Long accountId) {
+//        this.accountId = accountId;
+//    }
 
     public Instant getDateTo() {
         return dateTo;

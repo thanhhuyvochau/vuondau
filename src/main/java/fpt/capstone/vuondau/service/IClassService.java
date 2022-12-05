@@ -20,7 +20,7 @@ import java.util.List;
 public interface IClassService {
 
 
-    Boolean teacherRequestCreateClass(Long teacherId, CreateClassRequest createClassRequest) throws JsonProcessingException;
+    Boolean teacherRequestCreateClass( CreateClassRequest createClassRequest) throws JsonProcessingException;
 
     Boolean synchronizedClassToMoodle( MoodleCourseDataRequest moodleCourseDataRequest) throws JsonProcessingException;
 
@@ -44,5 +44,5 @@ public interface IClassService {
 
     ApiPage<ClassDto> getAllClass( Pageable pageable);
 
-    ApiPage<ClassDto> accountFilterClass(Long accountId, ClassSearchRequest query, Pageable pageable);
+    ApiPage<ClassDto> accountFilterClass( ClassSearchRequest query, Pageable pageable);
 }

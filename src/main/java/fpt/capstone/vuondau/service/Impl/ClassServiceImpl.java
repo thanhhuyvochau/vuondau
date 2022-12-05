@@ -18,7 +18,6 @@ import fpt.capstone.vuondau.entity.request.CourseIdRequest;
 import fpt.capstone.vuondau.entity.request.CreateClassRequest;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.CourseDetailResponse;
-import fpt.capstone.vuondau.entity.response.CourseResponse;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IClassService;
 import fpt.capstone.vuondau.util.*;
@@ -51,7 +50,9 @@ public class ClassServiceImpl implements IClassService {
     private final StudentClassRepository studentClassRepository;
     private final MessageUtil messageUtil;
 
-    public ClassServiceImpl(RequestUtil requestUtil, AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil) {
+    private final SecurityUtil securityUtil ;
+
+    public ClassServiceImpl(RequestUtil requestUtil, AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil, SecurityUtil securityUtil) {
         this.requestUtil = requestUtil;
         this.accountRepository = accountRepository;
         this.subjectRepository = subjectRepository;
@@ -61,14 +62,14 @@ public class ClassServiceImpl implements IClassService {
         this.courseServiceImpl = courseServiceImpl;
         this.studentClassRepository = studentClassRepository;
         this.messageUtil = messageUtil;
+        this.securityUtil = securityUtil;
     }
 
 
     @Override
-    public Boolean teacherRequestCreateClass(Long teacherId, CreateClassRequest createClassRequest) throws JsonProcessingException {
-        Account teacher = accountRepository.findById(teacherId)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay teacher" + teacherId));
+    public Boolean teacherRequestCreateClass( CreateClassRequest createClassRequest) throws JsonProcessingException {
 
+        Account teacher = securityUtil.getCurrentUser();
 
         // set class bên vườn đậu
         Class clazz = new Class();
@@ -399,9 +400,9 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
-    public ApiPage<ClassDto> accountFilterClass(Long accountId, ClassSearchRequest query, Pageable pageable) {
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + accountId));
+    public ApiPage<ClassDto> accountFilterClass( ClassSearchRequest query, Pageable pageable) {
+
+        Account account = securityUtil.getCurrentUser();
 
         List<Class> classAccount = null ;
         List<Long> classId = new ArrayList<>() ;

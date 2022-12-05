@@ -36,7 +36,7 @@ public class SubjectController {
 
     @Operation(summary = "Sửa subject bằng id ")
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<SubjectResponse>> updateSubject(@PathVariable Long id, @Valid @RequestBody SubjectRequest subjectRequest) {
+    public ResponseEntity<ApiResponse<SubjectResponse>> updateSubject(@PathVariable Long id, @Nullable @RequestBody SubjectRequest subjectRequest) {
         return ResponseEntity.ok(ApiResponse.success(subjectService.updateSubject(id, subjectRequest)));
     }
 
