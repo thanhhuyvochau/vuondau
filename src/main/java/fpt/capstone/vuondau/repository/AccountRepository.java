@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.repository;
 
 import fpt.capstone.vuondau.entity.Account;
 
+import fpt.capstone.vuondau.entity.Role;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,13 +19,12 @@ import java.util.Optional;
 public interface AccountRepository extends JpaRepository<Account, Long> {
 //    Optional<Account> findByUsername(String username);
 
-    Page<Account> findAccountByRole(Pageable pageable, EAccountRole eAccountRole);
+    Page<Account> findAccountByRole(Pageable pageable, Role role);
 
 
     Page<Account> findAll(Specification<Account> spec, Pageable pageable);
 
     Boolean existsAccountByUsername(String username);
-
 
 
     Boolean existsAccountByEmail(String email);

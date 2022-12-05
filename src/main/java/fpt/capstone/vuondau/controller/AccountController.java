@@ -2,7 +2,6 @@ package fpt.capstone.vuondau.controller;
 
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
-import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.service.IAccountService;
@@ -62,9 +61,9 @@ public class AccountController {
     }
 
 
-    @Operation(summary = "Xem thông tin giáo viên giáo viên")
+    @Operation(summary = "Xem thông tin tài khoản")
     @GetMapping("/{id}")
-    public ResponseEntity<AccountResponse> getInfoTeacher(@PathVariable long id) {
+    public ResponseEntity<AccountResponse> getInfoAccount(@PathVariable long id) {
         return ResponseEntity.ok(accountService.getAccountById(id));
     }
 

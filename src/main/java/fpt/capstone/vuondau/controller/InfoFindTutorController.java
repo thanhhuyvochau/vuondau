@@ -25,7 +25,7 @@ private final IInfoFindTutorService iInfoFindTutorService ;
     @Operation(summary = "Tạo mới Pano")
     @PostMapping
     public ResponseEntity<ApiResponse<Boolean>>registerFindTutor (@Nullable InfoFindTutorDto infoFindTutorDto) {
-        return ResponseEntity.ok(ApiResponse.success(iInfoFindTutorService.registerFindTutor(infoFindTutorDto));
+        return ResponseEntity.ok(ApiResponse.success(iInfoFindTutorService.registerFindTutor(infoFindTutorDto)));
     }
 
 
