@@ -36,7 +36,7 @@ public class TimeTableController {
     }
 
 
-    @Operation(summary = "Lấy thời khóa biểu của class trong một ngay")
+    @Operation(summary = "GV/Hs Lấy thời khóa biểu của class trong một ngay")
     @GetMapping({"/time-table-day/class"})
     public ResponseEntity<ApiResponse<ApiPage<TimeTableDto>>> getTimeTableInDay(@Nullable  TimeTableSearchRequest timeTableSearchRequest, Pageable pageable)  {
         return ResponseEntity.ok(ApiResponse.success(iTimeTableService.getTimeTableInDay( timeTableSearchRequest,pageable)));

@@ -1,6 +1,8 @@
 package fpt.capstone.vuondau.entity.dto;
 
 
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleRecourseClassResponse;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleRecourseDtoResponse;
 import fpt.capstone.vuondau.entity.TeacherCourseKey;
 import fpt.capstone.vuondau.entity.TimeTable;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
@@ -16,17 +18,17 @@ import java.util.List;
 
 public class ClassDetailDto {
 
-    private Long id ;
+    private Long id;
     private String name;
     private String code;
 
-    private EClassStatus status ;
+    private EClassStatus status;
 
-    private Instant startDate ;
+    private Instant startDate;
 
-    private Instant endDate ;
+    private Instant endDate;
 
-    private String level;
+    private ClassTypeDto classType;
 
 
     private BigDecimal unitPrice;
@@ -34,23 +36,24 @@ public class ClassDetailDto {
 
     private BigDecimal finalPrice;
 
-    private Long numberStudent ;
-    
-    private Long maxNumberStudent ;
+    private Long numberStudent;
 
-    private  boolean isActive ;
+    private Long maxNumberStudent;
+
+    private boolean isActive;
 
 //    private CourseResponse course ;
 
-    private CourseDetailResponse  course ;
+    private CourseDetailResponse course;
 
-    private AccountResponse teacher ;
+    private List<MoodleRecourseDtoResponse> resources;
 
-    private List<AccountResponse> students ;
+    private AccountResponse teacher;
+
+    private List<AccountResponse> students;
 
 
-    private List<TimeTableDto> timeTable ;
-
+    private List<TimeTableDto> timeTable;
 
 
     public Long getId() {
@@ -109,12 +112,13 @@ public class ClassDetailDto {
         this.endDate = endDate;
     }
 
-    public String getLevel() {
-        return level;
+
+    public ClassTypeDto getClassType() {
+        return classType;
     }
 
-    public void setLevel(String level) {
-        this.level = level;
+    public void setClassType(ClassTypeDto classType) {
+        this.classType = classType;
     }
 
     public Long getNumberStudent() {
@@ -149,15 +153,14 @@ public class ClassDetailDto {
     public void setActive(boolean active) {
         isActive = active;
     }
-//
-//    public CourseResponse getCourse() {
-//        return course;
-//    }
-//
-//    public void setCourse(CourseResponse course) {
-//        this.course = course;
-//    }
 
+    public List<MoodleRecourseDtoResponse> getResources() {
+        return resources;
+    }
+
+    public void setResources(List<MoodleRecourseDtoResponse> resources) {
+        this.resources = resources;
+    }
 
     public CourseDetailResponse getCourse() {
         return course;

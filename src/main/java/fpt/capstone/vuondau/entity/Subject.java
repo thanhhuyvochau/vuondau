@@ -28,6 +28,9 @@ public class Subject {
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AccountDetailSubject> accountDetailSubjects;
 
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InfoFindTutorSubject> infoFindTutorSubjects;
+
 
     public Long getId() {
         return id;
@@ -75,6 +78,22 @@ public class Subject {
 
     public void setAccountDetailSubjects(List<AccountDetailSubject> accountDetailSubjects) {
         this.accountDetailSubjects = accountDetailSubjects;
+    }
+
+    public List<Forum> getForums() {
+        return forums;
+    }
+
+    public void setForums(List<Forum> forums) {
+        this.forums = forums;
+    }
+
+    public List<InfoFindTutorSubject> getInfoFindTutorSubjects() {
+        return infoFindTutorSubjects;
+    }
+
+    public void setInfoFindTutorSubjects(List<InfoFindTutorSubject> infoFindTutorSubjects) {
+        this.infoFindTutorSubjects = infoFindTutorSubjects;
     }
 
     @Override

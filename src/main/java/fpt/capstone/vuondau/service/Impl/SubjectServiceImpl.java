@@ -20,6 +20,7 @@ import fpt.capstone.vuondau.repository.SubjectRepository;
 import fpt.capstone.vuondau.service.ISubjectService;
 import fpt.capstone.vuondau.util.ConvertUtil;
 import fpt.capstone.vuondau.util.MessageUtil;
+import fpt.capstone.vuondau.util.ObjectUtil;
 import fpt.capstone.vuondau.util.PageUtil;
 import fpt.capstone.vuondau.util.specification.SubjectSpecificationBuilder;
 import fpt.capstone.vuondau.util.specification.SuggestSubjectSpecificationBuilder;
@@ -31,8 +32,10 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -65,27 +68,44 @@ public class SubjectServiceImpl implements ISubjectService {
         if (subjectRepository.existsByCode(subjectRequest.getCode())) throw ApiException.create(HttpStatus.BAD_REQUEST)
                 .withMessage(messageUtil.getLocalMessage("code subject   đã tòn tạo"));
         subject.setCode(subjectRequest.getCode());
-        subject.setName(subject.getName());
+        subject.setName(subjectRequest.getName());
 
 
-        MoodleCategoryRequest moodleCategoryRequest = new MoodleCategoryRequest() ;
 
-        List<CategoryResponse> category = moodleCourseRepository.getCategory(moodleCategoryRequest);
-        List<MoodleCreateCategoryRequest.MoodleCreateCategoryBody> moodleCreateCategoryRequestList = new ArrayList<>() ;
-        category.forEach(categoryResponse -> {
-            if (categoryResponse.getName().equals(subjectRequest.getCode().name())){
-                MoodleCreateCategoryRequest request = new MoodleCreateCategoryRequest() ;
-                MoodleCreateCategoryRequest.MoodleCreateCategoryBody moodleCreateCategoryBody = new MoodleCreateCategoryRequest.MoodleCreateCategoryBody() ;
-                moodleCreateCategoryBody.setName(subjectRequest.getCode().name());
-                moodleCreateCategoryRequestList.add(moodleCreateCategoryBody) ;
-                request.setCategories(moodleCreateCategoryRequestList);
-                try {
-                    moodleCourseRepository.postCategory(request) ;
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
+
+
+        MoodleCategoryRequest moodleCategoryRequest = new MoodleCategoryRequest();
+        List<CategoryResponse> categoryList = moodleCourseRepository.getCategory(moodleCategoryRequest);
+        List<MoodleCreateCategoryRequest.MoodleCreateCategoryBody> moodleCreateCategoryRequestList = new ArrayList<>();
+
+
+
+        List<String> stringList = new ArrayList<>() ;
+
+        for (CategoryResponse categoryResponse : categoryList) {
+             if(categoryResponse.getName().equals(subjectRequest.getCode().name())){
+                 stringList.add(subjectRequest.getCode().name());
+             }
+        }
+
+         if (stringList.isEmpty()) {
+
+             MoodleCreateCategoryRequest request = new MoodleCreateCategoryRequest();
+             MoodleCreateCategoryRequest.MoodleCreateCategoryBody moodleCreateCategoryBody = new MoodleCreateCategoryRequest.MoodleCreateCategoryBody();
+             moodleCreateCategoryBody.setName(subjectRequest.getCode().name());
+             moodleCreateCategoryRequestList.add(moodleCreateCategoryBody);
+             request.setCategories(moodleCreateCategoryRequestList);
+             try {
+                 moodleCourseRepository.postCategory(request);
+             } catch (JsonProcessingException e) {
+                 throw new RuntimeException(e);
+             }
+         }
+
+
+
+
+
 
         Subject subjectSaved = subjectRepository.save(subject);
         SubjectResponse response = new SubjectResponse();
@@ -101,16 +121,13 @@ public class SubjectServiceImpl implements ISubjectService {
     public SubjectResponse updateSubject(Long subjectId, SubjectRequest subjectRequest) {
         Subject subject = subjectRepository.findById(subjectId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay subject"));
         subject.setCode(subjectRequest.getCode());
-        subject.setName(subject.getName());
-        List<Course> allCourse = courseRepository.findAllById(subjectRequest.getCourseIds());
-//        subject.setCourses(allCourse);
+        subject.setName(subjectRequest.getName());
         Subject subjectSaved = subjectRepository.save(subject);
-
         SubjectResponse response = new SubjectResponse();
         response.setId(subjectSaved.getId());
         response.setName(subjectSaved.getName());
         response.setCode(subjectSaved.getCode());
-//        response.setCourseIds(subjectSaved.getCourses());
+
         return response;
     }
 

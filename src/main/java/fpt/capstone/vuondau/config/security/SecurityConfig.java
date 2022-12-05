@@ -23,7 +23,11 @@ import java.util.Collections;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-/**Config for development */
+
+        /**Config for development */
+
+
+//
 //        http.cors().configurationSource(corsConfigurationSource())
 //                .and().csrf().disable()
 //                .authorizeRequests().anyRequest().permitAll();
