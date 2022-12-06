@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -63,8 +62,9 @@ public class AccountServiceImpl implements IAccountService {
 
     @Value("${minio.url}")
     String minioUrl;
+    private final SecurityUtil securityUtil;
 
-    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository, MessageUtil messageUtil, RoleRepository roleRepository1, Keycloak keycloak, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository) {
+    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository, MessageUtil messageUtil, RoleRepository roleRepository1, Keycloak keycloak, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, SecurityUtil securityUtil) {
         this.accountRepository = accountRepository;
         this.messageUtil = messageUtil;
         this.roleRepository = roleRepository1;
@@ -73,6 +73,7 @@ public class AccountServiceImpl implements IAccountService {
         this.keycloakRoleUtil = keycloakRoleUtil;
         this.minioAdapter = minioAdapter;
         this.resourceRepository = resourceRepository;
+        this.securityUtil = securityUtil;
     }
 
     @Override
@@ -289,6 +290,12 @@ public class AccountServiceImpl implements IAccountService {
         account.setActive(true);
         Account save = accountRepository.save(account);
         return ConvertUtil.doConvertEntityToResponse(save);
+    }
+
+    @Override
+    public AccountResponse getSelfAccount() {
+        Account currentUser = securityUtil.getCurrentUser();
+        return ConvertUtil.doConvertEntityToResponse(currentUser);
     }
 
     public AccountResponse getAccountById(long id) {

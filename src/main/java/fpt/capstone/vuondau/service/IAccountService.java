@@ -44,4 +44,5 @@ public interface IAccountService {
 
     AccountResponse updateRoleAndActiveAccount(long id,AccountEditRequest accountEditRequest);
     AccountResponse approveTeacherAccount(long id);
+    AccountResponse getSelfAccount();
 }
