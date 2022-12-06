@@ -18,9 +18,10 @@ public class AccountDetail {
     @SequenceGenerator(name = "account_id_generator", sequenceName = "account_id_generator")
     private Long id;
 
-    @Column(name = "full_name")
-    private String fullName;
-
+    @Column(name = "first_name")
+    private String firstName;
+    @Column(name = "last_name")
+    private String lastName;
     @Column(name = "birthDay")
     private Instant birthDay;
 
@@ -60,7 +61,7 @@ public class AccountDetail {
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private EAccountDetailStatus status ;
+    private EAccountDetailStatus status;
 
     @Column(name = "level")
     private String level;
@@ -202,12 +203,24 @@ public class AccountDetail {
         this.accountDetailClassLevels = accountDetailClassLevels;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public Boolean getActive() {
+        return isActive;
     }
 
     public Instant getBirthDay() {

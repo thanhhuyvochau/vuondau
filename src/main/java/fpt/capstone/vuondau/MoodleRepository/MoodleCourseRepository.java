@@ -8,8 +8,8 @@ import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCreateCategoryRequest
 import fpt.capstone.vuondau.MoodleRepository.Request.MoodleMasterDataRequest;
 import fpt.capstone.vuondau.MoodleRepository.Request.S1CourseRequest;
 import fpt.capstone.vuondau.MoodleRepository.Response.CategoryResponse;
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleRecourseClassResponse;
 import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleSectionResponse;
 import fpt.capstone.vuondau.entity.request.CourseIdRequest;
 import org.springframework.stereotype.Component;
 
@@ -30,10 +30,9 @@ public class MoodleCourseRepository extends S1BaseRepository {
     }
 
 
-    public List<MoodleClassResponse> getCourse(MoodleMasterDataRequest request) throws JsonProcessingException {
-        TypeReference<List<MoodleClassResponse>> typeReference = new TypeReference<List<MoodleClassResponse>>() {
+    public List<MoodleClassResponse> getCourse(MoodleMasterDataRequest request) throws JsonProcessingException {        TypeReference<List<MoodleClassResponse>> typeReference = new TypeReference<List<MoodleClassResponse>>() {
         };
-        return caller.getWithAuthenticationTokeCustom(masterUri, request, typeReference);
+        return caller.getWithAuthenticationTokeCustom(courseUri, request, typeReference);
     }
 
 
@@ -51,10 +50,9 @@ public class MoodleCourseRepository extends S1BaseRepository {
     }
 
 
-    public List<MoodleRecourseClassResponse> getResourceCourse(CourseIdRequest classId) throws JsonProcessingException {
-        TypeReference<List<MoodleRecourseClassResponse>> typeReference = new TypeReference<List<MoodleRecourseClassResponse>>() {
+    public List<MoodleSectionResponse> getResourceCourse(CourseIdRequest classId) throws JsonProcessingException {
+        TypeReference<List<MoodleSectionResponse>> typeReference = new TypeReference<List<MoodleSectionResponse>>() {
         };
         return caller.postWithAuthenticationTokeCustom(resourceUri, classId, typeReference);
     }
-
 }

@@ -20,7 +20,10 @@ public class S1BaseRepository {
 
     @Value("${moodle.createCourseUri}")
     protected String createCourseUri;
-
+    @Value("${moodle.courseUri}")
+    protected String courseUri;
+    @Value("${moodle.courseContentUri}")
+    protected String courseContentUri;
     protected final Caller caller;
 
     public S1BaseRepository(Caller caller) {
@@ -61,5 +64,29 @@ public class S1BaseRepository {
 
     public void setCategoryUri(String categoryUri) {
         this.categoryUri = categoryUri;
+    }
+
+    public String getCreateCategoryUri() {
+        return createCategoryUri;
+    }
+
+    public void setCreateCategoryUri(String createCategoryUri) {
+        this.createCategoryUri = createCategoryUri;
+    }
+
+    public String getCourseUri() {
+        return courseUri;
+    }
+
+    public void setCourseUri(String courseUri) {
+        this.courseUri = courseUri;
+    }
+
+    public String getCourseContentUri() {
+        return courseContentUri;
+    }
+
+    public void setCourseContentUri(String courseContentUri) {
+        this.courseContentUri = courseContentUri;
     }
 }
