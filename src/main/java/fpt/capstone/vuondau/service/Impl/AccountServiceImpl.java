@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.service.Impl;
 
 import fpt.capstone.vuondau.entity.Account;
 
+import fpt.capstone.vuondau.entity.AccountDetail;
 import fpt.capstone.vuondau.entity.Resource;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
@@ -9,9 +10,11 @@ import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.common.EResourceType;
 import fpt.capstone.vuondau.entity.dto.RoleDto;
 import fpt.capstone.vuondau.entity.request.*;
+import fpt.capstone.vuondau.entity.response.AccountDetailResponse;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
 import fpt.capstone.vuondau.entity.response.StudentResponse;
+import fpt.capstone.vuondau.repository.AccountDetailRepository;
 import fpt.capstone.vuondau.repository.AccountRepository;
 
 import fpt.capstone.vuondau.repository.ResourceRepository;
@@ -42,7 +45,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -61,10 +63,12 @@ public class AccountServiceImpl implements IAccountService {
 
     private final ResourceRepository resourceRepository;
 
+    private final AccountDetailRepository accountDetailRepository ;
+
     @Value("${minio.url}")
     String minioUrl;
 
-    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository, MessageUtil messageUtil, RoleRepository roleRepository1, Keycloak keycloak, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository) {
+    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository, MessageUtil messageUtil, RoleRepository roleRepository1, Keycloak keycloak, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, AccountDetailRepository accountDetailRepository) {
         this.accountRepository = accountRepository;
         this.messageUtil = messageUtil;
         this.roleRepository = roleRepository1;
@@ -73,6 +77,7 @@ public class AccountServiceImpl implements IAccountService {
         this.keycloakRoleUtil = keycloakRoleUtil;
         this.minioAdapter = minioAdapter;
         this.resourceRepository = resourceRepository;
+        this.accountDetailRepository = accountDetailRepository;
     }
 
     @Override
@@ -291,6 +296,7 @@ public class AccountServiceImpl implements IAccountService {
         return ConvertUtil.doConvertEntityToResponse(save);
     }
 
+
     public AccountResponse getAccountById(long id) {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
@@ -300,6 +306,15 @@ public class AccountServiceImpl implements IAccountService {
             accountResponse.setAvatar(account.getResource().getUrl());
         }
         return accountResponse;
-
     }
+
+
+    @Override
+    public ApiPage<AccountDetailResponse> getAllInfoTeacher(Pageable pageable) {
+        Page<AccountDetail> all = accountDetailRepository.findAllByIsActiveIsTrue(pageable);
+        return PageUtil.convert(all.map(ConvertUtil::doConvertEntityToResponse)) ;
+    }
+
+
+
 }

@@ -64,15 +64,8 @@ public class AccountDetailResponse {
     private Boolean isActive;
 
 
-//    private Account account;
-
-
     private List<SubjectDto> subjects;
 
-
-//    private List<Class> accountDetailClassLevels;
-
-//    @OneToMany(mappedBy = "accountDetail")
     private  List<ResourceDto> resources;
 
     public Long getId() {

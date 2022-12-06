@@ -1,13 +1,12 @@
-package fpt.capstone.vuondau.entity.dto;
+package fpt.capstone.vuondau.entity.response;
 
 
 import fpt.capstone.vuondau.entity.common.EClassLevelCode;
 
-import javax.persistence.*;
 import java.util.List;
 
 
-public class InfoFindTutorDto {
+public class InfoFindTutorResponse {
 
 
 
@@ -32,9 +31,9 @@ public class InfoFindTutorDto {
 
 
 
-    private List<Long> teacherId;
+    private List<AccountResponse> teachers;
 
-    private List<Long> subjectId;
+    private List<SubjectResponse> subjects;
 
     public String getFullName() {
         return fullName;
@@ -84,19 +83,19 @@ public class InfoFindTutorDto {
         this.description = description;
     }
 
-    public List<Long> getTeacherId() {
-        return teacherId;
+    public List<AccountResponse> getTeachers() {
+        return teachers;
     }
 
-    public void setTeacherId(List<Long> teacherId) {
-        this.teacherId = teacherId;
+    public void setTeachers(List<AccountResponse> teachers) {
+        this.teachers = teachers;
     }
 
-    public List<Long> getSubjectId() {
-        return subjectId;
+    public List<SubjectResponse> getSubjects() {
+        return subjects;
     }
 
-    public void setSubjectId(List<Long> subjectId) {
-        this.subjectId = subjectId;
+    public void setSubjects(List<SubjectResponse> subjects) {
+        this.subjects = subjects;
     }
 }

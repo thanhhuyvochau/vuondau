@@ -557,13 +557,13 @@ public class HatdauApplication {
         Boolean existClass12 = false;
 
         for (ClassType classType : all) {
-            if (classType.getCode().equals(EClassType.TEN)) {
+            if (classType.getCode().equals(EClassLevel.TEN)) {
                 existClass10 = true;
             }
-            if (classType.getCode().equals(EClassType.ELEVENT)) {
+            if (classType.getCode().equals(EClassLevel.ELEVENT)) {
                 existClass11 = true;
             }
-            if (classType.getCode().equals(EClassType.TWELFTH)) {
+            if (classType.getCode().equals(EClassLevel.TWELFTH)) {
                 existClass12 = true;
             }
         }
@@ -571,7 +571,7 @@ public class HatdauApplication {
         List<ClassType> classTypeList = new ArrayList<>();
         if (!existClass10) {
             ClassType classType = new ClassType();
-            classType.setCode(EClassType.TEN);
+            classType.setCode(EClassLevel.TEN);
             classType.setName("Lớp 10");
 
             classTypeList.add(classType);
@@ -579,7 +579,7 @@ public class HatdauApplication {
         if (!existClass11) {
 
             ClassType classType = new ClassType();
-            classType.setCode(EClassType.ELEVENT);
+            classType.setCode(EClassLevel.ELEVENT);
             classType.setName("Lớp 11");
 
             classTypeList.add(classType);
@@ -588,7 +588,7 @@ public class HatdauApplication {
 
         if (!existClass12) {
             ClassType classType = new ClassType();
-            classType.setCode(EClassType.TWELFTH);
+            classType.setCode(EClassLevel.TWELFTH);
             classType.setName("Lớp 12");
 
             classTypeList.add(classType);

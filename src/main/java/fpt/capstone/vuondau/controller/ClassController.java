@@ -110,4 +110,10 @@ public class ClassController {
     }
 
 
+    @Operation(summary = "Gợi ý lớp học - hs.phụ huynh đăng ký tìm gia sư ")
+    @GetMapping("{infoFindTutorId}/class-suggestion")
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> classSuggestion(@PathVariable long infoFindTutorId ,  Pageable pageable)  {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.classSuggestion(infoFindTutorId,  pageable)));
+    }
+
 }

@@ -1,13 +1,13 @@
 package fpt.capstone.vuondau.entity.response;
 
-import fpt.capstone.vuondau.entity.common.EClassType;
+import fpt.capstone.vuondau.entity.common.EClassLevel;
 
 
 public class ClassTypeResponse {
     private Long id;
     private String name;
 
-    private EClassType code;
+    private EClassLevel code;
 
 
     public Long getId() {
@@ -26,11 +26,11 @@ public class ClassTypeResponse {
         this.name = name;
     }
 
-    public EClassType getCode() {
+    public EClassLevel getCode() {
         return code;
     }
 
-    public void setCode(EClassType code) {
+    public void setCode(EClassLevel code) {
         this.code = code;
     }
 

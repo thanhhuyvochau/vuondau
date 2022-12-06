@@ -28,6 +28,7 @@ public class InfoFindTutor {
     private String address;
 
     @Column(name = "class_level")
+    @Enumerated(EnumType.STRING)
     private EClassLevelCode classLevel;
 
 
@@ -36,7 +37,7 @@ public class InfoFindTutor {
 
 
     @OneToMany(mappedBy = "infoFindTutor", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<InfoFindTutorAccount> infoFindTutors;
+    private List<InfoFindTutorAccount> infoFindTutorAccounts;
 
     @OneToMany(mappedBy = "infoFindTutor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InfoFindTutorSubject> infoFindTutorSubjects;
@@ -97,12 +98,13 @@ public class InfoFindTutor {
         this.description = description;
     }
 
-    public List<InfoFindTutorAccount> getInfoFindTutors() {
-        return infoFindTutors;
+
+    public List<InfoFindTutorAccount> getInfoFindTutorAccounts() {
+        return infoFindTutorAccounts;
     }
 
-    public void setInfoFindTutors(List<InfoFindTutorAccount> infoFindTutors) {
-        this.infoFindTutors = infoFindTutors;
+    public void setInfoFindTutorAccounts(List<InfoFindTutorAccount> infoFindTutorAccounts) {
+        this.infoFindTutorAccounts = infoFindTutorAccounts;
     }
 
     public List<InfoFindTutorSubject> getInfoFindTutorSubjects() {

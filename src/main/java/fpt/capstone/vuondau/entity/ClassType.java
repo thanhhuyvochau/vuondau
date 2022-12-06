@@ -1,13 +1,12 @@
 package fpt.capstone.vuondau.entity;
 
-import fpt.capstone.vuondau.entity.common.EClassLevelCode;
-import fpt.capstone.vuondau.entity.common.EClassType;
+import fpt.capstone.vuondau.entity.common.EClassLevel;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "class_type")
+@Table(name = "class_level")
 public class ClassType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,10 +16,10 @@ public class ClassType {
 
     @Column(name = "code")
     @Enumerated(EnumType.STRING)
-    private EClassType code;
+    private EClassLevel code;
 
-    @OneToMany(mappedBy="classType")
-    private List<Class> classes;
+//    @OneToMany(mappedBy="classType")
+//    private List<Class> classes;
 
     public Long getId() {
         return id;
@@ -38,20 +37,20 @@ public class ClassType {
         this.name = name;
     }
 
-    public EClassType getCode() {
+    public EClassLevel getCode() {
         return code;
     }
 
-    public void setCode(EClassType code) {
+    public void setCode(EClassLevel code) {
         this.code = code;
     }
 
-    public List<Class> getClasses() {
-        return classes;
-    }
-
-    public void setClasses(List<Class> classes) {
-        this.classes = classes;
-    }
+//    public List<Class> getClasses() {
+//        return classes;
+//    }
+//
+//    public void setClasses(List<Class> classes) {
+//        this.classes = classes;
+//    }
 
 }

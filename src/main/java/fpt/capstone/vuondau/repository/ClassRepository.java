@@ -25,12 +25,15 @@ public interface ClassRepository extends JpaRepository<Class, Long> {
 
    Optional<Class> findByIdAndCourse(long course , Course account );
 
-    Page<Class> findAll(Specification<Class> spec, Pageable pageable);
+//    List<Class> findAll(Specification<Class> spec, Pageable pageable);
     Page<Class> findAllByIsActiveIsTrue(Pageable pageable);
 
 //    Page<Class> findAllByActiveIsTrue(Pageable pageable);
 
     List<Class> findAll(Specification<Class> spec);
+
+    Page<Class> findAll(Specification<Class> spec, Pageable pageable);
+
     boolean existsByCode(String code);
 
     List<Class> findByIdInAndStatus(List<Long> classId, EClassStatus status);
