@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.service.Impl;
 
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleRecourseClassResponse;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleModuleResponse;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleSectionResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiException;
@@ -39,7 +40,7 @@ public class ForumServiceImpl implements IForumService {
     }
 
     @Override
-    public ForumDto createForumForClass(Long classId, MoodleRecourseClassResponse moodleRecourseClassResponse) {
+    public ForumDto createForumForClass(Long classId, MoodleSectionResponse moodleSectionResponse) {
         Class clazz = classRepository.findById(classId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Class not found with id:" + classId));
         Forum existedForum = forumRepository.findForumByClazz(clazz).orElse(null);
@@ -52,7 +53,7 @@ public class ForumServiceImpl implements IForumService {
         forum.setCode(clazz.getCode() + "FO");
         forum.setType(EForumType.CLASS);
 
-        List<ForumLesson> forumLessons = moodleRecourseClassResponse.getModules().stream().filter(resourceMoodleResponse -> resourceMoodleResponse.getModname().equals("lesson")).map(resourceMoodleResponse -> {
+        List<ForumLesson> forumLessons = moodleSectionResponse.getModules().stream().filter(resourceMoodleResponse -> resourceMoodleResponse.getModname().equals("lesson")).map(resourceMoodleResponse -> {
             ForumLesson forumLesson = new ForumLesson();
             forumLesson.setForum(forum);
             forumLesson.setLessonName(resourceMoodleResponse.getName());
@@ -158,4 +159,15 @@ public class ForumServiceImpl implements IForumService {
         Page<ForumDto> page = new PageImpl<>(forumClass, pageable, forumClass.size());
         return PageUtil.convert(page);
     }
+
+    @Override
+    public ApiPage<ForumDto> getAllClassForumsOfTeacher(Pageable pageable) {
+        Account account = securityUtil.getCurrentUser();
+        List<ForumDto> forumClass = account.getTeacherClass().stream()
+                .map(clazz -> this.getForumByClass(clazz.getId()))
+                .collect(Collectors.toList());
+        Page<ForumDto> page = new PageImpl<>(forumClass, pageable, forumClass.size());
+        return PageUtil.convert(page);
+    }
+
 }

@@ -250,7 +250,8 @@ public class ClassServiceImpl implements IClassService {
     @Override
     public List<ClassDto> searchClass(ClassSearchRequest query) {
         ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
-                .queryLike(query.getQ())
+                .queryLikeByClassName(query.getQ())
+                .queryLikeByTeacherName(query.getQ())
                 .queryStatusClass(query.getStatus());
 
         List<Class> classList = classRepository.findAll(builder.build());
@@ -309,14 +310,14 @@ public class ClassServiceImpl implements IClassService {
 
                     List<MoodleRecourseDtoResponse> resources = new ArrayList<>();
 
-                    List<MoodleRecourseClassResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
+                    List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
 
 
                     resourceCourse.stream().skip(1).forEach(moodleRecourseClassResponse -> {
                         MoodleRecourseDtoResponse recourseDtoResponse = new MoodleRecourseDtoResponse();
                         recourseDtoResponse.setId(moodleRecourseClassResponse.getId());
                         recourseDtoResponse.setName(moodleRecourseClassResponse.getName());
-                        List<ResourceMoodleResponse> modules = moodleRecourseClassResponse.getModules();
+                        List<MoodleModuleResponse> modules = moodleRecourseClassResponse.getModules();
 
                         List<ResourceDtoMoodleResponse> resourceDtoMoodleResponseList = new ArrayList<>();
 
@@ -410,9 +411,7 @@ public class ClassServiceImpl implements IClassService {
 
     @Override
     public ApiPage<ClassDto> accountFilterClass(ClassSearchRequest query, Pageable pageable) {
-
         Account account = securityUtil.getCurrentUser();
-
         List<Class> classAccount = null;
         List<Long> classId = new ArrayList<>();
         if (account.getRole().getCode().equals(EAccountRole.TEACHER)) {
