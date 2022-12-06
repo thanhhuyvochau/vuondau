@@ -2,7 +2,7 @@ package fpt.capstone.vuondau.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleRecourseClassResponse;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleSectionResponse;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 
@@ -27,7 +27,6 @@ import java.util.List;
 public class CourseController {
 
 
-
     private final ICourseService courseService;
 
     public CourseController(ICourseService courseService) {
@@ -37,63 +36,62 @@ public class CourseController {
 
     @Operation(summary = "giáo viên request các topic cho subject")
     @PostMapping("/{teacherId}/create-topics-subject")
-    public ResponseEntity<ApiResponse<TopicsSubjectRequest>> teacherCreateTopicInSubject(@PathVariable Long teacherId  , @RequestBody TopicsSubjectRequest topicsSubjectRequest ) {
+    public ResponseEntity<ApiResponse<TopicsSubjectRequest>> teacherCreateTopicInSubject(@PathVariable Long teacherId, @RequestBody TopicsSubjectRequest topicsSubjectRequest) {
         System.out.println(teacherId);
-        return ResponseEntity.ok(ApiResponse.success(courseService.teacherCreateTopicInSubject(teacherId,topicsSubjectRequest)));
+        return ResponseEntity.ok(ApiResponse.success(courseService.teacherCreateTopicInSubject(teacherId, topicsSubjectRequest)));
     }
 
 
     @Operation(summary = "Giáo viên đăng ký subject")
     @PostMapping({"/{teacherId}"})
-    public ResponseEntity<ApiResponse<ClassSubjectResponse>> createRegisterSubject(@PathVariable Long teacherId ,  Long subjectId , @RequestBody ClassRequest classRequest ) {
+    public ResponseEntity<ApiResponse<ClassSubjectResponse>> createRegisterSubject(@PathVariable Long teacherId, Long subjectId, @RequestBody ClassRequest classRequest) {
 
-        return ResponseEntity.ok(ApiResponse.success(courseService.createRegisterSubject(teacherId,subjectId, classRequest)));
+        return ResponseEntity.ok(ApiResponse.success(courseService.createRegisterSubject(teacherId, subjectId, classRequest)));
     }
-
 
 
     // MANGER COURSE
     @Operation(summary = "Tìm Kiếm course")
     @GetMapping("/search-cource")
     public ResponseEntity<ApiResponse<ApiPage<CourseResponse>>> searchCourse(@Nullable CourseSearchRequest query,
-                                                                                   Pageable pageable) {
+                                                                             Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(courseService.searchCourse(query, pageable)));
     }
 
     @Operation(summary = "Lấy tất cả course ")
     @GetMapping("/get-all-course")
     public ResponseEntity<ApiResponse<ApiPage<CourseResponse>>> viewAllCourse(Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.success(courseService.viewAllCourse( pageable)));
+        return ResponseEntity.ok(ApiResponse.success(courseService.viewAllCourse(pageable)));
     }
 
     @Operation(summary = "xem chi tiết course ")
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<CourseDetailResponse>> viewSubjectCourse(@PathVariable long id ) throws JsonProcessingException {
-        return ResponseEntity.ok(ApiResponse.success(courseService.viewCourseDetail(id )));
+    public ResponseEntity<ApiResponse<CourseDetailResponse>> viewSubjectCourse(@PathVariable long id) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(courseService.viewCourseDetail(id)));
     }
 
     @Operation(summary = "Get resource course từ moodle")
     @GetMapping("get-resource-from-moodle")
-    public ResponseEntity<ApiResponse<  List<MoodleRecourseClassResponse>>> synchronizedResource(@RequestParam Long classId) throws JsonProcessingException {
+    public ResponseEntity<ApiResponse<List<MoodleSectionResponse>>> synchronizedResource(@RequestParam Long classId) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(courseService.synchronizedResource(classId)));
     }
 
     @Operation(summary = "sửa course")
     @PutMapping("/{id}/update-course")
-    public ResponseEntity<ApiResponse<CourseDetailResponse>> updateCourse(@PathVariable long id , @RequestBody CourseRequest subjectRequest) {
+    public ResponseEntity<ApiResponse<CourseDetailResponse>> updateCourse(@PathVariable long id, @RequestBody CourseRequest subjectRequest) {
         return ResponseEntity.ok(ApiResponse.success(courseService.updateCourse(id, subjectRequest)));
     }
 
     @Operation(summary = "Học sinh xem lich sử course")
     @GetMapping("/{studentId}/histoty-course")
-    public ResponseEntity<ApiResponse<List<ClassCourseResponse>>> viewHistoryCourse(@PathVariable long studentId ) {
+    public ResponseEntity<ApiResponse<List<ClassCourseResponse>>> viewHistoryCourse(@PathVariable long studentId) {
         return ResponseEntity.ok(ApiResponse.success(courseService.viewHistoryCourse(studentId)));
     }
 
     @Operation(summary = "Học sinh enroll vao class - course")
     @PostMapping("/{studentId}/enroll-course")
-    public ResponseEntity<ApiResponse<ClassCourseResponse>> studentEnrollCourse(@PathVariable long studentId , long courseId,  long classId ) {
-        return ResponseEntity.ok(ApiResponse.success(courseService.studentEnrollCourse(studentId, courseId,classId)));
+    public ResponseEntity<ApiResponse<ClassCourseResponse>> studentEnrollCourse(@PathVariable long studentId, long courseId, long classId) {
+        return ResponseEntity.ok(ApiResponse.success(courseService.studentEnrollCourse(studentId, courseId, classId)));
     }
 
     @Operation(description = "Tạo khóa học")
@@ -105,17 +103,17 @@ public class CourseController {
 
     @Operation(summary = "lấy course theo subject")
     @GetMapping("/{subjectId}/subject")
-    public ResponseEntity<ApiResponse<ApiPage<CourseDetailResponse>>> getCourseBySubject(@PathVariable long subjectId ) throws JsonProcessingException {
-        return ResponseEntity.ok(ApiResponse.success(courseService.getCourseBySubject(subjectId )));
+    public ResponseEntity<ApiResponse<ApiPage<CourseDetailResponse>>> getCourseBySubject(@PathVariable long subjectId) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(courseService.getCourseBySubject(subjectId)));
     }
+
     @Operation(summary = "lấy course theo subject khong phân trang")
 
     @GetMapping("/{subjectId}/courses-subject")
-    public ResponseEntity<ApiResponse<List<CourseDetailResponse>>> getListCourseBySubject(@PathVariable long subjectId )  {
+    public ResponseEntity<ApiResponse<List<CourseDetailResponse>>> getListCourseBySubject(@PathVariable long subjectId) {
         return ResponseEntity.ok(ApiResponse.success(courseService.getListCourseBySubject(subjectId)));
 
     }
-
 
 
 }

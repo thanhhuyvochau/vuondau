@@ -6,6 +6,7 @@ import fpt.capstone.vuondau.entity.common.EForumType;
 import fpt.capstone.vuondau.entity.dto.*;
 import fpt.capstone.vuondau.entity.response.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,11 +77,51 @@ public class ConvertUtil {
         return requestFormResponese;
     }
 
+    public static AccountDetailResponse doConvertEntityToResponse(AccountDetail accountDetail) {
+
+        AccountDetailResponse accountDetailResponse = ObjectUtil.copyProperties(accountDetail, new AccountDetailResponse(), AccountDetailResponse.class);
+
+        List<AccountDetailSubject> accountDetailSubjects = accountDetail.getAccountDetailSubjects();
+        List<SubjectDto> subjects = new ArrayList<>();
+        accountDetailSubjects.forEach(accountDetailSubject -> {
+            subjects.add(ObjectUtil.copyProperties(accountDetailSubject.getSubject(), new SubjectDto(), SubjectDto.class));
+        });
+        accountDetailResponse.setSubjects(subjects);
+        List<ResourceDto> resourceDtoList = new ArrayList<>();
+        List<Resource> resources = accountDetail.getResources();
+        resources.forEach(resource -> {
+            resourceDtoList.add(ObjectUtil.copyProperties(resource, new ResourceDto(), ResourceDto.class));
+        });
+
+        accountDetailResponse.setResources(resourceDtoList);
+        accountDetailResponse.setActive(accountDetail.isActive());
+        return accountDetailResponse;
+
+    }
+
     public static CourseDetailResponse doConvertEntityToResponse(Course course) {
         CourseDetailResponse courseDetailResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class);
         courseDetailResponse.setGrade(course.getGrade());
         return courseDetailResponse;
     }
+
+    public static CourseResponse doConvertCourseToCourseResponse(Course course) {
+        CourseResponse courseResponse = ObjectUtil.copyProperties(course, new CourseResponse(), CourseResponse.class);
+        courseResponse.setCourseName(course.getName());
+        if (course.getResource()!=null){
+            courseResponse.setImage(course.getResource().getUrl());
+        }
+        if (course.getSubject()!=null){
+            courseResponse.setSubject(ConvertUtil.doConvertEntityToResponse(course.getSubject()));
+        }
+        courseResponse.setCourseTitle(course.getTitle());
+
+//        courseDetailResponse.setGrade(course.getGrade());
+        return courseResponse;
+    }
+
+
+
 
     public static ForumDto doConvertEntityToResponse(Forum forum) {
         ForumDto forumDto = ObjectUtil.copyProperties(forum, new ForumDto(), ForumDto.class, true);
@@ -99,24 +140,25 @@ public class ConvertUtil {
     public static ClassDto doConvertEntityToResponse(Class aclass) {
         ClassDto classDto = ObjectUtil.copyProperties(aclass, new ClassDto(), ClassDto.class);
 
-        CourseResponse courseResponse = new CourseResponse();
-        Course course = aclass.getCourse();
-        if (course!= null){
-            courseResponse.setId(course.getId());
-            courseResponse.setCourseName(course.getName());
-            courseResponse.setCourseTitle(course.getTitle());
-            if (course.getResource() != null) {
-                courseResponse.setImage(course.getResource().getUrl());
-            }
-            Subject subject = course.getSubject();
-            if (subject != null) {
-                courseResponse.setSubject(doConvertEntityToResponse(subject));
-            }
-        }
 
-        if (aclass.getAccount() != null) {
-            courseResponse.setTeacherName(aclass.getAccount().getName());
-        }
+        Course course = aclass.getCourse();
+        CourseResponse courseResponse = ConvertUtil.doConvertCourseToCourseResponse(course);
+//        if (course!= null){
+//            courseResponse.setId(course.getId());
+//            courseResponse.setCourseName(course.getName());
+//            courseResponse.setCourseTitle(course.getTitle());
+//            if (course.getResource() != null) {
+//                courseResponse.setImage(course.getResource().getUrl());
+//            }
+//            Subject subject = course.getSubject();
+//            if (subject != null) {
+//                courseResponse.setSubject(doConvertEntityToResponse(subject));
+//            }
+//        }
+//
+//        if (aclass.getAccount() != null) {
+//            courseResponse.setTeacherName(aclass.getAccount().getName());
+//        }
         classDto.setStatus(aclass.getStatus());
         classDto.setStartDate(aclass.getStartDate());
         classDto.setEndDate(aclass.getEndDate());
@@ -125,10 +167,10 @@ public class ConvertUtil {
         classDto.setUnitPrice(aclass.getUnitPrice());
         classDto.setFinalPrice(aclass.getFinalPrice());
         classDto.setTeacher(ObjectUtil.copyProperties(aclass.getAccount(), new AccountResponse() , AccountResponse.class));
-        if (aclass.getClassType()!= null){
-
-            classDto.setClassType(ObjectUtil.copyProperties(aclass.getClassType(), new ClassTypeDto() , ClassTypeDto.class));
-        }
+//        if (aclass.getClassType()!= null){
+//
+//            classDto.setClassType(ObjectUtil.copyProperties(aclass.getClassType(), new ClassTypeDto() , ClassTypeDto.class));
+//        }
 
         classDto.setCourse(courseResponse);
         return classDto;

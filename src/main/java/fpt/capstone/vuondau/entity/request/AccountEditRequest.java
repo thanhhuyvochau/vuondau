@@ -8,24 +8,32 @@ import java.time.Instant;
 
 public class AccountEditRequest implements Serializable {
 
-    private String name;
-    private Instant birthDay ;
-    private String phone ;
+    private String firstName;
+    private String lastName;
+    private Instant birthDay;
+    private String phone;
 
-    private String mail ;
+    private String mail;
 
-    private EAccountRole role ;
+    private EAccountRole role;
 
-    private boolean isActive ;
+    private boolean isActive;
 
 
-
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public Instant getBirthDay() {

@@ -1,13 +1,12 @@
 package fpt.capstone.vuondau.entity.dto;
 
 
-import fpt.capstone.vuondau.entity.common.EClassType;
-import fpt.capstone.vuondau.entity.common.ESlotCode;
+import fpt.capstone.vuondau.entity.common.EClassLevel;
 
 public class ClassTypeDto {
 
     private Long id;
-    private EClassType code;
+    private EClassLevel code;
     private String name;
 
     public Long getId() {
@@ -18,11 +17,11 @@ public class ClassTypeDto {
         this.id = id;
     }
 
-    public EClassType getCode() {
+    public EClassLevel getCode() {
         return code;
     }
 
-    public void setCode(EClassType code) {
+    public void setCode(EClassLevel code) {
         this.code = code;
     }
 

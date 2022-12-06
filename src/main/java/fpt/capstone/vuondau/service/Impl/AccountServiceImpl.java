@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.service.Impl;
 
 import fpt.capstone.vuondau.entity.Account;
 
+import fpt.capstone.vuondau.entity.AccountDetail;
 import fpt.capstone.vuondau.entity.Resource;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
@@ -9,9 +10,11 @@ import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.common.EResourceType;
 import fpt.capstone.vuondau.entity.dto.RoleDto;
 import fpt.capstone.vuondau.entity.request.*;
+import fpt.capstone.vuondau.entity.response.AccountDetailResponse;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
 import fpt.capstone.vuondau.entity.response.StudentResponse;
+import fpt.capstone.vuondau.repository.AccountDetailRepository;
 import fpt.capstone.vuondau.repository.AccountRepository;
 
 import fpt.capstone.vuondau.repository.ResourceRepository;
@@ -42,7 +45,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -57,14 +59,16 @@ public class AccountServiceImpl implements IAccountService {
     private final KeycloakUserUtil keycloakUserUtil;
     private final KeycloakRoleUtil keycloakRoleUtil;
 
-    private final MinioAdapter minioAdapter;
+
 
     private final ResourceRepository resourceRepository;
 
+    private final AccountDetailRepository accountDetailRepository ;
+    private final MinioAdapter minioAdapter;
     @Value("${minio.url}")
     String minioUrl;
 
-    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository, MessageUtil messageUtil, RoleRepository roleRepository1, Keycloak keycloak, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository) {
+    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository, MessageUtil messageUtil, RoleRepository roleRepository1, Keycloak keycloak, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, AccountDetailRepository accountDetailRepository) {
         this.accountRepository = accountRepository;
         this.messageUtil = messageUtil;
         this.roleRepository = roleRepository1;
@@ -73,6 +77,7 @@ public class AccountServiceImpl implements IAccountService {
         this.keycloakRoleUtil = keycloakRoleUtil;
         this.minioAdapter = minioAdapter;
         this.resourceRepository = resourceRepository;
+        this.accountDetailRepository = accountDetailRepository;
     }
 
     @Override
@@ -100,9 +105,8 @@ public class AccountServiceImpl implements IAccountService {
                     .withMessage(messageUtil.getLocalMessage("Email đã tòn tạo"));
         }
         account.setUsername(accountRequest.getUsername());
-        account.setName(accountRequest.getName());
-//        account.setFirstName(accountRequest.getFirstName());
-//        account.setLastName(accountRequest.getLastName());
+        account.setFirstName(accountRequest.getFirstName());
+        account.setLastName(accountRequest.getLastName());
         account.setPhoneNumber(accountRequest.getPhone());
 
         Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER)
@@ -138,9 +142,8 @@ public class AccountServiceImpl implements IAccountService {
             }
             account.setUsername(studentRequestAccount.getUsername());
             account.setPassword(studentRequestAccount.getPassword());
-            account.setName(studentRequest.getName());
-//            account.setFirstName(studentRequest.getFirstName());
-//            account.setLastName(studentRequest.getLastName());
+            account.setFirstName(studentRequest.getFirstName());
+            account.setLastName(studentRequest.getLastName());
             account.setActive(true);
             account.setEmail(studentRequest.getEmail());
             account.setPhoneNumber(studentRequest.getPhoneNumber());
@@ -199,11 +202,13 @@ public class AccountServiceImpl implements IAccountService {
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
         account.setBirthday(accountEditRequest.getBirthDay());
         account.setEmail(accountEditRequest.getMail());
-        account.setName(accountEditRequest.getName());
+        account.setFirstName(accountEditRequest.getFirstName());
+        account.setLastName(accountEditRequest.getLastName());
         account.setPhoneNumber(accountEditRequest.getPhone());
 
 
         Account save = accountRepository.save(account);
+        keycloakUserUtil.update(save);
         AccountResponse response = ObjectUtil.copyProperties(save, new AccountResponse(), AccountResponse.class);
         if (save.getRole() != null) {
             response.setRole(ObjectUtil.copyProperties(save.getRole(), new RoleDto(), RoleDto.class));
@@ -218,7 +223,8 @@ public class AccountServiceImpl implements IAccountService {
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
         account.setBirthday(accountEditRequest.getBirthDay());
         account.setEmail(accountEditRequest.getMail());
-        account.setName(accountEditRequest.getName());
+        account.setFirstName(accountEditRequest.getFirstName());
+        account.setLastName(accountEditRequest.getLastName());
         account.setPhoneNumber(accountEditRequest.getPhone());
 
 
@@ -291,6 +297,7 @@ public class AccountServiceImpl implements IAccountService {
         return ConvertUtil.doConvertEntityToResponse(save);
     }
 
+
     public AccountResponse getAccountById(long id) {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
@@ -300,6 +307,15 @@ public class AccountServiceImpl implements IAccountService {
             accountResponse.setAvatar(account.getResource().getUrl());
         }
         return accountResponse;
-
     }
+
+
+    @Override
+    public ApiPage<AccountDetailResponse> getAllInfoTeacher(Pageable pageable) {
+        Page<AccountDetail> all = accountDetailRepository.findAllByIsActiveIsTrue(pageable);
+        return PageUtil.convert(all.map(ConvertUtil::doConvertEntityToResponse)) ;
+    }
+
+
+
 }

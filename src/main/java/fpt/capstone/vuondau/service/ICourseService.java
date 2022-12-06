@@ -1,7 +1,7 @@
 package fpt.capstone.vuondau.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleRecourseClassResponse;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleSectionResponse;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.*;
@@ -10,9 +10,9 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface ICourseService {
-    TopicsSubjectRequest teacherCreateTopicInSubject( Long teacherId  ,TopicsSubjectRequest topicsSubjectRequest);
+    TopicsSubjectRequest teacherCreateTopicInSubject(Long teacherId, TopicsSubjectRequest topicsSubjectRequest);
 
-    ClassSubjectResponse createRegisterSubject(Long teacherId,  Long subjectId, ClassRequest classRequest );
+    ClassSubjectResponse createRegisterSubject(Long teacherId, Long subjectId, ClassRequest classRequest);
 
     ApiPage<CourseResponse> searchCourse(CourseSearchRequest query, Pageable pageable);
 
@@ -27,7 +27,7 @@ public interface ICourseService {
 
     ClassCourseResponse studentEnrollCourse(long id, long courseId, long classId);
 
-    List<MoodleRecourseClassResponse> synchronizedResource(Long classId) throws JsonProcessingException;
+    List<MoodleSectionResponse> synchronizedResource(Long classId) throws JsonProcessingException;
 
     CourseResponse createCourse(CourseRequest courseRequest);
 

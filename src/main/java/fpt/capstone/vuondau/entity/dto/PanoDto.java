@@ -1,6 +1,8 @@
 package fpt.capstone.vuondau.entity.dto;
 
+import fpt.capstone.vuondau.entity.common.EResourceType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -17,8 +19,10 @@ public class PanoDto implements Serializable {
     private Instant expirationDate;
 
 
-    @Schema(description = "Mã hình ảnh pano")
-    private Long imageId;
+    private EResourceType resourceType;
+
+
+    private MultipartFile file ;
 
     @Schema(description = "Hiển thị")
     private Boolean isVisible;
@@ -47,13 +51,20 @@ public class PanoDto implements Serializable {
         this.expirationDate = expirationDate;
     }
 
-
-    public Long getImageId() {
-        return imageId;
+    public EResourceType getResourceType() {
+        return resourceType;
     }
 
-    public void setImageId(Long imageId) {
-        this.imageId = imageId;
+    public void setResourceType(EResourceType resourceType) {
+        this.resourceType = resourceType;
+    }
+
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    public void setFile(MultipartFile file) {
+        this.file = file;
     }
 
     public Boolean getVisible() {

@@ -1,29 +1,24 @@
 package fpt.capstone.vuondau.MoodleRepository.Response;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class MoodleRecourseClassResponse {
-
-
-    private Long id;
+public class MoodleSectionResponse {
+    private long id;
     private String name;
-    private Long visible;
+    private int visible;
     private String summary;
-    private Long summaryformat ;
-
-    private Long section;
-
-    private Long hiddenbynumsections;
-
+    private int summaryformat;
+    private int section;
+    private int hiddenbynumsections;
     private boolean uservisible;
+    private List<MoodleModuleResponse> modules;
 
-    private List<ResourceMoodleResponse> modules;
-
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -35,11 +30,11 @@ public class MoodleRecourseClassResponse {
         this.name = name;
     }
 
-    public Long getVisible() {
+    public int getVisible() {
         return visible;
     }
 
-    public void setVisible(Long visible) {
+    public void setVisible(int visible) {
         this.visible = visible;
     }
 
@@ -51,27 +46,27 @@ public class MoodleRecourseClassResponse {
         this.summary = summary;
     }
 
-    public Long getSummaryformat() {
+    public int getSummaryformat() {
         return summaryformat;
     }
 
-    public void setSummaryformat(Long summaryformat) {
+    public void setSummaryformat(int summaryformat) {
         this.summaryformat = summaryformat;
     }
 
-    public Long getSection() {
+    public int getSection() {
         return section;
     }
 
-    public void setSection(Long section) {
+    public void setSection(int section) {
         this.section = section;
     }
 
-    public Long getHiddenbynumsections() {
+    public int getHiddenbynumsections() {
         return hiddenbynumsections;
     }
 
-    public void setHiddenbynumsections(Long hiddenbynumsections) {
+    public void setHiddenbynumsections(int hiddenbynumsections) {
         this.hiddenbynumsections = hiddenbynumsections;
     }
 
@@ -83,11 +78,11 @@ public class MoodleRecourseClassResponse {
         this.uservisible = uservisible;
     }
 
-    public List<ResourceMoodleResponse> getModules() {
+    public List<MoodleModuleResponse> getModules() {
         return modules;
     }
 
-    public void setModules(List<ResourceMoodleResponse> modules) {
+    public void setModules(List<MoodleModuleResponse> modules) {
         this.modules = modules;
     }
 }

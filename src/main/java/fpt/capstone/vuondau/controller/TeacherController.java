@@ -2,14 +2,17 @@ package fpt.capstone.vuondau.controller;
 
 
 import fpt.capstone.vuondau.entity.Account;
+import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.request.AccountEditRequest;
 import fpt.capstone.vuondau.entity.request.AccountExistedTeacherRequest;
+import fpt.capstone.vuondau.entity.response.AccountDetailResponse;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
 import fpt.capstone.vuondau.service.IAccountService;
 import fpt.capstone.vuondau.service.ITeacherService;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,4 +40,13 @@ public class TeacherController {
     public ResponseEntity<ApiResponse<AccountTeacherResponse>> createTeacherAccount(@RequestBody AccountExistedTeacherRequest accountRequest) {
         return ResponseEntity.ok(ApiResponse.success(accountService.createTeacherAccount(accountRequest)));
     }
+
+    @Operation(summary = "Xem thông tin giáo viên tiêu biểu - đã có account ")
+    @GetMapping("")
+    public ResponseEntity<ApiPage<AccountDetailResponse>> getAllInfoTeacher(Pageable pageable) {
+        return ResponseEntity.ok(accountService.getAllInfoTeacher(pageable));
+    }
+
+
+
 }

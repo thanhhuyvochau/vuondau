@@ -27,7 +27,13 @@ public class InfoFindTutorSubject {
         this.id = id;
     }
 
+    public InfoFindTutor getInfoFindTutor() {
+        return infoFindTutor;
+    }
 
+    public void setInfoFindTutor(InfoFindTutor infoFindTutor) {
+        this.infoFindTutor = infoFindTutor;
+    }
 
     public Subject getSubject() {
         return subject;
