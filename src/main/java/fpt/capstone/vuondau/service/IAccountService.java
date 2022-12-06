@@ -4,6 +4,7 @@ import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.request.*;
+import fpt.capstone.vuondau.entity.response.AccountDetailResponse;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
 import fpt.capstone.vuondau.entity.response.StudentResponse;
@@ -44,4 +45,6 @@ public interface IAccountService {
 
     AccountResponse updateRoleAndActiveAccount(long id,AccountEditRequest accountEditRequest);
     AccountResponse approveTeacherAccount(long id);
+
+    ApiPage<AccountDetailResponse> getAllInfoTeacher(Pageable pageable);
 }

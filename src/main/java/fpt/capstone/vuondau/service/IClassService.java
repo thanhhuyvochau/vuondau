@@ -45,4 +45,6 @@ public interface IClassService {
     ApiPage<ClassDto> getAllClass( Pageable pageable);
 
     ApiPage<ClassDto> accountFilterClass( ClassSearchRequest query, Pageable pageable);
+
+    ApiPage<ClassDto> classSuggestion( long infoFindTutorId , Pageable pageable);
 }
