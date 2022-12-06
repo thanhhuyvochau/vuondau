@@ -20,7 +20,7 @@ import java.util.List;
 @RequestMapping("/api/moodle")
 public class MoodleController {
 
-    private final IMoodleService iMoodleService ;
+    private final IMoodleService iMoodleService;
 
     public MoodleController(IMoodleService iMoodleService) {
         this.iMoodleService = iMoodleService;
@@ -45,6 +45,10 @@ public class MoodleController {
         return ResponseEntity.ok(ApiResponse.success(iMoodleService.synchronizedClass()));
     }
 
-
+    @Operation(summary = "Đồng bộ course content")
+    @GetMapping("/sync-course-content")
+    public ResponseEntity<ApiResponse<Boolean>> synchronizedCourseContent() throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iMoodleService.synchronizedClassDetail()));
+    }
 
 }

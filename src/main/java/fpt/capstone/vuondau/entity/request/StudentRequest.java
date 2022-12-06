@@ -7,9 +7,6 @@ import fpt.capstone.vuondau.entity.response.AccountResponse;
 public class StudentRequest {
     private AccountRequest account;
 
-
-    private String name;
-
     private String firstName;
 
     private String lastName;
@@ -24,14 +21,6 @@ public class StudentRequest {
 
     public void setAccount(AccountRequest account) {
         this.account = account;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getFirstName() {

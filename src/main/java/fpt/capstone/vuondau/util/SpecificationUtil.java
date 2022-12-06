@@ -9,7 +9,7 @@ public class SpecificationUtil {
     private SpecificationUtil() {
     }
 
-    public static Expression<String> concat(CriteriaBuilder criteriaBuilder, String delimiter ,Expression<String>... expressions) {
+    public static Expression<String> concat(CriteriaBuilder criteriaBuilder, String delimiter, Expression<String>... expressions) {
         Expression<String> result = null;
         for (int i = 0; i < expressions.length; i++) {
             final boolean first = i == 0, last = i == (expressions.length - 1);

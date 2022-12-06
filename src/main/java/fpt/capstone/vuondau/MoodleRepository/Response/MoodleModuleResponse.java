@@ -1,39 +1,33 @@
 package fpt.capstone.vuondau.MoodleRepository.Response;
 
+import java.util.ArrayList;
 
-
-
-public class ResourceMoodleResponse {
-    private Long id;
-    private String  url;
-    private String  name;
-    private Long instance;
-    private Long contextid;
-
-
-    private Long  visible;
+public class MoodleModuleResponse {
+    private long id;
+    private String url;
+    private String name;
+    private int instance;
+    private int contextid;
+    private int visible;
     private boolean uservisible;
-    private Long visibleoncoursepage;
-
-    private String  modicon;
+    private int visibleoncoursepage;
+    private String modicon;
     private String modname;
     private String modplural;
-
-    private String  availability;
-    private Long indent;
+    private Object availability;
+    private int indent;
     private String onclick;
-    private String  afterlink;
-
-    private String  customdata;
+    private Object afterlink;
+    private String customdata;
     private boolean noviewlink;
-    private Long completion;
-    private Object  dates;
+    private int completion;
+    private ArrayList<MoodleDate> dates;
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -53,27 +47,27 @@ public class ResourceMoodleResponse {
         this.name = name;
     }
 
-    public Long getInstance() {
+    public int getInstance() {
         return instance;
     }
 
-    public void setInstance(Long instance) {
+    public void setInstance(int instance) {
         this.instance = instance;
     }
 
-    public Long getContextid() {
+    public int getContextid() {
         return contextid;
     }
 
-    public void setContextid(Long contextid) {
+    public void setContextid(int contextid) {
         this.contextid = contextid;
     }
 
-    public Long getVisible() {
+    public int getVisible() {
         return visible;
     }
 
-    public void setVisible(Long visible) {
+    public void setVisible(int visible) {
         this.visible = visible;
     }
 
@@ -85,11 +79,11 @@ public class ResourceMoodleResponse {
         this.uservisible = uservisible;
     }
 
-    public Long getVisibleoncoursepage() {
+    public int getVisibleoncoursepage() {
         return visibleoncoursepage;
     }
 
-    public void setVisibleoncoursepage(Long visibleoncoursepage) {
+    public void setVisibleoncoursepage(int visibleoncoursepage) {
         this.visibleoncoursepage = visibleoncoursepage;
     }
 
@@ -117,19 +111,19 @@ public class ResourceMoodleResponse {
         this.modplural = modplural;
     }
 
-    public String getAvailability() {
+    public Object getAvailability() {
         return availability;
     }
 
-    public void setAvailability(String availability) {
+    public void setAvailability(Object availability) {
         this.availability = availability;
     }
 
-    public Long getIndent() {
+    public int getIndent() {
         return indent;
     }
 
-    public void setIndent(Long indent) {
+    public void setIndent(int indent) {
         this.indent = indent;
     }
 
@@ -141,11 +135,11 @@ public class ResourceMoodleResponse {
         this.onclick = onclick;
     }
 
-    public String getAfterlink() {
+    public Object getAfterlink() {
         return afterlink;
     }
 
-    public void setAfterlink(String afterlink) {
+    public void setAfterlink(Object afterlink) {
         this.afterlink = afterlink;
     }
 
@@ -165,19 +159,19 @@ public class ResourceMoodleResponse {
         this.noviewlink = noviewlink;
     }
 
-    public Long getCompletion() {
+    public int getCompletion() {
         return completion;
     }
 
-    public void setCompletion(Long completion) {
+    public void setCompletion(int completion) {
         this.completion = completion;
     }
 
-    public Object getDates() {
+    public ArrayList<MoodleDate> getDates() {
         return dates;
     }
 
-    public void setDates(Object dates) {
+    public void setDates(ArrayList<MoodleDate> dates) {
         this.dates = dates;
     }
 }

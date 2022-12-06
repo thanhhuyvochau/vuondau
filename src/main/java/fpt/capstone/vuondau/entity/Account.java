@@ -28,9 +28,10 @@ public class Account {
     private Boolean isActive = false;
 
 
-    @Column(name = "name")
-    private String name;
-
+    @Column(name = "first_name")
+    private String firstName;
+    @Column(name = "last_name")
+    private String lastName;
 
     @Column(name = "email")
     private String email;
@@ -64,6 +65,8 @@ public class Account {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudentClass> studentClasses;
 
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Class> teacherClass;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Request> requests;
@@ -145,12 +148,20 @@ public class Account {
         this.infoFindTutorAccounts = infoFindTutorAccounts;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public Instant getBirthday() {
@@ -292,11 +303,20 @@ public class Account {
     public void setTransactions(List<Transaction> transactions) {
         this.transactions = transactions;
     }
+
     public AccountDetail getAccountDetail() {
         return accountDetail;
     }
 
     public void setAccountDetail(AccountDetail accountDetail) {
         this.accountDetail = accountDetail;
+    }
+
+    public List<Class> getTeacherClass() {
+        return teacherClass;
+    }
+
+    public void setTeacherClass(List<Class> teacherClass) {
+        this.teacherClass = teacherClass;
     }
 }

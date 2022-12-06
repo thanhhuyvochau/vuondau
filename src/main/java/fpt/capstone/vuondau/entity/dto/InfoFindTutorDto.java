@@ -1,7 +1,6 @@
 package fpt.capstone.vuondau.entity.dto;
 
-import fpt.capstone.vuondau.entity.InfoFindTutorAccount;
-import fpt.capstone.vuondau.entity.InfoFindTutorSubject;
+
 import fpt.capstone.vuondau.entity.common.EClassLevelCode;
 
 import javax.persistence.*;

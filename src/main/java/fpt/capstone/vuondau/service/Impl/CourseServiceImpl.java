@@ -3,8 +3,8 @@ package fpt.capstone.vuondau.service.Impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
 import fpt.capstone.vuondau.MoodleRepository.Request.MoodleMasterDataRequest;
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleRecourseClassResponse;
-import fpt.capstone.vuondau.MoodleRepository.Response.ResourceMoodleResponse;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleModuleResponse;
+import fpt.capstone.vuondau.MoodleRepository.Response.MoodleSectionResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiException;
@@ -198,7 +198,7 @@ public class CourseServiceImpl implements ICourseService {
         courseResponse.setCourseTitle(course.getTitle());
         List<TeacherCourse> teacherCourses = course.getTeacherCourses();
         teacherCourses.stream().map(teacherCourse -> {
-            courseResponse.setTeacherName(teacherCourse.getAccount().getName());
+            courseResponse.setTeacherName(teacherCourse.getAccount().getFirstName() + teacherCourse.getAccount().getLastName());
 
             List<Class> classes = course.getClasses();
             courseResponse.setTotalClass((long) classes.size());
@@ -249,10 +249,10 @@ public class CourseServiceImpl implements ICourseService {
             courseDetailResponse.setSubject(subjectDto);
         }
 
-            List<ClassDto> classDtoList = new ArrayList<>( );
+        List<ClassDto> classDtoList = new ArrayList<>();
         List<Class> classes = course.getClasses();
         classes.stream().map(aClass -> {
-            if (aClass.isActive()){
+            if (aClass.isActive()) {
                 ClassDto classDto = new ClassDto();
                 classDto.setId(aClass.getId());
                 classDto.setName(aClass.getName());
@@ -264,7 +264,7 @@ public class CourseServiceImpl implements ICourseService {
                 classDto.setMaxNumberStudent(aClass.getMaxNumberStudent());
                 classDto.setUnitPrice(aClass.getUnitPrice());
                 classDto.setFinalPrice(aClass.getFinalPrice());
-                classDtoList.add(classDto) ;
+                classDtoList.add(classDto);
             }
 
 
@@ -282,7 +282,7 @@ public class CourseServiceImpl implements ICourseService {
             teacherCourseDto.setTopicId(teacherCourse.getCourse().getId());
             teacherCourseDto.setIsAllowed(teacherCourse.getIsAllowed());
             teacherCourseDto.setTeacherId(teacherCourse.getAccount().getId());
-            teacherCourseDto.setTeacherName(teacherCourse.getAccount().getName());
+            teacherCourseDto.setTeacherName(teacherCourse.getAccount().getFirstName() + teacherCourse.getAccount().getLastName());
             teacherCourseDtoList.add(teacherCourseDto);
 
             return teacherCourse;
@@ -294,24 +294,24 @@ public class CourseServiceImpl implements ICourseService {
         CourseIdRequest courseIdRequest = new CourseIdRequest();
         courseIdRequest.setCourseid(24L);
         try {
-            List<MoodleRecourseClassResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
+            List<MoodleSectionResponse> moodleSection = moodleCourseRepository.getResourceCourse(courseIdRequest);
 
-            List<MoodleRecourseClassResponse> moodleRecourseClassResponseList = new ArrayList<>();
-            resourceCourse.stream().peek(moodleRecourseClassResponse -> {
-                MoodleRecourseClassResponse setResource = ObjectUtil.copyProperties(moodleRecourseClassResponse, new MoodleRecourseClassResponse(), MoodleRecourseClassResponse.class);
+            List<MoodleSectionResponse> moodleSectionResponses = new ArrayList<>();
+            moodleSection.stream().peek(moodleRecourseClassResponse -> {
+                MoodleSectionResponse setResource = ObjectUtil.copyProperties(moodleRecourseClassResponse, new MoodleSectionResponse(), MoodleSectionResponse.class);
 
-                List<ResourceMoodleResponse> modules = moodleRecourseClassResponse.getModules();
-                List<ResourceMoodleResponse> resourceMoodleResponseList = new ArrayList<>();
+                List<MoodleModuleResponse> modules = moodleRecourseClassResponse.getModules();
+                List<MoodleModuleResponse> resourceMoodleResponseList = new ArrayList<>();
                 modules.stream().peek(moodleResponse -> {
 
-                    ResourceMoodleResponse resourceMoodleResponse = ObjectUtil.copyProperties(moodleResponse, new ResourceMoodleResponse(), ResourceMoodleResponse.class);
+                    MoodleModuleResponse resourceMoodleResponse = ObjectUtil.copyProperties(moodleResponse, new MoodleModuleResponse(), MoodleModuleResponse.class);
 
                     resourceMoodleResponseList.add(resourceMoodleResponse);
                 }).collect(Collectors.toList());
 
                 setResource.setModules(resourceMoodleResponseList);
 
-                moodleRecourseClassResponseList.add(setResource);
+                moodleSectionResponses.add(setResource);
             }).collect(Collectors.toList());
 //            courseDetailResponse.setResources(moodleRecourseClassResponseList);
         } catch (Exception e) {
@@ -475,11 +475,11 @@ public class CourseServiceImpl implements ICourseService {
     }
 
     @Override
-    public List<MoodleRecourseClassResponse> synchronizedResource(Long classId) throws JsonProcessingException {
+    public List<MoodleSectionResponse> synchronizedResource(Long classId) throws JsonProcessingException {
         CourseIdRequest courseIdRequest = new CourseIdRequest();
         courseIdRequest.setCourseid(classId);
         MoodleMasterDataRequest s1MasterDataRequest = new MoodleMasterDataRequest();
-        List<MoodleRecourseClassResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
+        List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
         System.out.println(resourceCourse);
         return resourceCourse;
     }

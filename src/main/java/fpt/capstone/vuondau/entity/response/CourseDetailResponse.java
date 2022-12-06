@@ -1,7 +1,6 @@
 package fpt.capstone.vuondau.entity.response;
 
 import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleRecourseClassResponse;
 import fpt.capstone.vuondau.entity.dto.ClassDto;
 import fpt.capstone.vuondau.entity.dto.SubjectDto;
 import fpt.capstone.vuondau.entity.dto.TeacherCourseDto;

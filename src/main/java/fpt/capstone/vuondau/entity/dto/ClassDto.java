@@ -1,10 +1,7 @@
 package fpt.capstone.vuondau.entity.dto;
 
 
-import fpt.capstone.vuondau.entity.Account;
-import fpt.capstone.vuondau.entity.common.EClassLevelCode;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
-import fpt.capstone.vuondau.entity.common.EClassType;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.CourseResponse;
 
