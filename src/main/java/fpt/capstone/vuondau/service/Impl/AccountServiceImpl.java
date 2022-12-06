@@ -59,12 +59,12 @@ public class AccountServiceImpl implements IAccountService {
     private final KeycloakUserUtil keycloakUserUtil;
     private final KeycloakRoleUtil keycloakRoleUtil;
 
-    private final MinioAdapter minioAdapter;
+
 
     private final ResourceRepository resourceRepository;
 
     private final AccountDetailRepository accountDetailRepository ;
-
+    private final MinioAdapter minioAdapter;
     @Value("${minio.url}")
     String minioUrl;
 

@@ -11,7 +11,9 @@ public enum EResourceType {
 
     CCCD,
 
-    CONTRACT
+    CONTRACT ,
+
+    PANO
 
 
 }
