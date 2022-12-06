@@ -5,7 +5,7 @@ public enum EClassStatus {
     REQUESTING,
     NOTSTART,
     STARTING,
-    ENDED
+    ENDED, NEW
 
 
 }

@@ -1,9 +1,10 @@
 package fpt.capstone.vuondau.MoodleRepository.Response;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MoodleSectionResponse {
-    private int id;
+    private long id;
     private String name;
     private int visible;
     private String summary;
@@ -11,13 +12,13 @@ public class MoodleSectionResponse {
     private int section;
     private int hiddenbynumsections;
     private boolean uservisible;
-    private ArrayList<MoodleModule> modules;
+    private List<MoodleModuleResponse> modules;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -77,11 +78,11 @@ public class MoodleSectionResponse {
         this.uservisible = uservisible;
     }
 
-    public ArrayList<MoodleModule> getModules() {
+    public List<MoodleModuleResponse> getModules() {
         return modules;
     }
 
-    public void setModules(ArrayList<MoodleModule> modules) {
+    public void setModules(List<MoodleModuleResponse> modules) {
         this.modules = modules;
     }
 }

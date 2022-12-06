@@ -8,8 +8,7 @@ import fpt.capstone.vuondau.util.SpecificationUtil;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -30,26 +29,34 @@ public class ClassSpecificationBuilder {
         return this;
     }
 
-    public ClassSpecificationBuilder queryLike(String q) {
+    public ClassSpecificationBuilder queryLikeByClassName(String q) {
         if (q == null || q.trim().isEmpty()) {
             return this;
         }
 
         specifications.add((root, query, criteriaBuilder) -> {
-            Expression<String> classname  = root.get(Class_.name);
+            Expression<String> classname = root.get(Class_.name);
+            return criteriaBuilder.like(classname, '%' + q + '%');
+        });
+        return this;
+    }
 
+    public ClassSpecificationBuilder queryLikeByTeacherName(String q) {
+        if (q == null || q.trim().isEmpty()) {
+            return this;
+        }
 
-            Expression<String> stringExpression = SpecificationUtil.concat(criteriaBuilder, " " ,classname);
+        specifications.add((root, query, criteriaBuilder) -> {
+            Path<Account> objectPath = root.get(Class_.ACCOUNT);
+            Expression<String> stringExpression = objectPath.get(Account_.FIRST_NAME);
             return criteriaBuilder.like(stringExpression, '%' + q + '%');
         });
-
-
         return this;
     }
 
     public Specification<Class> build() {
         return specifications.stream().filter(Objects::nonNull)
-                .reduce(all(), Specification::and);
+                .reduce(all(), Specification::or);
     }
 
     private Specification<Class> all() {

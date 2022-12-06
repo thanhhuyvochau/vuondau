@@ -129,7 +129,7 @@ public class CartServiceImpl implements ICartService {
                         if (!course.getTeacherCourses().isEmpty()) {
                             Account account = course.getTeacherCourses().stream().map(TeacherCourse::getAccount).findFirst().get();
 
-                            courseResponse.setTeacherName(account.getName());
+                            courseResponse.setTeacherName(account.getFirstName() + account.getLastName());
                         }
 //                        if (course.getFinalPrice()!= null){
 //                            totalPrice = totalPrice.add(course.getFinalPrice());

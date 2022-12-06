@@ -11,40 +11,48 @@ import java.util.List;
 public class AccountDetailRequest implements Serializable {
 
 
-    private String fullName;
-
-
+    private String firstName;
+    private String lastName;
     private Instant birthDay;
 
 
-    private String email ;
+    private String email;
 
 
-    private String phone ;
-    private String gender ;
+    private String phone;
+    private String gender;
 
     private String domicile;
-    private String voice ;
+    private String voice;
 
-    private String  teachingProvince;
-    private String currentAddress ;
+    private String teachingProvince;
+    private String currentAddress;
 
-    private String idCard ;
+    private String idCard;
 
-    private String trainingSchoolName ;
+    private String trainingSchoolName;
 
-    private String majors ;
+    private String majors;
 
-    private String level ;
+    private String level;
 
 //    private List<UploadAvatarRequest> uploadFiles ;
 
-    public String getFullName() {
-        return fullName;
+
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public Instant getBirthDay() {

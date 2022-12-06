@@ -100,9 +100,8 @@ public class AccountServiceImpl implements IAccountService {
                     .withMessage(messageUtil.getLocalMessage("Email đã tòn tạo"));
         }
         account.setUsername(accountRequest.getUsername());
-        account.setName(accountRequest.getName());
-//        account.setFirstName(accountRequest.getFirstName());
-//        account.setLastName(accountRequest.getLastName());
+        account.setFirstName(accountRequest.getFirstName());
+        account.setLastName(accountRequest.getLastName());
         account.setPhoneNumber(accountRequest.getPhone());
 
         Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER)
@@ -138,9 +137,8 @@ public class AccountServiceImpl implements IAccountService {
             }
             account.setUsername(studentRequestAccount.getUsername());
             account.setPassword(studentRequestAccount.getPassword());
-            account.setName(studentRequest.getName());
-//            account.setFirstName(studentRequest.getFirstName());
-//            account.setLastName(studentRequest.getLastName());
+            account.setFirstName(studentRequest.getFirstName());
+            account.setLastName(studentRequest.getLastName());
             account.setActive(true);
             account.setEmail(studentRequest.getEmail());
             account.setPhoneNumber(studentRequest.getPhoneNumber());
@@ -199,11 +197,13 @@ public class AccountServiceImpl implements IAccountService {
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
         account.setBirthday(accountEditRequest.getBirthDay());
         account.setEmail(accountEditRequest.getMail());
-        account.setName(accountEditRequest.getName());
+        account.setFirstName(accountEditRequest.getFirstName());
+        account.setLastName(accountEditRequest.getLastName());
         account.setPhoneNumber(accountEditRequest.getPhone());
 
 
         Account save = accountRepository.save(account);
+        keycloakUserUtil.update(save);
         AccountResponse response = ObjectUtil.copyProperties(save, new AccountResponse(), AccountResponse.class);
         if (save.getRole() != null) {
             response.setRole(ObjectUtil.copyProperties(save.getRole(), new RoleDto(), RoleDto.class));
@@ -218,7 +218,8 @@ public class AccountServiceImpl implements IAccountService {
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
         account.setBirthday(accountEditRequest.getBirthDay());
         account.setEmail(accountEditRequest.getMail());
-        account.setName(accountEditRequest.getName());
+        account.setFirstName(accountEditRequest.getFirstName());
+        account.setLastName(accountEditRequest.getLastName());
         account.setPhoneNumber(accountEditRequest.getPhone());
 
 
@@ -267,7 +268,7 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    public AccountResponse updateRoleAndActiveAccount(long id,AccountEditRequest accountEditRequest) {
+    public AccountResponse updateRoleAndActiveAccount(long id, AccountEditRequest accountEditRequest) {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
         Role role = roleRepository.findRoleByCode(accountEditRequest.getRole())

@@ -17,6 +17,7 @@ moodle:
   resourceUri: http://moodle-vuondau.amazingtech.vn/webservice/restful/server.php/core_course_get_contents
   categoryUri: http://moodle-vuondau.amazingtech.vn/webservice/restful/server.php/core_course_get_categories
   createCategoryUri: http://moodle-vuondau.amazingtech.vn/webservice/restful/server.php/core_course_create_categories
+  courseContentUri: http://moodle-vuondau.amazingtech.vn/webservice/restful/server.php/core_course_get_contents
   token: c60c932ed4585b4534362b56045e653d
 
 

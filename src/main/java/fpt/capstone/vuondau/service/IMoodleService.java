@@ -21,4 +21,5 @@ public interface IMoodleService {
     Boolean crateCategoryToMoodle(MoodleCreateCategoryRequest.MoodleCreateCategoryBody moodleCreateCategoryBody) throws JsonProcessingException;
 
     ApiPage<MoodleClassResponse> synchronizedClass() throws JsonProcessingException;
+    Boolean synchronizedClassDetail() throws JsonProcessingException;
 }

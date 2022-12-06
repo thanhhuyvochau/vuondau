@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.entity;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "module")
@@ -10,11 +11,14 @@ public class Module {
     private Long id;
     @ManyToOne
     @JoinColumn(name = "moodle_section_id")
-    private MoodleSection moodleSection;
+    private Section section;
     @Column(name = "name")
     private String name;
     @Column(name = "url")
     private String url;
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private EModuleType type;
 
     public Long getId() {
         return id;
@@ -24,12 +28,12 @@ public class Module {
         this.id = id;
     }
 
-    public MoodleSection getMoodleSection() {
-        return moodleSection;
+    public Section getSection() {
+        return section;
     }
 
-    public void setMoodleSection(MoodleSection moodleSection) {
-        this.moodleSection = moodleSection;
+    public void setSection(Section section) {
+        this.section = section;
     }
 
     public String getName() {
@@ -46,5 +50,26 @@ public class Module {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public EModuleType getType() {
+        return type;
+    }
+
+    public void setType(EModuleType type) {
+        this.type = type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Module module = (Module) o;
+        return Objects.equals(id, module.id) && Objects.equals(section, module.section) && Objects.equals(name, module.name) && Objects.equals(url, module.url) && type == module.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, section, name, url, type);
     }
 }

@@ -115,7 +115,7 @@ public class ConvertUtil {
         }
 
         if (aclass.getAccount() != null) {
-            courseResponse.setTeacherName(aclass.getAccount().getName());
+            courseResponse.setTeacherName(aclass.getAccount().getFirstName() + aclass.getAccount().getLastName());
         }
         classDto.setStatus(aclass.getStatus());
         classDto.setStartDate(aclass.getStartDate());

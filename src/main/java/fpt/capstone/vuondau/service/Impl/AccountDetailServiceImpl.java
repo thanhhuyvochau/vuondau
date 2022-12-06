@@ -73,7 +73,8 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Email đã có tà khoản trong hệ thống"));
         }
-        accountDetail.setFullName(accountDetailRequest.getFullName());
+        accountDetail.setLastName(accountDetailRequest.getLastName());
+        accountDetail.setFirstName(accountDetail.getFirstName());
         accountDetail.setBirthDay(accountDetailRequest.getBirthDay());
         accountDetail.setEmail(accountDetailRequest.getEmail());
         accountDetail.setPhone(accountDetailRequest.getPhone());
@@ -152,7 +153,8 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         account.setUsername(accountDetail.getEmail());
         account.setPassword("123456");
         account.setActive(true);
-        account.setName(accountDetail.getFullName());
+        account.setLastName(accountDetail.getLastName());
+        account.setFirstName(accountDetail.getFirstName());
         account.setEmail(accountDetail.getEmail());
         account.setGender(accountDetail.getGender());
         account.setPhoneNumber(accountDetail.getPhone());
@@ -188,7 +190,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
                 subjects.add(ObjectUtil.copyProperties(accountDetailSubject.getSubject(), new SubjectDto(), SubjectDto.class));
             });
             accountDetailResponse.setSubjects(subjects);
-                List<ResourceDto> resourceDtoList = new ArrayList<>();
+            List<ResourceDto> resourceDtoList = new ArrayList<>();
             List<Resource> resources = accountDetail.getResources();
             resources.forEach(resource -> {
                 resourceDtoList.add(ObjectUtil.copyProperties(resource, new ResourceDto(), ResourceDto.class));

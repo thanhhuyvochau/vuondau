@@ -5,7 +5,6 @@ import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
 import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCategoryRequest;
 import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCreateCategoryRequest;
 import fpt.capstone.vuondau.MoodleRepository.Response.CategoryResponse;
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleRecourseClassResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;

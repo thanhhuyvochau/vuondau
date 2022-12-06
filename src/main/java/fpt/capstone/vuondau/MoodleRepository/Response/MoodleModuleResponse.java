@@ -2,8 +2,8 @@ package fpt.capstone.vuondau.MoodleRepository.Response;
 
 import java.util.ArrayList;
 
-public class MoodleModule {
-    private int id;
+public class MoodleModuleResponse {
+    private long id;
     private String url;
     private String name;
     private int instance;
@@ -23,11 +23,11 @@ public class MoodleModule {
     private int completion;
     private ArrayList<MoodleDate> dates;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

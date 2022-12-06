@@ -87,6 +87,8 @@ public class Class {
     @ManyToOne
     @JoinColumn(name = "image_id")
     private Resource image;
+    @OneToMany(mappedBy = "clazz",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Section> sections;
 
     public Long getId() {
         return id;
@@ -255,5 +257,13 @@ public class Class {
 
     public void setImage(Resource image) {
         this.image = image;
+    }
+
+    public List<Section> getSections() {
+        return sections;
+    }
+
+    public void setSections(List<Section> sections) {
+        this.sections = sections;
     }
 }

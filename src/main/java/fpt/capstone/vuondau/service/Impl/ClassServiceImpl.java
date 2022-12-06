@@ -18,7 +18,6 @@ import fpt.capstone.vuondau.entity.request.CourseIdRequest;
 import fpt.capstone.vuondau.entity.request.CreateClassRequest;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.CourseDetailResponse;
-import fpt.capstone.vuondau.entity.response.CourseResponse;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IClassService;
 import fpt.capstone.vuondau.util.*;
@@ -246,7 +245,8 @@ public class ClassServiceImpl implements IClassService {
     @Override
     public List<ClassDto> searchClass(ClassSearchRequest query) {
         ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
-                .queryLike(query.getQ())
+                .queryLikeByClassName(query.getQ())
+                .queryLikeByTeacherName(query.getQ())
                 .queryStatusClass(query.getStatus());
 
         List<Class> classList = classRepository.findAll(builder.build());
@@ -267,7 +267,7 @@ public class ClassServiceImpl implements IClassService {
         ClassDetailDto classDetail = ObjectUtil.copyProperties(aClass, new ClassDetailDto(), ClassDetailDto.class);
         classDetail.setUnitPrice(aClass.getUnitPrice());
         classDetail.setFinalPrice(aClass.getFinalPrice());
-        classDetail.setClassType(ObjectUtil.copyProperties(aClass.getClassType(), new ClassTypeDto() , ClassTypeDto.class));
+        classDetail.setClassType(ObjectUtil.copyProperties(aClass.getClassType(), new ClassTypeDto(), ClassTypeDto.class));
         Course course = aClass.getCourse();
         if (course != null) {
             CourseDetailResponse courseDetailResponse = new CourseDetailResponse();
@@ -298,14 +298,14 @@ public class ClassServiceImpl implements IClassService {
 
                     List<MoodleRecourseDtoResponse> resources = new ArrayList<>();
 
-                    List<MoodleRecourseClassResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
+                    List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
 
 
                     resourceCourse.stream().skip(1).forEach(moodleRecourseClassResponse -> {
                         MoodleRecourseDtoResponse recourseDtoResponse = new MoodleRecourseDtoResponse();
                         recourseDtoResponse.setId(moodleRecourseClassResponse.getId());
                         recourseDtoResponse.setName(moodleRecourseClassResponse.getName());
-                        List<ResourceMoodleResponse> modules = moodleRecourseClassResponse.getModules();
+                        List<MoodleModuleResponse> modules = moodleRecourseClassResponse.getModules();
 
                         List<ResourceDtoMoodleResponse> resourceDtoMoodleResponseList = new ArrayList<>();
 
@@ -326,7 +326,6 @@ public class ClassServiceImpl implements IClassService {
                 }
 
             }
-
 
 
         }
@@ -403,22 +402,22 @@ public class ClassServiceImpl implements IClassService {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + accountId));
 
-        List<Class> classAccount = null ;
-        List<Long> classId = new ArrayList<>() ;
-        if (account.getRole().getCode().equals(EAccountRole.TEACHER)){
-            classAccount = classRepository.findByAccountAndStatus(account , query.getStatus());
+        List<Class> classAccount = null;
+        List<Long> classId = new ArrayList<>();
+        if (account.getRole().getCode().equals(EAccountRole.TEACHER)) {
+            classAccount = classRepository.findByAccountAndStatus(account, query.getStatus());
         } else if (account.getRole().getCode().equals(EAccountRole.STUDENT)) {
             List<StudentClass> studentClasses = account.getStudentClasses();
             studentClasses.forEach(studentClass -> {
                 Class aClass = studentClass.getaClass();
-                classId.add(aClass.getId()) ;
+                classId.add(aClass.getId());
 
             });
-            classAccount  = classRepository.findByIdInAndStatus(classId ,query.getStatus());
+            classAccount = classRepository.findByIdInAndStatus(classId, query.getStatus());
         }
         List<ClassDto> classDtoList = new ArrayList<>();
         classAccount.forEach(aClass -> {
-            classDtoList.add( ObjectUtil.copyProperties(aClass, new ClassDto() , ClassDto.class) );
+            classDtoList.add(ObjectUtil.copyProperties(aClass, new ClassDto(), ClassDto.class));
         });
 
         Page<ClassDto> page = new PageImpl<>(classDtoList, pageable, classDtoList.size());
