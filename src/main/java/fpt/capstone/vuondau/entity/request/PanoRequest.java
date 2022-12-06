@@ -1,6 +1,8 @@
 package fpt.capstone.vuondau.entity.request;
 
+import fpt.capstone.vuondau.entity.common.EResourceType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -18,12 +20,11 @@ public class PanoRequest implements Serializable {
     @Schema(description = "Ngày hết hạn")
     private Instant expirationDate ;
 
+    private EResourceType resourceType;
 
-    @Schema(description = "link liên kêt")
-    private String linkUrl ;
 
-    @Schema(description = "Mã hình ảnh pano")
-    private Long resourceId ;
+
+    private MultipartFile file ;
 
     @Schema(description = "Hiển thị")
     private Boolean isVisible;
@@ -52,22 +53,22 @@ public class PanoRequest implements Serializable {
         this.expirationDate = expirationDate;
     }
 
-    public Long getResourceId() {
-        return resourceId;
+
+    public EResourceType getResourceType() {
+        return resourceType;
     }
 
-    public void setResourceId(Long resourceId) {
-        this.resourceId = resourceId;
+    public void setResourceType(EResourceType resourceType) {
+        this.resourceType = resourceType;
     }
 
-    public String getLinkUrl() {
-        return linkUrl;
+    public MultipartFile getFile() {
+        return file;
     }
 
-    public void setLinkUrl(String linkUrl) {
-        this.linkUrl = linkUrl;
+    public void setFile(MultipartFile file) {
+        this.file = file;
     }
-
 
     public Boolean getVisible() {
         return isVisible;

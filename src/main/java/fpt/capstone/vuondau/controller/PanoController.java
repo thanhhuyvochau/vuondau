@@ -30,7 +30,7 @@ public class PanoController {
 
     @Operation(summary = "Tạo mới Pano")
     @PostMapping
-    public ResponseEntity<ApiResponse<GetPanoResponse>> createNewPano(@Valid @RequestBody PanoRequest panoRequest) {
+    public ResponseEntity<ApiResponse<GetPanoResponse>> createNewPano(@Valid @ModelAttribute PanoRequest panoRequest) {
         return ResponseEntity.ok(ApiResponse.success(panoService.createNewPano(panoRequest), "Add Successful Pano"));
     }
 
