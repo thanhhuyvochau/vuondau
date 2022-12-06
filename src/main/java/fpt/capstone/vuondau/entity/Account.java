@@ -87,6 +87,11 @@ public class Account {
     @OneToOne(mappedBy = "account")
     private AccountDetail accountDetail;
 
+    @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
+    private List<InfoFindTutorAccount> infoFindTutorAccounts = new ArrayList<>();
+
+
+
     public String getGender() {
         return gender;
     }
@@ -135,22 +140,13 @@ public class Account {
         isActive = active;
     }
 
-//    public String getFirstName() {
-//        return firstName;
-//    }
-//
-//    public void setFirstName(String firstName) {
-//        this.firstName = firstName;
-//    }
-//
-//    public String getLastName() {
-//        return lastName;
-//    }
-//
-//    public void setLastName(String lastName) {
-//        this.lastName = lastName;
-//    }
+    public List<InfoFindTutorAccount> getInfoFindTutorAccounts() {
+        return infoFindTutorAccounts;
+    }
 
+    public void setInfoFindTutorAccounts(List<InfoFindTutorAccount> infoFindTutorAccounts) {
+        this.infoFindTutorAccounts = infoFindTutorAccounts;
+    }
 
     public String getFirstName() {
         return firstName;

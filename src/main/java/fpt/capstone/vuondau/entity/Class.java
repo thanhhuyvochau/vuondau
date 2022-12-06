@@ -35,9 +35,9 @@ public class Class {
     @Column(name = "end_date")
     private Instant endDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "class_type_id")
-    private ClassType classType;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "class_type_id")
+//    private ClassType classType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id")
@@ -138,13 +138,13 @@ public class Class {
         this.endDate = endDate;
     }
 
-    public ClassType getClassType() {
-        return classType;
-    }
-
-    public void setClassType(ClassType classType) {
-        this.classType = classType;
-    }
+//    public ClassType getClassType() {
+//        return classType;
+//    }
+//
+//    public void setClassType(ClassType classType) {
+//        this.classType = classType;
+//    }
 
     public Course getCourse() {
         return course;

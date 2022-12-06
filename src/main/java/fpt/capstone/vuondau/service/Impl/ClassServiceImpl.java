@@ -50,7 +50,11 @@ public class ClassServiceImpl implements IClassService {
     private final StudentClassRepository studentClassRepository;
     private final MessageUtil messageUtil;
 
-    public ClassServiceImpl(RequestUtil requestUtil, AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil) {
+    private final SecurityUtil securityUtil;
+
+    private final InfoFindTutorRepository infoFindTutorRepository;
+
+    public ClassServiceImpl(RequestUtil requestUtil, AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil, SecurityUtil securityUtil, InfoFindTutorRepository infoFindTutorRepository) {
         this.requestUtil = requestUtil;
         this.accountRepository = accountRepository;
         this.subjectRepository = subjectRepository;
@@ -60,14 +64,15 @@ public class ClassServiceImpl implements IClassService {
         this.courseServiceImpl = courseServiceImpl;
         this.studentClassRepository = studentClassRepository;
         this.messageUtil = messageUtil;
+        this.securityUtil = securityUtil;
+        this.infoFindTutorRepository = infoFindTutorRepository;
     }
 
 
     @Override
-    public Boolean teacherRequestCreateClass(Long teacherId, CreateClassRequest createClassRequest) throws JsonProcessingException {
-        Account teacher = accountRepository.findById(teacherId)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay teacher" + teacherId));
+    public Boolean teacherRequestCreateClass(CreateClassRequest createClassRequest) throws JsonProcessingException {
 
+        Account teacher = securityUtil.getCurrentUser();
 
         // set class bên vườn đậu
         Class clazz = new Class();
@@ -253,12 +258,19 @@ public class ClassServiceImpl implements IClassService {
         List<ClassDto> classDtoList = new ArrayList<>();
         classList.stream().map(aClass -> {
             ClassDto classDto = ObjectUtil.copyProperties(aClass, new ClassDto(), ClassDto.class);
+            if (aClass.getAccount()!= null){
+                classDto.setTeacher(ConvertUtil.doConvertEntityToResponse(aClass.getAccount()));
+            }
+
+            if (aClass.getCourse()!= null) {
+                classDto.setCourse(ConvertUtil.doConvertCourseToCourseResponse(aClass.getCourse()));
+            }
+
             classDtoList.add(classDto);
             return aClass;
         }).collect(Collectors.toList());
         return classDtoList;
     }
-
 
     @Override
     public ClassDetailDto classDetail(Long id) throws JsonProcessingException {
@@ -267,7 +279,7 @@ public class ClassServiceImpl implements IClassService {
         ClassDetailDto classDetail = ObjectUtil.copyProperties(aClass, new ClassDetailDto(), ClassDetailDto.class);
         classDetail.setUnitPrice(aClass.getUnitPrice());
         classDetail.setFinalPrice(aClass.getFinalPrice());
-        classDetail.setClassType(ObjectUtil.copyProperties(aClass.getClassType(), new ClassTypeDto(), ClassTypeDto.class));
+//        classDetail.setClassType(ObjectUtil.copyProperties(aClass.getClassType(), new ClassTypeDto(), ClassTypeDto.class));
         Course course = aClass.getCourse();
         if (course != null) {
             CourseDetailResponse courseDetailResponse = new CourseDetailResponse();
@@ -398,10 +410,8 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
-    public ApiPage<ClassDto> accountFilterClass(Long accountId, ClassSearchRequest query, Pageable pageable) {
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + accountId));
-
+    public ApiPage<ClassDto> accountFilterClass(ClassSearchRequest query, Pageable pageable) {
+        Account account = securityUtil.getCurrentUser();
         List<Class> classAccount = null;
         List<Long> classId = new ArrayList<>();
         if (account.getRole().getCode().equals(EAccountRole.TEACHER)) {
@@ -424,6 +434,27 @@ public class ClassServiceImpl implements IClassService {
 
         return PageUtil.convert(page);
 
+    }
+
+    @Override
+    public ApiPage<ClassDto> classSuggestion(long infoFindTutorId, Pageable pageable) {
+        InfoFindTutor infoFindTutor = infoFindTutorRepository.findById(infoFindTutorId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay form đăng ký" + infoFindTutorId));
+
+        List<Long> idTeacher = infoFindTutor.getInfoFindTutorAccounts().stream().map(infoFindTutorAccount -> infoFindTutorAccount.getTeacher().getId()).collect(Collectors.toList());
+        List<Account> teachers = accountRepository.findAllById(idTeacher);
+
+        List<Long> idSubject = infoFindTutor.getInfoFindTutorSubjects().stream().map(infoFindTutorAccount -> infoFindTutorAccount.getSubject().getId()).collect(Collectors.toList());
+        List<Subject> subjects = subjectRepository.findAllById(idSubject);
+
+        ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
+                .queryLevelClass(infoFindTutor.getClassLevel())
+                .queryTeacherClass(teachers)
+                .querySubjectClass(subjects) ;
+
+        Page<Class> classesPage = classRepository.findAll(builder.build(), pageable);
+
+        return PageUtil.convert(classesPage.map(ConvertUtil::doConvertEntityToResponse));
     }
 
 //    @Override

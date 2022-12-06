@@ -10,10 +10,7 @@ import fpt.capstone.vuondau.entity.request.TimeTableRequest;
 import fpt.capstone.vuondau.entity.request.TimeTableSearchRequest;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.ITimeTableService;
-import fpt.capstone.vuondau.util.HashMapUtil;
-import fpt.capstone.vuondau.util.MessageUtil;
-import fpt.capstone.vuondau.util.ObjectUtil;
-import fpt.capstone.vuondau.util.PageUtil;
+import fpt.capstone.vuondau.util.*;
 import fpt.capstone.vuondau.util.specification.TimeTableSpecificationBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -43,7 +40,9 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
     private final AccountRepository accountRepository;
 
-    public TimeTableServiceImpl(ClassRepository classRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ArchetypeRepository archetypeRepository, ArchetypeTimeRepository archetypeTimeRepository, MessageUtil messageUtil, TimeTableRepository timeTableRepository, AccountRepository accountRepository) {
+    private final SecurityUtil SecurityUtil ;
+
+    public TimeTableServiceImpl(ClassRepository classRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ArchetypeRepository archetypeRepository, ArchetypeTimeRepository archetypeTimeRepository, MessageUtil messageUtil, TimeTableRepository timeTableRepository, AccountRepository accountRepository, fpt.capstone.vuondau.util.SecurityUtil securityUtil) {
         this.classRepository = classRepository;
         this.slotRepository = slotRepository;
         this.dayOfWeekRepository = dayOfWeekRepository;
@@ -52,6 +51,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
         this.messageUtil = messageUtil;
         this.timeTableRepository = timeTableRepository;
         this.accountRepository = accountRepository;
+        SecurityUtil = securityUtil;
     }
 
     @Override
@@ -154,28 +154,35 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
     @Override
     public ApiPage<TimeTableDto> getTimeTableInDay(TimeTableSearchRequest timeTableSearchRequest , Pageable pageable) {
+        Account currentUser = SecurityUtil.getCurrentUser();
 
         Class aClass = classRepository.findById(timeTableSearchRequest.getClassId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + timeTableSearchRequest.getClassId()));
 
+        if (currentUser.getRole()!= null){
+            if (currentUser.getRole().getCode().equals(EAccountRole.STUDENT)){
+                List<StudentClass> studentClasses = aClass.getStudentClasses();
+                List<Account> studentAccount = studentClasses.stream().map(StudentClass::getAccount).collect(Collectors.toList());
+                if (!studentAccount.contains(currentUser)) {
+                    throw ApiException.create(HttpStatus.BAD_REQUEST)
+                            .withMessage(messageUtil.getLocalMessage("Bạn không có trong lớp nay"));
+                }
 
-        Account account = accountRepository.findById(timeTableSearchRequest.getAccountId())
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + timeTableSearchRequest.getAccountId()));
-
-        List<StudentClass> studentClasses = aClass.getStudentClasses();
-        List<Account> studentAccount = studentClasses.stream().map(studentClass -> studentClass.getAccount()).collect(Collectors.toList());
-
-
-        if (account.getRole().getCode().equals(EAccountRole.STUDENT)) {
-            if (!studentAccount.contains(account)) {
-                throw ApiException.create(HttpStatus.BAD_REQUEST)
-                        .withMessage(messageUtil.getLocalMessage("Bạn không có trong lớp nay"));
+            }
+            if (currentUser.getRole().getCode().equals(EAccountRole.TEACHER)){
+                Account account = aClass.getAccount();
+                if (!currentUser.getId().equals(account.getId())){
+                    throw ApiException.create(HttpStatus.BAD_REQUEST)
+                            .withMessage(messageUtil.getLocalMessage("Bạn không có dạy lớp nay"));
+                }
             }
         }
 
 
+
+
         TimeTableSpecificationBuilder timeTableSpecificationBuilder = TimeTableSpecificationBuilder.specification()
-                .queryTeacherInClass(account)
+                .queryTeacherInClass(currentUser)
                 .queryClass(aClass)
                 .date(timeTableSearchRequest.getDateFrom(), timeTableSearchRequest.getDateTo());
 

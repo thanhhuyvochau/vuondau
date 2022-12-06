@@ -120,7 +120,7 @@ public class SubjectServiceImpl implements ISubjectService {
     public SubjectResponse updateSubject(Long subjectId, SubjectRequest subjectRequest) {
         Subject subject = subjectRepository.findById(subjectId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay subject"));
         subject.setCode(subjectRequest.getCode());
-        subject.setName(subject.getName());
+        subject.setName(subjectRequest.getName());
         Subject subjectSaved = subjectRepository.save(subject);
         SubjectResponse response = new SubjectResponse();
         response.setId(subjectSaved.getId());
