@@ -1,7 +1,6 @@
 package fpt.capstone.vuondau.controller;
 
 
-
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.dto.InfoFindTutorDto;
@@ -17,7 +16,7 @@ import org.springframework.lang.Nullable;
 @RequestMapping("/api/register-find-tutor")
 public class InfoFindTutorController {
 
-private final IInfoFindTutorService iInfoFindTutorService ;
+    private final IInfoFindTutorService iInfoFindTutorService;
 
     public InfoFindTutorController(IInfoFindTutorService iInfoFindTutorService) {
         this.iInfoFindTutorService = iInfoFindTutorService;
@@ -25,15 +24,13 @@ private final IInfoFindTutorService iInfoFindTutorService ;
 
     @Operation(summary = "dang-ky-tim-gia-su")
     @PostMapping
-    public ResponseEntity<ApiResponse<Boolean>> registerFindTutor (@Nullable @RequestBody InfoFindTutorDto infoFindTutorDto) {
+    public ResponseEntity<ApiResponse<Boolean>> registerFindTutor(@Nullable @RequestBody InfoFindTutorDto infoFindTutorDto) {
         return ResponseEntity.ok(ApiResponse.success(iInfoFindTutorService.registerFindTutor(infoFindTutorDto)));
     }
 
     @Operation(summary = "admin lấy form  dang-ky-tim-gia-su")
     @GetMapping
-    public ResponseEntity<ApiResponse<ApiPage<InfoFindTutorResponse>>> getAllRegisterFindTutor (Pageable pageable) {
+    public ResponseEntity<ApiResponse<ApiPage<InfoFindTutorResponse>>> getAllRegisterFindTutor(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iInfoFindTutorService.getAllRegisterFindTutor(pageable)));
     }
-
-
 }

@@ -238,13 +238,17 @@ public class AccountServiceImpl implements IAccountService {
 
     @Override
     public ApiPage<AccountResponse> getTeacherAccounts(Pageable pageable) {
-        Page<Account> accounts = accountRepository.findAccountByRole(pageable, EAccountRole.TEACHER);
+        Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Role not found by code:" + EAccountRole.TEACHER));
+        Page<Account> accounts = accountRepository.findAccountByRole(pageable, role);
         return PageUtil.convert(accounts.map(ConvertUtil::doConvertEntityToResponse));
     }
 
     @Override
     public ApiPage<AccountResponse> getStudentAccounts(Pageable pageable) {
-        Page<Account> accounts = accountRepository.findAccountByRole(pageable, EAccountRole.STUDENT);
+        Role role = roleRepository.findRoleByCode(EAccountRole.STUDENT)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Role not found by code:" + EAccountRole.STUDENT));
+        Page<Account> accounts = accountRepository.findAccountByRole(pageable, role);
         return PageUtil.convert(accounts.map(ConvertUtil::doConvertEntityToResponse));
     }
 
@@ -272,7 +276,7 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    public AccountResponse updateRoleAndActiveAccount(long id,AccountEditRequest accountEditRequest) {
+    public AccountResponse updateRoleAndActiveAccount(long id, AccountEditRequest accountEditRequest) {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
         Role role = roleRepository.findRoleByCode(accountEditRequest.getRole())
