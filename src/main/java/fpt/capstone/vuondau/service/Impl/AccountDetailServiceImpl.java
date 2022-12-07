@@ -107,7 +107,6 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         accountDetailRepository.save(accountDetail);
 
 
-
         return true;
     }
 
@@ -164,7 +163,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         account.setLastName(accountDetail.getLastName());
         account.setFirstName(accountDetail.getFirstName());
         account.setEmail(accountDetail.getEmail());
-        account.setGender(getGenderByCode(accountDetail.getGender()));
+        account.setGender(GenderUtil.getGenderByCode(accountDetail.getGender()));
         account.setPhoneNumber(accountDetail.getPhone());
         Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay role"));
 
@@ -210,28 +209,5 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
     }
 
-    public List<GenderResponse> getGendersAsList() {
-        List<GenderResponse> genderResponses = new ArrayList<>();
-        for (EGenderType gender : EGenderType.values()) {
-            GenderResponse genderResponse = new GenderResponse();
-            genderResponse.setCode(gender.name());
-            genderResponse.setName(gender.getLabel());
-            genderResponses.add(genderResponse);
-        }
-        return genderResponses;
-    }
 
-    private EGenderType getGenderByCode(String genderName) {
-        if (genderName == null) {
-            return EGenderType.OTHER;
-        }
-        switch (genderName) {
-            case "MALE":
-                return EGenderType.MALE;
-            case "FEMALE":
-                return EGenderType.FEMALE;
-            default:
-                return EGenderType.OTHER;
-        }
-    }
 }

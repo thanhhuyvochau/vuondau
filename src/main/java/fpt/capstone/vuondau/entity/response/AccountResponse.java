@@ -10,7 +10,8 @@ public class AccountResponse {
 
     private String username;
 
-    private String name;
+    private String firstName;
+    private String lastName;
 
     private Instant  birthday;
 
@@ -24,6 +25,15 @@ public class AccountResponse {
     private Boolean active;
 
     private String gender;
+    private GenderResponse genderResponse;
+
+    public GenderResponse getGenderResponse() {
+        return genderResponse;
+    }
+
+    public void setGenderResponse(GenderResponse genderResponse) {
+        this.genderResponse = genderResponse;
+    }
 
     public Long getId() {
         return id;
@@ -57,12 +67,20 @@ public class AccountResponse {
         this.active = active;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public Instant getBirthday() {

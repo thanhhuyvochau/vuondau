@@ -23,5 +23,4 @@ public interface IAccountDetailService {
 
     ApiPage<AccountDetailResponse> getRequestToActiveAccount(Pageable pageable);
 
-    List<GenderResponse> getGendersAsList();
 }
