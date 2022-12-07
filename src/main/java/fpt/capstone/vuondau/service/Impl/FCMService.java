@@ -3,7 +3,9 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.request.PushNotificationRequest;
+import fpt.capstone.vuondau.util.SecurityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -20,11 +22,17 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 @Service
 public class FCMService {
-
+    private final SecurityUtil securityUtil;
     private Logger logger = LoggerFactory.getLogger(FCMService.class);
+
+    public FCMService(SecurityUtil securityUtil) {
+        this.securityUtil = securityUtil;
+    }
 
     public void sendMessageToToken(PushNotificationRequest request)
             throws InterruptedException, ExecutionException {
+
+
         Message message = getPreconfiguredMessageToToken(request);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String jsonOutput = gson.toJson(message);
@@ -35,7 +43,6 @@ public class FCMService {
     private String sendAndGetResponse(Message message) throws InterruptedException, ExecutionException {
         return FirebaseMessaging.getInstance().sendAsync(message).get();
     }
-
 
     private AndroidConfig getAndroidConfig(String topic) {
         return AndroidConfig.builder()

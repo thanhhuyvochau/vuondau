@@ -50,12 +50,11 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
     private final RoleRepository roleRepository;
 
-
+    private final SecurityUtil securityUtil;
     @Value("${minio.url}")
     String minioUrl;
 
-
-    public AccountDetailServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, AccountDetailRepository accountDetailRepository, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, RoleRepository roleRepository) {
+    public AccountDetailServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, AccountDetailRepository accountDetailRepository, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, RoleRepository roleRepository, SecurityUtil securityUtil) {
         this.accountRepository = accountRepository;
         this.messageUtil = messageUtil;
         this.accountDetailRepository = accountDetailRepository;
@@ -64,10 +63,15 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         this.minioAdapter = minioAdapter;
         this.resourceRepository = resourceRepository;
         this.roleRepository = roleRepository;
+        this.securityUtil = securityUtil;
     }
+
 
     @Override
     public boolean registerTutor(AccountDetailRequest accountDetailRequest) {
+
+        Account teacher = securityUtil.getCurrentUser();
+
         AccountDetail accountDetail = new AccountDetail();
         if (accountRepository.existsAccountByEmail(accountDetailRequest.getEmail())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
@@ -100,6 +104,9 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         accountDetail.setLevel(accountDetailRequest.getLevel());
 
         accountDetailRepository.save(accountDetail);
+
+
+
         return true;
     }
 

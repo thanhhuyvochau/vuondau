@@ -52,6 +52,15 @@ public class PanoServiceImpl implements PanoService {
     @Override
     public GetPanoResponse createNewPano(PanoRequest panoRequest) {
         Pano pano = new Pano();
+        if (panoRepository.existsByName(panoRequest.getName())) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Name đã tồn tại"));
+        }
+        int value  = panoRequest.getPublishDate().compareTo(panoRequest.getExpirationDate());
+        if (value>0 || value == 0){
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Ngay publish không thể lớn hơn ngày hết hạn"));
+        }
         pano.setName(panoRequest.getName());
         pano.setPublishDate(panoRequest.getPublishDate());
         pano.setExpirationDate(panoRequest.getExpirationDate());
@@ -149,8 +158,15 @@ public class PanoServiceImpl implements PanoService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Name đã tồn tại"));
         }
-        oldPano.setPublishDate(panoDto.getPublishDate());
 
+        int value  = panoDto.getPublishDate().compareTo(panoDto.getExpirationDate());
+        if (value>0 || value == 0){
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Ngay publish không thể lớn hơn ngày hết hạn"));
+        }
+
+        oldPano.setPublishDate(panoDto.getPublishDate());
+        oldPano.setExpirationDate(panoDto.getExpirationDate());
         try {
             String name = panoDto.getFile().getOriginalFilename() + "-" + Instant.now().toString();
             ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, panoDto.getFile().getContentType(),
