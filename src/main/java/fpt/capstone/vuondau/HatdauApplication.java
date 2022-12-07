@@ -62,6 +62,7 @@ public class HatdauApplication {
     public static void main(String[] args) {
 
         SpringApplication.run(HatdauApplication.class, args);
+        System.out.println("my push notitifaction");
     }
 
     @EventListener(ApplicationReadyEvent.class)
