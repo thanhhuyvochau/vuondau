@@ -67,8 +67,10 @@ public class AccountServiceImpl implements IAccountService {
     private final MinioAdapter minioAdapter;
     @Value("${minio.url}")
     String minioUrl;
+    private final SecurityUtil securityUtil;
 
-    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository, MessageUtil messageUtil, RoleRepository roleRepository1, Keycloak keycloak, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, AccountDetailRepository accountDetailRepository) {
+
+    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository, MessageUtil messageUtil, RoleRepository roleRepository1, Keycloak keycloak, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, AccountDetailRepository accountDetailRepository, SecurityUtil securityUtil) {
         this.accountRepository = accountRepository;
         this.messageUtil = messageUtil;
         this.roleRepository = roleRepository1;
@@ -78,6 +80,7 @@ public class AccountServiceImpl implements IAccountService {
         this.minioAdapter = minioAdapter;
         this.resourceRepository = resourceRepository;
         this.accountDetailRepository = accountDetailRepository;
+        this.securityUtil = securityUtil;
     }
 
     @Override
@@ -297,6 +300,11 @@ public class AccountServiceImpl implements IAccountService {
         return ConvertUtil.doConvertEntityToResponse(save);
     }
 
+    @Override
+    public AccountResponse getSelfAccount() {
+        Account currentUser = securityUtil.getCurrentUser();
+        return ConvertUtil.doConvertEntityToResponse(currentUser);
+    }
 
     public AccountResponse getAccountById(long id) {
         Account account = accountRepository.findById(id)
@@ -315,7 +323,5 @@ public class AccountServiceImpl implements IAccountService {
         Page<AccountDetail> all = accountDetailRepository.findAllByIsActiveIsTrue(pageable);
         return PageUtil.convert(all.map(ConvertUtil::doConvertEntityToResponse)) ;
     }
-
-
 
 }

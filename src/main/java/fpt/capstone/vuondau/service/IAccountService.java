@@ -46,5 +46,7 @@ public interface IAccountService {
     AccountResponse updateRoleAndActiveAccount(long id,AccountEditRequest accountEditRequest);
     AccountResponse approveTeacherAccount(long id);
 
+    AccountResponse getSelfAccount();
+
     ApiPage<AccountDetailResponse> getAllInfoTeacher(Pageable pageable);
 }

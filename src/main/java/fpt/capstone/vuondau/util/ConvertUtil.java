@@ -50,7 +50,7 @@ public class ConvertUtil {
         AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class, true);
         RoleDto roleDto = doConvertEntityToResponse(account.getRole());
         accountResponse.setRole(roleDto);
-        if (account.getResource()!= null){
+        if (account.getResource() != null) {
             accountResponse.setAvatar(account.getResource().getUrl());
         }
 
@@ -106,12 +106,15 @@ public class ConvertUtil {
     }
 
     public static CourseResponse doConvertCourseToCourseResponse(Course course) {
+        if (course == null) {
+            return null;
+        }
         CourseResponse courseResponse = ObjectUtil.copyProperties(course, new CourseResponse(), CourseResponse.class);
         courseResponse.setCourseName(course.getName());
-        if (course.getResource()!=null){
+        if (course.getResource() != null) {
             courseResponse.setImage(course.getResource().getUrl());
         }
-        if (course.getSubject()!=null){
+        if (course.getSubject() != null) {
             courseResponse.setSubject(ConvertUtil.doConvertEntityToResponse(course.getSubject()));
         }
         courseResponse.setCourseTitle(course.getTitle());
@@ -119,8 +122,6 @@ public class ConvertUtil {
 //        courseDetailResponse.setGrade(course.getGrade());
         return courseResponse;
     }
-
-
 
 
     public static ForumDto doConvertEntityToResponse(Forum forum) {
@@ -139,8 +140,6 @@ public class ConvertUtil {
 
     public static ClassDto doConvertEntityToResponse(Class aclass) {
         ClassDto classDto = ObjectUtil.copyProperties(aclass, new ClassDto(), ClassDto.class);
-
-
         Course course = aclass.getCourse();
         CourseResponse courseResponse = ConvertUtil.doConvertCourseToCourseResponse(course);
 //        if (course!= null){
@@ -166,7 +165,7 @@ public class ConvertUtil {
         classDto.setMaxNumberStudent(aclass.getMaxNumberStudent());
         classDto.setUnitPrice(aclass.getUnitPrice());
         classDto.setFinalPrice(aclass.getFinalPrice());
-        classDto.setTeacher(ObjectUtil.copyProperties(aclass.getAccount(), new AccountResponse() , AccountResponse.class));
+        classDto.setTeacher(ObjectUtil.copyProperties(aclass.getAccount(), new AccountResponse(), AccountResponse.class));
 //        if (aclass.getClassType()!= null){
 //
 //            classDto.setClassType(ObjectUtil.copyProperties(aclass.getClassType(), new ClassTypeDto() , ClassTypeDto.class));
