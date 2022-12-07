@@ -22,8 +22,8 @@ public class FireBaseController {
     @PostMapping("/notification/token")
     public ResponseEntity sendTokenNotification(@RequestBody PushNotificationRequest request) {
         pushNotificationService.sendPushNotificationToToken(request);
-        System.out.println("princr");
         return new ResponseEntity<>(new PushNotificationResponse(HttpStatus.OK.value(), "Notification has been sent."), HttpStatus.OK);
     }
+
 
 }
