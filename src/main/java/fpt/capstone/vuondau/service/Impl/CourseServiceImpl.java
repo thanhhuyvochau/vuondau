@@ -277,16 +277,16 @@ public class CourseServiceImpl implements ICourseService {
         // set teacher course
         List<TeacherCourseDto> teacherCourseDtoList = new ArrayList<>();
         List<TeacherCourse> teacherCourses = course.getTeacherCourses();
-        teacherCourses.stream().map(teacherCourse -> {
+        teacherCourses.stream().peek(teacherCourse -> {
             TeacherCourseDto teacherCourseDto = new TeacherCourseDto();
             teacherCourseDto.setTopicId(teacherCourse.getCourse().getId());
             teacherCourseDto.setIsAllowed(teacherCourse.getIsAllowed());
             teacherCourseDto.setTeacherId(teacherCourse.getAccount().getId());
-            teacherCourseDto.setTeacherName(teacherCourse.getAccount().getFirstName() + teacherCourse.getAccount().getLastName());
+            teacherCourseDto.setFirstName(teacherCourse.getAccount().getFirstName());
+            teacherCourseDto.setLastName(teacherCourse.getAccount().getLastName());
             teacherCourseDtoList.add(teacherCourseDto);
-
-            return teacherCourse;
         }).collect(Collectors.toList());
+
 
         courseDetailResponse.setTeacherCourse(teacherCourseDtoList);
 

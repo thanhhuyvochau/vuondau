@@ -8,6 +8,7 @@ import fpt.capstone.vuondau.entity.request.AccountDetailRequest;
 import fpt.capstone.vuondau.entity.request.UploadAvatarRequest;
 import fpt.capstone.vuondau.entity.response.AccountDetailResponse;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
+import fpt.capstone.vuondau.entity.response.GenderResponse;
 import fpt.capstone.vuondau.repository.AccountDetailRepository;
 import fpt.capstone.vuondau.repository.AccountRepository;
 import fpt.capstone.vuondau.repository.ResourceRepository;
@@ -156,7 +157,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         account.setLastName(accountDetail.getLastName());
         account.setFirstName(accountDetail.getFirstName());
         account.setEmail(accountDetail.getEmail());
-        account.setGender(accountDetail.getGender());
+        account.setGender(getGenderByCode(accountDetail.getGender()));
         account.setPhoneNumber(accountDetail.getPhone());
         Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay role"));
 
@@ -172,9 +173,8 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         accountDetail.setStatus(EAccountDetailStatus.REQUESTED);
         accountDetail.setAccount(account);
         accountDetailRepository.save(accountDetail);
-        AccountResponse accountResponse = ObjectUtil.copyProperties(save, new AccountResponse(), AccountResponse.class);
 
-        return accountResponse;
+        return ObjectUtil.copyProperties(save, new AccountResponse(), AccountResponse.class);
     }
 
     @Override
@@ -201,5 +201,30 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
             return accountDetailResponse;
         }));
 
+    }
+
+    public List<GenderResponse> getGendersAsList() {
+        List<GenderResponse> genderResponses = new ArrayList<>();
+        for (EGenderType gender : EGenderType.values()) {
+            GenderResponse genderResponse = new GenderResponse();
+            genderResponse.setCode(gender.name());
+            genderResponse.setName(gender.getLabel());
+            genderResponses.add(genderResponse);
+        }
+        return genderResponses;
+    }
+
+    private EGenderType getGenderByCode(String genderName) {
+        if (genderName == null) {
+            return EGenderType.OTHER;
+        }
+        switch (genderName) {
+            case "MALE":
+                return EGenderType.MALE;
+            case "FEMALE":
+                return EGenderType.FEMALE;
+            default:
+                return EGenderType.OTHER;
+        }
     }
 }

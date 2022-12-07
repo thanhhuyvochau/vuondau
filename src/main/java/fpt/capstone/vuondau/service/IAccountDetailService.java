@@ -5,10 +5,7 @@ import fpt.capstone.vuondau.entity.AccountDetail;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.dto.ResourceDto;
 import fpt.capstone.vuondau.entity.request.*;
-import fpt.capstone.vuondau.entity.response.AccountDetailResponse;
-import fpt.capstone.vuondau.entity.response.AccountResponse;
-import fpt.capstone.vuondau.entity.response.AccountTeacherResponse;
-import fpt.capstone.vuondau.entity.response.StudentResponse;
+import fpt.capstone.vuondau.entity.response.*;
 import org.springframework.data.domain.Pageable;
 
 import java.io.IOException;
@@ -18,11 +15,13 @@ import java.util.Optional;
 public interface IAccountDetailService {
 
 
-     boolean registerTutor(AccountDetailRequest accountDetailRequest);
+    boolean registerTutor(AccountDetailRequest accountDetailRequest);
 
-    List<ResourceDto> uploadImageRegisterProfile(long id , UploadAvatarRequest uploadAvatarRequest);
+    List<ResourceDto> uploadImageRegisterProfile(long id, UploadAvatarRequest uploadAvatarRequest);
 
     AccountResponse approveRegisterAccount(long id);
 
-    ApiPage<AccountDetailResponse>  getRequestToActiveAccount(Pageable pageable);
+    ApiPage<AccountDetailResponse> getRequestToActiveAccount(Pageable pageable);
+
+    List<GenderResponse> getGendersAsList();
 }

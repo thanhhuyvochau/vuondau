@@ -108,7 +108,7 @@ public class AccountServiceImpl implements IAccountService {
         account.setFirstName(accountRequest.getFirstName());
         account.setLastName(accountRequest.getLastName());
         account.setPhoneNumber(accountRequest.getPhone());
-
+        account.setPassword(accountRequest.getPassword());
         Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
         account.setRole(role);
