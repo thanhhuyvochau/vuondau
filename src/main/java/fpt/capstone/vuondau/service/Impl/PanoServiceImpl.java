@@ -109,7 +109,7 @@ public class PanoServiceImpl implements PanoService {
         getPanoResponse.setPublishDate(pano.getPublishDate());
         getPanoResponse.setExpirationDate(pano.getExpirationDate());
         getPanoResponse.setVisible(pano.getVisible());
-        getPanoResponse.setLinkUrl( pano.getLinkUrl());
+        getPanoResponse.setLinkUrl(pano.getLinkUrl());
         getPanoResponse.setStatus(getStatus(pano));
         return getPanoResponse;
     }
