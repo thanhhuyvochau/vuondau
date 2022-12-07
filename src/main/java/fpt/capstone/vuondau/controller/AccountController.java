@@ -105,4 +105,5 @@ public class AccountController {
     public ResponseEntity<ApiResponse<AccountResponse>> getSelfAccount() {
         return ResponseEntity.ok(ApiResponse.success(accountService.getSelfAccount()));
     }
+
 }

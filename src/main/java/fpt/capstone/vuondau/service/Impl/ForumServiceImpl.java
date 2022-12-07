@@ -1,6 +1,5 @@
 package fpt.capstone.vuondau.service.Impl;
 
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleModuleResponse;
 import fpt.capstone.vuondau.MoodleRepository.Response.MoodleSectionResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
@@ -122,11 +121,54 @@ public class ForumServiceImpl implements IForumService {
         return ConvertUtil.doConvertEntityToResponse(forum);
     }
 
-    public ApiPage<ForumDto> getAllClassForumsOfStudent(Pageable pageable) {
+    @Override
+    public ApiPage<ForumDto> getAllSubjectForums(Pageable pageable) {
         Account account = securityUtil.getCurrentUser();
+        ApiPage<ForumDto> subjectForums = null;
+        if (account.getRole().getCode().equals(EAccountRole.STUDENT)) {
+            subjectForums = getAllSubjectForumsOfStudent(account, pageable);
+        } else if (account.getRole().getCode().equals(EAccountRole.TEACHER)
+                || account.getRole().getCode().equals(EAccountRole.ADMIN)) {
+            Page<Forum> subjectForumsList = forumRepository.findAllByType(EForumType.SUBJECT, pageable);
+            subjectForums = PageUtil.convert(subjectForumsList.map(ConvertUtil::doConvertEntityToResponse));
+        }
+        return subjectForums;
+    }
+
+
+    private ApiPage<ForumDto> getAllSubjectForumsOfStudent(Account account, Pageable pageable) {
+        List<ForumDto> forumClass = account.getStudentClasses().stream()
+                .map(StudentClass::getaClass).map(Class::getCourse).map(Course::getSubject).distinct()
+                .map(subject -> this.getForumBySubject(subject.getId()))
+                .collect(Collectors.toList());
+        Page<ForumDto> page = new PageImpl<>(forumClass, pageable, forumClass.size());
+        return PageUtil.convert(page);
+    }
+    @Override
+    public ApiPage<ForumDto> getAllClassForums(Pageable pageable) {
+        Account account = securityUtil.getCurrentUser();
+        ApiPage<ForumDto> classForums = null;
+        if (account.getRole().getCode().equals(EAccountRole.STUDENT)) {
+            classForums = getAllClassForumsOfStudent(account, pageable);
+        } else if (account.getRole().getCode().equals(EAccountRole.TEACHER)) {
+            classForums = getAllClassForumsOfTeacher(account, pageable);
+        }
+        return classForums;
+    }
+
+    private ApiPage<ForumDto> getAllClassForumsOfStudent(Account account, Pageable pageable) {
+
         List<ForumDto> forumClass = account.getStudentClasses().stream()
                 .map(StudentClass::getaClass).distinct()
                 .map(aClass -> this.getForumByClass(aClass.getId()))
+                .collect(Collectors.toList());
+        Page<ForumDto> page = new PageImpl<>(forumClass, pageable, forumClass.size());
+        return PageUtil.convert(page);
+    }
+
+    private ApiPage<ForumDto> getAllClassForumsOfTeacher(Account account, Pageable pageable) {
+        List<ForumDto> forumClass = account.getTeacherClass().stream()
+                .map(clazz -> this.getForumByClass(clazz.getId()))
                 .collect(Collectors.toList());
         Page<ForumDto> page = new PageImpl<>(forumClass, pageable, forumClass.size());
         return PageUtil.convert(page);
@@ -148,26 +190,4 @@ public class ForumServiceImpl implements IForumService {
         }
         return true;
     }
-
-    @Override
-    public ApiPage<ForumDto> getAllSubjectForumsOfStudent(Pageable pageable) {
-        Account account = securityUtil.getCurrentUser();
-        List<ForumDto> forumClass = account.getStudentClasses().stream()
-                .map(StudentClass::getaClass).map(Class::getCourse).map(Course::getSubject).distinct()
-                .map(subject -> this.getForumBySubject(subject.getId()))
-                .collect(Collectors.toList());
-        Page<ForumDto> page = new PageImpl<>(forumClass, pageable, forumClass.size());
-        return PageUtil.convert(page);
-    }
-
-    @Override
-    public ApiPage<ForumDto> getAllClassForumsOfTeacher(Pageable pageable) {
-        Account account = securityUtil.getCurrentUser();
-        List<ForumDto> forumClass = account.getTeacherClass().stream()
-                .map(clazz -> this.getForumByClass(clazz.getId()))
-                .collect(Collectors.toList());
-        Page<ForumDto> page = new PageImpl<>(forumClass, pageable, forumClass.size());
-        return PageUtil.convert(page);
-    }
-
 }

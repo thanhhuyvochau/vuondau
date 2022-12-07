@@ -4,10 +4,7 @@ import fpt.capstone.vuondau.entity.Account;
 
 import fpt.capstone.vuondau.entity.AccountDetail;
 import fpt.capstone.vuondau.entity.Resource;
-import fpt.capstone.vuondau.entity.common.ApiException;
-import fpt.capstone.vuondau.entity.common.ApiPage;
-import fpt.capstone.vuondau.entity.common.EAccountRole;
-import fpt.capstone.vuondau.entity.common.EResourceType;
+import fpt.capstone.vuondau.entity.common.*;
 import fpt.capstone.vuondau.entity.dto.RoleDto;
 import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.AccountDetailResponse;
@@ -60,10 +57,9 @@ public class AccountServiceImpl implements IAccountService {
     private final KeycloakRoleUtil keycloakRoleUtil;
 
 
-
     private final ResourceRepository resourceRepository;
 
-    private final AccountDetailRepository accountDetailRepository ;
+    private final AccountDetailRepository accountDetailRepository;
     private final MinioAdapter minioAdapter;
     @Value("${minio.url}")
     String minioUrl;
@@ -111,7 +107,9 @@ public class AccountServiceImpl implements IAccountService {
         account.setFirstName(accountRequest.getFirstName());
         account.setLastName(accountRequest.getLastName());
         account.setPhoneNumber(accountRequest.getPhone());
-
+        account.setPassword(accountRequest.getPassword());
+        EGenderType gender = GenderUtil.getGenderByCode(accountRequest.getGenderCode());
+        account.setGender(gender);
         Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
         account.setRole(role);
@@ -150,6 +148,8 @@ public class AccountServiceImpl implements IAccountService {
             account.setActive(true);
             account.setEmail(studentRequest.getEmail());
             account.setPhoneNumber(studentRequest.getPhoneNumber());
+            EGenderType gender = GenderUtil.getGenderByCode(studentRequest.getGenderCode());
+            account.setGender(gender);
             Role role = roleRepository.findRoleByCode(EAccountRole.STUDENT)
                     .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
             account.setRole(role);
@@ -321,7 +321,7 @@ public class AccountServiceImpl implements IAccountService {
     @Override
     public ApiPage<AccountDetailResponse> getAllInfoTeacher(Pageable pageable) {
         Page<AccountDetail> all = accountDetailRepository.findAllByIsActiveIsTrue(pageable);
-        return PageUtil.convert(all.map(ConvertUtil::doConvertEntityToResponse)) ;
+        return PageUtil.convert(all.map(ConvertUtil::doConvertEntityToResponse));
     }
 
 }

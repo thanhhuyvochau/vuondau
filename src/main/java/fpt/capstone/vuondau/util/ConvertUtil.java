@@ -3,6 +3,7 @@ package fpt.capstone.vuondau.util;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.EForumType;
+import fpt.capstone.vuondau.entity.common.EGenderType;
 import fpt.capstone.vuondau.entity.dto.*;
 import fpt.capstone.vuondau.entity.response.*;
 
@@ -48,6 +49,13 @@ public class ConvertUtil {
 
     public static AccountResponse doConvertEntityToResponse(Account account) {
         AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class, true);
+        EGenderType gender = account.getGender();
+        if (gender != null) {
+            GenderResponse genderResponse = new GenderResponse();
+            genderResponse.setCode(gender.name());
+            genderResponse.setName(gender.getLabel());
+            accountResponse.setGenderResponse(genderResponse);
+        }
         RoleDto roleDto = doConvertEntityToResponse(account.getRole());
         accountResponse.setRole(roleDto);
         if (account.getResource() != null) {

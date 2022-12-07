@@ -19,12 +19,12 @@ public class ForumController {
 
     @GetMapping("/class-type")
     public ResponseEntity<ApiResponse<ApiPage<ForumDto>>> getClassesForumForStudent(Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.success(forumService.getAllClassForumsOfStudent(pageable)));
+        return ResponseEntity.ok(ApiResponse.success(forumService.getAllClassForums(pageable)));
     }
 
     @GetMapping("/subject-type")
     public ResponseEntity<ApiResponse<ApiPage<ForumDto>>> getSubjectForumForStudent(Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.success(forumService.getAllSubjectForumsOfStudent(pageable)));
+        return ResponseEntity.ok(ApiResponse.success(forumService.getAllSubjectForums(pageable)));
     }
 
     @GetMapping("/class-type/{classId}")

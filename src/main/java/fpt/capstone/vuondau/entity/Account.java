@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.entity;
 
 import fpt.capstone.vuondau.entity.common.EDegreeType;
+import fpt.capstone.vuondau.entity.common.EGenderType;
 
 
 import javax.persistence.*;
@@ -52,7 +53,8 @@ public class Account {
     private String phoneNumber;
 
     @Column(name = "gender")
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private EGenderType gender;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
@@ -89,16 +91,6 @@ public class Account {
 
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
     private List<InfoFindTutorAccount> infoFindTutorAccounts = new ArrayList<>();
-
-
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "avatar_id")
@@ -318,5 +310,13 @@ public class Account {
 
     public void setTeacherClass(List<Class> teacherClass) {
         this.teacherClass = teacherClass;
+    }
+
+    public EGenderType getGender() {
+        return gender;
+    }
+
+    public void setGender(EGenderType gender) {
+        this.gender = gender;
     }
 }
