@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.entity.request;
 
 
 import fpt.capstone.vuondau.entity.common.EAccountRole;
+import fpt.capstone.vuondau.entity.common.EGenderType;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -18,6 +19,7 @@ public class AccountEditRequest implements Serializable {
     private EAccountRole role;
 
     private boolean isActive;
+    private EGenderType gender;
 
 
     public String getFirstName() {
@@ -74,5 +76,13 @@ public class AccountEditRequest implements Serializable {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public EGenderType getGender() {
+        return gender;
+    }
+
+    public void setGender(EGenderType gender) {
+        this.gender = gender;
     }
 }

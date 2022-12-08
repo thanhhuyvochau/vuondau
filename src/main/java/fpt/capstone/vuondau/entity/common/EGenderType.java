@@ -1,7 +1,7 @@
 package fpt.capstone.vuondau.entity.common;
 
 public enum EGenderType {
-    MALE("Nam"), FEMALE("Nữ"), OTHER("Khác"), nam("nam");
+    MALE("Nam"), FEMALE("Nữ"), OTHER("Khác");
 
     EGenderType(String label) {
         this.label = label;
