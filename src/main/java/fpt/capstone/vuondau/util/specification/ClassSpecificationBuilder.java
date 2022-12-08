@@ -10,6 +10,8 @@ import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Path;
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +32,32 @@ public class ClassSpecificationBuilder {
         return this;
     }
 
+    public ClassSpecificationBuilder queryByStartDate(Instant instant) {
+        if (instant == null) {
+            return this;
+        }
+        specifications.add((root, query, criteriaBuilder) -> criteriaBuilder.greaterThanOrEqualTo(root.get(Class_.START_DATE), instant));
+        return this;
+    }
+
+    public ClassSpecificationBuilder queryByPriceBetween(BigDecimal minPrice, BigDecimal maxPrice) {
+        if (minPrice == null || maxPrice == null) {
+            return this;
+        }
+        if (maxPrice.compareTo(minPrice) < 0) {
+            return this;
+        }
+        specifications.add((root, query, criteriaBuilder) -> criteriaBuilder.between(root.get(Class_.UNIT_PRICE), minPrice,maxPrice));
+        return this;
+    }
+
+    public ClassSpecificationBuilder queryByEndDate(Instant instant) {
+        if (instant == null) {
+            return this;
+        }
+        specifications.add((root, query, criteriaBuilder) -> criteriaBuilder.lessThanOrEqualTo(root.get(Class_.START_DATE), instant));
+        return this;
+    }
 
     public ClassSpecificationBuilder queryLikeByClassName(String q) {
         specifications.add((root, query, criteriaBuilder) -> {

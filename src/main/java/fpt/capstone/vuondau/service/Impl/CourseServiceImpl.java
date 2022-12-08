@@ -198,8 +198,6 @@ public class CourseServiceImpl implements ICourseService {
         courseResponse.setCourseTitle(course.getTitle());
         List<TeacherCourse> teacherCourses = course.getTeacherCourses();
         teacherCourses.stream().map(teacherCourse -> {
-            courseResponse.setTeacherName(teacherCourse.getAccount().getFirstName() + teacherCourse.getAccount().getLastName());
-
             List<Class> classes = course.getClasses();
             courseResponse.setTotalClass((long) classes.size());
 //            classes.stream().map(aClass -> {

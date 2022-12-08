@@ -102,7 +102,7 @@ public class ConvertUtil {
         });
 
         accountDetailResponse.setResources(resourceDtoList);
-        accountDetailResponse.setActive(accountDetail.isActive());
+        accountDetailResponse.setActive(accountDetail.getActive());
         return accountDetailResponse;
 
     }
@@ -147,25 +147,9 @@ public class ConvertUtil {
     }
 
     public static ClassDto doConvertEntityToResponse(Class aclass) {
-        ClassDto classDto = ObjectUtil.copyProperties(aclass, new ClassDto(), ClassDto.class);
+        ClassDto classDto = ObjectUtil.copyProperties(aclass, new ClassDto(), ClassDto.class,true);
         Course course = aclass.getCourse();
         CourseResponse courseResponse = ConvertUtil.doConvertCourseToCourseResponse(course);
-//        if (course!= null){
-//            courseResponse.setId(course.getId());
-//            courseResponse.setCourseName(course.getName());
-//            courseResponse.setCourseTitle(course.getTitle());
-//            if (course.getResource() != null) {
-//                courseResponse.setImage(course.getResource().getUrl());
-//            }
-//            Subject subject = course.getSubject();
-//            if (subject != null) {
-//                courseResponse.setSubject(doConvertEntityToResponse(subject));
-//            }
-//        }
-//
-//        if (aclass.getAccount() != null) {
-//            courseResponse.setTeacherName(aclass.getAccount().getName());
-//        }
         classDto.setStatus(aclass.getStatus());
         classDto.setStartDate(aclass.getStartDate());
         classDto.setEndDate(aclass.getEndDate());
@@ -173,12 +157,8 @@ public class ConvertUtil {
         classDto.setMaxNumberStudent(aclass.getMaxNumberStudent());
         classDto.setUnitPrice(aclass.getUnitPrice());
         classDto.setFinalPrice(aclass.getFinalPrice());
-        classDto.setTeacher(ObjectUtil.copyProperties(aclass.getAccount(), new AccountResponse(), AccountResponse.class));
-//        if (aclass.getClassType()!= null){
-//
-//            classDto.setClassType(ObjectUtil.copyProperties(aclass.getClassType(), new ClassTypeDto() , ClassTypeDto.class));
-//        }
-
+        Account teacher = aclass.getAccount();
+        classDto.setTeacher(ObjectUtil.copyProperties(teacher, new AccountResponse(), AccountResponse.class,true));
         classDto.setCourse(courseResponse);
         return classDto;
     }
