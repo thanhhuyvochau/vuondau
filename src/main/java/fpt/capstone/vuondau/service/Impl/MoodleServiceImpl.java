@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -102,8 +103,11 @@ public class MoodleServiceImpl implements IMoodleService {
                 Section section = new Section();
                 section.setClazz(clazz);
                 section.setName(moodleSectionResponse.getName());
-                section.setVisible(moodleSectionResponse.isUservisible());
-
+                if (Objects.equals(moodleSectionResponse.getName(), "General")) {
+                    section.setVisible(false);
+                } else {
+                    section.setVisible(moodleSectionResponse.isUservisible());
+                }
                 for (MoodleModuleResponse moodleModuleResponse : moodleSectionResponse.getModules()) {
                     Module module = new Module();
                     module.setName(moodleModuleResponse.getName());
