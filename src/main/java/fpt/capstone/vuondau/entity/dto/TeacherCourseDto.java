@@ -11,7 +11,8 @@ public class TeacherCourseDto {
 
     private Long teacherId;
 
-    private String teacherName ;
+    private String firstName;
+    private String lastName;
 
 
     @Schema(nullable = true)
@@ -41,11 +42,27 @@ public class TeacherCourseDto {
         isAllowed = allowed;
     }
 
-    public String getTeacherName() {
-        return teacherName;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setTeacherName(String teacherName) {
-        this.teacherName = teacherName;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public Boolean getAllowed() {
+        return isAllowed;
+    }
+
+    public void setAllowed(Boolean allowed) {
+        isAllowed = allowed;
     }
 }

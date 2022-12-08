@@ -14,6 +14,15 @@ public class StudentRequest {
     private String email;
 
     private String phoneNumber;
+    private String genderCode;
+
+    public String getGenderCode() {
+        return genderCode;
+    }
+
+    public void setGenderCode(String genderCode) {
+        this.genderCode = genderCode;
+    }
 
     public AccountRequest getAccount() {
         return account;

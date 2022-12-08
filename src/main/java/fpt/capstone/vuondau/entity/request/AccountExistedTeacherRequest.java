@@ -23,6 +23,15 @@ public class AccountExistedTeacherRequest implements Serializable {
     @JsonIgnore
     private String roleAccount ;
     private String email;
+    private String genderCode;
+
+    public String getGenderCode() {
+        return genderCode;
+    }
+
+    public void setGenderCode(String genderCode) {
+        this.genderCode = genderCode;
+    }
 
     public void setActive(boolean active) {
         isActive = active;
