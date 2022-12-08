@@ -90,7 +90,17 @@ public class Account {
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
     private List<InfoFindTutorAccount> infoFindTutorAccounts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+    private List<FileAttachment> fileAttachments = new ArrayList<>();
 
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "avatar_id")
+    private Resource resource;
+
+
+    @OneToOne(mappedBy = "student")
+    private Cart cart;
 
     public String getGender() {
         return gender;
@@ -100,13 +110,6 @@ public class Account {
         this.gender = gender;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "avatar_id")
-    private Resource resource;
-
-
-    @OneToOne(mappedBy = "student")
-    private Cart cart;
 
     public Long getId() {
         return id;
@@ -318,5 +321,13 @@ public class Account {
 
     public void setTeacherClass(List<Class> teacherClass) {
         this.teacherClass = teacherClass;
+    }
+
+    public List<FileAttachment> getFileAttachments() {
+        return fileAttachments;
+    }
+
+    public void setFileAttachments(List<FileAttachment> fileAttachments) {
+        this.fileAttachments = fileAttachments;
     }
 }
