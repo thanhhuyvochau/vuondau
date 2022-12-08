@@ -1,13 +1,7 @@
 package fpt.capstone.vuondau.entity.response;
 
-import fpt.capstone.vuondau.entity.common.EGradeType;
-import fpt.capstone.vuondau.entity.dto.ClassDto;
-import fpt.capstone.vuondau.entity.dto.SubjectDto;
-import fpt.capstone.vuondau.entity.dto.TeacherCourseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.math.BigDecimal;
-import java.util.List;
 
 public class CourseResponse {
 
@@ -22,11 +16,6 @@ public class CourseResponse {
 
     @Schema(description = "Têncủa course")
     private String courseName;
-
-
-    @Schema(description = "Tên giáo viên")
-    private String teacherName;
-
 
 //    @Schema(description = "Giá tiền của course")
 //    private BigDecimal unitPriceCourse;
@@ -72,13 +61,7 @@ public class CourseResponse {
         this.courseName = courseName;
     }
 
-    public String getTeacherName() {
-        return teacherName;
-    }
 
-    public void setTeacherName(String teacherName) {
-        this.teacherName = teacherName;
-    }
 
 //    public BigDecimal getUnitPriceCourse() {
 //        return unitPriceCourse;

@@ -1,38 +1,39 @@
 package fpt.capstone.vuondau.entity.response;
 
+import fpt.capstone.vuondau.entity.*;
+import fpt.capstone.vuondau.entity.Class;
+import fpt.capstone.vuondau.entity.common.EDegreeType;
+import fpt.capstone.vuondau.entity.common.EGenderType;
 import fpt.capstone.vuondau.entity.dto.RoleDto;
 
+import javax.persistence.*;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AccountResponse {
 
     private Long id;
-
     private String username;
-
+    private Boolean isActive = false;
     private String firstName;
     private String lastName;
-
-    private Instant  birthday;
-
-    private String email ;
+    private String email;
+    private String cvUrl;
+    private Instant birthday;
+    private String introduce;
     private String phoneNumber;
-
+    private GenderResponse gender;
     private RoleDto role;
-
-    private String avatar ;
-
-    private Boolean active;
-
-    private String gender;
     private GenderResponse genderResponse;
+    private String avatar;
 
-    public GenderResponse getGenderResponse() {
-        return genderResponse;
+    public String getAvatar() {
+        return avatar;
     }
 
-    public void setGenderResponse(GenderResponse genderResponse) {
-        this.genderResponse = genderResponse;
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public Long getId() {
@@ -52,19 +53,11 @@ public class AccountResponse {
     }
 
     public Boolean getActive() {
-        return active;
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
+        return isActive;
     }
 
     public void setActive(Boolean active) {
-        this.active = active;
+        isActive = active;
     }
 
     public String getFirstName() {
@@ -83,14 +76,6 @@ public class AccountResponse {
         this.lastName = lastName;
     }
 
-    public Instant getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(Instant birthday) {
-        this.birthday = birthday;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -99,7 +84,29 @@ public class AccountResponse {
         this.email = email;
     }
 
+    public String getCvUrl() {
+        return cvUrl;
+    }
 
+    public void setCvUrl(String cvUrl) {
+        this.cvUrl = cvUrl;
+    }
+
+    public Instant getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Instant birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getIntroduce() {
+        return introduce;
+    }
+
+    public void setIntroduce(String introduce) {
+        this.introduce = introduce;
+    }
 
     public String getPhoneNumber() {
         return phoneNumber;
@@ -107,6 +114,14 @@ public class AccountResponse {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public GenderResponse getGender() {
+        return gender;
+    }
+
+    public void setGender(GenderResponse gender) {
+        this.gender = gender;
     }
 
     public RoleDto getRole() {
@@ -117,11 +132,11 @@ public class AccountResponse {
         this.role = role;
     }
 
-    public String getGender() {
-        return gender;
+    public GenderResponse getGenderResponse() {
+        return genderResponse;
     }
 
-    public void setGender(String gender) {
-        this.gender = gender;
+    public void setGenderResponse(GenderResponse genderResponse) {
+        this.genderResponse = genderResponse;
     }
 }
