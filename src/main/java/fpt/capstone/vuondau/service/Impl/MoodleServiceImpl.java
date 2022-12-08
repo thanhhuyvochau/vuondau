@@ -22,6 +22,7 @@ import fpt.capstone.vuondau.service.IMoodleService;
 import fpt.capstone.vuondau.util.ObjectUtil;
 import fpt.capstone.vuondau.util.PageUtil;
 import fpt.capstone.vuondau.util.RequestUtil;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
@@ -100,20 +101,10 @@ public class MoodleServiceImpl implements IMoodleService {
             List<MoodleSectionResponse> detailCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
             List<Section> sections = new ArrayList<>();
             for (MoodleSectionResponse moodleSectionResponse : detailCourse) {
-                Section section = new Section();
-                section.setClazz(clazz);
-                section.setName(moodleSectionResponse.getName());
-                if (Objects.equals(moodleSectionResponse.getName(), "General")) {
-                    section.setVisible(false);
-                } else {
-                    section.setVisible(moodleSectionResponse.isUservisible());
-                }
+                Section section = createSection(clazz, moodleSectionResponse);
+
                 for (MoodleModuleResponse moodleModuleResponse : moodleSectionResponse.getModules()) {
-                    Module module = new Module();
-                    module.setName(moodleModuleResponse.getName());
-                    module.setType(getModuleType(moodleModuleResponse.getModname()));
-                    module.setSection(section);
-                    module.setUrl(moodleModuleResponse.getUrl());
+                    Module module = createModule(section, moodleModuleResponse);
                     section.getModules().add(module);
                 }
                 sections.add(section);
@@ -123,6 +114,29 @@ public class MoodleServiceImpl implements IMoodleService {
         }
         classRepository.saveAll(classes);
         return true;
+    }
+
+    @NotNull
+    private Section createSection(Class clazz, MoodleSectionResponse moodleSectionResponse) {
+        Section section = new Section();
+        section.setClazz(clazz);
+        section.setName(moodleSectionResponse.getName());
+        if (Objects.equals(moodleSectionResponse.getName(), "General")) {
+            section.setVisible(false);
+        } else {
+            section.setVisible(moodleSectionResponse.isUservisible());
+        }
+        return section;
+    }
+
+    @NotNull
+    private Module createModule(Section section, MoodleModuleResponse moodleModuleResponse) {
+        Module module = new Module();
+        module.setName(moodleModuleResponse.getName());
+        module.setType(getModuleType(moodleModuleResponse.getModname()));
+        module.setSection(section);
+        module.setUrl(moodleModuleResponse.getUrl());
+        return module;
     }
 
     private EModuleType getModuleType(String modname) {
