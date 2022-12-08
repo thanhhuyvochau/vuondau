@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.entity;
 
 import fpt.capstone.vuondau.entity.common.EDegreeType;
+import fpt.capstone.vuondau.entity.common.EGenderType;
 
 
 import javax.persistence.*;
@@ -52,7 +53,8 @@ public class Account {
     private String phoneNumber;
 
     @Column(name = "gender")
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private EGenderType gender;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
@@ -91,14 +93,10 @@ public class Account {
     private List<InfoFindTutorAccount> infoFindTutorAccounts = new ArrayList<>();
 
 
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+    private List<FileAttachment> fileAttachments = new ArrayList<>();
 
-    public String getGender() {
-        return gender;
-    }
 
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "avatar_id")
@@ -107,6 +105,17 @@ public class Account {
 
     @OneToOne(mappedBy = "student")
     private Cart cart;
+
+
+    public EGenderType getGender() {
+        return gender;
+    }
+
+    public void setGender(EGenderType gender) {
+        this.gender = gender;
+    }
+
+
 
     public Long getId() {
         return id;
@@ -318,5 +327,16 @@ public class Account {
 
     public void setTeacherClass(List<Class> teacherClass) {
         this.teacherClass = teacherClass;
+    }
+
+
+    public List<FileAttachment> getFileAttachments() {
+        return fileAttachments;
+    }
+
+    public void setFileAttachments(List<FileAttachment> fileAttachments) {
+        this.fileAttachments = fileAttachments;
+
+
     }
 }

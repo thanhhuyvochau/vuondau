@@ -6,7 +6,7 @@ import fpt.capstone.vuondau.entity.StudentClass;
 import fpt.capstone.vuondau.entity.Transaction;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.request.VpnPayRequest;
-import fpt.capstone.vuondau.entity.response.VpnPayResponse;
+import fpt.capstone.vuondau.entity.response.PaymentResponse;
 import fpt.capstone.vuondau.repository.ClassRepository;
 import fpt.capstone.vuondau.repository.TransactionRepository;
 import fpt.capstone.vuondau.service.ITransactionService;
@@ -41,7 +41,7 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
-    public VpnPayResponse startPayment(HttpServletRequest req, VpnPayRequest request) throws UnsupportedEncodingException {
+    public PaymentResponse startPayment(HttpServletRequest req, VpnPayRequest request) throws UnsupportedEncodingException {
         Class clazz = classRepository.findById(request.getClassId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
                         .withMessage("Class not found with id:" + request.getClassId()));
@@ -147,11 +147,11 @@ public class TransactionServiceImpl implements ITransactionService {
         String vnp_SecureHash = vnpConfig.hmacSHA512(vnpConfig.getVnp_HashSecret(), hashData.toString());
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
         String paymentUrl = vnpConfig.getVnp_PayUrl() + "?" + queryUrl;
-        VpnPayResponse vpnPayResponse = new VpnPayResponse();
-        vpnPayResponse.setCode("00");
-        vpnPayResponse.setMessage("success");
-        vpnPayResponse.setPaymentUrl(paymentUrl);
-        return vpnPayResponse;
+        PaymentResponse paymentResponse = new PaymentResponse();
+        paymentResponse.setCode("00");
+        paymentResponse.setMessage("success");
+        paymentResponse.setPaymentUrl(paymentUrl);
+        return paymentResponse;
     }
 
     @Override

@@ -8,6 +8,7 @@ import fpt.capstone.vuondau.entity.request.AccountDetailRequest;
 import fpt.capstone.vuondau.entity.request.UploadAvatarRequest;
 import fpt.capstone.vuondau.entity.response.AccountDetailResponse;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
+import fpt.capstone.vuondau.entity.response.GenderResponse;
 import fpt.capstone.vuondau.repository.AccountDetailRepository;
 import fpt.capstone.vuondau.repository.AccountRepository;
 import fpt.capstone.vuondau.repository.ResourceRepository;
@@ -50,12 +51,11 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
     private final RoleRepository roleRepository;
 
-
+    private final SecurityUtil securityUtil;
     @Value("${minio.url}")
     String minioUrl;
 
-
-    public AccountDetailServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, AccountDetailRepository accountDetailRepository, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, RoleRepository roleRepository) {
+    public AccountDetailServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, AccountDetailRepository accountDetailRepository, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, RoleRepository roleRepository, SecurityUtil securityUtil) {
         this.accountRepository = accountRepository;
         this.messageUtil = messageUtil;
         this.accountDetailRepository = accountDetailRepository;
@@ -64,10 +64,15 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         this.minioAdapter = minioAdapter;
         this.resourceRepository = resourceRepository;
         this.roleRepository = roleRepository;
+        this.securityUtil = securityUtil;
     }
+
 
     @Override
     public boolean registerTutor(AccountDetailRequest accountDetailRequest) {
+
+        Account teacher = securityUtil.getCurrentUser();
+
         AccountDetail accountDetail = new AccountDetail();
         if (accountRepository.existsAccountByEmail(accountDetailRequest.getEmail())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
@@ -100,6 +105,8 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         accountDetail.setLevel(accountDetailRequest.getLevel());
 
         accountDetailRepository.save(accountDetail);
+
+
         return true;
     }
 
@@ -156,7 +163,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         account.setLastName(accountDetail.getLastName());
         account.setFirstName(accountDetail.getFirstName());
         account.setEmail(accountDetail.getEmail());
-        account.setGender(accountDetail.getGender());
+        account.setGender(GenderUtil.getGenderByCode(accountDetail.getGender()));
         account.setPhoneNumber(accountDetail.getPhone());
         Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay role"));
 
@@ -172,9 +179,8 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         accountDetail.setStatus(EAccountDetailStatus.REQUESTED);
         accountDetail.setAccount(account);
         accountDetailRepository.save(accountDetail);
-        AccountResponse accountResponse = ObjectUtil.copyProperties(save, new AccountResponse(), AccountResponse.class);
 
-        return accountResponse;
+        return ObjectUtil.copyProperties(save, new AccountResponse(), AccountResponse.class);
     }
 
     @Override
@@ -202,4 +208,6 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         }));
 
     }
+
+
 }

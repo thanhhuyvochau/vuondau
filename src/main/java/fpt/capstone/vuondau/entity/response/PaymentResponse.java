@@ -1,6 +1,6 @@
 package fpt.capstone.vuondau.entity.response;
 
-public class VpnPayResponse {
+public class PaymentResponse {
     private String code;
     private String message;
     private String paymentUrl;

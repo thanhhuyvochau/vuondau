@@ -22,6 +22,7 @@ public class SecurityUtil {
 
     public Account getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         Jwt principal = (Jwt) authentication.getPrincipal();
         String username = principal.getClaimAsString("preferred_username");
         return Optional.ofNullable(accountRepository.findByUsername(username))

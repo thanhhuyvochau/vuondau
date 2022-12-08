@@ -3,7 +3,7 @@ package fpt.capstone.vuondau.controller;
 
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.request.VpnPayRequest;
-import fpt.capstone.vuondau.entity.response.VpnPayResponse;
+import fpt.capstone.vuondau.entity.response.PaymentResponse;
 import fpt.capstone.vuondau.service.ITransactionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +22,7 @@ public class PaymentController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<VpnPayResponse>> getPayment(HttpServletRequest req, @RequestBody VpnPayRequest request) throws IOException {
+    public ResponseEntity<ApiResponse<PaymentResponse>> getPayment(HttpServletRequest req, @RequestBody VpnPayRequest request) throws IOException {
         return ResponseEntity.ok(ApiResponse.success(transactionService.startPayment(req, request)));
     }
 

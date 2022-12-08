@@ -3,6 +3,7 @@ package fpt.capstone.vuondau.util;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.EForumType;
+import fpt.capstone.vuondau.entity.common.EGenderType;
 import fpt.capstone.vuondau.entity.dto.*;
 import fpt.capstone.vuondau.entity.response.*;
 
@@ -48,6 +49,13 @@ public class ConvertUtil {
 
     public static AccountResponse doConvertEntityToResponse(Account account) {
         AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class, true);
+        EGenderType gender = account.getGender();
+        if (gender != null) {
+            GenderResponse genderResponse = new GenderResponse();
+            genderResponse.setCode(gender.name());
+            genderResponse.setName(gender.getLabel());
+//            accountResponse.setGenderResponse(genderResponse);
+        }
         RoleDto roleDto = doConvertEntityToResponse(account.getRole());
         accountResponse.setRole(roleDto);
         if (account.getResource() != null) {
@@ -142,22 +150,7 @@ public class ConvertUtil {
         ClassDto classDto = ObjectUtil.copyProperties(aclass, new ClassDto(), ClassDto.class);
         Course course = aclass.getCourse();
         CourseResponse courseResponse = ConvertUtil.doConvertCourseToCourseResponse(course);
-//        if (course!= null){
-//            courseResponse.setId(course.getId());
-//            courseResponse.setCourseName(course.getName());
-//            courseResponse.setCourseTitle(course.getTitle());
-//            if (course.getResource() != null) {
-//                courseResponse.setImage(course.getResource().getUrl());
-//            }
-//            Subject subject = course.getSubject();
-//            if (subject != null) {
-//                courseResponse.setSubject(doConvertEntityToResponse(subject));
-//            }
-//        }
-//
-//        if (aclass.getAccount() != null) {
-//            courseResponse.setTeacherName(aclass.getAccount().getName());
-//        }
+
         classDto.setStatus(aclass.getStatus());
         classDto.setStartDate(aclass.getStartDate());
         classDto.setEndDate(aclass.getEndDate());
@@ -165,12 +158,10 @@ public class ConvertUtil {
         classDto.setMaxNumberStudent(aclass.getMaxNumberStudent());
         classDto.setUnitPrice(aclass.getUnitPrice());
         classDto.setFinalPrice(aclass.getFinalPrice());
-        classDto.setTeacher(ObjectUtil.copyProperties(aclass.getAccount(), new AccountResponse(), AccountResponse.class));
-//        if (aclass.getClassType()!= null){
-//
-//            classDto.setClassType(ObjectUtil.copyProperties(aclass.getClassType(), new ClassTypeDto() , ClassTypeDto.class));
-//        }
+        if (aclass.getAccount()!= null) {
+            classDto.setTeacher(ObjectUtil.copyProperties(aclass.getAccount(), new AccountResponse(), AccountResponse.class));
 
+        }
         classDto.setCourse(courseResponse);
         return classDto;
     }
