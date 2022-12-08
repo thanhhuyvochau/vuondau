@@ -1,7 +1,7 @@
 package fpt.capstone.vuondau.entity;
 
 public enum EModuleType {
-    QUIZ("quiz"), LESSON("lesson");
+    QUIZ("quiz"), LESSON("lesson") ,  ASSIGN("assign")  ;
 
     EModuleType(String label) {
         this.label = label;

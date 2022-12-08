@@ -303,46 +303,49 @@ public class ClassServiceImpl implements IClassService {
             }
             classDetail.setCourse(courseDetailResponse);
 
-            if (aClass.getResourceMoodleId() != null) {
-                CourseIdRequest courseIdRequest = new CourseIdRequest();
 
-                courseIdRequest.setCourseid(aClass.getResourceMoodleId());
-                try {
-
-
-                    List<MoodleRecourseDtoResponse> resources = new ArrayList<>();
-
-                    List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
-
-
-                    resourceCourse.stream().skip(1).forEach(moodleRecourseClassResponse -> {
-                        MoodleRecourseDtoResponse recourseDtoResponse = new MoodleRecourseDtoResponse();
-                        recourseDtoResponse.setId(moodleRecourseClassResponse.getId());
-                        recourseDtoResponse.setName(moodleRecourseClassResponse.getName());
-                        List<MoodleModuleResponse> modules = moodleRecourseClassResponse.getModules();
-
-                        List<ResourceDtoMoodleResponse> resourceDtoMoodleResponseList = new ArrayList<>();
-
-                        modules.forEach(moodleResponse -> {
-                            ResourceDtoMoodleResponse resourceDtoMoodleResponse = new ResourceDtoMoodleResponse();
-                            resourceDtoMoodleResponse.setId(moodleResponse.getId());
-                            resourceDtoMoodleResponse.setUrl(moodleResponse.getUrl());
-                            resourceDtoMoodleResponse.setName(moodleResponse.getName());
-                            resourceDtoMoodleResponse.setType(moodleResponse.getModname());
-                            resourceDtoMoodleResponseList.add(resourceDtoMoodleResponse);
-                        });
-                        recourseDtoResponse.setModules(resourceDtoMoodleResponseList);
-                        resources.add(recourseDtoResponse);
-                    });
-                    classDetail.setResources(resources);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }
 
 
         }
+
+        if (aClass.getResourceMoodleId() != null) {
+            CourseIdRequest courseIdRequest = new CourseIdRequest();
+
+            courseIdRequest.setCourseid(aClass.getResourceMoodleId());
+            try {
+
+
+                List<MoodleRecourseDtoResponse> resources = new ArrayList<>();
+
+                List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
+
+
+                resourceCourse.stream().skip(1).forEach(moodleRecourseClassResponse -> {
+                    MoodleRecourseDtoResponse recourseDtoResponse = new MoodleRecourseDtoResponse();
+                    recourseDtoResponse.setId(moodleRecourseClassResponse.getId());
+                    recourseDtoResponse.setName(moodleRecourseClassResponse.getName());
+                    List<MoodleModuleResponse> modules = moodleRecourseClassResponse.getModules();
+
+                    List<ResourceDtoMoodleResponse> resourceDtoMoodleResponseList = new ArrayList<>();
+
+                    modules.forEach(moodleResponse -> {
+                        ResourceDtoMoodleResponse resourceDtoMoodleResponse = new ResourceDtoMoodleResponse();
+                        resourceDtoMoodleResponse.setId(moodleResponse.getId());
+                        resourceDtoMoodleResponse.setUrl(moodleResponse.getUrl());
+                        resourceDtoMoodleResponse.setName(moodleResponse.getName());
+                        resourceDtoMoodleResponse.setType(moodleResponse.getModname());
+                        resourceDtoMoodleResponseList.add(resourceDtoMoodleResponse);
+                    });
+                    recourseDtoResponse.setModules(resourceDtoMoodleResponseList);
+                    resources.add(recourseDtoResponse);
+                });
+                classDetail.setResources(resources);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
         Account account = aClass.getAccount();
         if (account != null) {
             AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class);

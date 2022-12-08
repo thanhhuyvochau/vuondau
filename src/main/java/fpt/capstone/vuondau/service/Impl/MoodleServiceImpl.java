@@ -10,13 +10,13 @@ import fpt.capstone.vuondau.MoodleRepository.Response.CategoryResponse;
 import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
 import fpt.capstone.vuondau.MoodleRepository.Response.MoodleModuleResponse;
 import fpt.capstone.vuondau.MoodleRepository.Response.MoodleSectionResponse;
+import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
-import fpt.capstone.vuondau.entity.EModuleType;
-import fpt.capstone.vuondau.entity.Module;
-import fpt.capstone.vuondau.entity.Section;
 import fpt.capstone.vuondau.entity.common.ApiPage;
+import fpt.capstone.vuondau.entity.common.EFileType;
 import fpt.capstone.vuondau.entity.request.CourseIdRequest;
 import fpt.capstone.vuondau.repository.ClassRepository;
+import fpt.capstone.vuondau.repository.FileAttachmentRepository;
 import fpt.capstone.vuondau.repository.SectionRepository;
 import fpt.capstone.vuondau.service.IMoodleService;
 import fpt.capstone.vuondau.util.ObjectUtil;
@@ -28,7 +28,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -43,11 +42,14 @@ public class MoodleServiceImpl implements IMoodleService {
     private final ClassRepository classRepository;
     private final SectionRepository sectionRepository;
 
-    public MoodleServiceImpl(RequestUtil requestUtil, MoodleCourseRepository moodleCourseRepository, ClassRepository classRepository, SectionRepository sectionRepository) {
+    private final FileAttachmentRepository fileAttachmentRepository ;
+
+    public MoodleServiceImpl(RequestUtil requestUtil, MoodleCourseRepository moodleCourseRepository, ClassRepository classRepository, SectionRepository sectionRepository, FileAttachmentRepository fileAttachmentRepository) {
         this.requestUtil = requestUtil;
         this.moodleCourseRepository = moodleCourseRepository;
         this.classRepository = classRepository;
         this.sectionRepository = sectionRepository;
+        this.fileAttachmentRepository = fileAttachmentRepository;
     }
 
     @Override
@@ -95,6 +97,7 @@ public class MoodleServiceImpl implements IMoodleService {
     public Boolean synchronizedClassDetail() throws JsonProcessingException {
         List<Class> classes = classRepository.findAll();
 
+
         for (Class clazz : classes) {
             CourseIdRequest courseIdRequest = new CourseIdRequest();
             courseIdRequest.setCourseid(clazz.getResourceMoodleId());
@@ -106,9 +109,11 @@ public class MoodleServiceImpl implements IMoodleService {
                 for (MoodleModuleResponse moodleModuleResponse : moodleSectionResponse.getModules()) {
                     Module module = createModule(section, moodleModuleResponse);
                     section.getModules().add(module);
+
                 }
                 sections.add(section);
             }
+
             clazz.getSections().clear();
             clazz.getSections().addAll(sections);
         }
@@ -144,6 +149,9 @@ public class MoodleServiceImpl implements IMoodleService {
             return EModuleType.QUIZ;
         } else if (modname.equals(EModuleType.LESSON.getLabel())) {
             return EModuleType.LESSON;
+        }
+        else if (modname.equals(EModuleType.ASSIGN.getLabel())) {
+            return EModuleType.ASSIGN;
         }
         return null;
     }

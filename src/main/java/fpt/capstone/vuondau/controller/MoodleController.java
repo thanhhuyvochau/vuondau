@@ -39,7 +39,7 @@ public class MoodleController {
 //        return ResponseEntity.ok(ApiResponse.success(iMoodleService.crateCategoryToMoodle(moodleCreateCategoryBody)));
 //    }
 
-    @Operation(summary = "Get  từ moodle")
+    @Operation(summary = "Get từ moodle")
     @GetMapping("get-class-from-moodle")
     public ResponseEntity<ApiResponse<ApiPage<MoodleClassResponse>>> synchronizedClass() throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iMoodleService.synchronizedClass()));
