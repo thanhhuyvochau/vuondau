@@ -229,8 +229,6 @@ public class AccountServiceImpl implements IAccountService {
         account.setFirstName(accountEditRequest.getFirstName());
         account.setLastName(accountEditRequest.getLastName());
         account.setPhoneNumber(accountEditRequest.getPhone());
-
-
         Account save = accountRepository.save(account);
         AccountResponse response = ObjectUtil.copyProperties(save, new AccountResponse(), AccountResponse.class);
         if (save.getRole() != null) {

@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.entity;
 
 import fpt.capstone.vuondau.entity.common.EAccountDetailStatus;
 import fpt.capstone.vuondau.entity.common.EDegreeType;
+import fpt.capstone.vuondau.entity.common.EGenderType;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -38,12 +39,8 @@ public class AccountDetail {
     @Column(name = "teaching_province")
     private String teachingProvince;
 
-
     @Column(name = "voice")
     private String voice;
-
-    @Column(name = "gender")
-    private String gender;
 
     @Column(name = "current_address")
     private String currentAddress;
@@ -74,22 +71,15 @@ public class AccountDetail {
     private Account account;
 
     @OneToMany(mappedBy = "accountDetail", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AccountDetailSubject> accountDetailSubjects;
+    private List<AccountDetailSubject> accountDetailSubjects = new ArrayList<>();
 
     @OneToMany(mappedBy = "accountDetail", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AccountDetailClassLevel> accountDetailClassLevels;
+    private List<AccountDetailClassLevel> accountDetailClassLevels = new ArrayList<>();
 
     @OneToMany(mappedBy = "accountDetail")
-    List<Resource> resources;
+    private List<Resource> resources;
 
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
+    private EGenderType gender;
 
     public Long getId() {
         return id;
@@ -99,12 +89,44 @@ public class AccountDetail {
         this.id = id;
     }
 
-    public EAccountDetailStatus getStatus() {
-        return status;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setStatus(EAccountDetailStatus status) {
-        this.status = status;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public Instant getBirthDay() {
+        return birthDay;
+    }
+
+    public void setBirthDay(Instant birthDay) {
+        this.birthDay = birthDay;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getDomicile() {
@@ -163,6 +185,14 @@ public class AccountDetail {
         this.majors = majors;
     }
 
+    public EAccountDetailStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(EAccountDetailStatus status) {
+        this.status = status;
+    }
+
     public String getLevel() {
         return level;
     }
@@ -171,20 +201,20 @@ public class AccountDetail {
         this.level = level;
     }
 
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
     public Account getAccount() {
         return account;
     }
 
     public void setAccount(Account account) {
         this.account = account;
-    }
-
-    public Boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(Boolean active) {
-        isActive = active;
     }
 
     public List<AccountDetailSubject> getAccountDetailSubjects() {
@@ -203,55 +233,19 @@ public class AccountDetail {
         this.accountDetailClassLevels = accountDetailClassLevels;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public Boolean getActive() {
-        return isActive;
-    }
-
-    public Instant getBirthDay() {
-        return birthDay;
-    }
-
-    public void setBirthDay(Instant birthDay) {
-        this.birthDay = birthDay;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
     public List<Resource> getResources() {
         return resources;
     }
 
     public void setResources(List<Resource> resources) {
         this.resources = resources;
+    }
+
+    public EGenderType getGender() {
+        return gender;
+    }
+
+    public void setGender(EGenderType gender) {
+        this.gender = gender;
     }
 }

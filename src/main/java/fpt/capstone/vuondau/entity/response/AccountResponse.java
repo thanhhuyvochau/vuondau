@@ -7,32 +7,26 @@ import java.time.Instant;
 public class AccountResponse {
 
     private Long id;
-
     private String username;
-
+    private Boolean isActive = false;
     private String firstName;
     private String lastName;
+    private String email;
 
-    private Instant  birthday;
-
-    private String email ;
+    private Instant birthday;
+    private String introduce;
     private String phoneNumber;
 
     private RoleDto role;
+    private GenderResponse gender;
+    private String avatar;
 
-    private String avatar ;
-
-    private Boolean active;
-
-    private String gender;
-    private GenderResponse genderResponse;
-
-    public GenderResponse getGenderResponse() {
-        return genderResponse;
+    public String getAvatar() {
+        return avatar;
     }
 
-    public void setGenderResponse(GenderResponse genderResponse) {
-        this.genderResponse = genderResponse;
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public Long getId() {
@@ -52,19 +46,11 @@ public class AccountResponse {
     }
 
     public Boolean getActive() {
-        return active;
-    }
-
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
+        return isActive;
     }
 
     public void setActive(Boolean active) {
-        this.active = active;
+        isActive = active;
     }
 
     public String getFirstName() {
@@ -83,6 +69,22 @@ public class AccountResponse {
         this.lastName = lastName;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+//
+//    public String getCvUrl() {
+//        return cvUrl;
+//    }
+//
+//    public void setCvUrl(String cvUrl) {
+//        this.cvUrl = cvUrl;
+//    }
+
     public Instant getBirthday() {
         return birthday;
     }
@@ -91,15 +93,13 @@ public class AccountResponse {
         this.birthday = birthday;
     }
 
-    public String getEmail() {
-        return email;
+    public String getIntroduce() {
+        return introduce;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setIntroduce(String introduce) {
+        this.introduce = introduce;
     }
-
-
 
     public String getPhoneNumber() {
         return phoneNumber;
@@ -109,6 +109,8 @@ public class AccountResponse {
         this.phoneNumber = phoneNumber;
     }
 
+
+
     public RoleDto getRole() {
         return role;
     }
@@ -117,11 +119,11 @@ public class AccountResponse {
         this.role = role;
     }
 
-    public String getGender() {
+    public GenderResponse getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(GenderResponse gender) {
         this.gender = gender;
     }
 }

@@ -86,7 +86,7 @@ public class Account {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToOne(mappedBy = "account")
+    @OneToOne(mappedBy = "account", fetch = FetchType.LAZY)
     private AccountDetail accountDetail;
 
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)

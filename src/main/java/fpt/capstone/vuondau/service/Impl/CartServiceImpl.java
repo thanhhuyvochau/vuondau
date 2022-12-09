@@ -126,11 +126,11 @@ public class CartServiceImpl implements ICartService {
                         }
 //                        courseResponse.setUnitPriceCourse(course.getUnitPrice());
 //                        courseResponse.setFinalPriceCourse(course.getFinalPrice());
-                        if (!course.getTeacherCourses().isEmpty()) {
-                            Account account = course.getTeacherCourses().stream().map(TeacherCourse::getAccount).findFirst().get();
-
-                            courseResponse.setTeacherName(account.getFirstName() + account.getLastName());
-                        }
+//                        if (!course.getTeacherCourses().isEmpty()) {
+//                            Account account = course.getTeacherCourses().stream().map(TeacherCourse::getAccount).findFirst().get();
+//
+//                            courseResponse.setTeacherName(account.getFirstName() + account.getLastName());
+//                        }
 //                        if (course.getFinalPrice()!= null){
 //                            totalPrice = totalPrice.add(course.getFinalPrice());
 //                        }

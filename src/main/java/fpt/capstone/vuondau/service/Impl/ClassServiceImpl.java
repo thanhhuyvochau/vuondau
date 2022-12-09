@@ -27,6 +27,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 
 
 @Service
+@Transactional
 public class ClassServiceImpl implements IClassService {
 
 
@@ -252,17 +254,19 @@ public class ClassServiceImpl implements IClassService {
         ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
                 .queryLikeByClassName(query.getQ())
                 .queryLikeByTeacherName(query.getQ())
-                .queryStatusClass(query.getStatus());
+                .queryStatusClass(query.getStatus())
+                .queryByEndDate(query.getEndDate())
+                .queryByStartDate(query.getStartDate())
+                .queryByPriceBetween(query.getMinPrice(), query.getMaxPrice());
 
         List<Class> classList = classRepository.findAll(builder.build());
         List<ClassDto> classDtoList = new ArrayList<>();
         classList.stream().map(aClass -> {
             ClassDto classDto = ObjectUtil.copyProperties(aClass, new ClassDto(), ClassDto.class);
-            if (aClass.getAccount()!= null){
+            if (aClass.getAccount() != null) {
                 classDto.setTeacher(ConvertUtil.doConvertEntityToResponse(aClass.getAccount()));
             }
-
-            if (aClass.getCourse()!= null) {
+            if (aClass.getCourse() != null) {
                 classDto.setCourse(ConvertUtil.doConvertCourseToCourseResponse(aClass.getCourse()));
             }
 
@@ -453,7 +457,7 @@ public class ClassServiceImpl implements IClassService {
         ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
                 .queryLevelClass(infoFindTutor.getClassLevel())
                 .queryTeacherClass(teachers)
-                .querySubjectClass(subjects) ;
+                .querySubjectClass(subjects);
 
         Page<Class> classesPage = classRepository.findAll(builder.build(), pageable);
 

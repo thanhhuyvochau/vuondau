@@ -54,7 +54,7 @@ public class ConvertUtil {
             GenderResponse genderResponse = new GenderResponse();
             genderResponse.setCode(gender.name());
             genderResponse.setName(gender.getLabel());
-//            accountResponse.setGenderResponse(genderResponse);
+            accountResponse.setGender(genderResponse);
         }
         RoleDto roleDto = doConvertEntityToResponse(account.getRole());
         accountResponse.setRole(roleDto);
@@ -102,7 +102,7 @@ public class ConvertUtil {
         });
 
         accountDetailResponse.setResources(resourceDtoList);
-        accountDetailResponse.setActive(accountDetail.isActive());
+        accountDetailResponse.setActive(accountDetail.getActive());
         return accountDetailResponse;
 
     }
@@ -147,7 +147,7 @@ public class ConvertUtil {
     }
 
     public static ClassDto doConvertEntityToResponse(Class aclass) {
-        ClassDto classDto = ObjectUtil.copyProperties(aclass, new ClassDto(), ClassDto.class);
+        ClassDto classDto = ObjectUtil.copyProperties(aclass, new ClassDto(), ClassDto.class,true);
         Course course = aclass.getCourse();
         CourseResponse courseResponse = ConvertUtil.doConvertCourseToCourseResponse(course);
 
@@ -158,10 +158,23 @@ public class ConvertUtil {
         classDto.setMaxNumberStudent(aclass.getMaxNumberStudent());
         classDto.setUnitPrice(aclass.getUnitPrice());
         classDto.setFinalPrice(aclass.getFinalPrice());
+
         if (aclass.getAccount()!= null) {
-            classDto.setTeacher(ObjectUtil.copyProperties(aclass.getAccount(), new AccountResponse(), AccountResponse.class));
+            Account teacher = aclass.getAccount();
+//            AccountResponse accountResponse = ObjectUtil.copyProperties(teacher, new AccountResponse(), AccountResponse.class);
+            AccountResponse accountResponse1 = doConvertEntityToResponse(teacher);
+            classDto.setTeacher(accountResponse1);
+//            accountResponse.setBirthday(teacher.getBirthday());
+//            accountResponse.setIntroduce(teacher.getIntroduce());
+//            accountResponse.setPhoneNumber(teacher.getPhoneNumber());
+//            EGenderType gender = teacher.getGender();
+//            accountResponse.setGenderResponse(teacher.getGender());
+//            classDto.setTeacher(ObjectUtil.copyProperties(aclass.getAccount(), new AccountResponse(), AccountResponse.class));
 
         }
+
+
+
         classDto.setCourse(courseResponse);
         return classDto;
     }

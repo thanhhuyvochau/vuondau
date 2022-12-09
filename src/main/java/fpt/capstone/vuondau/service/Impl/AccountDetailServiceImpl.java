@@ -163,7 +163,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         account.setLastName(accountDetail.getLastName());
         account.setFirstName(accountDetail.getFirstName());
         account.setEmail(accountDetail.getEmail());
-        account.setGender(GenderUtil.getGenderByCode(accountDetail.getGender()));
+        account.setGender(accountDetail.getGender());
         account.setPhoneNumber(accountDetail.getPhone());
         Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay role"));
 
@@ -203,7 +203,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
             });
 
             accountDetailResponse.setResources(resourceDtoList);
-            accountDetailResponse.setActive(accountDetail.isActive());
+            accountDetailResponse.setActive(accountDetail.getActive());
             return accountDetailResponse;
         }));
 
