@@ -37,11 +37,12 @@ public class PanoServiceImpl implements PanoService {
 
     private final MessageUtil messageUtil;
 
-    private final PanoRepository panoRepository ;
+    private final PanoRepository panoRepository;
 
     private final MinioAdapter minioAdapter;
     @Value("${minio.url}")
     String minioUrl;
+
     public PanoServiceImpl(ResourceRepository resourceRepository, MessageUtil messageUtil, PanoRepository panoRepository, MinioAdapter minioAdapter) {
         this.resourceRepository = resourceRepository;
         this.messageUtil = messageUtil;
@@ -56,8 +57,8 @@ public class PanoServiceImpl implements PanoService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Name đã tồn tại"));
         }
-        int value  = panoRequest.getPublishDate().compareTo(panoRequest.getExpirationDate());
-        if (value>0 || value == 0){
+        int value = panoRequest.getPublishDate().compareTo(panoRequest.getExpirationDate());
+        if (value > 0 || value == 0) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Ngay publish không thể lớn hơn ngày hết hạn"));
         }
@@ -104,11 +105,11 @@ public class PanoServiceImpl implements PanoService {
     @Override
     public List<GetPanoResponse> getPanos() {
         List<Pano> all = panoRepository.findAll();
-        List<GetPanoResponse> panoResponses = new ArrayList<>() ;
+        List<GetPanoResponse> panoResponses = new ArrayList<>();
         all.forEach(pano -> {
-            panoResponses.add(convertPanoToPanoResponse(pano)) ;
+            panoResponses.add(convertPanoToPanoResponse(pano));
         });
-       return panoResponses ;
+        return panoResponses;
     }
 
     public static GetPanoResponse convertPanoToPanoResponse(Pano pano) {
@@ -124,14 +125,14 @@ public class PanoServiceImpl implements PanoService {
     }
 
     private static String getStatus(Pano pano) {
-        Instant now  = Instant.now() ;
+        Instant now = Instant.now();
         Instant expirationDate = pano.getExpirationDate();
         Instant publishDate = pano.getPublishDate();
         if (publishDate != null && now.isBefore(publishDate)) {
-            return "WAITING_PUBLISH" ;
+            return "WAITING_PUBLISH";
         }
         if (expirationDate != null && now.isAfter(expirationDate)) {
-            return "EXPIRED" ;
+            return "EXPIRED";
         }
         if (publishDate != null && expirationDate != null) {
             if (now.isAfter(publishDate) && now.isBefore(expirationDate)) {
@@ -160,33 +161,55 @@ public class PanoServiceImpl implements PanoService {
                     .withMessage(messageUtil.getLocalMessage("Name đã tồn tại"));
         }
 
-        int value  = panoDto.getPublishDate().compareTo(panoDto.getExpirationDate());
-        if (value>0 || value == 0){
-            throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Ngay publish không thể lớn hơn ngày hết hạn"));
+        if (panoDto.getPublishDate() != null) {
+            if (panoDto.getExpirationDate() == null) {
+                if (panoDto.getPublishDate().compareTo(oldPano.getExpirationDate()) >= 0)
+                    throw ApiException.create(HttpStatus.BAD_REQUEST)
+                            .withMessage(messageUtil.getLocalMessage("Ngay publish không thể lớn hơn ngày hết hạn"));
+            }
+            oldPano.setPublishDate(panoDto.getPublishDate());
+        }
+        if (panoDto.getExpirationDate() != null) {
+            if (panoDto.getPublishDate() == null) {
+                if (panoDto.getExpirationDate().compareTo(oldPano.getPublishDate()) <= 0)
+                    throw ApiException.create(HttpStatus.BAD_REQUEST)
+                            .withMessage(messageUtil.getLocalMessage("Ngay hết không thể nhỏ hơn ngày công bố"));
+            }
+            oldPano.setExpirationDate(panoDto.getExpirationDate());
         }
 
-        oldPano.setPublishDate(panoDto.getPublishDate());
-        oldPano.setExpirationDate(panoDto.getExpirationDate());
-        try {
-            String name = panoDto.getFile().getOriginalFilename() + "-" + Instant.now().toString();
-            ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, panoDto.getFile().getContentType(),
-                    panoDto.getFile().getInputStream(), panoDto.getFile().getSize());
 
-            Resource resource = new Resource();
-            resource.setName(name);
-            resource.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
-            resource.setResourceType(EResourceType.PANO);
-            resourceRepository.save(resource);
-            oldPano.setLinkUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
-            oldPano.setResource(resource);
-
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (panoDto.getPublishDate() != null && panoDto.getExpirationDate() != null) {
+            int value = panoDto.getPublishDate().compareTo(panoDto.getExpirationDate());
+            if (value > 0 || value == 0) {
+                throw ApiException.create(HttpStatus.BAD_REQUEST)
+                        .withMessage(messageUtil.getLocalMessage("Ngay publish không thể lớn hơn ngày hết hạn"));
+            }
         }
 
-        oldPano.setVisible(panoDto.getVisible()); ;
+        if (panoDto.getFile() != null) {
+            try {
+                String name = panoDto.getFile().getOriginalFilename() + "-" + Instant.now().toString();
+                ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, panoDto.getFile().getContentType(),
+                        panoDto.getFile().getInputStream(), panoDto.getFile().getSize());
+
+                Resource resource = new Resource();
+                resource.setName(name);
+                resource.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
+                resource.setResourceType(EResourceType.PANO);
+                resourceRepository.save(resource);
+                oldPano.setLinkUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
+                oldPano.setResource(resource);
+
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+        if (panoDto.getVisible() != null) {
+            oldPano.setVisible(panoDto.getVisible());
+        }
 
         Pano newPano = panoRepository.save(oldPano);
         return convertPanoToPanoResponse(newPano);

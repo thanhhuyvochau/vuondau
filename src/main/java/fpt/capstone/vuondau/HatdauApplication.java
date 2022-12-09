@@ -16,6 +16,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -62,7 +63,18 @@ public class HatdauApplication {
     public static void main(String[] args) {
 
         SpringApplication.run(HatdauApplication.class, args);
-        System.out.println("my push notitifaction");
+
+
+        Instant from = Instant.parse("2018-06-29T10:37:30.00Z");
+        Instant to = Instant.parse("1999-06-29T10:37:30.00Z");
+        long epochFirst = from.getEpochSecond() ;
+
+        long epochSecond = to.getEpochSecond() ;
+        System.out.println(epochFirst-epochSecond);
+
+        int now = 599616000 ;
+        Instant instant = Instant.ofEpochSecond(599616000);
+        System.out.println(instant);
     }
 
     @EventListener(ApplicationReadyEvent.class)

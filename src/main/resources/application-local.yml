@@ -54,3 +54,5 @@ vnp_Returnurl: http://localhost:8082/api/payment/payment-result
 vnp_TmnCode: 76E1ZE8I
 vnp_apiUrl: https://sandbox.vnpayment.vn/merchant_webapi/merchant.html
 
+# provinces
+provinces : https://provinces.open-api.vn/api/?depth=1

@@ -43,9 +43,9 @@ public class Caller {
         }
     }
 
-    public <ResponseType> ResponseType get(String uri, Class<ResponseType> responseTypeClass) {
-        return restTemplate.getForObject(uri, responseTypeClass);
-    }
+//    public <ResponseType> ResponseType get(String uri, TypeReference<ResponseType> responseTypeClass) {
+//        return restTemplate.getForObject(uri, responseTypeClass);
+//    }
 
     public <RequestType, ResponseType> ResponseType getWithAuthenticationTokeCustom(String uri, RequestType request, TypeReference<ResponseType> typeReference) throws JsonProcessingException {
         HttpHeadersCustom headers = new HttpHeadersCustom();
@@ -93,5 +93,7 @@ public class Caller {
             throw new RuntimeException(e);
         }
     }
+
+
 
 }
