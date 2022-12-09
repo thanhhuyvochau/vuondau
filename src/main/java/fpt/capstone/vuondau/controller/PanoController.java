@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -54,7 +55,7 @@ public class PanoController {
 
     @Operation(summary = "Sửa Pano bằng id ")
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<GetPanoResponse>> updatePano(@PathVariable Long id, @Valid @RequestBody PanoDto panoDto) {
+    public ResponseEntity<ApiResponse<GetPanoResponse>> updatePano(@PathVariable Long id, @Nullable @ModelAttribute PanoDto panoDto) {
         return ResponseEntity.ok(ApiResponse.success(panoService.updatePano(id, panoDto), "Pano has been successfully updated with id :" + id));
     }
 
