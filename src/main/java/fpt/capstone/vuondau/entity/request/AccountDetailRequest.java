@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.entity.request;
 
 
 import fpt.capstone.vuondau.entity.common.EAccountRole;
+import fpt.capstone.vuondau.entity.common.EGenderType;
 
 import javax.persistence.Column;
 import java.io.Serializable;
@@ -18,9 +19,11 @@ public class AccountDetailRequest implements Serializable {
 
     private String email;
 
-
+    private String password;
     private String phone;
-    private String gender;
+
+
+    private EGenderType gender;
 
     private String domicile;
     private String voice;
@@ -36,8 +39,20 @@ public class AccountDetailRequest implements Serializable {
 
     private String level;
 
+    private List<Long> subjects ;
+    private List<Long> classLevels ;
+
+
 //    private List<UploadAvatarRequest> uploadFiles ;
 
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public String getFirstName() {
         return firstName;
@@ -63,11 +78,11 @@ public class AccountDetailRequest implements Serializable {
         this.birthDay = birthDay;
     }
 
-    public String getGender() {
+    public EGenderType getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(EGenderType gender) {
         this.gender = gender;
     }
 
@@ -151,11 +166,19 @@ public class AccountDetailRequest implements Serializable {
         this.level = level;
     }
 
-//    public List<UploadAvatarRequest> getUploadFiles() {
-//        return uploadFiles;
-//    }
-//
-//    public void setUploadFiles(List<UploadAvatarRequest> uploadFiles) {
-//        this.uploadFiles = uploadFiles;
-//    }
+    public List<Long> getSubjects() {
+        return subjects;
+    }
+
+    public void setSubjects(List<Long> subjects) {
+        this.subjects = subjects;
+    }
+
+    public List<Long> getClassLevels() {
+        return classLevels;
+    }
+
+    public void setClassLevels(List<Long> classLevels) {
+        this.classLevels = classLevels;
+    }
 }

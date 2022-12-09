@@ -1,9 +1,10 @@
 package fpt.capstone.vuondau.controller;
 
 
-import fpt.capstone.vuondau.entity.AccountDetail;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
+import fpt.capstone.vuondau.entity.dto.ProvincesDto;
 import fpt.capstone.vuondau.entity.dto.ResourceDto;
 import fpt.capstone.vuondau.entity.request.AccountDetailRequest;
 import fpt.capstone.vuondau.entity.request.UploadAvatarRequest;
@@ -13,9 +14,13 @@ import fpt.capstone.vuondau.entity.response.GenderResponse;
 import fpt.capstone.vuondau.service.IAccountDetailService;
 import fpt.capstone.vuondau.util.GenderUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,13 +29,18 @@ import java.util.List;
 @RequestMapping("api/account-detail")
 public class AccountDetailController {
 
+    private final RestTemplate restTemplate;
     private final IAccountDetailService iAccountDetailService;
 
-    public AccountDetailController(IAccountDetailService iAccountDetailService) {
+    @Value("${provinces}")
+    private String province;
+
+    public AccountDetailController(RestTemplate restTemplate, IAccountDetailService iAccountDetailService) {
+        this.restTemplate = restTemplate;
         this.iAccountDetailService = iAccountDetailService;
     }
 
-    @Operation(summary = "Đăng ký làm gia sinh cho hệ thống")
+    @Operation(summary = "Đăng ký làm gia sư cho vườn đậu")
     @PostMapping("/register-tutor")
     public ResponseEntity<ApiResponse<Boolean>> registerTutor(@RequestBody AccountDetailRequest accountDetailRequest) {
         return ResponseEntity.ok(ApiResponse.success(iAccountDetailService.registerTutor(accountDetailRequest)));
@@ -38,8 +48,8 @@ public class AccountDetailController {
 
     @Operation(summary = "upload dại diện - bằng cấp - CMMD.CDCC  để đk giảng dạy")
     @PostMapping("/{id}/image-register-profile")
-    public ResponseEntity<List<ResourceDto>> uploadImageRegisterProfile(@PathVariable long id, @ModelAttribute UploadAvatarRequest uploadAvatarRequest) throws IOException {
-        return ResponseEntity.ok(iAccountDetailService.uploadImageRegisterProfile(id, uploadAvatarRequest));
+    public ResponseEntity<List<ResourceDto>> uploadImageRegisterProfile(@PathVariable long id, @ModelAttribute List<UploadAvatarRequest> UploadAvatarRequest) throws IOException {
+        return ResponseEntity.ok(iAccountDetailService.uploadImageRegisterProfile(id, UploadAvatarRequest));
     }
 
     @Operation(summary = "Admin phê duyệt request đăng ký giang dạy của giao vien")
@@ -59,4 +69,16 @@ public class AccountDetailController {
     public ResponseEntity<ApiResponse<List<GenderResponse>>> getGenderAsList() {
         return ResponseEntity.ok(ApiResponse.success(GenderUtil.getGendersAsList()));
     }
+
+    @GetMapping("/provinces")
+    @Operation(summary = "Lấy tât cả tỉnh thành ở viêt nam")
+    public List<ProvincesDto> getProvinces() throws JsonProcessingException {
+
+        ResponseEntity<List<ProvincesDto>> response = restTemplate.exchange("https://provinces.open-api.vn/api/?depth=1", HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<ProvincesDto>>() {});
+
+        return response.getBody();
+    }
+
+
 }

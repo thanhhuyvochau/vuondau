@@ -10,8 +10,6 @@ public class UploadAvatarRequest {
     private MultipartFile file ;
 
 
-
-
     public EResourceType getResourceType() {
         return resourceType;
     }

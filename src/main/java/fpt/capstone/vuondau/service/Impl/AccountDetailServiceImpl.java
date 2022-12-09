@@ -8,11 +8,8 @@ import fpt.capstone.vuondau.entity.request.AccountDetailRequest;
 import fpt.capstone.vuondau.entity.request.UploadAvatarRequest;
 import fpt.capstone.vuondau.entity.response.AccountDetailResponse;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
-import fpt.capstone.vuondau.entity.response.GenderResponse;
-import fpt.capstone.vuondau.repository.AccountDetailRepository;
-import fpt.capstone.vuondau.repository.AccountRepository;
-import fpt.capstone.vuondau.repository.ResourceRepository;
-import fpt.capstone.vuondau.repository.RoleRepository;
+
+import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IAccountDetailService;
 import fpt.capstone.vuondau.util.*;
 import fpt.capstone.vuondau.util.adapter.MinioAdapter;
@@ -52,10 +49,15 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
     private final RoleRepository roleRepository;
 
     private final SecurityUtil securityUtil;
+
+    private final SubjectRepository subjectRepository ;
+
+    private final ClassLevelRepository classLevelRepository;
+
     @Value("${minio.url}")
     String minioUrl;
 
-    public AccountDetailServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, AccountDetailRepository accountDetailRepository, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, RoleRepository roleRepository, SecurityUtil securityUtil) {
+    public AccountDetailServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, AccountDetailRepository accountDetailRepository, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, RoleRepository roleRepository, SecurityUtil securityUtil, SubjectRepository subjectRepository, ClassLevelRepository classLevelRepository) {
         this.accountRepository = accountRepository;
         this.messageUtil = messageUtil;
         this.accountDetailRepository = accountDetailRepository;
@@ -65,44 +67,101 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         this.resourceRepository = resourceRepository;
         this.roleRepository = roleRepository;
         this.securityUtil = securityUtil;
+        this.subjectRepository = subjectRepository;
+        this.classLevelRepository = classLevelRepository;
     }
 
 
     @Override
     public boolean registerTutor(AccountDetailRequest accountDetailRequest) {
 
-        Account teacher = securityUtil.getCurrentUser();
+//        Account teacher = securityUtil.getCurrentUser();
 
         AccountDetail accountDetail = new AccountDetail();
-        if (accountRepository.existsAccountByEmail(accountDetailRequest.getEmail())) {
+
+        if (accountRepository.existsAccountByEmail(accountDetailRequest.getEmail())
+                || accountDetailRepository.existsAccountByEmail(accountDetailRequest.getEmail())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Email đã có tà khoản trong hệ thống"));
         }
-        accountDetail.setLastName(accountDetailRequest.getLastName());
-        accountDetail.setFirstName(accountDetail.getFirstName());
-        accountDetail.setBirthDay(accountDetailRequest.getBirthDay());
-        accountDetail.setEmail(accountDetailRequest.getEmail());
-        accountDetail.setPhone(accountDetailRequest.getPhone());
-        // chưa có list cái tỉnh thành
+
+        if (accountDetailRepository.existsAccountByEmail(accountDetailRequest.getPhone())) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Email đã có tà khoản trong hệ thống"));
+        }
+
         accountDetail.setTeachingProvince(accountDetailRequest.getTeachingProvince());
+
+        accountDetail.setLastName(accountDetailRequest.getLastName());
+        accountDetail.setFirstName(accountDetailRequest.getFirstName());
+
+        accountDetail.setBirthDay(accountDetailRequest.getBirthDay());
         //Nguyên quán
         accountDetail.setDomicile(accountDetailRequest.getDomicile());
+        accountDetail.setGender(accountDetailRequest.getGender());
 
         accountDetail.setCurrentAddress(accountDetailRequest.getCurrentAddress());
 
         accountDetail.setIdCard(accountDetailRequest.getIdCard());
 
-        accountDetail.setVoice(accountDetailRequest.getVoice());
-        // ngành học
-        accountDetail.setMajors(accountDetailRequest.getMajors());
+
+        accountDetail.setEmail(accountDetailRequest.getEmail());
+        accountDetail.setPhone(accountDetailRequest.getPhone());
+
+        accountDetail.setPassword(accountDetailRequest.getPassword());
 
         // tên trươnng đh / cao đang đã học
         accountDetail.setTrainingSchoolName(accountDetailRequest.getTrainingSchoolName());
-        accountDetail.setStatus(EAccountDetailStatus.REQUESTED);
-        accountDetail.setActive(false);
+
+        // ngành học
+        accountDetail.setMajors(accountDetailRequest.getMajors());
+
 
         // trinh độ : h , cao đẳng
         accountDetail.setLevel(accountDetailRequest.getLevel());
+
+        List<Long> subjects = accountDetailRequest.getSubjects();
+        List<Subject> allSubjects = subjectRepository.findAllById(subjects);
+
+        List<AccountDetailSubject> accountDetailSubjectList = new ArrayList<>();
+        allSubjects.forEach(subject -> {
+            AccountDetailSubject accountDetailSubject = new AccountDetailSubject();
+            AccountDetailSubjectKey accountDetailSubjectKey = new AccountDetailSubjectKey();
+            accountDetailSubjectKey.setSubjectId(subject.getId());
+            accountDetailSubjectKey.setAccountDetailId(accountDetail.getId());
+            accountDetailSubject.setId(accountDetailSubjectKey) ;
+            accountDetailSubject.setSubject(subject);
+            accountDetailSubject.setAccountDetail(accountDetail);
+            accountDetailSubjectList.add(accountDetailSubject) ;
+        });
+
+        accountDetail.setAccountDetailSubjects(accountDetailSubjectList);
+
+
+        List<Long> classLevels = accountDetailRequest.getClassLevels();
+        List<ClassLevel> allClassLevel = classLevelRepository.findAllById(classLevels);
+
+        List<AccountDetailClassLevel> accountDetailClassLevelList = new ArrayList<>() ;
+        allClassLevel.forEach(classLevel -> {
+            AccountDetailClassLevel accountDetailClassLevel = new AccountDetailClassLevel() ;
+            AccountDetailClassLevelKey accountDetailClassLevelKey = new AccountDetailClassLevelKey() ;
+            accountDetailClassLevelKey.setClassLevelId(classLevel.getId());
+            accountDetailClassLevelKey.setAccountDetailId(accountDetail.getId());
+
+            accountDetailClassLevel.setId(accountDetailClassLevelKey);
+            accountDetailClassLevel.setAccountDetail(accountDetail);
+            accountDetailClassLevel.setClassLevel(classLevel);
+            accountDetailClassLevelList.add(accountDetailClassLevel) ;
+
+        });
+        accountDetail.setAccountDetailClassLevels(accountDetailClassLevelList);
+
+        accountDetail.setVoice(accountDetailRequest.getVoice());
+
+
+        accountDetail.setStatus(EAccountDetailStatus.REQUESTED);
+        accountDetail.setActive(false);
+
 
         accountDetailRepository.save(accountDetail);
 
@@ -111,32 +170,33 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
     }
 
     @Override
-    public List<ResourceDto> uploadImageRegisterProfile(long id, UploadAvatarRequest uploadAvatarRequest) {
+    public List<ResourceDto> uploadImageRegisterProfile(long id, List<UploadAvatarRequest> UploadAvatarRequest) {
 
         AccountDetail accountDetail = accountDetailRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
 
         List<Resource> resourceList = new ArrayList<>();
+        for (UploadAvatarRequest uploadImageRequest : UploadAvatarRequest) {
+            try {
+                String name = uploadImageRequest.getFile().getOriginalFilename() + "-" + Instant.now().toString();
+                ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, uploadImageRequest.getFile().getContentType(),
+                        uploadImageRequest.getFile().getInputStream(), uploadImageRequest.getFile().getSize());
 
-        try {
-            String name = uploadAvatarRequest.getFile().getOriginalFilename() + "-" + Instant.now().toString();
-            ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, uploadAvatarRequest.getFile().getContentType(),
-                    uploadAvatarRequest.getFile().getInputStream(), uploadAvatarRequest.getFile().getSize());
+                Resource resource = new Resource();
+                resource.setName(name);
+                resource.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
+                resource.setAccountDetail(accountDetail);
+                if (uploadImageRequest.getResourceType().equals(EResourceType.CARTPHOTO)) {
+                    resource.setResourceType(EResourceType.CARTPHOTO);
+                } else if (uploadImageRequest.getResourceType().equals(EResourceType.DEGREE)) {
+                    resource.setResourceType(EResourceType.CARTPHOTO);
+                } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCD)) {
+                    resource.setResourceType(EResourceType.CCCD);
+                }
 
-            Resource resource = new Resource();
-            resource.setName(name);
-            resource.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
-            resource.setAccountDetail(accountDetail);
-            if (uploadAvatarRequest.getResourceType().equals(EResourceType.CARTPHOTO)) {
-                resource.setResourceType(EResourceType.CARTPHOTO);
-            } else if (uploadAvatarRequest.getResourceType().equals(EResourceType.DEGREE)) {
-                resource.setResourceType(EResourceType.CARTPHOTO);
-            } else if (uploadAvatarRequest.getResourceType().equals(EResourceType.CCCD)) {
-                resource.setResourceType(EResourceType.CCCD);
+                resourceList.add(resource);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-
-            resourceList.add(resource);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
 
         resourceRepository.saveAll(resourceList);
