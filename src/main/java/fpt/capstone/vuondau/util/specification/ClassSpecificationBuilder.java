@@ -47,7 +47,8 @@ public class ClassSpecificationBuilder {
         if (maxPrice.compareTo(minPrice) < 0) {
             return this;
         }
-        specifications.add((root, query, criteriaBuilder) -> criteriaBuilder.between(root.get(Class_.UNIT_PRICE), minPrice,maxPrice));
+
+        specifications.add((root, query, criteriaBuilder) -> criteriaBuilder.between(root.get(Class_.UNIT_PRICE), minPrice, maxPrice));
         return this;
     }
 
@@ -81,7 +82,7 @@ public class ClassSpecificationBuilder {
 
     public Specification<Class> build() {
         return specifications.stream().filter(Objects::nonNull)
-                .reduce(all(), Specification::or);
+                .reduce(all(), Specification::and);
     }
 
     private Specification<Class> all() {
