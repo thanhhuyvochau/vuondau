@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.time.Instant;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,6 +54,8 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
     private final ClassLevelRepository classLevelRepository;
 
+
+
     @Value("${minio.url}")
     String minioUrl;
 
@@ -69,6 +71,25 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         this.securityUtil = securityUtil;
         this.subjectRepository = subjectRepository;
         this.classLevelRepository = classLevelRepository;
+    }
+
+
+    public Boolean checkBirthday (String birthday){
+
+        LocalDate today = LocalDate.now();
+
+        Instant instant = Instant.parse(birthday);
+        LocalDate localDate
+                = LocalDateTime.ofInstant(instant, ZoneOffset.UTC).toLocalDate();
+
+        Period p = Period.between(localDate, today);
+        int checkBirthday = p.getYears() ;
+        System.out.println("You are " + p.getYears() + " years") ;
+        if (checkBirthday <= 18){
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Bạn chưa đủ 18 tuổi"));
+        }
+        return  true;
     }
 
 
@@ -94,35 +115,29 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
         accountDetail.setLastName(accountDetailRequest.getLastName());
         accountDetail.setFirstName(accountDetailRequest.getFirstName());
-
-        accountDetail.setBirthDay(accountDetailRequest.getBirthDay());
+        if(checkBirthday(accountDetailRequest.getBirthDay().toString())){
+            accountDetail.setBirthDay(accountDetailRequest.getBirthDay());
+        }
         //Nguyên quán
         accountDetail.setDomicile(accountDetailRequest.getDomicile());
         accountDetail.setGender(accountDetailRequest.getGender());
-
         accountDetail.setCurrentAddress(accountDetailRequest.getCurrentAddress());
-
+        if (accountDetailRepository.existsAccountDetailByIdCard(accountDetailRequest.getIdCard())){
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Số chứng minh / căn cước công dân đã có trong hệ thống"));
+        }
         accountDetail.setIdCard(accountDetailRequest.getIdCard());
-
-
         accountDetail.setEmail(accountDetailRequest.getEmail());
         accountDetail.setPhone(accountDetailRequest.getPhone());
-
         accountDetail.setPassword(accountDetailRequest.getPassword());
-
         // tên trươnng đh / cao đang đã học
         accountDetail.setTrainingSchoolName(accountDetailRequest.getTrainingSchoolName());
-
         // ngành học
         accountDetail.setMajors(accountDetailRequest.getMajors());
-
-
         // trinh độ : h , cao đẳng
         accountDetail.setLevel(accountDetailRequest.getLevel());
-
         List<Long> subjects = accountDetailRequest.getSubjects();
         List<Subject> allSubjects = subjectRepository.findAllById(subjects);
-
         List<AccountDetailSubject> accountDetailSubjectList = new ArrayList<>();
         allSubjects.forEach(subject -> {
             AccountDetailSubject accountDetailSubject = new AccountDetailSubject();
@@ -134,31 +149,22 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
             accountDetailSubject.setAccountDetail(accountDetail);
             accountDetailSubjectList.add(accountDetailSubject) ;
         });
-
         accountDetail.setAccountDetailSubjects(accountDetailSubjectList);
-
-
         List<Long> classLevels = accountDetailRequest.getClassLevels();
         List<ClassLevel> allClassLevel = classLevelRepository.findAllById(classLevels);
-
         List<AccountDetailClassLevel> accountDetailClassLevelList = new ArrayList<>() ;
         allClassLevel.forEach(classLevel -> {
             AccountDetailClassLevel accountDetailClassLevel = new AccountDetailClassLevel() ;
             AccountDetailClassLevelKey accountDetailClassLevelKey = new AccountDetailClassLevelKey() ;
             accountDetailClassLevelKey.setClassLevelId(classLevel.getId());
             accountDetailClassLevelKey.setAccountDetailId(accountDetail.getId());
-
             accountDetailClassLevel.setId(accountDetailClassLevelKey);
             accountDetailClassLevel.setAccountDetail(accountDetail);
             accountDetailClassLevel.setClassLevel(classLevel);
             accountDetailClassLevelList.add(accountDetailClassLevel) ;
-
         });
         accountDetail.setAccountDetailClassLevels(accountDetailClassLevelList);
-
         accountDetail.setVoice(accountDetailRequest.getVoice());
-
-
         accountDetail.setStatus(EAccountDetailStatus.REQUESTED);
         accountDetail.setActive(false);
 
@@ -218,7 +224,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
         Account account = new Account();
         account.setUsername(accountDetail.getEmail());
-        account.setPassword("123456");
+        account.setPassword(accountDetail.getPassword());
         account.setActive(true);
         account.setLastName(accountDetail.getLastName());
         account.setFirstName(accountDetail.getFirstName());

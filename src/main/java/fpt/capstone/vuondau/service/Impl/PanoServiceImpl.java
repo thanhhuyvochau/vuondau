@@ -155,6 +155,7 @@ public class PanoServiceImpl implements PanoService {
         Pano oldPano = panoRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Không tìm thấy Pano") + id));
         oldPano.setName(panoDto.getName());
+
         if (panoRepository.existsByName(panoDto.getName()) && !oldPano.getName().equals(panoDto.getName())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Name đã tồn tại"));
