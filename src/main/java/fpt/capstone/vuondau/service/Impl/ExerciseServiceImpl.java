@@ -55,6 +55,7 @@ public class ExerciseServiceImpl implements IExerciseService {
                 exerciseDto.setFileType(EFileType.CREATE);
                 exerciseList.add(exerciseDto) ;
             }
+
             classExerciseDto.setExercises(exerciseList);
             classExerciseList.add(classExerciseDto) ;
         });
