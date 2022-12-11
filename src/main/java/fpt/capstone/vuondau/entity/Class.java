@@ -43,7 +43,7 @@ public class Class {
     @JoinColumn(name = "course_id")
     private Course course;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "teacher_id")
     private Account account;
 

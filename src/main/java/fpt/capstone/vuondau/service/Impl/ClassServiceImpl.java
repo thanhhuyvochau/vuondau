@@ -251,6 +251,7 @@ public class ClassServiceImpl implements IClassService {
 
     @Override
     public List<ClassDto> searchClass(ClassSearchRequest query) {
+        List<Long> classIds = query.getSubjectIds();
         ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
                 .queryLikeByClassName(query.getQ())
                 .queryLikeByTeacherName(query.getQ())
@@ -258,7 +259,10 @@ public class ClassServiceImpl implements IClassService {
                 .queryByEndDate(query.getEndDate())
                 .queryByStartDate(query.getStartDate())
                 .queryByPriceBetween(query.getMinPrice(), query.getMaxPrice());
-
+        if (!classIds.isEmpty()) {
+            List<Subject> subjects = subjectRepository.findAllById(query.getSubjectIds());
+            builder.querySubjectClass(subjects);
+        }
         List<Class> classList = classRepository.findAll(builder.build());
         List<ClassDto> classDtoList = new ArrayList<>();
         classList.stream().map(aClass -> {
@@ -304,8 +308,6 @@ public class ClassServiceImpl implements IClassService {
                 courseDetailResponse.setSubject(subjectDto);
             }
             classDetail.setCourse(courseDetailResponse);
-
-
 
 
         }

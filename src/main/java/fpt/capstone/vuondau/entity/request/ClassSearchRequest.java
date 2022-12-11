@@ -5,6 +5,8 @@ import fpt.capstone.vuondau.entity.common.EClassStatus;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClassSearchRequest implements Serializable {
     private String q;
@@ -14,6 +16,7 @@ public class ClassSearchRequest implements Serializable {
     private Instant endDate;
     private BigDecimal minPrice;
     private BigDecimal maxPrice;
+    private List<Long> subjectIds = new ArrayList<>();
 
     public String getQ() {
         return q;
@@ -61,5 +64,13 @@ public class ClassSearchRequest implements Serializable {
 
     public void setMaxPrice(BigDecimal maxPrice) {
         this.maxPrice = maxPrice;
+    }
+
+    public List<Long> getSubjectIds() {
+        return subjectIds;
+    }
+
+    public void setSubjectIds(List<Long> subjectIds) {
+        this.subjectIds = subjectIds;
     }
 }
