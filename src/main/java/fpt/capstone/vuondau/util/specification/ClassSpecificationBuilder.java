@@ -8,6 +8,7 @@ import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.util.SpecificationUtil;
 import org.springframework.data.jpa.domain.Specification;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Path;
 import java.math.BigDecimal;
@@ -113,13 +114,14 @@ public class ClassSpecificationBuilder {
         }
         specifications.add((root, query, criteriaBuilder) -> {
             Path<Course> coursePath = root.get(Class_.course);
-            Path<Subject> subjectPath = coursePath.get(Course_.subject);
-            return criteriaBuilder.or(criteriaBuilder.and(coursePath.get(Course_.subject).in(subjects)));
+            CriteriaBuilder.In<Subject> inClause = criteriaBuilder.in(coursePath.get(Course_.subject));
+            for (Subject subject : subjects) {
+                inClause.value(subject);
+            }
+            return inClause;
         });
 
 
         return this;
     }
-
-
 }
