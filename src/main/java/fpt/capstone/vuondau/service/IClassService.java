@@ -36,7 +36,7 @@ public interface IClassService {
 
     List<ClassStudentDto> getStudentWaitingIntoClass(Long classId);
 
-    List<ClassDto> searchClass(ClassSearchRequest query);
+    ApiPage<ClassDto> searchClass(ClassSearchRequest query,Pageable pageable);
 
 
 

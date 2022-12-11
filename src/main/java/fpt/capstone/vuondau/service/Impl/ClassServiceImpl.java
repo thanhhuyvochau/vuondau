@@ -250,7 +250,7 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
-    public List<ClassDto> searchClass(ClassSearchRequest query) {
+    public ApiPage<ClassDto> searchClass(ClassSearchRequest query,Pageable pageable) {
         List<Long> classIds = query.getSubjectIds();
         ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
                 .queryLikeByClassName(query.getQ())
@@ -277,7 +277,8 @@ public class ClassServiceImpl implements IClassService {
             classDtoList.add(classDto);
             return aClass;
         }).collect(Collectors.toList());
-        return classDtoList;
+        Page<ClassDto> classPage = new PageImpl<>(classDtoList,pageable,classDtoList.size());
+        return PageUtil.convert(classPage);
     }
 
     @Override
