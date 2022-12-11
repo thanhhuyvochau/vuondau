@@ -4,6 +4,8 @@ import fpt.capstone.vuondau.entity.Module;
 import fpt.capstone.vuondau.entity.Section;
 import fpt.capstone.vuondau.repository.SectionRepository;
 
+import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class CompareUtil {
@@ -23,6 +25,10 @@ public class CompareUtil {
 
 
     }
+
+
+
+
 
 //    public static Boolean compareSection(Section o1, Section o2) {
 //        if (o1 == o2) return true;

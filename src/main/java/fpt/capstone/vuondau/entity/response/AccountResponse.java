@@ -1,15 +1,8 @@
 package fpt.capstone.vuondau.entity.response;
 
-import fpt.capstone.vuondau.entity.*;
-import fpt.capstone.vuondau.entity.Class;
-import fpt.capstone.vuondau.entity.common.EDegreeType;
-import fpt.capstone.vuondau.entity.common.EGenderType;
 import fpt.capstone.vuondau.entity.dto.RoleDto;
 
-import javax.persistence.*;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AccountResponse {
 
@@ -19,13 +12,13 @@ public class AccountResponse {
     private String firstName;
     private String lastName;
     private String email;
-    private String cvUrl;
+
     private Instant birthday;
     private String introduce;
     private String phoneNumber;
-    private GenderResponse gender;
+
     private RoleDto role;
-    private GenderResponse genderResponse;
+    private GenderResponse gender;
     private String avatar;
 
     public String getAvatar() {
@@ -83,14 +76,14 @@ public class AccountResponse {
     public void setEmail(String email) {
         this.email = email;
     }
-
-    public String getCvUrl() {
-        return cvUrl;
-    }
-
-    public void setCvUrl(String cvUrl) {
-        this.cvUrl = cvUrl;
-    }
+//
+//    public String getCvUrl() {
+//        return cvUrl;
+//    }
+//
+//    public void setCvUrl(String cvUrl) {
+//        this.cvUrl = cvUrl;
+//    }
 
     public Instant getBirthday() {
         return birthday;
@@ -116,13 +109,7 @@ public class AccountResponse {
         this.phoneNumber = phoneNumber;
     }
 
-    public GenderResponse getGender() {
-        return gender;
-    }
 
-    public void setGender(GenderResponse gender) {
-        this.gender = gender;
-    }
 
     public RoleDto getRole() {
         return role;
@@ -132,11 +119,11 @@ public class AccountResponse {
         this.role = role;
     }
 
-    public GenderResponse getGenderResponse() {
-        return genderResponse;
+    public GenderResponse getGender() {
+        return gender;
     }
 
-    public void setGenderResponse(GenderResponse genderResponse) {
-        this.genderResponse = genderResponse;
+    public void setGender(GenderResponse gender) {
+        this.gender = gender;
     }
 }
