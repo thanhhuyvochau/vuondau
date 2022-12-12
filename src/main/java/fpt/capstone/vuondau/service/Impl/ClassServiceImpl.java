@@ -83,7 +83,7 @@ public class ClassServiceImpl implements IClassService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("class code da ton tai"));
         }
-
+        courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(()->ApiException.create(HttpStatus.NOT_FOUND).withMessage());
         clazz.setCode(createClassRequest.getCode());
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
@@ -105,10 +105,7 @@ public class ClassServiceImpl implements IClassService {
 
 
         S1CourseRequest s1CourseRequest = new S1CourseRequest();
-
         List<MoodleCourseDataRequest.MoodleCourseBody> moodleCourseBodyList = new ArrayList<>();
-
-
         for (MoodleCourseDataRequest.MoodleCourseBody request : moodleCourseDataRequest.getCourses()) {
             MoodleCourseDataRequest.MoodleCourseBody moodleCourseBody = new MoodleCourseDataRequest.MoodleCourseBody();
             moodleCourseBody.setFullname(request.getFullname());
@@ -304,8 +301,6 @@ public class ClassServiceImpl implements IClassService {
                 courseDetailResponse.setSubject(subjectDto);
             }
             classDetail.setCourse(courseDetailResponse);
-
-
 
 
         }
