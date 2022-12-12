@@ -67,7 +67,7 @@ public class Class {
 
     @Column(name = "class_level")
     @Enumerated(EnumType.STRING)
-    private EClassLevelCode classLevel ;
+    private EClassLevelCode classLevel;
 
     @Column(name = "unit_price")
     private BigDecimal unitPrice;
@@ -87,8 +87,10 @@ public class Class {
     @ManyToOne
     @JoinColumn(name = "image_id")
     private Resource image;
-    @OneToMany(mappedBy = "clazz",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "clazz", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections;
+    @OneToMany(mappedBy = "clazz", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<ClassTeacherCandicate> candicates = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -265,5 +267,13 @@ public class Class {
 
     public void setSections(List<Section> sections) {
         this.sections = sections;
+    }
+
+    public List<ClassTeacherCandicate> getCandicates() {
+        return candicates;
+    }
+
+    public void setCandicates(List<ClassTeacherCandicate> candicates) {
+        this.candicates = candicates;
     }
 }
