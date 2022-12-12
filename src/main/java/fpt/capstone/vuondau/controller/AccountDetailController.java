@@ -12,6 +12,7 @@ import fpt.capstone.vuondau.entity.response.AccountDetailResponse;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.GenderResponse;
 import fpt.capstone.vuondau.service.IAccountDetailService;
+import fpt.capstone.vuondau.service.ISendMailService;
 import fpt.capstone.vuondau.util.GenderUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,12 +33,15 @@ public class AccountDetailController {
     private final RestTemplate restTemplate;
     private final IAccountDetailService iAccountDetailService;
 
+    private final ISendMailService iSendMailService ;
+
     @Value("${provinces}")
     private String province;
 
-    public AccountDetailController(RestTemplate restTemplate, IAccountDetailService iAccountDetailService) {
+    public AccountDetailController(RestTemplate restTemplate, IAccountDetailService iAccountDetailService, ISendMailService iSendMailService) {
         this.restTemplate = restTemplate;
         this.iAccountDetailService = iAccountDetailService;
+        this.iSendMailService = iSendMailService;
     }
 
     @Operation(summary = "Đăng ký làm gia sư cho vườn đậu")
@@ -80,5 +84,11 @@ public class AccountDetailController {
         return response.getBody();
     }
 
+
+    @PostMapping("/sendMail")
+    public ResponseEntity<ApiResponse<Boolean>> sendMail() {
+        return ResponseEntity.ok(ApiResponse.success(iSendMailService.sendMail()));
+
+    }
 
 }
