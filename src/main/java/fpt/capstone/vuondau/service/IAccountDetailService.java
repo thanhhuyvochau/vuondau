@@ -17,7 +17,7 @@ import java.util.Optional;
 public interface IAccountDetailService {
 
 
-    boolean registerTutor(AccountDetailRequest accountDetailRequest);
+    Long registerTutor(AccountDetailRequest accountDetailRequest);
 
     List<ResourceDto> uploadImageRegisterProfile(long id, List<UploadAvatarRequest> UploadAvatarRequest);
 

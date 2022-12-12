@@ -43,7 +43,7 @@ public class AccountDetailRequest implements Serializable {
     private List<Long> classLevels ;
 
 
-//    private List<UploadAvatarRequest> uploadFiles ;
+    private List<UploadAvatarRequest> uploadFiles ;
 
 
     public String getPassword() {
@@ -180,5 +180,13 @@ public class AccountDetailRequest implements Serializable {
 
     public void setClassLevels(List<Long> classLevels) {
         this.classLevels = classLevels;
+    }
+
+    public List<UploadAvatarRequest> getUploadFiles() {
+        return uploadFiles;
+    }
+
+    public void setUploadFiles(List<UploadAvatarRequest> uploadFiles) {
+        this.uploadFiles = uploadFiles;
     }
 }

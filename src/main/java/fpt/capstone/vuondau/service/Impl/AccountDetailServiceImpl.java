@@ -94,38 +94,43 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
 
     @Override
-    public boolean registerTutor(AccountDetailRequest accountDetailRequest) {
+    public Long registerTutor(AccountDetailRequest accountDetailRequest) {
 
 //        Account teacher = securityUtil.getCurrentUser();
 
         AccountDetail accountDetail = new AccountDetail();
 
-        if (accountRepository.existsAccountByEmail(accountDetailRequest.getEmail())
+        if (accountRepository.existsAccountByEmail(accountDetailRequest.getEmail() )
+                || accountDetailRequest.getEmail() == null
                 || accountDetailRepository.existsAccountByEmail(accountDetailRequest.getEmail())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Email đã có tà khoản trong hệ thống"));
         }
 
-        if (accountDetailRepository.existsAccountByEmail(accountDetailRequest.getPhone())) {
+        if (accountDetailRepository.existsAccountByEmail(accountDetailRequest.getPhone()) || accountDetailRequest.getPhone()== null) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Email đã có tà khoản trong hệ thống"));
+                    .withMessage(messageUtil.getLocalMessage("Phone đã có tà khoản trong hệ thống"));
         }
 
         accountDetail.setTeachingProvince(accountDetailRequest.getTeachingProvince());
 
         accountDetail.setLastName(accountDetailRequest.getLastName());
         accountDetail.setFirstName(accountDetailRequest.getFirstName());
-        if(checkBirthday(accountDetailRequest.getBirthDay().toString())){
-            accountDetail.setBirthDay(accountDetailRequest.getBirthDay());
+        if (accountDetailRequest.getBirthDay()!=null){
+            if(checkBirthday(accountDetailRequest.getBirthDay().toString())){
+                accountDetail.setBirthDay(accountDetailRequest.getBirthDay());
+            }
         }
+
         //Nguyên quán
         accountDetail.setDomicile(accountDetailRequest.getDomicile());
         accountDetail.setGender(accountDetailRequest.getGender());
         accountDetail.setCurrentAddress(accountDetailRequest.getCurrentAddress());
-        if (accountDetailRepository.existsAccountDetailByIdCard(accountDetailRequest.getIdCard())){
+        if (accountDetailRepository.existsAccountDetailByIdCard(accountDetailRequest.getIdCard()) || accountDetailRequest.getIdCard() == null){
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Số chứng minh / căn cước công dân đã có trong hệ thống"));
         }
+
         accountDetail.setIdCard(accountDetailRequest.getIdCard());
         accountDetail.setEmail(accountDetailRequest.getEmail());
         accountDetail.setPhone(accountDetailRequest.getPhone());
@@ -137,42 +142,86 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         // trinh độ : h , cao đẳng
         accountDetail.setLevel(accountDetailRequest.getLevel());
         List<Long> subjects = accountDetailRequest.getSubjects();
-        List<Subject> allSubjects = subjectRepository.findAllById(subjects);
         List<AccountDetailSubject> accountDetailSubjectList = new ArrayList<>();
-        allSubjects.forEach(subject -> {
-            AccountDetailSubject accountDetailSubject = new AccountDetailSubject();
-            AccountDetailSubjectKey accountDetailSubjectKey = new AccountDetailSubjectKey();
-            accountDetailSubjectKey.setSubjectId(subject.getId());
-            accountDetailSubjectKey.setAccountDetailId(accountDetail.getId());
-            accountDetailSubject.setId(accountDetailSubjectKey) ;
-            accountDetailSubject.setSubject(subject);
-            accountDetailSubject.setAccountDetail(accountDetail);
-            accountDetailSubjectList.add(accountDetailSubject) ;
-        });
+        if (subjects!= null){
+            List<Subject> allSubjects = subjectRepository.findAllById(subjects);
+
+
+            allSubjects.forEach(subject -> {
+                AccountDetailSubject accountDetailSubject = new AccountDetailSubject();
+                AccountDetailSubjectKey accountDetailSubjectKey = new AccountDetailSubjectKey();
+                accountDetailSubjectKey.setSubjectId(subject.getId());
+                accountDetailSubjectKey.setAccountDetailId(accountDetail.getId());
+                accountDetailSubject.setId(accountDetailSubjectKey);
+                accountDetailSubject.setSubject(subject);
+                accountDetailSubject.setAccountDetail(accountDetail);
+                accountDetailSubjectList.add(accountDetailSubject);
+            });
+        }
+
+
         accountDetail.setAccountDetailSubjects(accountDetailSubjectList);
-        List<Long> classLevels = accountDetailRequest.getClassLevels();
-        List<ClassLevel> allClassLevel = classLevelRepository.findAllById(classLevels);
         List<AccountDetailClassLevel> accountDetailClassLevelList = new ArrayList<>() ;
-        allClassLevel.forEach(classLevel -> {
-            AccountDetailClassLevel accountDetailClassLevel = new AccountDetailClassLevel() ;
-            AccountDetailClassLevelKey accountDetailClassLevelKey = new AccountDetailClassLevelKey() ;
-            accountDetailClassLevelKey.setClassLevelId(classLevel.getId());
-            accountDetailClassLevelKey.setAccountDetailId(accountDetail.getId());
-            accountDetailClassLevel.setId(accountDetailClassLevelKey);
-            accountDetailClassLevel.setAccountDetail(accountDetail);
-            accountDetailClassLevel.setClassLevel(classLevel);
-            accountDetailClassLevelList.add(accountDetailClassLevel) ;
-        });
+        List<Long> classLevels = accountDetailRequest.getClassLevels();
+        if (classLevels!=null ){
+            List<ClassLevel> allClassLevel = classLevelRepository.findAllById(classLevels);
+            allClassLevel.forEach(classLevel -> {
+                AccountDetailClassLevel accountDetailClassLevel = new AccountDetailClassLevel() ;
+                AccountDetailClassLevelKey accountDetailClassLevelKey = new AccountDetailClassLevelKey() ;
+                accountDetailClassLevelKey.setClassLevelId(classLevel.getId());
+                accountDetailClassLevelKey.setAccountDetailId(accountDetail.getId());
+                accountDetailClassLevel.setId(accountDetailClassLevelKey);
+                accountDetailClassLevel.setAccountDetail(accountDetail);
+                accountDetailClassLevel.setClassLevel(classLevel);
+                accountDetailClassLevelList.add(accountDetailClassLevel) ;
+            });
+        }
+
+
+
+
         accountDetail.setAccountDetailClassLevels(accountDetailClassLevelList);
         accountDetail.setVoice(accountDetailRequest.getVoice());
         accountDetail.setStatus(EAccountDetailStatus.REQUESTED);
         accountDetail.setActive(false);
 
 
-        accountDetailRepository.save(accountDetail);
+
+        List<Resource> resourceList = new ArrayList<>();
+        for (UploadAvatarRequest uploadImageRequest : accountDetailRequest.getUploadFiles()) {
+            try {
+                String name = uploadImageRequest.getFile().getOriginalFilename() + "-" + Instant.now().toString();
+                ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, uploadImageRequest.getFile().getContentType(),
+                        uploadImageRequest.getFile().getInputStream(), uploadImageRequest.getFile().getSize());
+
+                Resource resource = new Resource();
+                resource.setName(name);
+                resource.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
+                resource.setAccountDetail(accountDetail);
+                if (uploadImageRequest.getResourceType().equals(EResourceType.CARTPHOTO)) {
+                    resource.setResourceType(EResourceType.CARTPHOTO);
+                } else if (uploadImageRequest.getResourceType().equals(EResourceType.DEGREE)) {
+                    resource.setResourceType(EResourceType.CARTPHOTO);
+                } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCD)) {
+                    resource.setResourceType(EResourceType.CCCD);
+                }
+
+                resourceList.add(resource);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (resourceList.size() <3 ){
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Hệ thống cần bạn upload đầy đủ hình ảnh."));
+        }
+
+        resourceRepository.saveAll(resourceList);
+
+        AccountDetail save = accountDetailRepository.save(accountDetail);
 
 
-        return true;
+        return save.getId() ;
     }
 
     @Override

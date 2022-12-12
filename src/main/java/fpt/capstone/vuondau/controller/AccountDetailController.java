@@ -42,7 +42,7 @@ public class AccountDetailController {
 
     @Operation(summary = "Đăng ký làm gia sư cho vườn đậu")
     @PostMapping("/register-tutor")
-    public ResponseEntity<ApiResponse<Boolean>> registerTutor(@RequestBody AccountDetailRequest accountDetailRequest) {
+    public ResponseEntity<ApiResponse<Long>> registerTutor( @ModelAttribute  AccountDetailRequest accountDetailRequest) {
         return ResponseEntity.ok(ApiResponse.success(iAccountDetailService.registerTutor(accountDetailRequest)));
     }
 
