@@ -17,8 +17,8 @@ public class AccountDetailResponse {
 
     private Long id;
 
-
-    private String fullName;
+    private String firstName;
+    private String lastName;
 
 
     private Instant birthDay;
@@ -76,12 +76,21 @@ public class AccountDetailResponse {
         this.id = id;
     }
 
-    public String getFullName() {
-        return fullName;
+
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public Instant getBirthDay() {
