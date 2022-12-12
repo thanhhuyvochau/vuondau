@@ -3,7 +3,7 @@ package fpt.capstone.vuondau.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "account_detail_subject")
+@Table(name = "account_detail_class_level")
 public class AccountDetailClassLevel {
 
     @EmbeddedId

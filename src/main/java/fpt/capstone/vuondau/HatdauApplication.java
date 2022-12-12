@@ -9,6 +9,7 @@ import fpt.capstone.vuondau.MoodleRepository.Response.CategoryResponse;
 import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
+import fpt.capstone.vuondau.entity.DayOfWeek;
 import fpt.capstone.vuondau.entity.common.*;
 import fpt.capstone.vuondau.repository.*;
 import org.springframework.boot.SpringApplication;
@@ -16,6 +17,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
+import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -42,11 +45,11 @@ public class HatdauApplication {
 
     private final SlotRepository slotRepository;
 
-    private final DayOfWeekRepository dayOfWeekRepository ;
+    private final DayOfWeekRepository dayOfWeekRepository;
 
-    private final ClassRepository classRepository ;
+    private final ClassRepository classRepository;
 
-    private final  ClassTypeRepository classTypeRepository ;
+    private final ClassTypeRepository classTypeRepository;
 
     public HatdauApplication(RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository, MoodleCourseRepository moodleCourseRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ClassRepository classRepository, ClassTypeRepository classTypeRepository) {
         this.roleRepository = roleRepository;
@@ -61,9 +64,29 @@ public class HatdauApplication {
 
     public static void main(String[] args) {
 
+
         SpringApplication.run(HatdauApplication.class, args);
-        System.out.println("my push notitifaction");
+
+        LocalDate today = LocalDate.now();
+
+        Instant instant = Instant.parse("2007-12-09T08:23:38.169Z");
+        LocalDate localDate
+                = LocalDateTime.ofInstant(instant, ZoneOffset.UTC).toLocalDate();
+
+
+        Period p = Period.between(localDate, today);
+        int checkBirthday = p.getYears() ;
+
+        System.out.println("You are " + p.getYears() + " years") ;
+        if (checkBirthday >= 18){
+            System.out.println("dung");
+        }
+
+
+
+
     }
+
 
     @EventListener(ApplicationReadyEvent.class)
     public void intiDataRole() {
@@ -118,7 +141,6 @@ public class HatdauApplication {
             RequestType requestType = new RequestType();
             requestType.setCode(AVATAR);
             requestType.setName("avatar");
-
             requestTypeList.add(requestType);
         }
         if (!existTypeFile) {
@@ -299,38 +321,37 @@ public class HatdauApplication {
         List<MoodleClassResponse> courseMoodle = moodleCourseRepository.getCourse(request);
 
         List<Class> allClass = classRepository.findAll();
-        List<Class> classList = new ArrayList<>() ;
+        List<Class> classList = new ArrayList<>();
         courseMoodle.stream().map(moodleClassResponse -> {
-            for (Class aClass : allClass){
-                if (aClass.getCode().equals(moodleClassResponse.getShortname())){
+            for (Class aClass : allClass) {
+                if (aClass.getCode().equals(moodleClassResponse.getShortname())) {
                     aClass.setResourceMoodleId(moodleClassResponse.getId());
-                    classList.add(aClass) ;
+                    classList.add(aClass);
                 }
             }
-            return moodleClassResponse ;
+            return moodleClassResponse;
         }).collect(Collectors.toList());
 
         courseMoodle.forEach(moodleClassResponse -> {
             Class byCode = classRepository.findByCode(moodleClassResponse.getShortname());
-            if (byCode!= null){
+            if (byCode != null) {
                 byCode.setResourceMoodleId(moodleClassResponse.getId());
 
-                classList.add(byCode) ;
+                classList.add(byCode);
             }
-            if (byCode == null){
+            if (byCode == null) {
 //                Subject byCategoryMoodleId = subjectRepository.findByCategoryMoodleId(moodleClassResponse.getCategoryid());
-                Class aClass = new Class() ;
+                Class aClass = new Class();
                 aClass.setCode(moodleClassResponse.getShortname());
                 aClass.setName(moodleClassResponse.getFullname());
 
                 aClass.setActive(true);
-                classList.add(aClass) ;
+                classList.add(aClass);
             }
         });
 
-        classRepository.saveAll(classList) ;
+        classRepository.saveAll(classList);
     }
-
 
 
     @EventListener(ApplicationReadyEvent.class)
@@ -504,41 +525,41 @@ public class HatdauApplication {
 
         List<DayOfWeek> dayOfWeekList = new ArrayList<>();
         if (!existDay2) {
-            DayOfWeek dayOfWeek = new DayOfWeek() ;
+            DayOfWeek dayOfWeek = new DayOfWeek();
             dayOfWeek.setCode(EDayOfWeekCode.ThuHai);
             dayOfWeek.setName("Thứ hai");
             dayOfWeekList.add(dayOfWeek);
         }
         if (!existDay3) {
-            DayOfWeek dayOfWeek = new DayOfWeek() ;
+            DayOfWeek dayOfWeek = new DayOfWeek();
             dayOfWeek.setCode(EDayOfWeekCode.ThuBa);
             dayOfWeek.setName("Thứ Ba");
             dayOfWeekList.add(dayOfWeek);
         }
 
         if (!existDay4) {
-            DayOfWeek dayOfWeek = new DayOfWeek() ;
+            DayOfWeek dayOfWeek = new DayOfWeek();
             dayOfWeek.setCode(EDayOfWeekCode.ThuTu);
             dayOfWeek.setName("Thứ Tư");
             dayOfWeekList.add(dayOfWeek);
         }
 
         if (!existDay5) {
-            DayOfWeek dayOfWeek = new DayOfWeek() ;
+            DayOfWeek dayOfWeek = new DayOfWeek();
             dayOfWeek.setCode(EDayOfWeekCode.ThuNam);
             dayOfWeek.setName("Thứ Năm");
             dayOfWeekList.add(dayOfWeek);
         }
 
         if (!existDay6) {
-            DayOfWeek dayOfWeek = new DayOfWeek() ;
+            DayOfWeek dayOfWeek = new DayOfWeek();
             dayOfWeek.setCode(EDayOfWeekCode.ThuSau);
             dayOfWeek.setName("Thứ Sáu");
             dayOfWeekList.add(dayOfWeek);
         }
 
         if (!existDay7) {
-            DayOfWeek dayOfWeek = new DayOfWeek() ;
+            DayOfWeek dayOfWeek = new DayOfWeek();
             dayOfWeek.setCode(EDayOfWeekCode.ThuBay);
             dayOfWeek.setName("Thứ Bảy");
             dayOfWeekList.add(dayOfWeek);
@@ -595,7 +616,7 @@ public class HatdauApplication {
             classTypeList.add(classType);
         }
 
-        classTypeRepository.saveAll(classTypeList) ;
+        classTypeRepository.saveAll(classTypeList);
 
 
     }

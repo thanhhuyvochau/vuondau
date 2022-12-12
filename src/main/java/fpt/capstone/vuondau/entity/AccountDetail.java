@@ -63,6 +63,9 @@ public class AccountDetail {
     @Column(name = "level")
     private String level;
 
+    @Column(name = "password")
+    private String password;
+
     @Column(name = "is_active")
     private Boolean isActive;
 
@@ -95,6 +98,14 @@ public class AccountDetail {
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getLastName() {

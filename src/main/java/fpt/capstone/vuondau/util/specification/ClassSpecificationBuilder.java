@@ -8,6 +8,7 @@ import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.util.SpecificationUtil;
 import org.springframework.data.jpa.domain.Specification;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Path;
 import java.math.BigDecimal;
@@ -47,7 +48,8 @@ public class ClassSpecificationBuilder {
         if (maxPrice.compareTo(minPrice) < 0) {
             return this;
         }
-        specifications.add((root, query, criteriaBuilder) -> criteriaBuilder.between(root.get(Class_.UNIT_PRICE), minPrice,maxPrice));
+
+        specifications.add((root, query, criteriaBuilder) -> criteriaBuilder.between(root.get(Class_.UNIT_PRICE), minPrice, maxPrice));
         return this;
     }
 
@@ -81,7 +83,7 @@ public class ClassSpecificationBuilder {
 
     public Specification<Class> build() {
         return specifications.stream().filter(Objects::nonNull)
-                .reduce(all(), Specification::or);
+                .reduce(all(), Specification::and);
     }
 
     private Specification<Class> all() {
@@ -112,13 +114,14 @@ public class ClassSpecificationBuilder {
         }
         specifications.add((root, query, criteriaBuilder) -> {
             Path<Course> coursePath = root.get(Class_.course);
-            Path<Subject> subjectPath = coursePath.get(Course_.subject);
-            return criteriaBuilder.or(criteriaBuilder.and(coursePath.get(Course_.subject).in(subjects)));
+            CriteriaBuilder.In<Subject> inClause = criteriaBuilder.in(coursePath.get(Course_.subject));
+            for (Subject subject : subjects) {
+                inClause.value(subject);
+            }
+            return inClause;
         });
 
 
         return this;
     }
-
-
 }
