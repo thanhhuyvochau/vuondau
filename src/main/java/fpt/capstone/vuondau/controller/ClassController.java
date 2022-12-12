@@ -41,7 +41,7 @@ public class ClassController {
     @Operation(summary = "Giáo viên yêu cầu tạo class ( subject - course) chờ admin phê duyệt ")
     @PostMapping({"/teacher-request-create-class"})
     public ResponseEntity<ApiResponse<Boolean>> teacherRequestCreateClass(@Nullable @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClass( createClassRequest)));
+        return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClass(createClassRequest)));
 
     }
 
@@ -53,8 +53,8 @@ public class ClassController {
 
     @Operation(summary = "lấy tất cả class có phân trang")
     @GetMapping
-    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getAllClass( Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.getAllClass( pageable)));
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getAllClass(Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.getAllClass(pageable)));
     }
 
     @Operation(summary = "Admin phê duyệt request tao class của teacher ")
@@ -72,8 +72,8 @@ public class ClassController {
 
     @Operation(summary = "Hoc sinh đăng ký vào class")
     @PostMapping({"/{studentId}/student-enroll-class"})
-    public ResponseEntity<ApiResponse<Boolean>> studentEnrollClass(@PathVariable Long studentId , Long classId ) throws JsonProcessingException {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.studentEnrollClass(studentId , classId)));
+    public ResponseEntity<ApiResponse<Boolean>> studentEnrollClass(@PathVariable Long studentId, Long classId) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.studentEnrollClass(studentId, classId)));
     }
 
     @Operation(summary = "lấy danh sachs tất cả hoc sinh dang  chờ duyệt để vào class")
@@ -84,9 +84,10 @@ public class ClassController {
 
     @Operation(summary = "Tìm Kiếm class")
     @GetMapping("/search-class")
-    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> searchClass(@Nullable ClassSearchRequest query,Pageable pageable
-           ) {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.searchClass(query,pageable)));
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> searchClass(@Nullable ClassSearchRequest query, Pageable pageable
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.searchClass(query, pageable)));
+
     }
 
 
@@ -105,15 +106,26 @@ public class ClassController {
 
     @Operation(summary = "học sinh / giáo viên xem lớp bằng thời gian (was study, is studying, will study) ")
     @GetMapping("/{accountId}/class-of-account")
-    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> accountFilterClass( @Nullable ClassSearchRequest query, Pageable pageable) throws JsonProcessingException {
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> accountFilterClass(@Nullable ClassSearchRequest query, Pageable pageable) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.accountFilterClass(query, pageable)));
     }
 
 
     @Operation(summary = "Gợi ý lớp học - hs.phụ huynh đăng ký tìm gia sư ")
     @GetMapping("{infoFindTutorId}/class-suggestion")
-    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> classSuggestion(@PathVariable long infoFindTutorId ,  Pageable pageable)  {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.classSuggestion(infoFindTutorId,  pageable)));
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> classSuggestion(@PathVariable long infoFindTutorId, Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.classSuggestion(infoFindTutorId, pageable)));
     }
 
+    @Operation(summary = "Admin tạo class để tuyển giáo viên ")
+    @PostMapping({"/for-recruiting"})
+    public ResponseEntity<ApiResponse<Boolean>> createClassForRecruiting(@Nullable @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.createClassForRecruiting(createClassRequest)));
+    }
+
+    @Operation(summary = "Giáo viên ứng tuyển dạy")
+    @PostMapping({"/apply"})
+    public ResponseEntity<ApiResponse<Boolean>> applyToRecruitingClass(@RequestBody Long classId) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.applyToRecruitingClass(classId)));
+    }
 }

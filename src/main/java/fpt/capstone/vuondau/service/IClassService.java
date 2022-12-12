@@ -47,4 +47,6 @@ public interface IClassService {
     ApiPage<ClassDto> accountFilterClass( ClassSearchRequest query, Pageable pageable);
 
     ApiPage<ClassDto> classSuggestion( long infoFindTutorId , Pageable pageable);
+    Boolean createClassForRecruiting( CreateClassRequest createClassRequest) throws JsonProcessingException;
+    Boolean applyToRecruitingClass(Long classId);
 }

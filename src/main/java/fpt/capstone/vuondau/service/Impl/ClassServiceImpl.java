@@ -55,8 +55,9 @@ public class ClassServiceImpl implements IClassService {
     private final SecurityUtil securityUtil;
 
     private final InfoFindTutorRepository infoFindTutorRepository;
+    protected final ClassTeacherCandicateRepository classTeacherCandicateRepository;
 
-    public ClassServiceImpl(RequestUtil requestUtil, AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil, SecurityUtil securityUtil, InfoFindTutorRepository infoFindTutorRepository) {
+    public ClassServiceImpl(RequestUtil requestUtil, AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil, SecurityUtil securityUtil, InfoFindTutorRepository infoFindTutorRepository, ClassTeacherCandicateRepository classTeacherCandicateRepository) {
         this.requestUtil = requestUtil;
         this.accountRepository = accountRepository;
         this.subjectRepository = subjectRepository;
@@ -68,6 +69,7 @@ public class ClassServiceImpl implements IClassService {
         this.messageUtil = messageUtil;
         this.securityUtil = securityUtil;
         this.infoFindTutorRepository = infoFindTutorRepository;
+        this.classTeacherCandicateRepository = classTeacherCandicateRepository;
     }
 
 
@@ -83,7 +85,7 @@ public class ClassServiceImpl implements IClassService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("class code da ton tai"));
         }
-
+        courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
         clazz.setCode(createClassRequest.getCode());
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
@@ -105,10 +107,7 @@ public class ClassServiceImpl implements IClassService {
 
 
         S1CourseRequest s1CourseRequest = new S1CourseRequest();
-
         List<MoodleCourseDataRequest.MoodleCourseBody> moodleCourseBodyList = new ArrayList<>();
-
-
         for (MoodleCourseDataRequest.MoodleCourseBody request : moodleCourseDataRequest.getCourses()) {
             MoodleCourseDataRequest.MoodleCourseBody moodleCourseBody = new MoodleCourseDataRequest.MoodleCourseBody();
             moodleCourseBody.setFullname(request.getFullname());
@@ -442,6 +441,29 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
+    public Boolean createClassForRecruiting(CreateClassRequest createClassRequest) throws JsonProcessingException {
+        // set class bên vườn đậu
+        Class clazz = new Class();
+        clazz.setName(createClassRequest.getName());
+        if (classRepository.existsByCode(createClassRequest.getCode())) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("class code da ton tai"));
+        }
+        courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+        clazz.setCode(createClassRequest.getCode());
+        clazz.setStartDate(createClassRequest.getStartDate());
+        clazz.setEndDate(createClassRequest.getEndDate());
+        clazz.setNumberStudent(createClassRequest.getNumberStudent());
+        clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
+        clazz.setStatus(EClassStatus.RECRUIT);
+        clazz.setStartDate(createClassRequest.getStartDate());
+        clazz.setEndDate(createClassRequest.getEndDate());
+        clazz.setActive(false);
+        classRepository.save(clazz);
+        return true;
+    }
+
+    @Override
     public ApiPage<ClassDto> classSuggestion(long infoFindTutorId, Pageable pageable) {
         InfoFindTutor infoFindTutor = infoFindTutorRepository.findById(infoFindTutorId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay form đăng ký" + infoFindTutorId));
@@ -478,4 +500,22 @@ public class ClassServiceImpl implements IClassService {
 //
 
 
+    @Override
+    public Boolean applyToRecruitingClass(Long classId) {
+        Account teacher = securityUtil.getCurrentUser();
+        Class clazz = classRepository.findById(classId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
+        List<ClassTeacherCandicate> candicates = clazz.getCandicates();
+        boolean isContain = candicates.contains(teacher);
+        if (isContain) {
+            throw ApiException.create(HttpStatus.CONFLICT).withMessage("Teacher already");
+        } else {
+            ClassTeacherCandicate classTeacherCandicate = new ClassTeacherCandicate();
+            classTeacherCandicate.setTeacher(teacher);
+            classTeacherCandicate.setClazz(clazz);
+            candicates.add(classTeacherCandicate);
+        }
+        classRepository.save(clazz);
+        return true;
+    }
 }
