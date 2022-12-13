@@ -18,7 +18,7 @@ public class SendMailServiceImplServiceImpl implements ISendMailService {
     @Override
     public Boolean sendMail() {
 
-        String to = "thanhhuyvochau@gmail.com";
+        String to = "nguyenlehaidang.290698@gmail.com";
 
         String host = "smtp.gmail.com";
 
@@ -49,7 +49,7 @@ public class SendMailServiceImplServiceImpl implements ISendMailService {
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
 
             // Set Subject: header field
-            message.setSubject("This is the Subject Line!");
+            message.setSubject("THƯ MỜI NHẬN VIỆC- GIẢNG VIÊN");
 
             Multipart multipart = new MimeMultipart();
 
@@ -60,10 +60,27 @@ public class SendMailServiceImplServiceImpl implements ISendMailService {
             try {
                 File f =new File("C:\\Users\\Admin\\Downloads\\HOP-DONG-GIA-SU-VUON-DAU.docx");
 
-//                File f =new File("H:\\pepipost_tutorials\\javaemail1.PNG");
-
                 attachmentPart.attachFile(f);
-                textPart.setText("This is text");
+                textPart.setText("Công ty cổ phần Vườn Dậu chân thành cảm ơn Bạn đã quan tâm đến vị trí tuyển dụng của chúng tôi. Qua buổi trao đổi, chúng tôi đánh giá tốt kiến thức chuyên môn cũng như khả năng làm việc của Bạn. Chúng tôi nhận thấy nếu được tạo điều kiện tốt, Bạn sẽ có những đóng góp to lớn vào sự phát triển và vững mạnh của công ty, đồng thời Vườn Đậu cũng là môi trường phù hợp để Bạn có thể phát triển tốt nhất khả năng của mình." +
+                        " \n" +
+                        "\n" +
+                        "Do vậy, công ty xin gửi Bạn nội dung offer như sau:\n" +
+                        "\n" +
+                        "* Công ty cổ phần Vườn Đậu \n" +
+                        "\n" +
+                        "* Vị trí công việc: Giảng Viên" +
+                        "" +
+                        "* Lương và các chế độ phúc lợi khác như sau:   \n" +
+                        "- Mức lương chính thức: \n " +
+
+                        "Vui lòng phản hồi Thư mời nhận việc cho công ty chúng tôi trong vòng 01 ngày làm việc kể từ khi nhận được email này. \n" +
+                        "\n" +
+                        "Một lần nữa, Chúng tôi hân hoan chào đón Bạn gia nhập, làm việc tại công ty và tin tưởng sự hợp tác lâu dài.\n" +
+                        "\n" +
+                        "Trân trọng!\n" +
+                        "\n" +
+                        "\n" +
+                        "Thank you and best regards,");
                 multipart.addBodyPart(textPart);
                 multipart.addBodyPart(attachmentPart);
 
