@@ -17,7 +17,9 @@ import java.util.Optional;
 public interface AccountDetailRepository extends JpaRepository<AccountDetail, Long> {
 
    Page<AccountDetail> findAllByIsActiveIsTrue(Pageable pageable);
-   Optional<AccountDetail> findByIdAndIsActiveIsFalse(long id);
+
+   List<AccountDetail> findAllByIdInAndIsActiveIsFalse  (List<Long> ids) ;
+//   Optional<AccountDetail> findAllByIdsInAndIsActiveIsFalse(long id);
    Page<AccountDetail> findAllByIsActiveIsFalse(Pageable pageable);
 
    Boolean existsAccountByEmail (String email) ;

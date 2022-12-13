@@ -1,16 +1,11 @@
 package fpt.capstone.vuondau.entity.common;
 
 public enum EClassStatus {
-
-    NEW ,
-
+    NEW,
     REQUESTING,
     NOTSTART,
-
     STARTING,
-
-    ENDED
-
-
+    ENDED,
+    RECRUITING
 
 }
