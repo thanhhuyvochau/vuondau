@@ -12,17 +12,17 @@ public class CreateClassRequest implements Serializable {
 
     private String name;
     private String code;
-    private Instant startDate ;
-    private Instant endDate ;
+    private Instant startDate;
+    private Instant endDate;
     private String level;
 
-    private Long numberStudent ;
+    private Long numberStudent;
 
-    private Long maxNumberStudent ;
+    private Long maxNumberStudent;
 
-    private Long subjectId ;
+    private Long subjectId;
 
-    private Long courseId ;
+    private Long courseId;
 
 //    private CreateCourseRequest courseRequest ;
 

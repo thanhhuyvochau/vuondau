@@ -147,7 +147,7 @@ public class ConvertUtil {
     }
 
     public static ClassDto doConvertEntityToResponse(Class aclass) {
-        ClassDto classDto = ObjectUtil.copyProperties(aclass, new ClassDto(), ClassDto.class,true);
+        ClassDto classDto = ObjectUtil.copyProperties(aclass, new ClassDto(), ClassDto.class, true);
         Course course = aclass.getCourse();
         CourseResponse courseResponse = ConvertUtil.doConvertCourseToCourseResponse(course);
 
@@ -159,7 +159,7 @@ public class ConvertUtil {
         classDto.setUnitPrice(aclass.getUnitPrice());
         classDto.setFinalPrice(aclass.getFinalPrice());
 
-        if (aclass.getAccount()!= null) {
+        if (aclass.getAccount() != null) {
             Account teacher = aclass.getAccount();
 //            AccountResponse accountResponse = ObjectUtil.copyProperties(teacher, new AccountResponse(), AccountResponse.class);
             AccountResponse accountResponse1 = doConvertEntityToResponse(teacher);
@@ -174,7 +174,6 @@ public class ConvertUtil {
         }
 
 
-
         classDto.setCourse(courseResponse);
         return classDto;
     }
@@ -184,5 +183,13 @@ public class ConvertUtil {
         List<QuestionDto> questionDtos = forumLesson.getQuestions().stream().map(ConvertUtil::doConvertEntityToResponse).collect(Collectors.toList());
         forumLessonDto.setQuestions(questionDtos);
         return forumLessonDto;
+    }
+
+    public static CandicateResponse doConvertEntityToResponse(ClassTeacherCandicate classTeacherCandicate) {
+        CandicateResponse response = new CandicateResponse();
+        AccountResponse teacher = doConvertEntityToResponse(classTeacherCandicate.getTeacher());
+        response.setTeacher(teacher);
+        response.setStatus(classTeacherCandicate.getStatus());
+        return response;
     }
 }

@@ -45,15 +45,6 @@ public class AccountDetailRequest implements Serializable {
 
     private List<UploadAvatarRequest> uploadFiles ;
 
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getFirstName() {
         return firstName;
     }
@@ -78,14 +69,6 @@ public class AccountDetailRequest implements Serializable {
         this.birthDay = birthDay;
     }
 
-    public EGenderType getGender() {
-        return gender;
-    }
-
-    public void setGender(EGenderType gender) {
-        this.gender = gender;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -94,12 +77,28 @@ public class AccountDetailRequest implements Serializable {
         this.email = email;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getPhone() {
         return phone;
     }
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public EGenderType getGender() {
+        return gender;
+    }
+
+    public void setGender(EGenderType gender) {
+        this.gender = gender;
     }
 
     public String getDomicile() {

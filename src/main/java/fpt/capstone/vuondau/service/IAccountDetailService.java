@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.AccountDetail;
 import fpt.capstone.vuondau.entity.common.ApiPage;
+import fpt.capstone.vuondau.entity.dto.EmailDto;
 import fpt.capstone.vuondau.entity.dto.ProvincesDto;
 import fpt.capstone.vuondau.entity.dto.ResourceDto;
 import fpt.capstone.vuondau.entity.request.*;
@@ -21,7 +22,7 @@ public interface IAccountDetailService {
 
     List<ResourceDto> uploadImageRegisterProfile(long id, List<UploadAvatarRequest> UploadAvatarRequest);
 
-    AccountResponse approveRegisterAccount(long id);
+    List<EmailDto> approveRegisterAccount(List<Long> id);
 
     ApiPage<AccountDetailResponse> getRequestToActiveAccount(Pageable pageable);
 

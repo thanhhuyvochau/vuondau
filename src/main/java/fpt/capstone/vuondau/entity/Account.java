@@ -103,8 +103,6 @@ public class Account {
     private Resource resource;
 
 
-    @OneToOne(mappedBy = "student")
-    private Cart cart;
 
 
     public EGenderType getGender() {
@@ -221,13 +219,7 @@ public class Account {
         this.phoneNumber = phoneNumber;
     }
 
-    public Cart getCart() {
-        return cart;
-    }
 
-    public void setCart(Cart cart) {
-        this.cart = cart;
-    }
 
     public Role getRole() {
         return role;

@@ -12,9 +12,11 @@ import fpt.capstone.vuondau.entity.dto.ClassDetailDto;
 import fpt.capstone.vuondau.entity.dto.ClassDto;
 import fpt.capstone.vuondau.entity.dto.ClassStudentDto;
 import fpt.capstone.vuondau.entity.dto.StudentDto;
+import fpt.capstone.vuondau.entity.request.ClassCandicateRequest;
 import fpt.capstone.vuondau.entity.request.ClassSearchRequest;
 import fpt.capstone.vuondau.entity.request.CreateClassRequest;
 import fpt.capstone.vuondau.entity.request.SubjectSearchRequest;
+import fpt.capstone.vuondau.entity.response.CandicateResponse;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
 import fpt.capstone.vuondau.service.IClassService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,7 +43,7 @@ public class ClassController {
     @Operation(summary = "Giáo viên yêu cầu tạo class ( subject - course) chờ admin phê duyệt ")
     @PostMapping({"/teacher-request-create-class"})
     public ResponseEntity<ApiResponse<Boolean>> teacherRequestCreateClass(@Nullable @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClass( createClassRequest)));
+        return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClass(createClassRequest)));
 
     }
 
@@ -53,8 +55,8 @@ public class ClassController {
 
     @Operation(summary = "lấy tất cả class có phân trang")
     @GetMapping
-    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getAllClass( Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.getAllClass( pageable)));
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getAllClass(Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.getAllClass(pageable)));
     }
 
     @Operation(summary = "Admin phê duyệt request tao class của teacher ")
@@ -72,8 +74,8 @@ public class ClassController {
 
     @Operation(summary = "Hoc sinh đăng ký vào class")
     @PostMapping({"/{studentId}/student-enroll-class"})
-    public ResponseEntity<ApiResponse<Boolean>> studentEnrollClass(@PathVariable Long studentId , Long classId ) throws JsonProcessingException {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.studentEnrollClass(studentId , classId)));
+    public ResponseEntity<ApiResponse<Boolean>> studentEnrollClass(@PathVariable Long studentId, Long classId) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.studentEnrollClass(studentId, classId)));
     }
 
     @Operation(summary = "lấy danh sachs tất cả hoc sinh dang  chờ duyệt để vào class")
@@ -85,7 +87,7 @@ public class ClassController {
     @Operation(summary = "Tìm Kiếm class")
     @GetMapping("/search-class")
     public ResponseEntity<ApiResponse<List<ClassDto>>> searchClass(@Nullable ClassSearchRequest query
-           ) {
+    ) {
         return ResponseEntity.ok(ApiResponse.success(iClassService.searchClass(query)));
     }
 
@@ -105,15 +107,38 @@ public class ClassController {
 
     @Operation(summary = "học sinh / giáo viên xem lớp bằng thời gian (was study, is studying, will study) ")
     @GetMapping("/{accountId}/class-of-account")
-    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> accountFilterClass( @Nullable ClassSearchRequest query, Pageable pageable) throws JsonProcessingException {
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> accountFilterClass(@Nullable ClassSearchRequest query, Pageable pageable) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.accountFilterClass(query, pageable)));
     }
 
 
     @Operation(summary = "Gợi ý lớp học - hs.phụ huynh đăng ký tìm gia sư ")
     @GetMapping("{infoFindTutorId}/class-suggestion")
-    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> classSuggestion(@PathVariable long infoFindTutorId ,  Pageable pageable)  {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.classSuggestion(infoFindTutorId,  pageable)));
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> classSuggestion(@PathVariable long infoFindTutorId, Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.classSuggestion(infoFindTutorId, pageable)));
     }
 
+    @Operation(summary = "Admin tạo class để tuyển giáo viên ")
+    @PostMapping({"/for-recruiting"})
+    public ResponseEntity<ApiResponse<Boolean>> createClassForRecruiting(@Nullable @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.createClassForRecruiting(createClassRequest)));
+    }
+
+    @Operation(summary = "Giáo viên ứng tuyển dạy")
+    @PostMapping({"/apply"})
+    public ResponseEntity<ApiResponse<Boolean>> applyToRecruitingClass(@RequestBody Long classId) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.applyToRecruitingClass(classId)));
+    }
+
+    @Operation(summary = "Chọn giáo viên cho lớp")
+    @PutMapping({"/choose-candicate"})
+    public ResponseEntity<ApiResponse<Boolean>> chooseCandicateTeacher(@RequestBody ClassCandicateRequest request) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.chooseCandicateForClass(request)));
+    }
+
+    @Operation(summary = "Lấy các giáo viên ứng viên của lớp")
+    @GetMapping({"/{classId}/candicates"})
+    public ResponseEntity<ApiResponse<ApiPage<CandicateResponse>>> getClassCandicates(@PathVariable Long classId, Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.getClassCandicate(classId, pageable)));
+    }
 }
