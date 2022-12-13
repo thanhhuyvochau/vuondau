@@ -2,12 +2,12 @@ package fpt.capstone.vuondau.service.Impl;
 
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.common.*;
+import fpt.capstone.vuondau.entity.dto.EmailDto;
 import fpt.capstone.vuondau.entity.dto.ResourceDto;
 import fpt.capstone.vuondau.entity.dto.SubjectDto;
 import fpt.capstone.vuondau.entity.request.AccountDetailRequest;
 import fpt.capstone.vuondau.entity.request.UploadAvatarRequest;
 import fpt.capstone.vuondau.entity.response.AccountDetailResponse;
-import fpt.capstone.vuondau.entity.response.AccountResponse;
 
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IAccountDetailService;
@@ -54,12 +54,14 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
     private final ClassLevelRepository classLevelRepository;
 
+    private final SendMailServiceImplServiceImpl sendMailServiceImplService ;
+
 
 
     @Value("${minio.url}")
     String minioUrl;
 
-    public AccountDetailServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, AccountDetailRepository accountDetailRepository, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, RoleRepository roleRepository, SecurityUtil securityUtil, SubjectRepository subjectRepository, ClassLevelRepository classLevelRepository) {
+    public AccountDetailServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, AccountDetailRepository accountDetailRepository, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, RoleRepository roleRepository, SecurityUtil securityUtil, SubjectRepository subjectRepository, ClassLevelRepository classLevelRepository, SendMailServiceImplServiceImpl sendMailServiceImplService) {
         this.accountRepository = accountRepository;
         this.messageUtil = messageUtil;
         this.accountDetailRepository = accountDetailRepository;
@@ -71,6 +73,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         this.securityUtil = securityUtil;
         this.subjectRepository = subjectRepository;
         this.classLevelRepository = classLevelRepository;
+        this.sendMailServiceImplService = sendMailServiceImplService;
     }
 
 
@@ -242,37 +245,61 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
     }
 
     @Override
-    public AccountResponse approveRegisterAccount(long id) {
+    public List<EmailDto> approveRegisterAccount(List<Long> id) {
+        List<EmailDto> mail = new ArrayList<>( );
+        List<AccountDetail> accountDetailList = new ArrayList<>() ;
+        List<AccountDetail> accountDetails = accountDetailRepository.findAllByIdInAndIsActiveIsFalse(id);
+        if (accountDetails != null) {
+            accountDetails.forEach(accountDetail -> {
+                EmailDto emailDto = new EmailDto() ;
 
-        AccountDetail accountDetail = accountDetailRepository.findByIdAndIsActiveIsFalse(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay request" + id));
-        accountDetail.setActive(true);
+                accountDetail.setActive(true);
+                Account account = new Account();
+                if (accountDetail.getEmail()== null) {
+                    throw ApiException.create(HttpStatus.BAD_REQUEST)
+                            .withMessage(messageUtil.getLocalMessage("Không thể phê duyệt tài khoản vì không có email"));
+                }
+                if (accountDetail.getPassword()== null) {
+                    throw ApiException.create(HttpStatus.BAD_REQUEST)
+                            .withMessage(messageUtil.getLocalMessage("Không thể phê duyệt tài khoản vì không có password"));
+                }
+                account.setUsername(accountDetail.getEmail());
+                account.setPassword(accountDetail.getPassword());
+                account.setActive(true);
+                account.setLastName(accountDetail.getLastName());
+                account.setFirstName(accountDetail.getFirstName());
+                account.setEmail(accountDetail.getEmail());
+
+                account.setGender(accountDetail.getGender());
+                account.setPhoneNumber(accountDetail.getPhone());
+                Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay role"));
+
+                account.setRole(role);
+                account.setBirthday(accountDetail.getBirthDay());
+                account.setAccountDetail(accountDetail);
 
 
-        Account account = new Account();
-        account.setUsername(accountDetail.getEmail());
-        account.setPassword(accountDetail.getPassword());
-        account.setActive(true);
-        account.setLastName(accountDetail.getLastName());
-        account.setFirstName(accountDetail.getFirstName());
-        account.setEmail(accountDetail.getEmail());
-        account.setGender(accountDetail.getGender());
-        account.setPhoneNumber(accountDetail.getPhone());
-        Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay role"));
-
-        account.setRole(role);
-        account.setBirthday(accountDetail.getBirthDay());
-        account.setAccountDetail(accountDetail);
+                Boolean saveAccountSuccess = keycloakUserUtil.create(account);
+                Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getCode().name(), account);
+                Account save = accountRepository.save(account);
 
 
-        Boolean saveAccountSuccess = keycloakUserUtil.create(account);
-        Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getCode().name(), account);
-        Account save = accountRepository.save(account);
 
-        accountDetail.setStatus(EAccountDetailStatus.REQUESTED);
-        accountDetail.setAccount(account);
-        accountDetailRepository.save(accountDetail);
+                accountDetail.setStatus(EAccountDetailStatus.REQUESTED);
+                accountDetail.setAccount(account);
+                accountDetailList.add(accountDetail ) ;
+                emailDto.setMail(accountDetail.getEmail());
+                emailDto.setName(accountDetail.getFirstName()+""+accountDetail.getLastName());
+                emailDto.setPassword(accountDetail.getPassword());
 
-        return ObjectUtil.copyProperties(save, new AccountResponse(), AccountResponse.class);
+                mail.add(emailDto) ;
+            });
+        }
+
+        sendMailServiceImplService.sendMail(mail);
+        List<AccountDetail> accountDetailList1 = accountDetailRepository.saveAll(accountDetailList);
+
+        return mail;
     }
 
     @Override
