@@ -12,9 +12,11 @@ import fpt.capstone.vuondau.entity.dto.ClassDetailDto;
 import fpt.capstone.vuondau.entity.dto.ClassDto;
 import fpt.capstone.vuondau.entity.dto.ClassStudentDto;
 import fpt.capstone.vuondau.entity.dto.StudentDto;
+import fpt.capstone.vuondau.entity.request.ClassCandicateRequest;
 import fpt.capstone.vuondau.entity.request.ClassSearchRequest;
 import fpt.capstone.vuondau.entity.request.CreateClassRequest;
 import fpt.capstone.vuondau.entity.request.SubjectSearchRequest;
+import fpt.capstone.vuondau.entity.response.CandicateResponse;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
 import fpt.capstone.vuondau.service.IClassService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -126,5 +128,17 @@ public class ClassController {
     @PostMapping({"/apply"})
     public ResponseEntity<ApiResponse<Boolean>> applyToRecruitingClass(@RequestBody Long classId) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.applyToRecruitingClass(classId)));
+    }
+
+    @Operation(summary = "Chọn giáo viên cho lớp")
+    @PutMapping({"/choose-candicate"})
+    public ResponseEntity<ApiResponse<Boolean>> chooseCandicateTeacher(@RequestBody ClassCandicateRequest request) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.chooseCandicateForClass(request)));
+    }
+
+    @Operation(summary = "Lấy các giáo viên ứng viên của lớp")
+    @GetMapping({"/{classId}/candicates"})
+    public ResponseEntity<ApiResponse<ApiPage<CandicateResponse>>> getClassCandicates(@PathVariable Long classId, Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.getClassCandicate(classId, pageable)));
     }
 }
