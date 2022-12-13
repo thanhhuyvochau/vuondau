@@ -86,7 +86,7 @@ public class AccountDetailController {
 
 
     @PostMapping("/sendMail")
-    public ResponseEntity<ApiResponse<Boolean>> sendMail() {
+    public ResponseEntity<ApiResponse<String>> sendMail() {
         return ResponseEntity.ok(ApiResponse.success(iSendMailService.sendMail()));
 
     }
