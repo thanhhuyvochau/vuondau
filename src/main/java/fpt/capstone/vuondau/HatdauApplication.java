@@ -64,27 +64,7 @@ public class HatdauApplication {
 
     public static void main(String[] args) {
 
-
         SpringApplication.run(HatdauApplication.class, args);
-
-        LocalDate today = LocalDate.now();
-
-        Instant instant = Instant.parse("2007-12-09T08:23:38.169Z");
-        LocalDate localDate
-                = LocalDateTime.ofInstant(instant, ZoneOffset.UTC).toLocalDate();
-
-
-        Period p = Period.between(localDate, today);
-        int checkBirthday = p.getYears() ;
-
-        System.out.println("You are " + p.getYears() + " years") ;
-        if (checkBirthday >= 18){
-            System.out.println("dung");
-        }
-
-
-
-
     }
 
 

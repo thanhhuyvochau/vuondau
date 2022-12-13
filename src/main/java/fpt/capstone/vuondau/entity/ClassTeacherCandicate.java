@@ -1,5 +1,7 @@
 package fpt.capstone.vuondau.entity;
 
+import fpt.capstone.vuondau.entity.common.ECandicateStatus;
+
 import javax.persistence.*;
 
 @Entity
@@ -14,6 +16,10 @@ public class ClassTeacherCandicate {
     @JoinColumn(name = "teacher_id")
     @ManyToOne
     private Account teacher;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private ECandicateStatus status;
 
     public Long getId() {
         return id;
@@ -37,5 +43,13 @@ public class ClassTeacherCandicate {
 
     public void setTeacher(Account teacher) {
         this.teacher = teacher;
+    }
+
+    public ECandicateStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ECandicateStatus status) {
+        this.status = status;
     }
 }

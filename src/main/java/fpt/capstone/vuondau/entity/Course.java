@@ -49,8 +49,6 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL , orphanRemoval = true)
     private List<Class> classes;
 
-    @OneToMany(mappedBy = "course")
-    private List<CartItemCourse> cartItemCourses;
 
     @ManyToOne
     @JoinColumn(name = "resource_id")
@@ -150,12 +148,6 @@ public class Course {
         this.classes = classes;
     }
 
-    public List<CartItemCourse> getCartItemCourses() {
-        return cartItemCourses;
-    }
 
-    public void setCartItemCourses(List<CartItemCourse> cartItemCourses) {
-        this.cartItemCourses = cartItemCourses;
-    }
 
 }

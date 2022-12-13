@@ -8,15 +8,14 @@ import fpt.capstone.vuondau.MoodleRepository.Request.S1CourseRequest;
 import fpt.capstone.vuondau.MoodleRepository.Response.*;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
-import fpt.capstone.vuondau.entity.common.ApiException;
-import fpt.capstone.vuondau.entity.common.ApiPage;
-import fpt.capstone.vuondau.entity.common.EAccountRole;
-import fpt.capstone.vuondau.entity.common.EClassStatus;
+import fpt.capstone.vuondau.entity.common.*;
 import fpt.capstone.vuondau.entity.dto.*;
+import fpt.capstone.vuondau.entity.request.ClassCandicateRequest;
 import fpt.capstone.vuondau.entity.request.ClassSearchRequest;
 import fpt.capstone.vuondau.entity.request.CourseIdRequest;
 import fpt.capstone.vuondau.entity.request.CreateClassRequest;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
+import fpt.capstone.vuondau.entity.response.CandicateResponse;
 import fpt.capstone.vuondau.entity.response.CourseDetailResponse;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IClassService;
@@ -455,7 +454,7 @@ public class ClassServiceImpl implements IClassService {
         clazz.setEndDate(createClassRequest.getEndDate());
         clazz.setNumberStudent(createClassRequest.getNumberStudent());
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
-        clazz.setStatus(EClassStatus.RECRUIT);
+        clazz.setStatus(EClassStatus.RECRUITING);
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
         clazz.setActive(false);
@@ -513,9 +512,39 @@ public class ClassServiceImpl implements IClassService {
             ClassTeacherCandicate classTeacherCandicate = new ClassTeacherCandicate();
             classTeacherCandicate.setTeacher(teacher);
             classTeacherCandicate.setClazz(clazz);
+            classTeacherCandicate.setStatus(ECandicateStatus.APPLYING);
             candicates.add(classTeacherCandicate);
         }
         classRepository.save(clazz);
         return true;
+    }
+
+    @Override
+    public Boolean chooseCandicateForClass(ClassCandicateRequest request) {
+        Long classId = request.getClassId();
+        Long teacherId = request.getTeacherId();
+        Class clazz = classRepository.findById(classId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
+        Account teacher = accountRepository.findById(teacherId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay teacher" + teacherId));
+        List<ClassTeacherCandicate> candicates = clazz.getCandicates();
+        candicates.stream().peek(classTeacherCandicate -> {
+            if (classTeacherCandicate.getTeacher().getId().equals(teacherId)) {
+                classTeacherCandicate.setStatus(ECandicateStatus.SELECTED);
+                clazz.setAccount(teacher);
+            } else {
+                classTeacherCandicate.setStatus(ECandicateStatus.CLOSED);
+            }
+        });
+        classRepository.save(clazz);
+        return true;
+    }
+
+    @Override
+    public ApiPage<CandicateResponse> getClassCandicate(Long classId, Pageable pageable) {
+        Class clazz = classRepository.findById(classId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
+        Page<ClassTeacherCandicate> classCandicates = classTeacherCandicateRepository.findAllByClazz(clazz, pageable);
+        return PageUtil.convert(classCandicates.map(ConvertUtil::doConvertEntityToResponse));
     }
 }

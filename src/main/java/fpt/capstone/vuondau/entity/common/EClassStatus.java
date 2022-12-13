@@ -6,6 +6,6 @@ public enum EClassStatus {
     NOTSTART,
     STARTING,
     ENDED,
-    RECRUIT
+    RECRUITING
 
 }

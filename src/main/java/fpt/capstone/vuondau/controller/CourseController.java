@@ -49,7 +49,6 @@ public class CourseController {
         return ResponseEntity.ok(ApiResponse.success(courseService.createRegisterSubject(teacherId, subjectId, classRequest)));
     }
 
-
     // MANGER COURSE
     @Operation(summary = "Tìm Kiếm course")
     @GetMapping("/search-cource")
