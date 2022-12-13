@@ -60,7 +60,8 @@ public class Class {
 
     @Column(name = "max_number_student")
     private Long maxNumberStudent;
-
+    @Column(name = "min_number_student")
+    private Long minNumberStudent;
 
     @Column(name = "is_avtive")
     private boolean isActive;
@@ -276,4 +277,13 @@ public class Class {
     public void setCandicates(List<ClassTeacherCandicate> candicates) {
         this.candicates = candicates;
     }
+
+    public Long getMinNumberStudent() {
+        return minNumberStudent;
+    }
+
+    public void setMinNumberStudent(Long minNumberStudent) {
+        this.minNumberStudent = minNumberStudent;
+    }
+
 }

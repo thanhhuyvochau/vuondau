@@ -77,11 +77,7 @@ public class TransactionServiceImpl implements ITransactionService {
         vnp_Params.put("vnp_OrderType", orderType);
 
         String locate = "VN";
-        if (locate != null && !locate.isEmpty()) {
-            vnp_Params.put("vnp_Locale", locate);
-        } else {
-            vnp_Params.put("vnp_Locale", "vn");
-        }
+        vnp_Params.put("vnp_Locale", locate);
         vnp_Params.put("vnp_ReturnUrl", vnpConfig.getVnp_Returnurl());
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
