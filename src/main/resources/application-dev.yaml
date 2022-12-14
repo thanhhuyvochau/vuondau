@@ -4,8 +4,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-    url: jdbc:mysql://mysql8:3306/vuondau
-#    url: jdbc:mysql://103.173.255.39:3306/vuondau
+#    url: jdbc:mysql://mysql8:3306/vuondau
+    url: jdbc:mysql://103.173.255.39:3306/vuondau
     username: root
     password: OOiyw5qptYd6xXDl
   jpa:
@@ -77,4 +77,4 @@ vnp_TmnCode: 76E1ZE8I
 vnp_apiUrl: https://sandbox.vnpayment.vn/merchant_webapi/merchant.html
 
 # provinces
-provinces : https://provinces.open-api.vn/api/?depth=1
+provinces: https://provinces.open-api.vn/api/?depth=1
