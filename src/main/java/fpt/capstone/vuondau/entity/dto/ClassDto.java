@@ -28,6 +28,7 @@ public class ClassDto {
     private Long numberStudent ;
 
     private Long maxNumberStudent ;
+    private Long minNumberStudent ;
 
     private CourseResponse course ;
 
@@ -149,5 +150,13 @@ public class ClassDto {
 
     public void setCourse(CourseResponse course) {
         this.course = course;
+    }
+
+    public Long getMinNumberStudent() {
+        return minNumberStudent;
+    }
+
+    public void setMinNumberStudent(Long minNumberStudent) {
+        this.minNumberStudent = minNumberStudent;
     }
 }

@@ -55,4 +55,6 @@ public interface IClassService {
     Boolean chooseCandicateForClass(ClassCandicateRequest request);
 
     ApiPage<CandicateResponse> getClassCandicate(Long classId, Pageable pageable);
+
+    ApiPage<ClassDto> getRecruitingClasses(Pageable pageable);
 }
