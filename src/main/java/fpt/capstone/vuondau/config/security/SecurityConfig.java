@@ -32,18 +32,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .authorizeRequests().anyRequest().permitAll();
 
         /**Config for deployment */
-//        http.cors().configurationSource(corsConfigurationSource())
-//                .and().csrf().disable()
-//                .authorizeRequests()
-//                .antMatchers(HttpMethod.POST, "/api/*").authenticated()
-//                .antMatchers(HttpMethod.DELETE, "/api/*").authenticated()
-//                .antMatchers(HttpMethod.PUT, "/api/*").authenticated()
-//                .antMatchers("/api/accounts").authenticated()
-//                .antMatchers(HttpMethod.GET, "/api/*").permitAll()
-//                .antMatchers(HttpMethod.POST, "api/teachers/account").permitAll()
-//                .antMatchers(HttpMethod.POST, "api/students/account").permitAll()
-//                .and().oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter())
-//                .and().authenticationEntryPoint(new BasicAuthenticationEntryPoint());
+        http.cors().configurationSource(corsConfigurationSource())
+                .and().csrf().disable()
+                .authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/api/*").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/*").authenticated()
+                .antMatchers(HttpMethod.PUT, "/api/*").authenticated()
+                .antMatchers("/api/accounts").authenticated()
+                .antMatchers(HttpMethod.GET, "/api/*").permitAll()
+                .antMatchers(HttpMethod.POST, "api/teachers/account").permitAll()
+                .antMatchers(HttpMethod.POST, "api/students/account").permitAll()
+                .and().oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter())
+                .and().authenticationEntryPoint(new BasicAuthenticationEntryPoint());
     }
 
 
