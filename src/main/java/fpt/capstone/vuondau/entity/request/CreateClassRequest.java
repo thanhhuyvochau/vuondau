@@ -1,8 +1,7 @@
 package fpt.capstone.vuondau.entity.request;
 
-import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCourseDataRequest;
+import fpt.capstone.vuondau.entity.common.EClassType;
 
-import javax.persistence.Column;
 import java.io.Serializable;
 import java.time.Instant;
 
@@ -16,7 +15,8 @@ public class CreateClassRequest implements Serializable {
     private Instant endDate;
     private String level;
 
-    private Long numberStudent;
+    private EClassType classType ;
+    private Long minNumberStudent;
 
     private Long maxNumberStudent;
 
@@ -24,8 +24,13 @@ public class CreateClassRequest implements Serializable {
 
     private Long courseId;
 
-//    private CreateCourseRequest courseRequest ;
+    public EClassType getClassType() {
+        return classType;
+    }
 
+    public void setClassType(EClassType classType) {
+        this.classType = classType;
+    }
 
     public String getName() {
         return name;
@@ -67,12 +72,12 @@ public class CreateClassRequest implements Serializable {
         this.level = level;
     }
 
-    public Long getNumberStudent() {
-        return numberStudent;
+    public Long getMinNumberStudent() {
+        return minNumberStudent;
     }
 
-    public void setNumberStudent(Long numberStudent) {
-        this.numberStudent = numberStudent;
+    public void setMinNumberStudent(Long minNumberStudent) {
+        this.minNumberStudent = minNumberStudent;
     }
 
     public Long getMaxNumberStudent() {

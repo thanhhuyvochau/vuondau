@@ -141,4 +141,10 @@ public class ClassController {
     public ResponseEntity<ApiResponse<ApiPage<CandicateResponse>>> getClassCandicates(@PathVariable Long classId, Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getClassCandicate(classId, pageable)));
     }
+
+    @Operation(summary = "Lấy các lớp đang tuyển gia sư")
+    @GetMapping({"/status/recruiting"})
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getRecruitingClass(Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.getRecruitingClasses(pageable)));
+    }
 }

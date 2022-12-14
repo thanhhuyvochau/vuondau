@@ -3,9 +3,8 @@ package fpt.capstone.vuondau.util.specification;
 
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
-import fpt.capstone.vuondau.entity.common.EClassLevelCode;
+import fpt.capstone.vuondau.entity.common.EClassLevel;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
-import fpt.capstone.vuondau.util.SpecificationUtil;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -90,7 +89,7 @@ public class ClassSpecificationBuilder {
         return Specification.where(null);
     }
 
-    public ClassSpecificationBuilder queryLevelClass(EClassLevelCode level) {
+    public ClassSpecificationBuilder queryLevelClass(EClassLevel level) {
         if (level == null) {
             return this;
         }
