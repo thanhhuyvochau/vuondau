@@ -17,15 +17,15 @@ import java.util.Optional;
 @Repository
 public interface ClassRepository extends JpaRepository<Class, Long> {
 
-    Class findByCode(String code );
+    Class findByCode(String code);
 
-    Class findByCourseAndAccount(Course course , Account account );
+    Class findByCourseAndAccount(Course course, Account account);
 
-   List<Class> findByAccountAndStatus(Account account , EClassStatus status);
+    List<Class> findByAccountAndStatus(Account account, EClassStatus status);
 
-   Optional<Class> findByIdAndCourse(long course , Course account );
+    Optional<Class> findByIdAndCourse(long course, Course account);
 
-//    List<Class> findAll(Specification<Class> spec, Pageable pageable);
+    //    List<Class> findAll(Specification<Class> spec, Pageable pageable);
     Page<Class> findAllByIsActiveIsTrue(Pageable pageable);
 
 //    Page<Class> findAllByActiveIsTrue(Pageable pageable);
@@ -39,4 +39,6 @@ public interface ClassRepository extends JpaRepository<Class, Long> {
     List<Class> findByIdInAndStatus(List<Long> classId, EClassStatus status);
 
 //    List<Class> findClassByAccount (Account account );
+
+    Page<Class> findAllByStatus(EClassStatus eClassStatus, Pageable pageable);
 }

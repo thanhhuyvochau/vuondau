@@ -551,4 +551,10 @@ public class ClassServiceImpl implements IClassService {
         Page<ClassTeacherCandicate> classCandicates = classTeacherCandicateRepository.findAllByClazz(clazz, pageable);
         return PageUtil.convert(classCandicates.map(ConvertUtil::doConvertEntityToResponse));
     }
+
+    @Override
+    public ApiPage<ClassDto> getRecruitingClasses(Pageable pageable) {
+        Page<Class> classPages = classRepository.findAllByStatus(EClassStatus.RECRUITING, pageable);
+        return PageUtil.convert(classPages.map(ConvertUtil::doConvertEntityToResponse));
+    }
 }
