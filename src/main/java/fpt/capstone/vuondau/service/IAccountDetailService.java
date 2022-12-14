@@ -25,7 +25,7 @@ public interface IAccountDetailService {
 
     List<EmailDto> approveRegisterAccount(List<Long> id);
 
-    ApiPage<AccountDetailResponse> getRequestToActiveAccount(Pageable pageable);
+    ApiPage<AccountDetailResponse> getRequestToActiveAccount( Boolean isActive, Pageable pageable);
 
 
 }
