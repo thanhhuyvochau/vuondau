@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
@@ -50,12 +51,11 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
     private final SecurityUtil securityUtil;
 
-    private final SubjectRepository subjectRepository ;
+    private final SubjectRepository subjectRepository;
 
     private final ClassLevelRepository classLevelRepository;
 
-    private final SendMailServiceImplServiceImpl sendMailServiceImplService ;
-
+    private final SendMailServiceImplServiceImpl sendMailServiceImplService;
 
 
     @Value("${minio.url}")
@@ -77,7 +77,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
     }
 
 
-    public Boolean checkBirthday (String birthday){
+    public Boolean checkBirthday(String birthday) {
 
         LocalDate today = LocalDate.now();
 
@@ -86,13 +86,13 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
                 = LocalDateTime.ofInstant(instant, ZoneOffset.UTC).toLocalDate();
 
         Period p = Period.between(localDate, today);
-        int checkBirthday = p.getYears() ;
-        System.out.println("You are " + p.getYears() + " years") ;
-        if (checkBirthday <= 18){
+        int checkBirthday = p.getYears();
+        System.out.println("You are " + p.getYears() + " years");
+        if (checkBirthday <= 18) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Bạn chưa đủ 18 tuổi"));
         }
-        return  true;
+        return true;
     }
 
 
@@ -103,14 +103,14 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
         AccountDetail accountDetail = new AccountDetail();
 
-        if (accountRepository.existsAccountByEmail(accountDetailRequest.getEmail() )
+        if (accountRepository.existsAccountByEmail(accountDetailRequest.getEmail())
                 || accountDetailRequest.getEmail() == null
                 || accountDetailRepository.existsAccountByEmail(accountDetailRequest.getEmail())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Email đã có tà khoản trong hệ thống"));
         }
 
-        if (accountDetailRepository.existsAccountByEmail(accountDetailRequest.getPhone()) || accountDetailRequest.getPhone()== null) {
+        if (accountDetailRepository.existsAccountByEmail(accountDetailRequest.getPhone()) || accountDetailRequest.getPhone() == null) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Phone đã có tà khoản trong hệ thống"));
         }
@@ -119,8 +119,8 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
         accountDetail.setLastName(accountDetailRequest.getLastName());
         accountDetail.setFirstName(accountDetailRequest.getFirstName());
-        if (accountDetailRequest.getBirthDay()!=null){
-            if(checkBirthday(accountDetailRequest.getBirthDay().toString())){
+        if (accountDetailRequest.getBirthDay() != null) {
+            if (checkBirthday(accountDetailRequest.getBirthDay().toString())) {
                 accountDetail.setBirthDay(accountDetailRequest.getBirthDay());
             }
         }
@@ -129,7 +129,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         accountDetail.setDomicile(accountDetailRequest.getDomicile());
         accountDetail.setGender(accountDetailRequest.getGender());
         accountDetail.setCurrentAddress(accountDetailRequest.getCurrentAddress());
-        if (accountDetailRepository.existsAccountDetailByIdCard(accountDetailRequest.getIdCard()) || accountDetailRequest.getIdCard() == null){
+        if (accountDetailRepository.existsAccountDetailByIdCard(accountDetailRequest.getIdCard()) || accountDetailRequest.getIdCard() == null) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Số chứng minh / căn cước công dân đã có trong hệ thống"));
         }
@@ -146,7 +146,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         accountDetail.setLevel(accountDetailRequest.getLevel());
         List<Long> subjects = accountDetailRequest.getSubjects();
         List<AccountDetailSubject> accountDetailSubjectList = new ArrayList<>();
-        if (subjects!= null){
+        if (subjects != null) {
             List<Subject> allSubjects = subjectRepository.findAllById(subjects);
 
 
@@ -164,56 +164,62 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
 
         accountDetail.setAccountDetailSubjects(accountDetailSubjectList);
-        List<AccountDetailClassLevel> accountDetailClassLevelList = new ArrayList<>() ;
+        List<AccountDetailClassLevel> accountDetailClassLevelList = new ArrayList<>();
         List<Long> classLevels = accountDetailRequest.getClassLevels();
-        if (classLevels!=null ){
+        if (classLevels != null) {
             List<ClassLevel> allClassLevel = classLevelRepository.findAllById(classLevels);
             allClassLevel.forEach(classLevel -> {
-                AccountDetailClassLevel accountDetailClassLevel = new AccountDetailClassLevel() ;
-                AccountDetailClassLevelKey accountDetailClassLevelKey = new AccountDetailClassLevelKey() ;
+                AccountDetailClassLevel accountDetailClassLevel = new AccountDetailClassLevel();
+                AccountDetailClassLevelKey accountDetailClassLevelKey = new AccountDetailClassLevelKey();
                 accountDetailClassLevelKey.setClassLevelId(classLevel.getId());
                 accountDetailClassLevelKey.setAccountDetailId(accountDetail.getId());
                 accountDetailClassLevel.setId(accountDetailClassLevelKey);
                 accountDetailClassLevel.setAccountDetail(accountDetail);
                 accountDetailClassLevel.setClassLevel(classLevel);
-                accountDetailClassLevelList.add(accountDetailClassLevel) ;
+                accountDetailClassLevelList.add(accountDetailClassLevel);
             });
         }
-
-
 
 
         accountDetail.setAccountDetailClassLevels(accountDetailClassLevelList);
         accountDetail.setVoice(accountDetailRequest.getVoice());
         accountDetail.setStatus(EAccountDetailStatus.REQUESTED);
         accountDetail.setActive(false);
-        List<Resource> resourceList = new ArrayList<>();
 
-        for (UploadAvatarRequest uploadImageRequest : accountDetailRequest.getUploadFiles()) {
-            try {
-                String name = uploadImageRequest.getFile().getOriginalFilename() + "-" + Instant.now().toString();
-                ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, uploadImageRequest.getFile().getContentType(),
-                        uploadImageRequest.getFile().getInputStream(), uploadImageRequest.getFile().getSize());
 
-                Resource resource = new Resource();
-                resource.setName(name);
-                resource.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
-                resource.setAccountDetail(accountDetail);
-                if (uploadImageRequest.getResourceType().equals(EResourceType.CARTPHOTO)) {
-                    resource.setResourceType(EResourceType.CARTPHOTO);
-                } else if (uploadImageRequest.getResourceType().equals(EResourceType.DEGREE)) {
-                    resource.setResourceType(EResourceType.DEGREE);
-                } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCD)) {
-                    resource.setResourceType(EResourceType.CCCD);
-                }
+        AccountDetail save = accountDetailRepository.save(accountDetail);
 
-                resourceList.add(resource);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        accountDetail.setResources(resourceList);
-        resourceRepository.saveAll(resourceList);
+
+        return save.getId();
+    }
+//        List<Resource> resourceList = new ArrayList<>();
+
+//        for (UploadAvatarRequest uploadImageRequest : accountDetailRequest.getUploadFiles()) {
+//        UploadAvatarRequest uploadFiles = accountDetailRequest.getUploadFiles();
+//        try {
+//                String name = accountDetailRequest.getFile().getOriginalFilename() + "-" + Instant.now().toString();
+//                ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, accountDetailRequest.getFile().getContentType(),
+//                        accountDetailRequest.getFile().getInputStream(), accountDetailRequest.getFile().getSize());
+//
+//                Resource resource = new Resource();
+//                resource.setName(name);
+//                resource.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
+//                resource.setAccountDetail(accountDetail);
+//                if (uploadImageRequest.getResourceType().equals(EResourceType.CARTPHOTO)) {
+//                    resource.setResourceType(EResourceType.CARTPHOTO);
+//                } else if (uploadImageRequest.getResourceType().equals(EResourceType.DEGREE)) {
+//                    resource.setResourceType(EResourceType.DEGREE);
+//                } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCD)) {
+//                    resource.setResourceType(EResourceType.CCCD);
+//                }
+
+//                resourceList.add(resource);
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//        accountDetail.setResources(resourceList);
+//        resourceRepository.saveAll(resourceList);
 
 //
 //        List<Resource> resourceList = new ArrayList<>();
@@ -240,75 +246,70 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 //                throw new RuntimeException(e);
 //            }
 //        }
-        if (resourceList.size() <3 ){
-            throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Hệ thống cần bạn upload đầy đủ hình ảnh."));
-        }
+//        if (resourceList.size() <3 ){
+//            throw ApiException.create(HttpStatus.BAD_REQUEST)
+//                    .withMessage(messageUtil.getLocalMessage("Hệ thống cần bạn upload đầy đủ hình ảnh."));
+//        }
 
 //        resourceRepository.saveAll(resourceList);
 
-        AccountDetail save = accountDetailRepository.save(accountDetail);
-
-
-        return save.getId() ;
-    }
 
     @Override
-    public List<ResourceDto> uploadImageRegisterProfile(long id, List<UploadAvatarRequest> UploadAvatarRequest) {
+    public List<ResourceDto> uploadImageRegisterProfile(Long id, UploadAvatarRequest uploadImageRequest) {
 
         AccountDetail accountDetail = accountDetailRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
 
         List<Resource> resourceList = new ArrayList<>();
-        for (UploadAvatarRequest uploadImageRequest : UploadAvatarRequest) {
-            try {
-                String name = uploadImageRequest.getFile().getOriginalFilename() + "-" + Instant.now().toString();
-                ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, uploadImageRequest.getFile().getContentType(),
-                        uploadImageRequest.getFile().getInputStream(), uploadImageRequest.getFile().getSize());
 
-                Resource resource = new Resource();
-                resource.setName(name);
-                resource.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
-                resource.setAccountDetail(accountDetail);
+        try {
+            String name = uploadImageRequest.getFile().getOriginalFilename() + "-" + Instant.now().toString();
+            ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name,  uploadImageRequest.getFile().getContentType(),
+            uploadImageRequest.getFile().getInputStream(),  uploadImageRequest.getFile().getSize());
+
+            Resource resource = new Resource();
+            resource.setName(name);
+            resource.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
+            resource.setAccountDetail(accountDetail);
                 if (uploadImageRequest.getResourceType().equals(EResourceType.CARTPHOTO)) {
                     resource.setResourceType(EResourceType.CARTPHOTO);
                 } else if (uploadImageRequest.getResourceType().equals(EResourceType.DEGREE)) {
-                    resource.setResourceType(EResourceType.CARTPHOTO);
+                    resource.setResourceType(EResourceType.DEGREE);
                 } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCD)) {
                     resource.setResourceType(EResourceType.CCCD);
                 }
 
-                resourceList.add(resource);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            resourceList.add(resource);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         resourceRepository.saveAll(resourceList);
 
         List<ResourceDto> resourceDtoList = new ArrayList<>();
-        resourceList.stream().map(resource -> {
-            resourceDtoList.add(ObjectUtil.copyProperties(resource, new ResourceDto(), ResourceDto.class));
-            return resource;
-        }).collect(Collectors.toList());
+        resourceList.forEach(resource -> {
+            ResourceDto resourceDto = ObjectUtil.copyProperties(resource, new ResourceDto(), ResourceDto.class);
+            resourceDto.setResourceType(resource.getResourceType());
+            resourceDtoList.add(resourceDto) ;
+        });
         return resourceDtoList;
     }
 
     @Override
     public List<EmailDto> approveRegisterAccount(List<Long> id) {
-        List<EmailDto> mail = new ArrayList<>( );
-        List<AccountDetail> accountDetailList = new ArrayList<>() ;
+        List<EmailDto> mail = new ArrayList<>();
+        List<AccountDetail> accountDetailList = new ArrayList<>();
         List<AccountDetail> accountDetails = accountDetailRepository.findAllByIdInAndIsActiveIsFalse(id);
         if (accountDetails != null) {
             accountDetails.forEach(accountDetail -> {
-                EmailDto emailDto = new EmailDto() ;
+                EmailDto emailDto = new EmailDto();
 
                 accountDetail.setActive(true);
                 Account account = new Account();
-                if (accountDetail.getEmail()== null) {
+                if (accountDetail.getEmail() == null) {
                     throw ApiException.create(HttpStatus.BAD_REQUEST)
                             .withMessage(messageUtil.getLocalMessage("Không thể phê duyệt tài khoản vì không có email"));
                 }
-                if (accountDetail.getPassword()== null) {
+                if (accountDetail.getPassword() == null) {
                     throw ApiException.create(HttpStatus.BAD_REQUEST)
                             .withMessage(messageUtil.getLocalMessage("Không thể phê duyệt tài khoản vì không có password"));
                 }
@@ -333,15 +334,14 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
                 Account save = accountRepository.save(account);
 
 
-
                 accountDetail.setStatus(EAccountDetailStatus.REQUESTED);
                 accountDetail.setAccount(account);
-                accountDetailList.add(accountDetail ) ;
+                accountDetailList.add(accountDetail);
                 emailDto.setMail(accountDetail.getEmail());
-                emailDto.setName(accountDetail.getFirstName()+""+accountDetail.getLastName());
+                emailDto.setName(accountDetail.getFirstName() + "" + accountDetail.getLastName());
                 emailDto.setPassword(accountDetail.getPassword());
 
-                mail.add(emailDto) ;
+                mail.add(emailDto);
             });
         }
 
