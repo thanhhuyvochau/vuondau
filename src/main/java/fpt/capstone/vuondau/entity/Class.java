@@ -1,7 +1,7 @@
 package fpt.capstone.vuondau.entity;
 
 
-import fpt.capstone.vuondau.entity.common.EClassLevelCode;
+import fpt.capstone.vuondau.entity.common.EClassLevel;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 
 import javax.persistence.*;
@@ -67,7 +67,7 @@ public class Class {
 
     @Column(name = "class_level")
     @Enumerated(EnumType.STRING)
-    private EClassLevelCode classLevel;
+    private EClassLevel classLevel;
 
     @Column(name = "unit_price")
     private BigDecimal unitPrice;
@@ -172,11 +172,11 @@ public class Class {
         this.numberStudent = numberStudent;
     }
 
-    public EClassLevelCode getClassLevel() {
+    public EClassLevel getClassLevel() {
         return classLevel;
     }
 
-    public void setClassLevel(EClassLevelCode classLevel) {
+    public void setClassLevel(EClassLevel classLevel) {
         this.classLevel = classLevel;
     }
 

@@ -1,7 +1,7 @@
 package fpt.capstone.vuondau.entity.response;
 
 
-import fpt.capstone.vuondau.entity.common.EClassLevelCode;
+import fpt.capstone.vuondau.entity.common.EClassLevel;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class InfoFindTutorResponse {
     private String address;
 
 
-    private EClassLevelCode classLevel;
+    private EClassLevel classLevel;
 
 
 
@@ -67,11 +67,12 @@ public class InfoFindTutorResponse {
         this.address = address;
     }
 
-    public EClassLevelCode getClassLevel() {
+
+    public EClassLevel getClassLevel() {
         return classLevel;
     }
 
-    public void setClassLevel(EClassLevelCode classLevel) {
+    public void setClassLevel(EClassLevel classLevel) {
         this.classLevel = classLevel;
     }
 

@@ -1,6 +1,6 @@
 package fpt.capstone.vuondau.entity;
 
-import fpt.capstone.vuondau.entity.common.EClassLevelCode;
+import fpt.capstone.vuondau.entity.common.EClassLevel;
 
 import javax.persistence.*;
 import java.util.List;
@@ -29,7 +29,7 @@ public class InfoFindTutor {
 
     @Column(name = "class_level")
     @Enumerated(EnumType.STRING)
-    private EClassLevelCode classLevel;
+    private EClassLevel classLevel;
 
 
     @Column(name = "description")
@@ -82,11 +82,11 @@ public class InfoFindTutor {
         this.address = address;
     }
 
-    public EClassLevelCode getClassLevel() {
+    public EClassLevel getClassLevel() {
         return classLevel;
     }
 
-    public void setClassLevel(EClassLevelCode classLevel) {
+    public void setClassLevel(EClassLevel classLevel) {
         this.classLevel = classLevel;
     }
 
