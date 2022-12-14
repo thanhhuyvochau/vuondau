@@ -4,6 +4,7 @@ package fpt.capstone.vuondau.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
+import fpt.capstone.vuondau.entity.dto.EmailDto;
 import fpt.capstone.vuondau.entity.dto.ProvincesDto;
 import fpt.capstone.vuondau.entity.dto.ResourceDto;
 import fpt.capstone.vuondau.entity.request.AccountDetailRequest;
@@ -22,6 +23,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -46,19 +48,19 @@ public class AccountDetailController {
 
     @Operation(summary = "Đăng ký làm gia sư cho vườn đậu")
     @PostMapping("/register-tutor")
-    public ResponseEntity<ApiResponse<Boolean>> registerTutor(@RequestBody AccountDetailRequest accountDetailRequest) {
+    public ResponseEntity<ApiResponse<Long>> registerTutor(@ModelAttribute AccountDetailRequest accountDetailRequest) {
         return ResponseEntity.ok(ApiResponse.success(iAccountDetailService.registerTutor(accountDetailRequest)));
     }
 
     @Operation(summary = "upload dại diện - bằng cấp - CMMD.CDCC  để đk giảng dạy")
     @PostMapping("/{id}/image-register-profile")
-    public ResponseEntity<List<ResourceDto>> uploadImageRegisterProfile(@PathVariable long id, @ModelAttribute List<UploadAvatarRequest> UploadAvatarRequest) throws IOException {
-        return ResponseEntity.ok(iAccountDetailService.uploadImageRegisterProfile(id, UploadAvatarRequest));
+    public ResponseEntity<List<ResourceDto>> uploadImageRegisterProfile(@PathVariable Long id, @ModelAttribute UploadAvatarRequest uploadImageRequest ) throws IOException {
+        return ResponseEntity.ok(iAccountDetailService.uploadImageRegisterProfile(id, uploadImageRequest));
     }
 
     @Operation(summary = "Admin phê duyệt request đăng ký giang dạy của giao vien")
     @PostMapping("/{id}/approve-request-register-profile")
-    public ResponseEntity<AccountResponse> approveRegisterAccount(@PathVariable long id) {
+    public ResponseEntity<List<EmailDto>> approveRegisterAccount(@RequestBody List<Long> id) {
         return ResponseEntity.ok(iAccountDetailService.approveRegisterAccount(id));
     }
 
@@ -86,8 +88,8 @@ public class AccountDetailController {
 
 
     @PostMapping("/sendMail")
-    public ResponseEntity<ApiResponse<Boolean>> sendMail() {
-        return ResponseEntity.ok(ApiResponse.success(iSendMailService.sendMail()));
+    public ResponseEntity<ApiResponse<Boolean>> sendMail(List<EmailDto> emailDto) {
+        return ResponseEntity.ok(ApiResponse.success(iSendMailService.sendMail( emailDto )));
 
     }
 

@@ -34,6 +34,7 @@ url: http://103.173.255.39:9001/
 username: minioadmin
 password: minioadmin
 
+
 accessKey: mGUnihw7IeJ3C6EQ
 secretKey: KLXCOA4g71xV5SChU3f278AYH3HqKE7I
 api:s3v4
