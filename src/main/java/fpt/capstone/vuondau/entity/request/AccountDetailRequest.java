@@ -3,6 +3,7 @@ package fpt.capstone.vuondau.entity.request;
 
 import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.common.EGenderType;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.Column;
 import java.io.Serializable;
@@ -42,24 +43,26 @@ public class AccountDetailRequest implements Serializable {
     private List<Long> subjects ;
     private List<Long> classLevels ;
 
+//    private UploadAvatarRequest uploadFiles ;
+    private MultipartFile file ;
+//    private List<UploadAvatarRequest> uploadFiles ;
 
-    private List<UploadAvatarRequest> uploadFiles ;
-
-    public List<UploadAvatarRequest> getUploadFiles() {
-        return uploadFiles;
+    public MultipartFile getFile() {
+        return file;
     }
 
-    public void setUploadFiles(List<UploadAvatarRequest> uploadFiles) {
-        this.uploadFiles = uploadFiles;
+    public void setFile(MultipartFile file) {
+        this.file = file;
     }
 
-    public String getPassword() {
-        return password;
-    }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+//    public UploadAvatarRequest getUploadFiles() {
+//        return uploadFiles;
+//    }
+//
+//    public void setUploadFiles(UploadAvatarRequest uploadFiles) {
+//        this.uploadFiles = uploadFiles;
+//    }
 
     public String getFirstName() {
         return firstName;
@@ -85,14 +88,6 @@ public class AccountDetailRequest implements Serializable {
         this.birthDay = birthDay;
     }
 
-    public EGenderType getGender() {
-        return gender;
-    }
-
-    public void setGender(EGenderType gender) {
-        this.gender = gender;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -101,12 +96,28 @@ public class AccountDetailRequest implements Serializable {
         this.email = email;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getPhone() {
         return phone;
     }
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public EGenderType getGender() {
+        return gender;
+    }
+
+    public void setGender(EGenderType gender) {
+        this.gender = gender;
     }
 
     public String getDomicile() {
@@ -188,4 +199,12 @@ public class AccountDetailRequest implements Serializable {
     public void setClassLevels(List<Long> classLevels) {
         this.classLevels = classLevels;
     }
+
+//    public List<UploadAvatarRequest> getUploadFiles() {
+//        return uploadFiles;
+//    }
+//
+//    public void setUploadFiles(List<UploadAvatarRequest> uploadFiles) {
+//        this.uploadFiles = uploadFiles;
+//    }
 }
