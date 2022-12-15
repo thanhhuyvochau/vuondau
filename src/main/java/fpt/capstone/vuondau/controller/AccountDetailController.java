@@ -23,6 +23,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,14 +48,14 @@ public class AccountDetailController {
 
     @Operation(summary = "Đăng ký làm gia sư cho vườn đậu")
     @PostMapping("/register-tutor")
-    public ResponseEntity<ApiResponse<Boolean>> registerTutor(@ModelAttribute AccountDetailRequest accountDetailRequest) {
+    public ResponseEntity<ApiResponse<Long>> registerTutor(@RequestBody AccountDetailRequest accountDetailRequest) {
         return ResponseEntity.ok(ApiResponse.success(iAccountDetailService.registerTutor(accountDetailRequest)));
     }
 
     @Operation(summary = "upload dại diện - bằng cấp - CMMD.CDCC  để đk giảng dạy")
     @PostMapping("/{id}/image-register-profile")
-    public ResponseEntity<List<ResourceDto>> uploadImageRegisterProfile(@PathVariable long id, @ModelAttribute List<UploadAvatarRequest> UploadAvatarRequest) throws IOException {
-        return ResponseEntity.ok(iAccountDetailService.uploadImageRegisterProfile(id, UploadAvatarRequest));
+    public ResponseEntity<List<ResourceDto>> uploadImageRegisterProfile(@PathVariable Long id, @ModelAttribute UploadAvatarRequest uploadImageRequest ) throws IOException {
+        return ResponseEntity.ok(iAccountDetailService.uploadImageRegisterProfile(id, uploadImageRequest));
     }
 
     @Operation(summary = "Admin phê duyệt request đăng ký giang dạy của giao vien")
@@ -64,9 +65,9 @@ public class AccountDetailController {
     }
 
     @GetMapping
-    @Operation(summary = "Lấy tất cả request tạo tk để đang ký giang day")
-    public ResponseEntity<ApiResponse<ApiPage<AccountDetailResponse>>> getRequestToActiveAccount(Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.success(iAccountDetailService.getRequestToActiveAccount(pageable)));
+    @Operation(summary = "Lấy tất cả request tạo tk để đang ký giang dạy theo trạng thái (đã duyệt/chờ)")
+    public ResponseEntity<ApiResponse<ApiPage<AccountDetailResponse>>> getRequestToActiveAccount(  Boolean isActive   , Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(iAccountDetailService.getRequestToActiveAccount(isActive , pageable)));
     }
 
     @GetMapping("/genders")

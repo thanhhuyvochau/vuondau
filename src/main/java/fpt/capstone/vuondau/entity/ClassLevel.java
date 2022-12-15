@@ -1,11 +1,9 @@
 package fpt.capstone.vuondau.entity;
 
-import fpt.capstone.vuondau.entity.common.EClassLevelCode;
-import fpt.capstone.vuondau.entity.common.ESubjectCode;
+import fpt.capstone.vuondau.entity.common.EClassLevel;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(name = "class_level")
@@ -17,7 +15,7 @@ public class ClassLevel {
     private String name;
     @Column(name = "code")
     @Enumerated(EnumType.STRING)
-    private EClassLevelCode code;
+    private EClassLevel code;
 
 
     @OneToMany(mappedBy = "classLevel", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -39,11 +37,11 @@ public class ClassLevel {
         this.name = name;
     }
 
-    public EClassLevelCode getCode() {
+    public EClassLevel getCode() {
         return code;
     }
 
-    public void setCode(EClassLevelCode code) {
+    public void setCode(EClassLevel code) {
         this.code = code;
     }
 

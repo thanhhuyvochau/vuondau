@@ -88,13 +88,14 @@ public class ClassServiceImpl implements IClassService {
         clazz.setCode(createClassRequest.getCode());
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
-        clazz.setNumberStudent(createClassRequest.getNumberStudent());
+        clazz.setMinNumberStudent(createClassRequest.getMinNumberStudent());
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
         clazz.setStatus(EClassStatus.REQUESTING);
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
         clazz.setActive(false);
         clazz.setAccount(teacher);
+        clazz.setClassType(createClassRequest.getClassType());
         classRepository.save(clazz);
 
 
@@ -452,7 +453,7 @@ public class ClassServiceImpl implements IClassService {
         clazz.setCode(createClassRequest.getCode());
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
-        clazz.setNumberStudent(createClassRequest.getNumberStudent());
+        clazz.setMinNumberStudent(createClassRequest.getMinNumberStudent());
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
         clazz.setStatus(EClassStatus.RECRUITING);
         clazz.setStartDate(createClassRequest.getStartDate());
@@ -546,5 +547,11 @@ public class ClassServiceImpl implements IClassService {
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
         Page<ClassTeacherCandicate> classCandicates = classTeacherCandicateRepository.findAllByClazz(clazz, pageable);
         return PageUtil.convert(classCandicates.map(ConvertUtil::doConvertEntityToResponse));
+    }
+
+    @Override
+    public ApiPage<ClassDto> getRecruitingClasses(Pageable pageable) {
+        Page<Class> classPages = classRepository.findAllByStatus(EClassStatus.RECRUITING, pageable);
+        return PageUtil.convert(classPages.map(ConvertUtil::doConvertEntityToResponse));
     }
 }

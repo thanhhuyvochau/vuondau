@@ -10,6 +10,7 @@ import fpt.capstone.vuondau.entity.dto.ResourceDto;
 import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.*;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,13 +19,13 @@ import java.util.Optional;
 public interface IAccountDetailService {
 
 
-    boolean registerTutor(AccountDetailRequest accountDetailRequest);
+    Long registerTutor(AccountDetailRequest accountDetailRequest);
 
-    List<ResourceDto> uploadImageRegisterProfile(long id, List<UploadAvatarRequest> UploadAvatarRequest);
+    List<ResourceDto> uploadImageRegisterProfile(Long id,  UploadAvatarRequest uploadImageRequest);
 
     List<EmailDto> approveRegisterAccount(List<Long> id);
 
-    ApiPage<AccountDetailResponse> getRequestToActiveAccount(Pageable pageable);
+    ApiPage<AccountDetailResponse> getRequestToActiveAccount( Boolean isActive, Pageable pageable);
 
 
 }

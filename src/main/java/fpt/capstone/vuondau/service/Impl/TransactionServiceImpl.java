@@ -77,11 +77,7 @@ public class TransactionServiceImpl implements ITransactionService {
         vnp_Params.put("vnp_OrderType", orderType);
 
         String locate = "VN";
-        if (locate != null && !locate.isEmpty()) {
-            vnp_Params.put("vnp_Locale", locate);
-        } else {
-            vnp_Params.put("vnp_Locale", "vn");
-        }
+        vnp_Params.put("vnp_Locale", locate);
         vnp_Params.put("vnp_ReturnUrl", vnpConfig.getVnp_Returnurl());
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
@@ -155,7 +151,7 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
-    public Boolean executeAfterPayment(HttpServletRequest request) {
+    public Transaction executeAfterPayment(HttpServletRequest request) {
         Map<String, String[]> parameterMap = request.getParameterMap();
         String transactionNo = request.getParameter("vnp_TransactionNo");
         String responseCode = request.getParameter("vnp_ResponseCode");
@@ -165,11 +161,9 @@ public class TransactionServiceImpl implements ITransactionService {
         Transaction transaction = transactionRepository
                 .findById(Long.valueOf(transactionId)).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
                         .withMessage("Transaction not found with id:" + transactionId));
-        boolean result = false;
         if (transactionStatus.equals("00") && responseCode.equals("00")) {
             Class paymentClass = transaction.getPaymentClass();
             if (paymentClass.getNumberStudent() < paymentClass.getMaxNumberStudent()) {
-                result = true;
                 transaction.setTransactionNo(transactionNo);
                 transaction.setSuccess(true);
                 StudentClass studentClass = new StudentClass();
@@ -187,6 +181,6 @@ public class TransactionServiceImpl implements ITransactionService {
             transaction.setSuccess(false);
         }
         transactionRepository.save(transaction);
-        return result;
+        return transaction;
     }
 }
