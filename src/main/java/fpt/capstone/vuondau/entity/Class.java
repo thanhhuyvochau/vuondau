@@ -1,8 +1,9 @@
 package fpt.capstone.vuondau.entity;
 
 
-import fpt.capstone.vuondau.entity.common.EClassLevelCode;
+import fpt.capstone.vuondau.entity.common.EClassLevel;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
+import fpt.capstone.vuondau.entity.common.EClassType;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -35,9 +36,6 @@ public class Class {
     @Column(name = "end_date")
     private Instant endDate;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "class_type_id")
-//    private ClassType classType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id")
@@ -68,7 +66,12 @@ public class Class {
 
     @Column(name = "class_level")
     @Enumerated(EnumType.STRING)
-    private EClassLevelCode classLevel;
+    private EClassLevel classLevel;
+
+
+    @Column(name = "class_type")
+    @Enumerated(EnumType.STRING)
+    private EClassType classType;
 
     @Column(name = "unit_price")
     private BigDecimal unitPrice;
@@ -107,6 +110,14 @@ public class Class {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public EClassType getClassType() {
+        return classType;
+    }
+
+    public void setClassType(EClassType classType) {
+        this.classType = classType;
     }
 
     public String getCode() {
@@ -165,19 +176,12 @@ public class Class {
         this.account = account;
     }
 
-    public Long getNumberStudent() {
-        return numberStudent;
-    }
 
-    public void setNumberStudent(Long numberStudent) {
-        this.numberStudent = numberStudent;
-    }
-
-    public EClassLevelCode getClassLevel() {
+    public EClassLevel getClassLevel() {
         return classLevel;
     }
 
-    public void setClassLevel(EClassLevelCode classLevel) {
+    public void setClassLevel(EClassLevel classLevel) {
         this.classLevel = classLevel;
     }
 
@@ -286,4 +290,11 @@ public class Class {
         this.minNumberStudent = minNumberStudent;
     }
 
+    public Long getNumberStudent() {
+        return numberStudent;
+    }
+
+    public void setNumberStudent(Long numberStudent) {
+        this.numberStudent = numberStudent;
+    }
 }

@@ -26,4 +26,8 @@ public interface AccountDetailRepository extends JpaRepository<AccountDetail, Lo
    Boolean existsAccountDetailByIdCard (String idCart) ;
 
    Boolean existsAccountByPhone(String phone) ;
+
+
+   Page<AccountDetail> findAllByIsActive( Boolean isActive ,Pageable pageable);
+
 }

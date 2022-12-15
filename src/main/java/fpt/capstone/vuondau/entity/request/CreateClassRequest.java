@@ -1,5 +1,7 @@
 package fpt.capstone.vuondau.entity.request;
 
+import fpt.capstone.vuondau.entity.common.EClassType;
+
 import java.io.Serializable;
 import java.time.Instant;
 
@@ -13,6 +15,7 @@ public class CreateClassRequest implements Serializable {
     private Instant endDate;
     private String level;
 
+    private EClassType classType ;
     private Long minNumberStudent;
 
     private Long maxNumberStudent;
@@ -21,8 +24,13 @@ public class CreateClassRequest implements Serializable {
 
     private Long courseId;
 
-//    private CreateCourseRequest courseRequest ;
+    public EClassType getClassType() {
+        return classType;
+    }
 
+    public void setClassType(EClassType classType) {
+        this.classType = classType;
+    }
 
     public String getName() {
         return name;

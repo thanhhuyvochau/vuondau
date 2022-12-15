@@ -264,19 +264,19 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         try {
             String name = uploadImageRequest.getFile().getOriginalFilename() + "-" + Instant.now().toString();
             ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name,  uploadImageRequest.getFile().getContentType(),
-            uploadImageRequest.getFile().getInputStream(),  uploadImageRequest.getFile().getSize());
+                    uploadImageRequest.getFile().getInputStream(),  uploadImageRequest.getFile().getSize());
 
             Resource resource = new Resource();
             resource.setName(name);
             resource.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
             resource.setAccountDetail(accountDetail);
-                if (uploadImageRequest.getResourceType().equals(EResourceType.CARTPHOTO)) {
-                    resource.setResourceType(EResourceType.CARTPHOTO);
-                } else if (uploadImageRequest.getResourceType().equals(EResourceType.DEGREE)) {
-                    resource.setResourceType(EResourceType.DEGREE);
-                } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCD)) {
-                    resource.setResourceType(EResourceType.CCCD);
-                }
+            if (uploadImageRequest.getResourceType().equals(EResourceType.CARTPHOTO)) {
+                resource.setResourceType(EResourceType.CARTPHOTO);
+            } else if (uploadImageRequest.getResourceType().equals(EResourceType.DEGREE)) {
+                resource.setResourceType(EResourceType.DEGREE);
+            } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCD)) {
+                resource.setResourceType(EResourceType.CCCD);
+            }
 
             resourceList.add(resource);
         } catch (IOException e) {
@@ -352,8 +352,8 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
     }
 
     @Override
-    public ApiPage<AccountDetailResponse> getRequestToActiveAccount(Pageable pageable) {
-        Page<AccountDetail> accountDetailPage = accountDetailRepository.findAll(pageable);
+    public ApiPage<AccountDetailResponse> getRequestToActiveAccount( Boolean isActive , Pageable pageable) {
+        Page<AccountDetail> accountDetailPage = accountDetailRepository.findAllByIsActive(isActive,pageable);
 
         return PageUtil.convert(accountDetailPage.map(accountDetail -> {
             AccountDetailResponse accountDetailResponse = ObjectUtil.copyProperties(accountDetail, new AccountDetailResponse(), AccountDetailResponse.class);

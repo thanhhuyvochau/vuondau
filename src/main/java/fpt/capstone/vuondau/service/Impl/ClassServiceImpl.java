@@ -88,13 +88,14 @@ public class ClassServiceImpl implements IClassService {
         clazz.setCode(createClassRequest.getCode());
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
-        clazz.setNumberStudent(createClassRequest.getMinNumberStudent());
+        clazz.setMinNumberStudent(createClassRequest.getMinNumberStudent());
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
         clazz.setStatus(EClassStatus.REQUESTING);
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
         clazz.setActive(false);
         clazz.setAccount(teacher);
+        clazz.setClassType(createClassRequest.getClassType());
         classRepository.save(clazz);
 
 

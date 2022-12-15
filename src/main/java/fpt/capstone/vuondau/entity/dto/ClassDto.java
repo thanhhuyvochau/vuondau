@@ -1,7 +1,9 @@
 package fpt.capstone.vuondau.entity.dto;
 
 
+import fpt.capstone.vuondau.entity.common.EClassLevel;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
+import fpt.capstone.vuondau.entity.common.EClassType;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.CourseResponse;
 
@@ -16,14 +18,15 @@ public class ClassDto {
 
     private EClassStatus status ;
 
-    private ClassTypeDto classType ;
+    private EClassType classType ;
+
+    private EClassLevel classLevel ;
 
 
     private Instant startDate ;
 
     private Instant endDate ;
 
-//    private EClassLevelCode classLevel;
 
     private Long numberStudent ;
 
@@ -103,22 +106,21 @@ public class ClassDto {
     }
 
 
-//    public EClassLevelCode getClassLevel() {
-//        return classLevel;
-//    }
-
-    public ClassTypeDto getClassType() {
+    public EClassType getClassType() {
         return classType;
     }
 
-    public void setClassType(ClassTypeDto classType) {
+    public void setClassType(EClassType classType) {
         this.classType = classType;
     }
 
+    public EClassLevel getClassLevel() {
+        return classLevel;
+    }
 
-//    public void setClassLevel(EClassLevelCode classLevel) {
-//        this.classLevel = classLevel;
-//    }
+    public void setClassLevel(EClassLevel classLevel) {
+        this.classLevel = classLevel;
+    }
 
     public Long getNumberStudent() {
         return numberStudent;
