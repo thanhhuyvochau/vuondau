@@ -60,10 +60,16 @@ public class ClassController {
     }
 
 
-    @Operation(summary = "lấy tất cả class của giáo viên ")
-    @GetMapping("/teacher/classes")
+    @Operation(summary = "lấy tất cả class của giáo viên / học sinh")
+    @GetMapping("/account")
     public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getClassByAccount( Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getClassByAccount(pageable)));
+    }
+
+    @Operation(summary = "hoc sinh/ giao vien xem chi tiết class")
+    @GetMapping("/{id}/account/class-detail")
+    public ResponseEntity<ApiResponse<ClassDetailDto>> accountGetClassDetail(@PathVariable Long id) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.accountGetClassDetail(id)));
     }
 
     @Operation(summary = "Admin phê duyệt request tao class của teacher ")
