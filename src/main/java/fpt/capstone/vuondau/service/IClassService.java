@@ -57,4 +57,6 @@ public interface IClassService {
     ApiPage<CandicateResponse> getClassCandicate(Long classId, Pageable pageable);
 
     ApiPage<ClassDto> getRecruitingClasses(Pageable pageable);
+
+    ApiPage<ClassDto> getClassByAccount( Pageable pageable);
 }

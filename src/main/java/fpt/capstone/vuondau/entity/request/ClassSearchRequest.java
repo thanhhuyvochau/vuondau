@@ -11,12 +11,14 @@ import java.util.List;
 public class ClassSearchRequest implements Serializable {
     private String q;
 
+
     private EClassStatus status;
     private Instant startDate;
     private Instant endDate;
     private BigDecimal minPrice;
     private BigDecimal maxPrice;
     private List<Long> subjectIds = new ArrayList<>();
+
 
     public String getQ() {
         return q;

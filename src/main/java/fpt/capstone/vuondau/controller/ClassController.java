@@ -55,8 +55,15 @@ public class ClassController {
 
     @Operation(summary = "lấy tất cả class có phân trang")
     @GetMapping
-    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getAllClass(Pageable pageable) {
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getAllClass( Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getAllClass(pageable)));
+    }
+
+
+    @Operation(summary = "lấy tất cả class của giáo viên ")
+    @GetMapping("/teacher/classes")
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getClassByAccount( Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.getClassByAccount(pageable)));
     }
 
     @Operation(summary = "Admin phê duyệt request tao class của teacher ")
@@ -78,7 +85,7 @@ public class ClassController {
         return ResponseEntity.ok(ApiResponse.success(iClassService.studentEnrollClass(studentId, classId)));
     }
 
-    @Operation(summary = "lấy danh sachs tất cả hoc sinh dang  chờ duyệt để vào class")
+    @Operation(summary = "lấy danh sách tất cả hoc sinh dang  chờ duyệt để vào class")
     @GetMapping({"/{classId}/student-waiting-approve"})
     public ResponseEntity<ApiResponse<List<ClassStudentDto>>> getStudentWaitingIntoClass(@PathVariable Long classId) {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getStudentWaitingIntoClass(classId)));
