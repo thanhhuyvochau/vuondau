@@ -35,7 +35,7 @@ public class PaymentController {
 
 
     @GetMapping("/payment-result")
-    public void executeAfterPayment(HttpServletRequest request, Principal user) {
+    public void executeAfterPayment(HttpServletRequest request) {
         Transaction transaction = transactionService.executeAfterPayment(request);
         Account student = transaction.getAccount();
         Boolean success = transaction.getSuccess();

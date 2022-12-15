@@ -20,7 +20,7 @@ public class SocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry
-                .addEndpoint("/greeting")
+                .addEndpoint("/vuondau-socket")
                 .withSockJS();
     }
 
