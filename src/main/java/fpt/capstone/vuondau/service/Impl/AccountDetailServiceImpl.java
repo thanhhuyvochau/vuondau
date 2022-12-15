@@ -352,8 +352,8 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
     }
 
     @Override
-    public ApiPage<AccountDetailResponse> getRequestToActiveAccount(Pageable pageable) {
-        Page<AccountDetail> accountDetailPage = accountDetailRepository.findAll(pageable);
+    public ApiPage<AccountDetailResponse> getRequestToActiveAccount( Boolean isActive , Pageable pageable) {
+        Page<AccountDetail> accountDetailPage = accountDetailRepository.findAllByIsActive(isActive,pageable);
 
         return PageUtil.convert(accountDetailPage.map(accountDetail -> {
             AccountDetailResponse accountDetailResponse = ObjectUtil.copyProperties(accountDetail, new AccountDetailResponse(), AccountDetailResponse.class);

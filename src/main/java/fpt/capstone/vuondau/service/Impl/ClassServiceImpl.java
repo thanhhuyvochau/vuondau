@@ -558,4 +558,11 @@ public class ClassServiceImpl implements IClassService {
         Page<Class> classPages = classRepository.findAllByStatus(EClassStatus.RECRUITING, pageable);
         return PageUtil.convert(classPages.map(ConvertUtil::doConvertEntityToResponse));
     }
+
+    @Override
+    public ApiPage<ClassDto> getClassByAccount(Pageable pageable) {
+        Account teacher = securityUtil.getCurrentUser();
+        Page<Class> classesPage = classRepository.findAllByAccount(teacher, pageable);
+        return PageUtil.convert(classesPage.map(ConvertUtil::doConvertEntityToResponse));
+    }
 }

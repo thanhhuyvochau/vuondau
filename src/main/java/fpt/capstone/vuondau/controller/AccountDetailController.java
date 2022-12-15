@@ -48,7 +48,7 @@ public class AccountDetailController {
 
     @Operation(summary = "Đăng ký làm gia sư cho vườn đậu")
     @PostMapping("/register-tutor")
-    public ResponseEntity<ApiResponse<Long>> registerTutor(@ModelAttribute AccountDetailRequest accountDetailRequest) {
+    public ResponseEntity<ApiResponse<Long>> registerTutor(@RequestBody AccountDetailRequest accountDetailRequest) {
         return ResponseEntity.ok(ApiResponse.success(iAccountDetailService.registerTutor(accountDetailRequest)));
     }
 
@@ -65,9 +65,9 @@ public class AccountDetailController {
     }
 
     @GetMapping
-    @Operation(summary = "Lấy tất cả request tạo tk để đang ký giang day")
-    public ResponseEntity<ApiResponse<ApiPage<AccountDetailResponse>>> getRequestToActiveAccount(Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.success(iAccountDetailService.getRequestToActiveAccount(pageable)));
+    @Operation(summary = "Lấy tất cả request tạo tk để đang ký giang dạy theo trạng thái (đã duyệt/chờ)")
+    public ResponseEntity<ApiResponse<ApiPage<AccountDetailResponse>>> getRequestToActiveAccount(  Boolean isActive   , Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(iAccountDetailService.getRequestToActiveAccount(isActive , pageable)));
     }
 
     @GetMapping("/genders")
