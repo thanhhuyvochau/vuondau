@@ -43,26 +43,8 @@ public class AccountDetailRequest implements Serializable {
     private List<Long> subjects ;
     private List<Long> classLevels ;
 
-//    private UploadAvatarRequest uploadFiles ;
-    private MultipartFile file ;
-//    private List<UploadAvatarRequest> uploadFiles ;
-
-    public MultipartFile getFile() {
-        return file;
-    }
-
-    public void setFile(MultipartFile file) {
-        this.file = file;
-    }
 
 
-//    public UploadAvatarRequest getUploadFiles() {
-//        return uploadFiles;
-//    }
-//
-//    public void setUploadFiles(UploadAvatarRequest uploadFiles) {
-//        this.uploadFiles = uploadFiles;
-//    }
 
     public String getFirstName() {
         return firstName;
