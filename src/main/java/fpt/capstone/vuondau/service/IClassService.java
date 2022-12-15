@@ -6,6 +6,7 @@ import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCourseDataRequest;
 import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiPage;
+import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.dto.ClassDetailDto;
 import fpt.capstone.vuondau.entity.dto.ClassDto;
 import fpt.capstone.vuondau.entity.dto.ClassStudentDto;
@@ -59,4 +60,6 @@ public interface IClassService {
     ApiPage<ClassDto> getRecruitingClasses(Pageable pageable);
 
     ApiPage<ClassDto> getClassByAccount( Pageable pageable);
+
+    ClassDetailDto accountGetClassDetail(Long id);
 }
