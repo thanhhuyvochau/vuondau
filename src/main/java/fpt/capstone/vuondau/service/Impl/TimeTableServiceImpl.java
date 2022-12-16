@@ -56,9 +56,13 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
     @Override
     public Long createTimeTableClass(Long classId, TimeTableRequest timeTableRequest) {
-        Class aClass = classRepository.findById(classId)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
+        Account currentUser = SecurityUtil.getCurrentUser();
 
+        Class aClass = classRepository.findByIdAndAccount(classId, currentUser);
+                if (aClass == null) {
+                    throw ApiException.create(HttpStatus.BAD_REQUEST)
+                            .withMessage(messageUtil.getLocalMessage("Class không tồn tai"));
+                }
         if (aClass.getTimeTables().size() > 0) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("class đã có thời khoá biểu"));
@@ -74,16 +78,18 @@ public class TimeTableServiceImpl implements ITimeTableService {
         }
 
 
+
+
         // Check Dow
-        List<Long> allDayOfWeekId = timeTableRequest.getSlotDow().stream().map(SlotDowDto::getDayOfWeekId).collect(Collectors.toList());
-        Set<Long> countDow = new HashSet<>();
-        Set<Long> checkDuplicatesDow = allDayOfWeekId.stream().filter(n -> !countDow.add(n)).collect(Collectors.toSet());
-
-
-        // Check slot
-        List<Long> allSlotId = timeTableRequest.getSlotDow().stream().map(SlotDowDto::getSlotId).collect(Collectors.toList());
-        Set<Long> countSlot = new HashSet<>();
-        Set<Long> checkSlotDow = allDayOfWeekId.stream().filter(n -> !countDow.add(n)).collect(Collectors.toSet());
+//        List<Long> allDayOfWeekId = timeTableRequest.getSlotDow().stream().map(SlotDowDto::getDayOfWeekId).collect(Collectors.toList());
+//        Set<Long> countDow = new HashSet<>();
+//        Set<Long> checkDuplicatesDow = allDayOfWeekId.stream().filter(n -> !countDow.add(n)).collect(Collectors.toSet());
+//
+//
+//        // Check slot
+//        List<Long> allSlotId = timeTableRequest.getSlotDow().stream().map(SlotDowDto::getSlotId).collect(Collectors.toList());
+//        Set<Long> countSlot = new HashSet<>();
+//        Set<Long> checkSlotDow = allDayOfWeekId.stream().filter(n -> !countDow.add(n)).collect(Collectors.toSet());
 
 
         // Dạy 2 ngày trong 1 tuần
