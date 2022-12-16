@@ -13,7 +13,6 @@ public class SlotDowDto {
 
     private Instant date ;
 
-
     private long slotId ;
 
     private Long dayOfWeekId ;
