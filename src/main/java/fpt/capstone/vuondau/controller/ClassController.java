@@ -55,16 +55,10 @@ public class ClassController {
 
     @Operation(summary = "lấy tất cả class có phân trang")
     @GetMapping
-    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getAllClass( Pageable pageable) {
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getAllClass(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getAllClass(pageable)));
     }
 
-
-    @Operation(summary = "lấy tất cả class của giáo viên ")
-    @GetMapping("/teacher/classes")
-    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getClassByAccount( Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.getClassByAccount(pageable)));
-    }
 
     @Operation(summary = "Admin phê duyệt request tao class của teacher ")
     @PostMapping({"/{id}/approve-class"})
@@ -154,4 +148,11 @@ public class ClassController {
     public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getRecruitingClass(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getRecruitingClasses(pageable)));
     }
+
+    @Operation(summary = "lấy tất cả class của giáo viên ")
+    @GetMapping("/teacher/classes")
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getClassByAccount(Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.getClassByAccount(pageable)));
+    }
+
 }
