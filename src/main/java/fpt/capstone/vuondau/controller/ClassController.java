@@ -16,8 +16,7 @@ import fpt.capstone.vuondau.entity.request.ClassCandicateRequest;
 import fpt.capstone.vuondau.entity.request.ClassSearchRequest;
 import fpt.capstone.vuondau.entity.request.CreateClassRequest;
 import fpt.capstone.vuondau.entity.request.SubjectSearchRequest;
-import fpt.capstone.vuondau.entity.response.CandicateResponse;
-import fpt.capstone.vuondau.entity.response.SubjectResponse;
+import fpt.capstone.vuondau.entity.response.*;
 import fpt.capstone.vuondau.service.IClassService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -58,6 +57,9 @@ public class ClassController {
     public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getAllClass(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getAllClass(pageable)));
     }
+
+
+
 
 
     @Operation(summary = "Admin phê duyệt request tao class của teacher ")
@@ -149,10 +151,39 @@ public class ClassController {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getRecruitingClasses(pageable)));
     }
 
-    @Operation(summary = "lấy tất cả class của giáo viên ")
-    @GetMapping("/teacher/classes")
-    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getClassByAccount(Pageable pageable) {
+    @Operation(summary = "lấy tất cả class của giáo viên / học sinh")
+    @GetMapping("/account")
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getClassByAccount( Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getClassByAccount(pageable)));
     }
 
+    @Operation(summary = "hoc sinh/ giao vien xem chi tiết class")
+    @GetMapping("/{id}/account/class-detail")
+    public ResponseEntity<ApiResponse<ClassDetailDto>> accountGetClassDetail(@PathVariable Long id) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.accountGetClassDetail(id)));
+    }
+
+    @Operation(summary = "hoc sinh/ giao vien xem chi tiết resource của lớp")
+    @GetMapping("/{id}/resource")
+    public ResponseEntity<ApiResponse<ClassResourcesResponse>> accountGetResourceOfClass(@PathVariable Long id) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.accountGetResourceOfClass(id)));
+    }
+
+    @Operation(summary = "giao vien xem chi tiết hoc sinh của lớp")
+    @GetMapping("/{id}/students")
+    public ResponseEntity<ApiResponse<ClassStudentResponse>> accountGetStudentOfClass(@PathVariable Long id) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.accountGetStudentOfClass(id)));
+    }
+
+    @Operation(summary = "giao vien/ học sinh xem chi tiết  thời khoá biểu của lớp")
+    @GetMapping("/{id}/timetable")
+    public ResponseEntity<ApiResponse<List<ClassTimeTableResponse>>> accountGetTimeTableOfClass(@PathVariable Long id) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.accountGetTimeTableOfClass(id)));
+    }
+
+    @Operation(summary = "học sinh xem thông tin giáo viên của lớp")
+    @GetMapping("/{id}/teacher")
+    public ResponseEntity<ApiResponse<ClassTeacherResponse>> studentGetTeacherInfoOfClass(@PathVariable Long id) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.studentGetTeacherInfoOfClass(id)));
+    }
 }
