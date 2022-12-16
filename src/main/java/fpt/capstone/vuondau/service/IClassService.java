@@ -12,8 +12,7 @@ import fpt.capstone.vuondau.entity.dto.ClassDto;
 import fpt.capstone.vuondau.entity.dto.ClassStudentDto;
 import fpt.capstone.vuondau.entity.dto.StudentDto;
 import fpt.capstone.vuondau.entity.request.*;
-import fpt.capstone.vuondau.entity.response.CandicateResponse;
-import fpt.capstone.vuondau.entity.response.SubjectResponse;
+import fpt.capstone.vuondau.entity.response.*;
 import org.springframework.data.domain.Pageable;
 
 
@@ -62,4 +61,12 @@ public interface IClassService {
     ApiPage<ClassDto> getClassByAccount( Pageable pageable);
 
     ClassDetailDto accountGetClassDetail(Long id);
+
+    ClassResourcesResponse accountGetResourceOfClass(Long id);
+
+    ClassStudentResponse accountGetStudentOfClass(Long id);
+
+    List<ClassTimeTableResponse> accountGetTimeTableOfClass(Long id);
+
+    ClassTeacherResponse studentGetTeacherInfoOfClass(Long id);
 }
