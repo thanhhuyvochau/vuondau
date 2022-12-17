@@ -14,9 +14,7 @@ import fpt.capstone.vuondau.entity.request.ClassCandicateRequest;
 import fpt.capstone.vuondau.entity.request.ClassSearchRequest;
 import fpt.capstone.vuondau.entity.request.CourseIdRequest;
 import fpt.capstone.vuondau.entity.request.CreateClassRequest;
-import fpt.capstone.vuondau.entity.response.AccountResponse;
-import fpt.capstone.vuondau.entity.response.CandicateResponse;
-import fpt.capstone.vuondau.entity.response.CourseDetailResponse;
+import fpt.capstone.vuondau.entity.response.*;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IClassService;
 import fpt.capstone.vuondau.util.*;
@@ -30,7 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Service
@@ -275,6 +275,7 @@ public class ClassServiceImpl implements IClassService {
         }));
     }
 
+
     @Override
     public ClassDetailDto classDetail(Long id) throws JsonProcessingException {
         Class aClass = classRepository.findById(id)
@@ -282,7 +283,7 @@ public class ClassServiceImpl implements IClassService {
         ClassDetailDto classDetail = ObjectUtil.copyProperties(aClass, new ClassDetailDto(), ClassDetailDto.class);
         classDetail.setUnitPrice(aClass.getUnitPrice());
         classDetail.setFinalPrice(aClass.getFinalPrice());
-//        classDetail.setClassType(ObjectUtil.copyProperties(aClass.getClassType(), new ClassTypeDto(), ClassTypeDto.class));
+
         Course course = aClass.getCourse();
         if (course != null) {
             CourseDetailResponse courseDetailResponse = new CourseDetailResponse();
@@ -553,5 +554,324 @@ public class ClassServiceImpl implements IClassService {
     public ApiPage<ClassDto> getRecruitingClasses(Pageable pageable) {
         Page<Class> classPages = classRepository.findAllByStatus(EClassStatus.RECRUITING, pageable);
         return PageUtil.convert(classPages.map(ConvertUtil::doConvertEntityToResponse));
+    }
+
+    @Override
+    public ApiPage<ClassDto> getClassByAccount(Pageable pageable) {
+        Account account = securityUtil.getCurrentUser();
+
+        Page<Class> classesPage = null;
+        Role role = account.getRole();
+
+        if (role != null) {
+            if (role.getCode().equals(EAccountRole.STUDENT)) {
+                List<Class> classList = account.getStudentClasses().stream().map(StudentClass::getaClass).collect(Collectors.toList());
+                classesPage = new PageImpl<>(classList, pageable, classList.size());
+
+            } else if (role.getCode().equals(EAccountRole.TEACHER)) {
+                classesPage = classRepository.findAllByAccount(account, pageable);
+            }
+        }
+
+
+        return PageUtil.convert(classesPage != null ? classesPage.map(ConvertUtil::doConvertEntityToResponse) : null);
+    }
+
+    @Override
+    public ClassDetailDto accountGetClassDetail(Long id) {
+        Account account = securityUtil.getCurrentUser();
+        Class aClass = null;
+        Role role = account.getRole();
+
+        if (role != null) {
+            if (role.getCode().equals(EAccountRole.STUDENT)) {
+                List<Class> classList = account.getStudentClasses().stream().map(StudentClass::getaClass).collect(Collectors.toList());
+                List<Long> idsClass = classList.stream().map(Class::getId).collect(Collectors.toList());
+                for (Long ids : idsClass) {
+                    if (ids.equals(id)) {
+                        aClass = classRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
+                        ;
+                    }
+                }
+
+            } else if (role.getCode().equals(EAccountRole.TEACHER)) {
+                aClass = classRepository.findByIdAndAccount(id, account);
+            }
+        }
+
+        if (aClass== null){
+            throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Class không tìm thấy!!");
+        }
+
+        ClassDetailDto classDetail = ObjectUtil.copyProperties(aClass, new ClassDetailDto(), ClassDetailDto.class);
+        classDetail.setUnitPrice(aClass.getUnitPrice());
+
+        Course course = aClass.getCourse();
+        if (course != null) {
+            CourseDetailResponse courseDetailResponse = new CourseDetailResponse();
+            courseDetailResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class, true);
+            if (course.getResource() != null) {
+                courseDetailResponse.setImage(course.getResource().getUrl());
+            }
+            courseDetailResponse.setActive(course.getIsActive());
+            courseDetailResponse.setTitle(course.getTitle());
+
+            // set subject
+            Subject subject = course.getSubject();
+            if (subject != null) {
+                SubjectDto subjectDto = new SubjectDto();
+                subjectDto.setId(subject.getId());
+                subjectDto.setName(subject.getName());
+                subjectDto.setCode(subject.getCode());
+                courseDetailResponse.setSubject(subjectDto);
+            }
+            classDetail.setCourse(courseDetailResponse);
+        }
+        if (aClass.getResourceMoodleId() != null) {
+            CourseIdRequest courseIdRequest = new CourseIdRequest();
+
+            courseIdRequest.setCourseid(aClass.getResourceMoodleId());
+            try {
+
+
+                List<MoodleRecourseDtoResponse> resources = new ArrayList<>();
+
+                List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
+
+
+                resourceCourse.stream().skip(1).forEach(moodleRecourseClassResponse -> {
+                    MoodleRecourseDtoResponse recourseDtoResponse = new MoodleRecourseDtoResponse();
+                    recourseDtoResponse.setId(moodleRecourseClassResponse.getId());
+                    recourseDtoResponse.setName(moodleRecourseClassResponse.getName());
+                    List<MoodleModuleResponse> modules = moodleRecourseClassResponse.getModules();
+
+                    List<ResourceDtoMoodleResponse> resourceDtoMoodleResponseList = new ArrayList<>();
+
+                    modules.forEach(moodleResponse -> {
+                        ResourceDtoMoodleResponse resourceDtoMoodleResponse = new ResourceDtoMoodleResponse();
+                        resourceDtoMoodleResponse.setId(moodleResponse.getId());
+                        resourceDtoMoodleResponse.setUrl(moodleResponse.getUrl());
+                        resourceDtoMoodleResponse.setName(moodleResponse.getName());
+                        resourceDtoMoodleResponse.setType(moodleResponse.getModname());
+                        resourceDtoMoodleResponseList.add(resourceDtoMoodleResponse);
+                    });
+                    recourseDtoResponse.setModules(resourceDtoMoodleResponseList);
+                    resources.add(recourseDtoResponse);
+                });
+                classDetail.setResources(resources);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+
+        if (account != null) {
+            AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class);
+            accountResponse.setRole(ObjectUtil.copyProperties(account.getRole(), new RoleDto(), RoleDto.class));
+            Resource resource = account.getResource();
+            if (resource != null) {
+                accountResponse.setAvatar(resource.getUrl());
+            }
+            classDetail.setTeacher(accountResponse);
+        }
+
+
+        List<Account> studentList = aClass.getStudentClasses().stream().map(StudentClass::getAccount).collect(Collectors.toList());
+
+        List<AccountResponse> accountResponses = new ArrayList<>();
+        studentList.stream().map(studentMap -> {
+            AccountResponse student = ObjectUtil.copyProperties(studentMap, new AccountResponse(), AccountResponse.class);
+            student.setRole(ObjectUtil.copyProperties(studentMap.getRole(), new RoleDto(), RoleDto.class));
+            if (studentMap.getResource() != null) {
+                student.setAvatar(studentMap.getResource().getUrl());
+            }
+
+            accountResponses.add(student);
+            return studentMap;
+        }).collect(Collectors.toList());
+        classDetail.setStudents(accountResponses);
+
+        List<TimeTableDto> timeTableDtoList = new ArrayList<>();
+
+        List<TimeTable> timeTables = aClass.getTimeTables();
+        timeTables.forEach(timeTable -> {
+            TimeTableDto timeTableDto = new TimeTableDto();
+            timeTableDto.setId(timeTable.getId());
+            timeTableDto.setDate(timeTable.getDate());
+            timeTableDto.setSlotNumber(timeTable.getSlotNumber());
+            ArchetypeTimeDto archetypeTimeDto = new ArchetypeTimeDto();
+            ArchetypeTime archetypeTime = timeTable.getArchetypeTime();
+            if (archetypeTime != null) {
+                Archetype archetype = archetypeTime.getArchetype();
+                if (archetype != null) {
+                    archetypeTimeDto.setArchetype(ObjectUtil.copyProperties(archetype, new ArchetypeDto(), ArchetypeDto.class));
+                }
+                Slot slot = archetypeTime.getSlot();
+                if (slot != null) {
+                    archetypeTimeDto.setSlot(ObjectUtil.copyProperties(slot, new SlotDto(), SlotDto.class));
+                }
+                DayOfWeek dayOfWeek = archetypeTime.getDayOfWeek();
+                if (dayOfWeek != null) {
+                    archetypeTimeDto.setDayOfWeek(ObjectUtil.copyProperties(dayOfWeek, new DayOfWeekDto(), DayOfWeekDto.class));
+                }
+            }
+
+
+            timeTableDto.setArchetypeTime(archetypeTimeDto);
+            timeTableDtoList.add(timeTableDto);
+
+        });
+        classDetail.setTimeTable(timeTableDtoList);
+        return classDetail;
+
+    }
+
+    private Class findClassByRoleAccount (Long id ) {
+        Account account = securityUtil.getCurrentUser();
+        Class aClass = null;
+        Role role = account.getRole();
+        if (role != null) {
+            if (role.getCode().equals(EAccountRole.STUDENT)) {
+                List<Class> classList = account.getStudentClasses().stream().map(StudentClass::getaClass).collect(Collectors.toList());
+                List<Long> idsClass = classList.stream().map(Class::getId).collect(Collectors.toList());
+                for (Long ids : idsClass) {
+                    if (ids.equals(id)) {
+                        aClass = classRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
+                    }
+                }
+
+            } else if (role.getCode().equals(EAccountRole.TEACHER)) {
+                aClass = classRepository.findByIdAndAccount(id, account);
+            }
+        }
+        if (aClass== null){
+            throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Class không tìm thấy!!");
+        }
+        return aClass ;
+    }
+
+    @Override
+    public ClassResourcesResponse accountGetResourceOfClass(Long id) {
+
+        Class aClass = findClassByRoleAccount(id);
+
+        ClassResourcesResponse classResourcesResponse = new ClassResourcesResponse() ;
+
+        if (aClass.getResourceMoodleId() != null) {
+            CourseIdRequest courseIdRequest = new CourseIdRequest();
+
+            courseIdRequest.setCourseid(aClass.getResourceMoodleId());
+            try {
+
+                List<MoodleRecourseDtoResponse> resources = new ArrayList<>();
+
+                List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
+
+
+                resourceCourse.stream().skip(1).forEach(moodleRecourseClassResponse -> {
+                    MoodleRecourseDtoResponse recourseDtoResponse = new MoodleRecourseDtoResponse();
+                    recourseDtoResponse.setId(moodleRecourseClassResponse.getId());
+                    recourseDtoResponse.setName(moodleRecourseClassResponse.getName());
+                    List<MoodleModuleResponse> modules = moodleRecourseClassResponse.getModules();
+
+                    List<ResourceDtoMoodleResponse> resourceDtoMoodleResponseList = new ArrayList<>();
+
+                    modules.forEach(moodleResponse -> {
+                        ResourceDtoMoodleResponse resourceDtoMoodleResponse = new ResourceDtoMoodleResponse();
+                        resourceDtoMoodleResponse.setId(moodleResponse.getId());
+                        resourceDtoMoodleResponse.setUrl(moodleResponse.getUrl());
+                        resourceDtoMoodleResponse.setName(moodleResponse.getName());
+                        resourceDtoMoodleResponse.setType(moodleResponse.getModname());
+                        resourceDtoMoodleResponseList.add(resourceDtoMoodleResponse);
+                    });
+                    recourseDtoResponse.setModules(resourceDtoMoodleResponseList);
+                    resources.add(recourseDtoResponse);
+                });
+                classResourcesResponse.setResources(resources);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+
+        return classResourcesResponse;
+    }
+
+    @Override
+    public ClassStudentResponse accountGetStudentOfClass(Long id) {
+        Class aClass = findClassByRoleAccount(id);
+        ClassStudentResponse classStudentResponse = new ClassStudentResponse() ;
+        List<Account> studentList = aClass.getStudentClasses().stream().map(StudentClass::getAccount).collect(Collectors.toList());
+
+        List<AccountResponse> accountResponses = new ArrayList<>();
+        studentList.forEach(studentMap -> {
+            AccountResponse student = ObjectUtil.copyProperties(studentMap, new AccountResponse(), AccountResponse.class);
+            student.setRole(ObjectUtil.copyProperties(studentMap.getRole(), new RoleDto(), RoleDto.class));
+            if (studentMap.getResource() != null) {
+                student.setAvatar(studentMap.getResource().getUrl());
+            }
+
+            accountResponses.add(student);
+        });
+        classStudentResponse.setStudents(accountResponses);
+        return classStudentResponse;
+    }
+
+    @Override
+    public List<ClassTimeTableResponse> accountGetTimeTableOfClass(Long id) {
+        Class aClass = findClassByRoleAccount(id);
+
+        List<TimeTable> timeTables = aClass.getTimeTables();
+
+        List<ClassTimeTableResponse> classTimeTableResponseList = new ArrayList<>( );
+
+        timeTables.forEach(timeTable -> {
+            ClassTimeTableResponse classTimeTableResponse = new ClassTimeTableResponse() ;
+            classTimeTableResponse.setId(timeTable.getId());
+            classTimeTableResponse.setDate(timeTable.getDate());
+            classTimeTableResponse.setSlotNumber(timeTable.getSlotNumber());
+            ArchetypeTime archetypeTime = timeTable.getArchetypeTime();
+            if (archetypeTime != null) {
+                Archetype archetype = archetypeTime.getArchetype();
+                if (archetype != null) {
+                    classTimeTableResponse.setArchetypeCode(archetype.getCode());
+                    classTimeTableResponse.setArchetypeCName(archetype.getName());
+                }
+                Slot slot = archetypeTime.getSlot();
+                if (slot != null) {
+                    classTimeTableResponse.setSlotName(slot.getName());
+                    classTimeTableResponse.setSlotCode(slot.getCode());
+                    classTimeTableResponse.setStartTime(slot.getStartTime());
+                    classTimeTableResponse.setEndTime(slot.getEndTime());
+                }
+                DayOfWeek dayOfWeek = archetypeTime.getDayOfWeek();
+                if (dayOfWeek != null) {
+                    classTimeTableResponse.setDayOfWeekName(dayOfWeek.getName());
+                    classTimeTableResponse.setDayOfWeekCode(dayOfWeek.getCode());
+                }
+            }
+            classTimeTableResponseList.add(classTimeTableResponse) ;
+        });
+
+        return classTimeTableResponseList;
+    }
+
+    @Override
+    public ClassTeacherResponse studentGetTeacherInfoOfClass(Long id) {
+        Class aClass = findClassByRoleAccount(id);
+        Account account = aClass.getAccount();
+        ClassTeacherResponse classTeacherResponse = new ClassTeacherResponse() ;
+        if (account != null) {
+            AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class);
+            accountResponse.setRole(ObjectUtil.copyProperties(account.getRole(), new RoleDto(), RoleDto.class));
+            Resource resource = account.getResource();
+            if (resource != null) {
+                accountResponse.setAvatar(resource.getUrl());
+            }
+            classTeacherResponse.setTeacher(accountResponse);
+        }
+        return classTeacherResponse;
     }
 }
