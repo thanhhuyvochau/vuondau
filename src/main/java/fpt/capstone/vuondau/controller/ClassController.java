@@ -169,10 +169,10 @@ public class ClassController {
         return ResponseEntity.ok(ApiResponse.success(iClassService.accountGetResourceOfClass(id)));
     }
 
-    @Operation(summary = "giao vien xem chi tiết hoc sinh của lớp")
+    @Operation(summary = "giao vien xem  hoc sinh của lớp")
     @GetMapping("/{id}/students")
-    public ResponseEntity<ApiResponse<ClassStudentResponse>> accountGetStudentOfClass(@PathVariable Long id) throws JsonProcessingException {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.accountGetStudentOfClass(id)));
+    public ResponseEntity<ApiResponse<ApiPage<AccountResponse>>> accountGetStudentOfClass(@PathVariable Long id, Pageable pageable) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.accountGetStudentOfClass(id, pageable)));
     }
 
     @Operation(summary = "giao vien/ học sinh xem chi tiết  thời khoá biểu của lớp")

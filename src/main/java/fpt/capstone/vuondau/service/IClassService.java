@@ -64,7 +64,7 @@ public interface IClassService {
 
     ClassResourcesResponse accountGetResourceOfClass(Long id);
 
-    ClassStudentResponse accountGetStudentOfClass(Long id);
+    ApiPage<AccountResponse> accountGetStudentOfClass(Long id, Pageable pageable);
 
     List<ClassTimeTableResponse> accountGetTimeTableOfClass(Long id);
 

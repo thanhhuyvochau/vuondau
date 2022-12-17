@@ -603,7 +603,7 @@ public class ClassServiceImpl implements IClassService {
             }
         }
 
-        if (aClass== null){
+        if (aClass == null) {
             throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Class không tìm thấy!!");
         }
 
@@ -731,7 +731,7 @@ public class ClassServiceImpl implements IClassService {
 
     }
 
-    private Class findClassByRoleAccount (Long id ) {
+    private Class findClassByRoleAccount(Long id) {
         Account account = securityUtil.getCurrentUser();
         Class aClass = null;
         Role role = account.getRole();
@@ -749,10 +749,10 @@ public class ClassServiceImpl implements IClassService {
                 aClass = classRepository.findByIdAndAccount(id, account);
             }
         }
-        if (aClass== null){
+        if (aClass == null) {
             throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Class không tìm thấy!!");
         }
-        return aClass ;
+        return aClass;
     }
 
     @Override
@@ -760,7 +760,7 @@ public class ClassServiceImpl implements IClassService {
 
         Class aClass = findClassByRoleAccount(id);
 
-        ClassResourcesResponse classResourcesResponse = new ClassResourcesResponse() ;
+        ClassResourcesResponse classResourcesResponse = new ClassResourcesResponse();
 
         if (aClass.getResourceMoodleId() != null) {
             CourseIdRequest courseIdRequest = new CourseIdRequest();
@@ -804,9 +804,9 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
-    public ClassStudentResponse accountGetStudentOfClass(Long id) {
+    public ApiPage<AccountResponse> accountGetStudentOfClass(Long id, Pageable pageable) {
         Class aClass = findClassByRoleAccount(id);
-        ClassStudentResponse classStudentResponse = new ClassStudentResponse() ;
+
         List<Account> studentList = aClass.getStudentClasses().stream().map(StudentClass::getAccount).collect(Collectors.toList());
 
         List<AccountResponse> accountResponses = new ArrayList<>();
@@ -819,8 +819,10 @@ public class ClassServiceImpl implements IClassService {
 
             accountResponses.add(student);
         });
-        classStudentResponse.setStudents(accountResponses);
-        return classStudentResponse;
+        Page<AccountResponse> page = new PageImpl<>(accountResponses);
+
+
+        return PageUtil.convert(page);
     }
 
     @Override
@@ -829,10 +831,10 @@ public class ClassServiceImpl implements IClassService {
 
         List<TimeTable> timeTables = aClass.getTimeTables();
 
-        List<ClassTimeTableResponse> classTimeTableResponseList = new ArrayList<>( );
+        List<ClassTimeTableResponse> classTimeTableResponseList = new ArrayList<>();
 
         timeTables.forEach(timeTable -> {
-            ClassTimeTableResponse classTimeTableResponse = new ClassTimeTableResponse() ;
+            ClassTimeTableResponse classTimeTableResponse = new ClassTimeTableResponse();
             classTimeTableResponse.setId(timeTable.getId());
             classTimeTableResponse.setDate(timeTable.getDate());
             classTimeTableResponse.setSlotNumber(timeTable.getSlotNumber());
@@ -856,7 +858,7 @@ public class ClassServiceImpl implements IClassService {
                     classTimeTableResponse.setDayOfWeekCode(dayOfWeek.getCode());
                 }
             }
-            classTimeTableResponseList.add(classTimeTableResponse) ;
+            classTimeTableResponseList.add(classTimeTableResponse);
         });
 
         return classTimeTableResponseList;
@@ -866,7 +868,7 @@ public class ClassServiceImpl implements IClassService {
     public ClassTeacherResponse studentGetTeacherInfoOfClass(Long id) {
         Class aClass = findClassByRoleAccount(id);
         Account account = aClass.getAccount();
-        ClassTeacherResponse classTeacherResponse = new ClassTeacherResponse() ;
+        ClassTeacherResponse classTeacherResponse = new ClassTeacherResponse();
         if (account != null) {
             AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class);
             accountResponse.setRole(ObjectUtil.copyProperties(account.getRole(), new RoleDto(), RoleDto.class));
