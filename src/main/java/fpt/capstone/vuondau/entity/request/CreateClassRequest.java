@@ -1,5 +1,7 @@
 package fpt.capstone.vuondau.entity.request;
 
+import fpt.capstone.vuondau.entity.ClassLevel;
+import fpt.capstone.vuondau.entity.common.EClassLevel;
 import fpt.capstone.vuondau.entity.common.EClassType;
 
 import java.io.Serializable;
@@ -13,7 +15,7 @@ public class CreateClassRequest implements Serializable {
     private String code;
     private Instant startDate;
     private Instant endDate;
-    private String level;
+    private EClassLevel classLevel ;
 
     private EClassType classType ;
     private Long minNumberStudent;
@@ -64,12 +66,13 @@ public class CreateClassRequest implements Serializable {
         this.endDate = endDate;
     }
 
-    public String getLevel() {
-        return level;
+
+    public EClassLevel getClassLevel() {
+        return classLevel;
     }
 
-    public void setLevel(String level) {
-        this.level = level;
+    public void setClassLevel(EClassLevel classLevel) {
+        this.classLevel = classLevel;
     }
 
     public Long getMinNumberStudent() {
