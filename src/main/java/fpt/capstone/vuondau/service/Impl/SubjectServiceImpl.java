@@ -8,19 +8,12 @@ import fpt.capstone.vuondau.MoodleRepository.Response.CategoryResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
-import fpt.capstone.vuondau.entity.request.CourseIdRequest;
 import fpt.capstone.vuondau.entity.request.SubjectRequest;
 import fpt.capstone.vuondau.entity.request.SubjectSearchRequest;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
-import fpt.capstone.vuondau.repository.AccountRepository;
-import fpt.capstone.vuondau.repository.CourseRepository;
-import fpt.capstone.vuondau.repository.StudentAnswerRepository;
-import fpt.capstone.vuondau.repository.SubjectRepository;
+import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.ISubjectService;
-import fpt.capstone.vuondau.util.ConvertUtil;
-import fpt.capstone.vuondau.util.MessageUtil;
-import fpt.capstone.vuondau.util.ObjectUtil;
-import fpt.capstone.vuondau.util.PageUtil;
+import fpt.capstone.vuondau.util.*;
 import fpt.capstone.vuondau.util.specification.SubjectSpecificationBuilder;
 import fpt.capstone.vuondau.util.specification.SuggestSubjectSpecificationBuilder;
 import org.springframework.data.domain.Page;
@@ -31,10 +24,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -51,13 +42,19 @@ public class SubjectServiceImpl implements ISubjectService {
 
     private final MoodleCourseRepository moodleCourseRepository;
 
-    public SubjectServiceImpl(CourseRepository courseRepository, SubjectRepository subjectRepository, AccountRepository accountRepository, MessageUtil messageUtil, StudentAnswerRepository studentAnswerRepository, MoodleCourseRepository moodleCourseRepository) {
+    private final SecurityUtil securityUtil;
+
+    private final InfoFindTutorRepository infoFindTutorRepository;
+
+    public SubjectServiceImpl(CourseRepository courseRepository, SubjectRepository subjectRepository, AccountRepository accountRepository, MessageUtil messageUtil, StudentAnswerRepository studentAnswerRepository, MoodleCourseRepository moodleCourseRepository, SecurityUtil securityUtil, InfoFindTutorRepository infoFindTutorRepository) {
         this.courseRepository = courseRepository;
         this.subjectRepository = subjectRepository;
         this.accountRepository = accountRepository;
         this.messageUtil = messageUtil;
         this.studentAnswerRepository = studentAnswerRepository;
         this.moodleCourseRepository = moodleCourseRepository;
+        this.securityUtil = securityUtil;
+        this.infoFindTutorRepository = infoFindTutorRepository;
     }
 
     @Override
@@ -203,6 +200,27 @@ public class SubjectServiceImpl implements ISubjectService {
         Page<Subject> coursePage = subjectRepository.findAll(builder.build(), pageable);
 
         return PageUtil.convert(coursePage.map(ConvertUtil::doConvertEntityToResponse));
+
+    }
+
+    @Override
+    public List<SubjectResponse> getSubjectOfTeacher() {
+        List<SubjectResponse> subjectResponseList = new ArrayList<>();
+        Account teacher = securityUtil.getCurrentUser();
+        AccountDetail accountDetail = teacher.getAccountDetail();
+
+        List<Subject> subjectList = null;
+        if (accountDetail!= null) {
+        subjectList = accountDetail.getAccountDetailSubjects().stream().map(AccountDetailSubject::getSubject).collect(Collectors.toList());
+        }
+        if (subjectList!=null){
+            subjectList.forEach(subject -> {
+                subjectResponseList.add( ObjectUtil.copyProperties(subject, new SubjectResponse() , SubjectResponse.class ) );
+
+            });
+        }
+        return subjectResponseList ;
+
 
     }
 }
