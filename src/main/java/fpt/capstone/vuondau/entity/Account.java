@@ -8,6 +8,7 @@ import javax.persistence.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
@@ -328,7 +329,18 @@ public class Account {
 
     public void setFileAttachments(List<FileAttachment> fileAttachments) {
         this.fileAttachments = fileAttachments;
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Account account = (Account) o;
+        return Objects.equals(id, account.id) && Objects.equals(username, account.username) && Objects.equals(password, account.password) && Objects.equals(isActive, account.isActive) && Objects.equals(firstName, account.firstName) && Objects.equals(lastName, account.lastName) && Objects.equals(email, account.email) && Objects.equals(cvUrl, account.cvUrl) && Objects.equals(birthday, account.birthday) && Objects.equals(introduce, account.introduce) && degree == account.degree && Objects.equals(phoneNumber, account.phoneNumber) && gender == account.gender && Objects.equals(role, account.role) && Objects.equals(transactions, account.transactions) && Objects.equals(teacherCourses, account.teacherCourses) && Objects.equals(studentClasses, account.studentClasses) && Objects.equals(teacherClass, account.teacherClass) && Objects.equals(requests, account.requests) && Objects.equals(studentAnswers, account.studentAnswers) && Objects.equals(keycloakId, account.keycloakId) && Objects.equals(questions, account.questions) && Objects.equals(comments, account.comments) && Objects.equals(accountDetail, account.accountDetail) && Objects.equals(infoFindTutorAccounts, account.infoFindTutorAccounts) && Objects.equals(fileAttachments, account.fileAttachments) && Objects.equals(resource, account.resource);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username, password, isActive, firstName, lastName, email, cvUrl, birthday, introduce, degree, phoneNumber, gender, role, transactions, teacherCourses, studentClasses, teacherClass, requests, studentAnswers, keycloakId, questions, comments, accountDetail, infoFindTutorAccounts, fileAttachments, resource);
     }
 }

@@ -249,7 +249,7 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
-    public List<ClassDto> searchClass(ClassSearchRequest query) {
+    public ApiPage<ClassDto> searchClass(ClassSearchRequest query, Pageable pageable) {
         List<Long> classIds = query.getSubjectIds();
         ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
                 .queryLikeByClassName(query.getQ())
@@ -262,9 +262,8 @@ public class ClassServiceImpl implements IClassService {
             List<Subject> subjects = subjectRepository.findAllById(query.getSubjectIds());
             builder.querySubjectClass(subjects);
         }
-        List<Class> classList = classRepository.findAll(builder.build());
-        List<ClassDto> classDtoList = new ArrayList<>();
-        classList.stream().map(aClass -> {
+        Page<Class> classes = classRepository.findAll(builder.build(), pageable);
+        return PageUtil.convert(classes.map(aClass -> {
             ClassDto classDto = ObjectUtil.copyProperties(aClass, new ClassDto(), ClassDto.class);
             if (aClass.getAccount() != null) {
                 classDto.setTeacher(ConvertUtil.doConvertEntityToResponse(aClass.getAccount()));
@@ -272,11 +271,8 @@ public class ClassServiceImpl implements IClassService {
             if (aClass.getCourse() != null) {
                 classDto.setCourse(ConvertUtil.doConvertCourseToCourseResponse(aClass.getCourse()));
             }
-
-            classDtoList.add(classDto);
-            return aClass;
-        }).collect(Collectors.toList());
-        return classDtoList;
+            return classDto;
+        }));
     }
 
 
@@ -511,7 +507,7 @@ public class ClassServiceImpl implements IClassService {
         Class clazz = classRepository.findById(classId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
         List<ClassTeacherCandicate> candicates = clazz.getCandicates();
-        boolean isContain = candicates.contains(teacher);
+        boolean isContain = candicates.stream().anyMatch(candicate -> candicate.getTeacher().getId().equals(teacher.getId()));
         if (isContain) {
             throw ApiException.create(HttpStatus.CONFLICT).withMessage("Teacher already");
         } else {
@@ -534,14 +530,15 @@ public class ClassServiceImpl implements IClassService {
         Account teacher = accountRepository.findById(teacherId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay teacher" + teacherId));
         List<ClassTeacherCandicate> candicates = clazz.getCandicates();
-        candicates.stream().peek(classTeacherCandicate -> {
+        for (ClassTeacherCandicate classTeacherCandicate : candicates) {
             if (classTeacherCandicate.getTeacher().getId().equals(teacherId)) {
                 classTeacherCandicate.setStatus(ECandicateStatus.SELECTED);
+                clazz.setStatus(EClassStatus.NEW);
                 clazz.setAccount(teacher);
             } else {
                 classTeacherCandicate.setStatus(ECandicateStatus.CLOSED);
             }
-        });
+        }
         classRepository.save(clazz);
         return true;
     }
@@ -603,7 +600,7 @@ public class ClassServiceImpl implements IClassService {
             }
         }
 
-        if (aClass== null){
+        if (aClass == null) {
             throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Class không tìm thấy!!");
         }
 
@@ -731,7 +728,7 @@ public class ClassServiceImpl implements IClassService {
 
     }
 
-    private Class findClassByRoleAccount (Long id ) {
+    private Class findClassByRoleAccount(Long id) {
         Account account = securityUtil.getCurrentUser();
         Class aClass = null;
         Role role = account.getRole();
@@ -749,10 +746,10 @@ public class ClassServiceImpl implements IClassService {
                 aClass = classRepository.findByIdAndAccount(id, account);
             }
         }
-        if (aClass== null){
+        if (aClass == null) {
             throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Class không tìm thấy!!");
         }
-        return aClass ;
+        return aClass;
     }
 
     @Override
@@ -760,7 +757,7 @@ public class ClassServiceImpl implements IClassService {
 
         Class aClass = findClassByRoleAccount(id);
 
-        ClassResourcesResponse classResourcesResponse = new ClassResourcesResponse() ;
+        ClassResourcesResponse classResourcesResponse = new ClassResourcesResponse();
 
         if (aClass.getResourceMoodleId() != null) {
             CourseIdRequest courseIdRequest = new CourseIdRequest();
@@ -806,7 +803,7 @@ public class ClassServiceImpl implements IClassService {
     @Override
     public ClassStudentResponse accountGetStudentOfClass(Long id) {
         Class aClass = findClassByRoleAccount(id);
-        ClassStudentResponse classStudentResponse = new ClassStudentResponse() ;
+        ClassStudentResponse classStudentResponse = new ClassStudentResponse();
         List<Account> studentList = aClass.getStudentClasses().stream().map(StudentClass::getAccount).collect(Collectors.toList());
 
         List<AccountResponse> accountResponses = new ArrayList<>();
@@ -829,10 +826,10 @@ public class ClassServiceImpl implements IClassService {
 
         List<TimeTable> timeTables = aClass.getTimeTables();
 
-        List<ClassTimeTableResponse> classTimeTableResponseList = new ArrayList<>( );
+        List<ClassTimeTableResponse> classTimeTableResponseList = new ArrayList<>();
 
         timeTables.forEach(timeTable -> {
-            ClassTimeTableResponse classTimeTableResponse = new ClassTimeTableResponse() ;
+            ClassTimeTableResponse classTimeTableResponse = new ClassTimeTableResponse();
             classTimeTableResponse.setId(timeTable.getId());
             classTimeTableResponse.setDate(timeTable.getDate());
             classTimeTableResponse.setSlotNumber(timeTable.getSlotNumber());
@@ -856,7 +853,7 @@ public class ClassServiceImpl implements IClassService {
                     classTimeTableResponse.setDayOfWeekCode(dayOfWeek.getCode());
                 }
             }
-            classTimeTableResponseList.add(classTimeTableResponse) ;
+            classTimeTableResponseList.add(classTimeTableResponse);
         });
 
         return classTimeTableResponseList;
@@ -866,7 +863,7 @@ public class ClassServiceImpl implements IClassService {
     public ClassTeacherResponse studentGetTeacherInfoOfClass(Long id) {
         Class aClass = findClassByRoleAccount(id);
         Account account = aClass.getAccount();
-        ClassTeacherResponse classTeacherResponse = new ClassTeacherResponse() ;
+        ClassTeacherResponse classTeacherResponse = new ClassTeacherResponse();
         if (account != null) {
             AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class);
             accountResponse.setRole(ObjectUtil.copyProperties(account.getRole(), new RoleDto(), RoleDto.class));

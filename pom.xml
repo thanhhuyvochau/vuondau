@@ -119,13 +119,16 @@
         <!-- https://mvnrepository.com/artifact/com.sun.mail/jakarta.mail -->
 
 
-
         <dependency>
             <groupId>com.google.firebase</groupId>
             <artifactId>firebase-admin</artifactId>
             <version>6.11.0</version>
         </dependency>
-
+        <!--Socket-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
