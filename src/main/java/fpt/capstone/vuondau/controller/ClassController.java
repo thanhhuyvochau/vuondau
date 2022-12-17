@@ -89,9 +89,10 @@ public class ClassController {
 
     @Operation(summary = "Tìm Kiếm class")
     @GetMapping("/search-class")
-    public ResponseEntity<ApiResponse<List<ClassDto>>> searchClass(@Nullable ClassSearchRequest query
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> searchClass(@Nullable ClassSearchRequest query, Pageable pageable
     ) {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.searchClass(query)));
+        return ResponseEntity.ok(ApiResponse.success(iClassService.searchClass(query, pageable)));
+
     }
 
 

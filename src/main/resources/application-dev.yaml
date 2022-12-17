@@ -4,8 +4,9 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-#    url: jdbc:mysql://mysql8:3306/vuondau
-    url: jdbc:mysql://103.173.255.39:3306/vuondau
+
+    url: jdbc:mysql://mysql8:3306/vuondau
+#    url: jdbc:mysql://103.173.255.39:3306/vuondau
     username: root
     password: OOiyw5qptYd6xXDl
   jpa:
