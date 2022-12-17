@@ -26,6 +26,7 @@ public class StudentClass {
     @Column(name = "is_enrolled")
     private boolean is_enrolled;
 
+
     public StudentClassKey getId() {
         return id;
     }
@@ -65,4 +66,6 @@ public class StudentClass {
     public void setIs_enrolled(boolean is_enrolled) {
         this.is_enrolled = is_enrolled;
     }
+
+
 }

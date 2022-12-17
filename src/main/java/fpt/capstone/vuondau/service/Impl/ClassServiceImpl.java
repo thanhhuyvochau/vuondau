@@ -801,9 +801,13 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
-    public ClassStudentResponse accountGetStudentOfClass(Long id) {
+    public ApiPage<AccountResponse> accountGetStudentOfClass(Long id, Pageable pageable) {
         Class aClass = findClassByRoleAccount(id);
+
+
+
         ClassStudentResponse classStudentResponse = new ClassStudentResponse();
+
         List<Account> studentList = aClass.getStudentClasses().stream().map(StudentClass::getAccount).collect(Collectors.toList());
 
         List<AccountResponse> accountResponses = new ArrayList<>();
@@ -816,8 +820,10 @@ public class ClassServiceImpl implements IClassService {
 
             accountResponses.add(student);
         });
-        classStudentResponse.setStudents(accountResponses);
-        return classStudentResponse;
+        Page<AccountResponse> page = new PageImpl<>(accountResponses);
+
+
+        return PageUtil.convert(page);
     }
 
     @Override
