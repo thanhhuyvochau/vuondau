@@ -8,6 +8,8 @@ import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.Subject;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
+import fpt.capstone.vuondau.entity.common.EClassStatus;
+import fpt.capstone.vuondau.entity.common.EClassType;
 import fpt.capstone.vuondau.entity.dto.ClassDetailDto;
 import fpt.capstone.vuondau.entity.dto.ClassDto;
 import fpt.capstone.vuondau.entity.dto.ClassStudentDto;
@@ -58,9 +60,11 @@ public class ClassController {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getAllClass(pageable)));
     }
 
-
-
-
+    @Operation(summary = "lấy tất cả class có phân trang cho trang chủ (chỉ truyền status NEW hoặc RECRUITING)")
+    @GetMapping("/for-user")
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getAllClassForUser(Pageable pageable, @RequestParam EClassStatus classStatus) {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.getAllClassForUser(pageable, classStatus)));
+    }
 
     @Operation(summary = "Admin phê duyệt request tao class của teacher ")
     @PostMapping({"/{id}/approve-class"})
@@ -154,7 +158,7 @@ public class ClassController {
 
     @Operation(summary = "lấy tất cả class của giáo viên / học sinh")
     @GetMapping("/account")
-    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getClassByAccount( Pageable pageable) {
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getClassByAccount(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getClassByAccount(pageable)));
     }
 

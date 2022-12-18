@@ -24,11 +24,11 @@ public class ClassSpecificationBuilder {
 
     private final List<Specification<Class>> specifications = new ArrayList<>();
 
-    public ClassSpecificationBuilder queryStatusClass(EClassStatus status) {
-        if (status == null) {
+    public ClassSpecificationBuilder queryByClassStatus(EClassStatus... statuses) {
+        if (statuses == null) {
             return this;
         }
-        specifications.add((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Class_.STATUS), status));
+        specifications.add((root, query, criteriaBuilder) -> root.get(Class_.STATUS).in(statuses));
         return this;
     }
 
@@ -121,6 +121,16 @@ public class ClassSpecificationBuilder {
         });
 
 
+        return this;
+    }
+
+    public ClassSpecificationBuilder isActive(Boolean isActive) {
+        if (isActive == null) {
+            return this;
+        }
+        specifications.add((root, query, criteriaBuilder) -> criteriaBuilder.or(
+                criteriaBuilder.equal(root.get(Class_.IS_ACTIVE), isActive))
+        );
         return this;
     }
 }
