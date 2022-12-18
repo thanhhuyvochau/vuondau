@@ -256,6 +256,7 @@ public class ClassServiceImpl implements IClassService {
                 .queryByClassStatus(query.getStatus())
                 .queryByEndDate(query.getEndDate())
                 .queryByStartDate(query.getStartDate())
+                .isActive(true)
                 .queryByPriceBetween(query.getMinPrice(), query.getMaxPrice());
         if (!classIds.isEmpty()) {
             List<Subject> subjects = subjectRepository.findAllById(query.getSubjectIds());
@@ -885,6 +886,7 @@ public class ClassServiceImpl implements IClassService {
         if (classStatus.name().equals(EClassStatus.NEW.name()) || classStatus.name().equals(EClassStatus.RECRUITING.name())) {
             ClassSpecificationBuilder builder = new ClassSpecificationBuilder();
             builder.queryByClassStatus(EClassStatus.NEW, EClassStatus.RECRUITING);
+            builder.isActive(true);
             Specification<Class> classSpecification = builder.build();
             Page<Class> classesPage = classRepository.findAll(classSpecification, pageable);
             return PageUtil.convert(classesPage.map(ConvertUtil::doConvertEntityToResponse));
