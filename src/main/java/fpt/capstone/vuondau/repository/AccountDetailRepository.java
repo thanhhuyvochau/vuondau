@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.repository;
 
 
+import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.AccountDetail;
 
 import fpt.capstone.vuondau.entity.common.ApiPage;
@@ -16,18 +17,21 @@ import java.util.Optional;
 @Repository
 public interface AccountDetailRepository extends JpaRepository<AccountDetail, Long> {
 
-   Page<AccountDetail> findAllByIsActiveIsTrue(Pageable pageable);
+    Page<AccountDetail> findAllByIsActiveIsTrue(Pageable pageable);
 
-   List<AccountDetail> findAllByIdInAndIsActiveIsFalse  (List<Long> ids) ;
-//   Optional<AccountDetail> findAllByIdsInAndIsActiveIsFalse(long id);
-   Page<AccountDetail> findAllByIsActiveIsFalse(Pageable pageable);
+    List<AccountDetail> findAllByIdInAndIsActiveIsFalse(List<Long> ids);
 
-   Boolean existsAccountByEmail (String email) ;
-   Boolean existsAccountDetailByIdCard (String idCart) ;
+    //   Optional<AccountDetail> findAllByIdsInAndIsActiveIsFalse(long id);
+    Page<AccountDetail> findAllByIsActiveIsFalse(Pageable pageable);
 
-   Boolean existsAccountByPhone(String phone) ;
+    Boolean existsAccountByEmail(String email);
 
+    Boolean existsAccountDetailByIdCard(String idCart);
 
-   Page<AccountDetail> findAllByIsActive( Boolean isActive ,Pageable pageable);
+    Boolean existsAccountByPhone(String phone);
+
+    AccountDetail findByAccount(Account account);
+
+    Page<AccountDetail> findAllByIsActive(Boolean isActive, Pageable pageable);
 
 }

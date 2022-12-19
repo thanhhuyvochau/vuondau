@@ -28,4 +28,5 @@ public interface IAccountDetailService {
     ApiPage<AccountDetailResponse> getRequestToActiveAccount( Boolean isActive, Pageable pageable);
 
 
+    AccountDetailResponse getAccountDetail(Long accountId);
 }

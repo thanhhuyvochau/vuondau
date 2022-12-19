@@ -2,12 +2,12 @@ package fpt.capstone.vuondau.entity.common;
 
 public enum EDayOfWeekCode {
 
-    ThuHai,
-    ThuBa,
-    ThuTu,
-    ThuNam,
-    ThuSau,
-    ThuBay
+    MONDAY,
+    TUESDAY,
+    WEDNESDAY,
+    THURSDAY,
+    FRIDAY,
+    SATURDAY
 
 
 
