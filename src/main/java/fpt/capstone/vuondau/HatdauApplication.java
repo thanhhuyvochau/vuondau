@@ -23,18 +23,18 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static fpt.capstone.vuondau.entity.common.EAccountRole.STUDENT;
 import static fpt.capstone.vuondau.entity.common.EAccountRole.TEACHER;
 import static fpt.capstone.vuondau.entity.common.EResourceType.AVATAR;
 import static fpt.capstone.vuondau.entity.common.EResourceType.FILE;
 import static fpt.capstone.vuondau.entity.common.ESubjectCode.*;
+import static java.time.DayOfWeek.MONDAY;
+import static java.time.DayOfWeek.TUESDAY;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 
@@ -72,11 +72,38 @@ public class HatdauApplication {
     public static void main(String[] args) throws ParseException {
 
         SpringApplication.run(HatdauApplication.class, args);
-
-
-
+//
+//        Instant start = Instant.parse("2022-12-20T04:29:08.293Z");
+//        String oneSubString = start.toString().substring(0, 10);
+//
+//
+//
+//        LocalDate startDate = LocalDate.parse(oneSubString);
+//        System.out.println(startDate);
+//
+//        LocalDate endDate = startDate.plusDays(7);
+//        System.out.println(endDate);
+//
+//        long numOfDaysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+//        List<LocalDate> collectDay = IntStream.iterate(0, i -> i + 1)
+//                .limit(numOfDaysBetween)
+//                .mapToObj(startDate::plusDays)
+//                .collect(Collectors.toList());
+//        System.out.println(collectDay);
+//
+//        java.time.DayOfWeek tuesday = MONDAY;
+//
+//        for (LocalDate ld : collectDay) {
+//                java.time.DayOfWeek dayf = ld.getDayOfWeek();
+//                System.out.println(dayf);
+//                if (tuesday.equals(dayf)){
+//                    System.out.println("có ne");
+//                }
+//
+//            }
 
     }
+
 
 
     @EventListener(ApplicationReadyEvent.class)
@@ -493,22 +520,22 @@ public class HatdauApplication {
         Boolean existDay6 = false;
         Boolean existDay7 = false;
         for (DayOfWeek dayOfWeek : allDayOfWeeks) {
-            if (dayOfWeek.getCode().equals(EDayOfWeekCode.ThuHai)) {
+            if (dayOfWeek.getCode().equals(EDayOfWeekCode.MONDAY)) {
                 existDay2 = true;
             }
-            if (dayOfWeek.getCode().equals(EDayOfWeekCode.ThuBa)) {
+            if (dayOfWeek.getCode().equals(EDayOfWeekCode.TUESDAY)) {
                 existDay3 = true;
             }
-            if (dayOfWeek.getCode().equals(EDayOfWeekCode.ThuTu)) {
+            if (dayOfWeek.getCode().equals(EDayOfWeekCode.WEDNESDAY)) {
                 existDay4 = true;
             }
-            if (dayOfWeek.getCode().equals(EDayOfWeekCode.ThuNam)) {
+            if (dayOfWeek.getCode().equals(EDayOfWeekCode.THURSDAY)) {
                 existDay5 = true;
             }
-            if (dayOfWeek.getCode().equals(EDayOfWeekCode.ThuSau)) {
+            if (dayOfWeek.getCode().equals(EDayOfWeekCode.FRIDAY)) {
                 existDay6 = true;
             }
-            if (dayOfWeek.getCode().equals(EDayOfWeekCode.ThuBay)) {
+            if (dayOfWeek.getCode().equals(EDayOfWeekCode.SATURDAY)) {
                 existDay7 = true;
             }
 
@@ -518,41 +545,41 @@ public class HatdauApplication {
         List<DayOfWeek> dayOfWeekList = new ArrayList<>();
         if (!existDay2) {
             DayOfWeek dayOfWeek = new DayOfWeek();
-            dayOfWeek.setCode(EDayOfWeekCode.ThuHai);
+            dayOfWeek.setCode(EDayOfWeekCode.MONDAY);
             dayOfWeek.setName("Thứ hai");
             dayOfWeekList.add(dayOfWeek);
         }
         if (!existDay3) {
             DayOfWeek dayOfWeek = new DayOfWeek();
-            dayOfWeek.setCode(EDayOfWeekCode.ThuBa);
+            dayOfWeek.setCode(EDayOfWeekCode.TUESDAY);
             dayOfWeek.setName("Thứ Ba");
             dayOfWeekList.add(dayOfWeek);
         }
 
         if (!existDay4) {
             DayOfWeek dayOfWeek = new DayOfWeek();
-            dayOfWeek.setCode(EDayOfWeekCode.ThuTu);
+            dayOfWeek.setCode(EDayOfWeekCode.WEDNESDAY);
             dayOfWeek.setName("Thứ Tư");
             dayOfWeekList.add(dayOfWeek);
         }
 
         if (!existDay5) {
             DayOfWeek dayOfWeek = new DayOfWeek();
-            dayOfWeek.setCode(EDayOfWeekCode.ThuNam);
+            dayOfWeek.setCode(EDayOfWeekCode.THURSDAY);
             dayOfWeek.setName("Thứ Năm");
             dayOfWeekList.add(dayOfWeek);
         }
 
         if (!existDay6) {
             DayOfWeek dayOfWeek = new DayOfWeek();
-            dayOfWeek.setCode(EDayOfWeekCode.ThuSau);
+            dayOfWeek.setCode(EDayOfWeekCode.FRIDAY);
             dayOfWeek.setName("Thứ Sáu");
             dayOfWeekList.add(dayOfWeek);
         }
 
         if (!existDay7) {
             DayOfWeek dayOfWeek = new DayOfWeek();
-            dayOfWeek.setCode(EDayOfWeekCode.ThuBay);
+            dayOfWeek.setCode(EDayOfWeekCode.SATURDAY);
             dayOfWeek.setName("Thứ Bảy");
             dayOfWeekList.add(dayOfWeek);
         }

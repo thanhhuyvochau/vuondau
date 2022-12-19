@@ -11,7 +11,7 @@ public class SlotDowDto {
 
     private int slotNumber ;
 
-    private Instant date ;
+//    private Instant date ;
 
     private long slotId ;
 
@@ -43,11 +43,11 @@ public class SlotDowDto {
         this.slotNumber = slotNumber;
     }
 
-    public Instant getDate() {
-        return date;
-    }
-
-    public void setDate(Instant date) {
-        this.date = date;
-    }
+//    public Instant getDate() {
+//        return date;
+//    }
+//
+//    public void setDate(Instant date) {
+//        this.date = date;
+//    }
 }

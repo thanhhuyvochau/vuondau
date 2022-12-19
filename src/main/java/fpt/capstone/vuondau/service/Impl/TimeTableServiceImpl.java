@@ -22,8 +22,12 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static java.time.DayOfWeek.MONDAY;
 
 @Service
 public class TimeTableServiceImpl implements ITimeTableService {
@@ -69,7 +73,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
         String twoSubString = dayTwo.toString().substring(0, 10).replaceAll("-", " ");
 
 
-        SimpleDateFormat myFormat = new SimpleDateFormat("yyyy dd MM");
+        SimpleDateFormat myFormat = new SimpleDateFormat("yyyy MM dd");
 
 
         Date dateOne = myFormat.parse(oneSubString);
@@ -82,9 +86,36 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
     }
 
+    public static Boolean getDatesBetweenUsingJava8(String startDate, java.time.DayOfWeek dow) throws ParseException {
+        Instant start = Instant.parse(startDate);
+        String oneSubString = start.toString().substring(0, 10);
+        LocalDate startLocalDate = LocalDate.parse(oneSubString);
+        LocalDate endDate = startLocalDate.plusDays(7);
+
+        // lấy tất cả ngày / thứ trong 1 tuần : tính từ ngày bắt dầu
+
+        long numOfDaysBetween = ChronoUnit.DAYS.between(startLocalDate, endDate);
+        List<LocalDate> collectDay = IntStream.iterate(0, i -> i + 1)
+                .limit(numOfDaysBetween)
+                .mapToObj(startLocalDate::plusDays)
+                .collect(Collectors.toList());
+
+        for (LocalDate ld : collectDay) {
+            java.time.DayOfWeek dayf = ld.getDayOfWeek();
+            System.out.println(dayf);
+            if (dow.equals(dayf)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return true;
+
+    }
+
 
     @Override
-    public Long createTimeTableClass(Long classId, TimeTableRequest timeTableRequest) throws ParseException {
+    public Long createTimeTableClass(Long classId, Long numberSlot, TimeTableRequest timeTableRequest) throws ParseException {
         Account currentUser = SecurityUtil.getCurrentUser();
 
         Class aClass = classRepository.findByIdAndAccount(classId, currentUser);
@@ -96,7 +127,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("class đã có thời khoá biểu"));
         }
-        if (timeTableRequest.getSlotDow().size() > 3 || timeTableRequest.getSlotDow().size() < 2 ) {
+        if (timeTableRequest.getSlotDow().size() > 3 || timeTableRequest.getSlotDow().size() < 2) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Vui lòng kiểm tra lại số buổi trong tuần "));
         }
@@ -105,7 +136,10 @@ public class TimeTableServiceImpl implements ITimeTableService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("time table code da ton tai"));
         }
-
+        if (timeTableRequest.getSlotDow().size() != numberSlot) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Thêm số buổi dạy trong tuần đang lớn / nhỏ hơn với số buổi bạn đã chọn "));
+        }
 
         //Set Archetype
         Archetype archetype = new Archetype();
@@ -135,14 +169,14 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
         for (SlotDowDto slotDowDto : slotDows) {
 
-            if (!checkDay(startDate.toString(), slotDowDto.getDate().toString())) {
-                throw ApiException.create(HttpStatus.BAD_REQUEST)
-                        .withMessage(messageUtil.getLocalMessage("Ngày học không thể sớm hơn ngày mở lớp!"));
-            }
-            if (!checkDay(slotDowDto.getDate().toString(), endDate.toString())) {
-                throw ApiException.create(HttpStatus.BAD_REQUEST)
-                        .withMessage(messageUtil.getLocalMessage("Ngày học không thể sau ngày kết thúc lớp!"));
-            }
+//            if (!checkDay(startDate.toString(), slotDowDto.getDate().toString())) {
+//                throw ApiException.create(HttpStatus.BAD_REQUEST)
+//                        .withMessage(messageUtil.getLocalMessage("Ngày học không thể sớm hơn ngày mở lớp!"));
+//            }
+//            if (!checkDay(slotDowDto.getDate().toString(), endDate.toString())) {
+//                throw ApiException.create(HttpStatus.BAD_REQUEST)
+//                        .withMessage(messageUtil.getLocalMessage("Ngày học không thể sau ngày kết thúc lớp!"));
+//            }
 
 
             // Set  Archetype_Time
@@ -162,7 +196,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
             ++slotNumber;
 
             timeTable.setClazz(aClass);
-            timeTable.setDate(slotDowDto.getDate());
+//            timeTable.setDate(slotDowDto.getDate());
             timeTable.setArchetypeTime(archetypeTime);
             timeTableList.add(timeTable);
 

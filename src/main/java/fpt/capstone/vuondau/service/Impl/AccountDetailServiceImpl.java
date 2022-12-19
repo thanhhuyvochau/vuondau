@@ -377,5 +377,35 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
     }
 
+    @Override
+    public AccountDetailResponse getAccountDetail(Long accountId) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay account")));
+        AccountDetail accountDetail = accountDetailRepository.findByAccount(account);
+        AccountDetailResponse accountDetailResponse = ObjectUtil.copyProperties(accountDetail, new AccountDetailResponse(), AccountDetailResponse.class);
+        List<AccountDetailSubject> accountDetailSubjects = accountDetail.getAccountDetailSubjects();
+        List<SubjectDto> subjects = new ArrayList<>();
+        accountDetailSubjects.forEach(accountDetailSubject -> {
+            subjects.add(ObjectUtil.copyProperties(accountDetailSubject.getSubject(), new SubjectDto(), SubjectDto.class));
+        });
+        accountDetailResponse.setSubjects(subjects);
+
+        List<Resource> resources = accountDetail.getResources();
+
+        List<ResourceDto> resourceDtoList = new ArrayList<>();
+        resources.forEach(resource -> {
+            resourceDtoList.add(ObjectUtil.copyProperties(resource, new ResourceDto(), ResourceDto.class));
+        });
+
+        accountDetailResponse.setResources(resourceDtoList);
+
+        EGenderType gender = accountDetail.getGender();
+        if (gender!= null){
+            accountDetailResponse.setGender(gender.getLabel());
+        }
+
+        return accountDetailResponse;
+    }
+
 
 }

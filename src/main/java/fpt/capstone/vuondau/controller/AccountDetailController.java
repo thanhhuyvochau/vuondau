@@ -93,4 +93,11 @@ public class AccountDetailController {
 
     }
 
+    @GetMapping("/{accountId}/account-detail")
+    @Operation(summary = "Lấy tất cả thông tin của giáo viên")
+    public ResponseEntity<ApiResponse<AccountDetailResponse>> getAccountDetail(@PathVariable Long accountId) {
+        return ResponseEntity.ok(ApiResponse.success(iAccountDetailService.getAccountDetail(accountId)));
+    }
+
+
 }

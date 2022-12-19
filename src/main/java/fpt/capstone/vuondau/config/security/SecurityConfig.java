@@ -44,6 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "api/students/account").permitAll()
                 .and().oauth2ResourceServer().jwt().jwtAuthenticationConverter(jwtAuthenticationConverter())
                 .and().authenticationEntryPoint(new BasicAuthenticationEntryPoint());
+
     }
 
 
