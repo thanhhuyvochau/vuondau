@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.service.Impl;
 
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
+import fpt.capstone.vuondau.entity.DayOfWeek;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
@@ -18,6 +19,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,7 +44,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
     private final AccountRepository accountRepository;
 
-    private final SecurityUtil SecurityUtil ;
+    private final SecurityUtil SecurityUtil;
 
     public TimeTableServiceImpl(ClassRepository classRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ArchetypeRepository archetypeRepository, ArchetypeTimeRepository archetypeTimeRepository, MessageUtil messageUtil, TimeTableRepository timeTableRepository, AccountRepository accountRepository, fpt.capstone.vuondau.util.SecurityUtil securityUtil) {
         this.classRepository = classRepository;
@@ -54,52 +58,53 @@ public class TimeTableServiceImpl implements ITimeTableService {
         SecurityUtil = securityUtil;
     }
 
+
+    private boolean checkDay(String one, String two) throws ParseException {
+
+        Instant datOne = Instant.parse(one);
+        String oneSubString = datOne.toString().substring(0, 10).replaceAll("-", " ");
+
+
+        Instant dayTwo = Instant.parse(two);
+        String twoSubString = dayTwo.toString().substring(0, 10).replaceAll("-", " ");
+
+
+        SimpleDateFormat myFormat = new SimpleDateFormat("yyyy dd MM");
+
+
+        Date dateOne = myFormat.parse(oneSubString);
+        Date dateTwo = myFormat.parse(twoSubString);
+        long check = dateOne.getTime() - dateTwo.getTime();
+        if (check > 0) {
+            return false;
+        }
+        return true;
+
+    }
+
+
     @Override
-    public Long createTimeTableClass(Long classId, TimeTableRequest timeTableRequest) {
+    public Long createTimeTableClass(Long classId, TimeTableRequest timeTableRequest) throws ParseException {
         Account currentUser = SecurityUtil.getCurrentUser();
 
         Class aClass = classRepository.findByIdAndAccount(classId, currentUser);
-                if (aClass == null) {
-                    throw ApiException.create(HttpStatus.BAD_REQUEST)
-                            .withMessage(messageUtil.getLocalMessage("Class không tồn tai"));
-                }
+        if (aClass == null) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Class không tồn tai"));
+        }
         if (aClass.getTimeTables().size() > 0) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("class đã có thời khoá biểu"));
         }
-        if (timeTableRequest.getSlotDow().size() > 3) {
+        if (timeTableRequest.getSlotDow().size() > 3 || timeTableRequest.getSlotDow().size() < 2 ) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Đã vượt quá số buổi trong tuần"));
+                    .withMessage(messageUtil.getLocalMessage("Vui lòng kiểm tra lại số buổi trong tuần "));
         }
 
         if (archetypeRepository.existsByIdAndCode(aClass.getId(), timeTableRequest.getArchetypeCode())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("time table code da ton tai"));
         }
-
-
-
-
-        // Check Dow
-//        List<Long> allDayOfWeekId = timeTableRequest.getSlotDow().stream().map(SlotDowDto::getDayOfWeekId).collect(Collectors.toList());
-//        Set<Long> countDow = new HashSet<>();
-//        Set<Long> checkDuplicatesDow = allDayOfWeekId.stream().filter(n -> !countDow.add(n)).collect(Collectors.toSet());
-//
-//
-//        // Check slot
-//        List<Long> allSlotId = timeTableRequest.getSlotDow().stream().map(SlotDowDto::getSlotId).collect(Collectors.toList());
-//        Set<Long> countSlot = new HashSet<>();
-//        Set<Long> checkSlotDow = allDayOfWeekId.stream().filter(n -> !countDow.add(n)).collect(Collectors.toSet());
-
-
-        // Dạy 2 ngày trong 1 tuần
-//
-//        if (timeTableRequest.getSlotDow().size()==2){ //day 2 ngay trong tuần
-//                if (checkDuplicatesDow.size()>=1) {
-//                    throw ApiException.create(HttpStatus.BAD_REQUEST)
-//                            .withMessage(messageUtil.getLocalMessage("Số buổi dạy trong tuần là 2. Bạn không thể dạy 2 slot trong 1 ngày được. ")) ;
-//                }
-//        }
 
 
         //Set Archetype
@@ -123,7 +128,21 @@ public class TimeTableServiceImpl implements ITimeTableService {
         List<TimeTable> timeTableList = new ArrayList<>();
 
         int slotNumber = 1;
+        Instant startDate = aClass.getStartDate();
+
+        Instant endDate = aClass.getEndDate();
+
+
         for (SlotDowDto slotDowDto : slotDows) {
+
+            if (!checkDay(startDate.toString(), slotDowDto.getDate().toString())) {
+                throw ApiException.create(HttpStatus.BAD_REQUEST)
+                        .withMessage(messageUtil.getLocalMessage("Ngày học không thể sớm hơn ngày mở lớp!"));
+            }
+            if (!checkDay(slotDowDto.getDate().toString(), endDate.toString())) {
+                throw ApiException.create(HttpStatus.BAD_REQUEST)
+                        .withMessage(messageUtil.getLocalMessage("Ngày học không thể sau ngày kết thúc lớp!"));
+            }
 
 
             // Set  Archetype_Time
@@ -159,14 +178,14 @@ public class TimeTableServiceImpl implements ITimeTableService {
     }
 
     @Override
-    public ApiPage<TimeTableDto> getTimeTableInDay(TimeTableSearchRequest timeTableSearchRequest , Pageable pageable) {
+    public ApiPage<TimeTableDto> getTimeTableInDay(TimeTableSearchRequest timeTableSearchRequest, Pageable pageable) {
         Account currentUser = SecurityUtil.getCurrentUser();
 
         Class aClass = classRepository.findById(timeTableSearchRequest.getClassId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + timeTableSearchRequest.getClassId()));
 
-        if (currentUser.getRole()!= null){
-            if (currentUser.getRole().getCode().equals(EAccountRole.STUDENT)){
+        if (currentUser.getRole() != null) {
+            if (currentUser.getRole().getCode().equals(EAccountRole.STUDENT)) {
                 List<StudentClass> studentClasses = aClass.getStudentClasses();
                 List<Account> studentAccount = studentClasses.stream().map(StudentClass::getAccount).collect(Collectors.toList());
                 if (!studentAccount.contains(currentUser)) {
@@ -175,16 +194,14 @@ public class TimeTableServiceImpl implements ITimeTableService {
                 }
 
             }
-            if (currentUser.getRole().getCode().equals(EAccountRole.TEACHER)){
+            if (currentUser.getRole().getCode().equals(EAccountRole.TEACHER)) {
                 Account account = aClass.getAccount();
-                if (!currentUser.getId().equals(account.getId())){
+                if (!currentUser.getId().equals(account.getId())) {
                     throw ApiException.create(HttpStatus.BAD_REQUEST)
                             .withMessage(messageUtil.getLocalMessage("Bạn không có dạy lớp nay"));
                 }
             }
         }
-
-
 
 
         TimeTableSpecificationBuilder timeTableSpecificationBuilder = TimeTableSpecificationBuilder.specification()
