@@ -2,7 +2,7 @@ package fpt.capstone.vuondau.service.Impl;
 
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
-import fpt.capstone.vuondau.entity.DayOfWeek;
+
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
@@ -22,12 +22,11 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
+import java.time.DayOfWeek;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static java.time.DayOfWeek.MONDAY;
 
 @Service
 public class TimeTableServiceImpl implements ITimeTableService {
@@ -156,8 +155,8 @@ public class TimeTableServiceImpl implements ITimeTableService {
         List<Slot> slotList = slotRepository.findAll();
         Map<Long, Slot> slotMap = HashMapUtil.convertSlotListToMap(slotList);
 
-        List<DayOfWeek> dayOfWeekList = dayOfWeekRepository.findAll();
-        Map<Long, DayOfWeek> dayOfWeekMap = HashMapUtil.convertDoWListToMap(dayOfWeekList);
+        List<fpt.capstone.vuondau.entity.DayOfWeek> dayOfWeekList = dayOfWeekRepository.findAll();
+        Map<Long, fpt.capstone.vuondau.entity.DayOfWeek> dayOfWeekMap = HashMapUtil.convertDoWListToMap(dayOfWeekList);
 
         List<TimeTable> timeTableList = new ArrayList<>();
 
@@ -168,23 +167,22 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
 
         for (SlotDowDto slotDowDto : slotDows) {
+            fpt.capstone.vuondau.entity.DayOfWeek dayOfWeek = dayOfWeekMap.get(slotDowDto.getDayOfWeekId());
 
-//            if (!checkDay(startDate.toString(), slotDowDto.getDate().toString())) {
-//                throw ApiException.create(HttpStatus.BAD_REQUEST)
-//                        .withMessage(messageUtil.getLocalMessage("Ngày học không thể sớm hơn ngày mở lớp!"));
-//            }
-//            if (!checkDay(slotDowDto.getDate().toString(), endDate.toString())) {
-//                throw ApiException.create(HttpStatus.BAD_REQUEST)
-//                        .withMessage(messageUtil.getLocalMessage("Ngày học không thể sau ngày kết thúc lớp!"));
-//            }
-
+            Slot slot = null;
+            if (!getDatesBetweenUsingJava8(startDate.toString(), DayOfWeek.valueOf(dayOfWeek.getCode().name()))){
+                throw ApiException.create(HttpStatus.BAD_REQUEST)
+                        .withMessage(messageUtil.getLocalMessage("Khong tim thấy thứ trong tuần"));
+            }
 
             // Set  Archetype_Time
-            Slot slot = slotMap.get(slotDowDto.getSlotId());
+            {
+                slot = slotMap.get(slotDowDto.getSlotId());
+            }
             ArchetypeTime archetypeTime = new ArchetypeTime();
             archetypeTime.setSlot(slot);
 
-            DayOfWeek dayOfWeek = dayOfWeekMap.get(slotDowDto.getDayOfWeekId());
+
             archetypeTime.setDayOfWeek(dayOfWeek);
             archetypeTime.setArchetype(archetype);
 
@@ -196,7 +194,6 @@ public class TimeTableServiceImpl implements ITimeTableService {
             ++slotNumber;
 
             timeTable.setClazz(aClass);
-//            timeTable.setDate(slotDowDto.getDate());
             timeTable.setArchetypeTime(archetypeTime);
             timeTableList.add(timeTable);
 
@@ -259,7 +256,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
                 if (slot != null) {
                     archetypeTimeDto.setSlot(ObjectUtil.copyProperties(slot, new SlotDto(), SlotDto.class));
                 }
-                DayOfWeek dayOfWeek = archetypeTime.getDayOfWeek();
+                fpt.capstone.vuondau.entity.DayOfWeek dayOfWeek = archetypeTime.getDayOfWeek();
                 if (dayOfWeek != null) {
                     archetypeTimeDto.setDayOfWeek(ObjectUtil.copyProperties(dayOfWeek, new DayOfWeekDto(), DayOfWeekDto.class));
                 }
