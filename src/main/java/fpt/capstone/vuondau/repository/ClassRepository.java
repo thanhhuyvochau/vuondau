@@ -27,14 +27,10 @@ public interface ClassRepository extends JpaRepository<Class, Long> {
 
     Page<Class> findAllByAccount(Account account, Pageable pageable);
 
-
-
     Optional<Class> findByIdAndCourse(long course, Course account);
 
-    //    List<Class> findAll(Specification<Class> spec, Pageable pageable);
     Page<Class> findAllByIsActiveIsTrue(Pageable pageable);
 
-//    Page<Class> findAllByActiveIsTrue(Pageable pageable);
 
     List<Class> findAll(Specification<Class> spec);
 
@@ -44,7 +40,6 @@ public interface ClassRepository extends JpaRepository<Class, Long> {
 
     List<Class> findByIdInAndStatus(List<Long> classId, EClassStatus status);
 
-//    List<Class> findClassByAccount (Account account );
-
     Page<Class> findAllByStatus(EClassStatus eClassStatus, Pageable pageable);
+
 }

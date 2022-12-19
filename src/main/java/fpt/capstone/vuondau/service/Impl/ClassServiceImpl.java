@@ -22,15 +22,14 @@ import fpt.capstone.vuondau.util.specification.ClassSpecificationBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 @Service
@@ -169,7 +168,7 @@ public class ClassServiceImpl implements IClassService {
     @Override
     public ApiPage<ClassDto> getClassRequesting(ClassSearchRequest query, Pageable pageable) {
         ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
-                .queryStatusClass(query.getStatus());
+                .queryByClassStatus(query.getStatus());
 
         Page<Class> classesPage = classRepository.findAll(builder.build(), pageable);
 
@@ -255,9 +254,10 @@ public class ClassServiceImpl implements IClassService {
         ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
                 .queryLikeByClassName(query.getQ())
                 .queryLikeByTeacherName(query.getQ())
-                .queryStatusClass(query.getStatus())
+                .queryByClassStatus(query.getStatus())
                 .queryByEndDate(query.getEndDate())
                 .queryByStartDate(query.getStartDate())
+                .isActive(true)
                 .queryByPriceBetween(query.getMinPrice(), query.getMaxPrice());
         if (!classIds.isEmpty()) {
             List<Subject> subjects = subjectRepository.findAllById(query.getSubjectIds());
@@ -411,7 +411,7 @@ public class ClassServiceImpl implements IClassService {
 
     @Override
     public ApiPage<ClassDto> getAllClass(Pageable pageable) {
-        Page<Class> classesPage = classRepository.findAllByIsActiveIsTrue(pageable);
+        Page<Class> classesPage = classRepository.findAll(pageable);
         return PageUtil.convert(classesPage.map(ConvertUtil::doConvertEntityToResponse));
     }
 
@@ -806,7 +806,6 @@ public class ClassServiceImpl implements IClassService {
         Class aClass = findClassByRoleAccount(id);
 
 
-
         ClassStudentResponse classStudentResponse = new ClassStudentResponse();
 
         List<Account> studentList = aClass.getStudentClasses().stream().map(StudentClass::getAccount).collect(Collectors.toList());
@@ -881,5 +880,19 @@ public class ClassServiceImpl implements IClassService {
             classTeacherResponse.setTeacher(accountResponse);
         }
         return classTeacherResponse;
+    }
+
+    @Override
+    public ApiPage<ClassDto> getAllClassForUser(Pageable pageable, EClassStatus classStatus) {
+        if (classStatus.name().equals(EClassStatus.NEW.name()) || classStatus.name().equals(EClassStatus.RECRUITING.name())) {
+            ClassSpecificationBuilder builder = new ClassSpecificationBuilder();
+            builder.queryByClassStatus(EClassStatus.NEW, EClassStatus.RECRUITING);
+            builder.isActive(true);
+            Specification<Class> classSpecification = builder.build();
+            Page<Class> classesPage = classRepository.findAll(classSpecification, pageable);
+            return PageUtil.convert(classesPage.map(ConvertUtil::doConvertEntityToResponse));
+        } else {
+            throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Class status invalid!");
+        }
     }
 }

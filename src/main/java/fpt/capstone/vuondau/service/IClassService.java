@@ -7,6 +7,8 @@ import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
+import fpt.capstone.vuondau.entity.common.EClassStatus;
+import fpt.capstone.vuondau.entity.common.EClassType;
 import fpt.capstone.vuondau.entity.dto.ClassDetailDto;
 import fpt.capstone.vuondau.entity.dto.ClassDto;
 import fpt.capstone.vuondau.entity.dto.ClassStudentDto;
@@ -43,7 +45,7 @@ public interface IClassService {
     ClassDetailDto classDetail(Long id) throws JsonProcessingException;
 
     ApiPage<ClassDto> getAllClass(Pageable pageable);
-
+    ApiPage<ClassDto> getAllClassForUser(Pageable pageable, EClassStatus classStatus);
     ApiPage<ClassDto> accountFilterClass(ClassSearchRequest query, Pageable pageable);
 
     ApiPage<ClassDto> classSuggestion(long infoFindTutorId, Pageable pageable);
