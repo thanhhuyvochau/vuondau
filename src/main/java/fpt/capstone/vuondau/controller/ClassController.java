@@ -140,7 +140,7 @@ public class ClassController {
 
     @Operation(summary = "Chọn giáo viên cho lớp")
     @PutMapping({"/choose-candicate"})
-    public ResponseEntity<ApiResponse<Boolean>> chooseCandicateTeacher(@RequestBody ClassCandicateRequest request) throws JsonProcessingException {
+    public ResponseEntity<ApiResponse<AccountResponse>> chooseCandicateTeacher(@RequestBody ClassCandicateRequest request) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.chooseCandicateForClass(request)));
     }
 

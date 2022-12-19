@@ -83,7 +83,7 @@ public class ClassServiceImpl implements IClassService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("class code da ton tai"));
         }
-        courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
         clazz.setCode(createClassRequest.getCode());
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
@@ -96,6 +96,8 @@ public class ClassServiceImpl implements IClassService {
         clazz.setActive(false);
         clazz.setAccount(teacher);
         clazz.setClassType(createClassRequest.getClassType());
+        clazz.setUnitPrice(createClassRequest.getUnitPrice());
+        clazz.setCourse(course);
         classRepository.save(clazz);
 
 
@@ -451,7 +453,7 @@ public class ClassServiceImpl implements IClassService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("class code da ton tai"));
         }
-        courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
         clazz.setCode(createClassRequest.getCode());
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
@@ -460,7 +462,11 @@ public class ClassServiceImpl implements IClassService {
         clazz.setStatus(EClassStatus.RECRUITING);
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
+        clazz.setClassLevel(createClassRequest.getClassLevel());
+        clazz.setClassType(createClassRequest.getClassType());
         clazz.setActive(false);
+        clazz.setCourse(course);
+        clazz.setUnitPrice(createClassRequest.getUnitPrice());
         classRepository.save(clazz);
         return true;
     }
@@ -523,7 +529,7 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
-    public Boolean chooseCandicateForClass(ClassCandicateRequest request) {
+    public AccountResponse chooseCandicateForClass(ClassCandicateRequest request) {
         Long classId = request.getClassId();
         Long teacherId = request.getTeacherId();
         Class clazz = classRepository.findById(classId)
@@ -541,7 +547,7 @@ public class ClassServiceImpl implements IClassService {
             }
         }
         classRepository.save(clazz);
-        return true;
+        return ConvertUtil.doConvertEntityToResponse(teacher);
     }
 
     @Override
