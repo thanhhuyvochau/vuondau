@@ -78,4 +78,10 @@ public class SubjectController {
                                                                                Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(subjectService.searchSubject(query, pageable)));
     }
+
+    @Operation(summary = "Lấy tất cả các môn của giáo viên không phân trang")
+    @GetMapping("/teacher/subjects")
+    public ResponseEntity<ApiResponse<List<SubjectResponse>>> getSubjectOfTeacher() {
+        return ResponseEntity.ok(ApiResponse.success(subjectService.getSubjectOfTeacher()));
+    }
 }

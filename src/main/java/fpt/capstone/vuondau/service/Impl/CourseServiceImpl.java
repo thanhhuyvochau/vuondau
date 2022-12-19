@@ -487,6 +487,7 @@ public class CourseServiceImpl implements ICourseService {
         Course course = new Course();
         course.setName(courseRequest.getName());
         if (courseRepository.existsByCode(courseRequest.getCode())) {
+
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("course code da ton tai"));
         }
@@ -500,6 +501,7 @@ public class CourseServiceImpl implements ICourseService {
 
         Course save = courseRepository.save(course);
         CourseResponse response = ObjectUtil.copyProperties(save, new CourseResponse(), CourseResponse.class);
+
         return response;
     }
 

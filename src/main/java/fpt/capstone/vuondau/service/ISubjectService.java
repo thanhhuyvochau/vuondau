@@ -26,4 +26,6 @@ public interface ISubjectService {
     ApiPage<SubjectResponse> getAllWithPaging(Pageable pageable);
 
     ApiPage<SubjectResponse> searchSubject(SubjectSearchRequest query, Pageable pageable);
+
+    List<SubjectResponse> getSubjectOfTeacher();
 }

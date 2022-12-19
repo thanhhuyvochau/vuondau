@@ -17,11 +17,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static fpt.capstone.vuondau.entity.common.EAccountRole.STUDENT;
@@ -29,6 +35,7 @@ import static fpt.capstone.vuondau.entity.common.EAccountRole.TEACHER;
 import static fpt.capstone.vuondau.entity.common.EResourceType.AVATAR;
 import static fpt.capstone.vuondau.entity.common.EResourceType.FILE;
 import static fpt.capstone.vuondau.entity.common.ESubjectCode.*;
+import static java.time.temporal.ChronoUnit.DAYS;
 
 
 @SpringBootApplication
@@ -62,14 +69,19 @@ public class HatdauApplication {
         this.classTypeRepository = classTypeRepository;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
 
         SpringApplication.run(HatdauApplication.class, args);
+
+
+
+
     }
 
 
     @EventListener(ApplicationReadyEvent.class)
     public void intiDataRole() {
+
 
         List<Role> allRole = roleRepository.findAll();
         Boolean existTeacherRole = false;

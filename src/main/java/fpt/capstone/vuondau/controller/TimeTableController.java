@@ -31,7 +31,7 @@ public class TimeTableController {
 
     @Operation(summary = "Giáo viên tao lich dạy")
     @PostMapping({"/{classId}"})
-    public ResponseEntity<ApiResponse<Long>> createTimeTableClass(@PathVariable Long classId , @RequestBody TimeTableRequest timeTableRequest  ) {
+    public ResponseEntity<ApiResponse<Long>> createTimeTableClass(@PathVariable Long classId , @RequestBody TimeTableRequest timeTableRequest  ) throws ParseException {
         return ResponseEntity.ok(ApiResponse.success(iTimeTableService.createTimeTableClass(classId, timeTableRequest)));
     }
 

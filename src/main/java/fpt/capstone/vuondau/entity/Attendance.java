@@ -14,12 +14,7 @@ public class Attendance {
     @GeneratedValue
     @Column(name = "id")
     private Long id;
-
-    private StudentClassKey studentClassKeyId ;
-
-//    @OneToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "student_class_id")
-//    private StudentClass studentClass;
+    private StudentClassKey studentClassKeyId = new StudentClassKey();
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "time_table_id")
