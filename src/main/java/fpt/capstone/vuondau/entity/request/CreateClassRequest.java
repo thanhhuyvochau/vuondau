@@ -5,6 +5,7 @@ import fpt.capstone.vuondau.entity.common.EClassLevel;
 import fpt.capstone.vuondau.entity.common.EClassType;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.Instant;
 
 
@@ -15,9 +16,9 @@ public class CreateClassRequest implements Serializable {
     private String code;
     private Instant startDate;
     private Instant endDate;
-    private EClassLevel classLevel ;
+    private EClassLevel classLevel;
 
-    private EClassType classType ;
+    private EClassType classType;
     private Long minNumberStudent;
 
     private Long maxNumberStudent;
@@ -25,6 +26,8 @@ public class CreateClassRequest implements Serializable {
     private Long subjectId;
 
     private Long courseId;
+    private BigDecimal unitPrice;
+
 
     public EClassType getClassType() {
         return classType;
@@ -114,4 +117,12 @@ public class CreateClassRequest implements Serializable {
 //    public void setCourseRequest(CreateCourseRequest courseRequest) {
 //        this.courseRequest = courseRequest;
 //    }
+
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
+    }
 }
