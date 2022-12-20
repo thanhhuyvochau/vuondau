@@ -1,6 +1,6 @@
 package fpt.capstone.vuondau.entity.request;
 
-public class ClassTypeRequest {
+public class ClassLevelRequest {
     private String name;
     private String code;
     private Integer maximumQuantity;

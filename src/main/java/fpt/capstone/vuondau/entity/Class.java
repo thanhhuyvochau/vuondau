@@ -262,8 +262,6 @@ public class Class {
         this.forums = forums;
     }
 
-
-
     public List<Section> getSections() {
         return sections;
     }
