@@ -68,6 +68,8 @@ public class AccountDetailResponse {
 
     private  List<ResourceDto> resources;
 
+    private Long AccountId ;
+
     public Long getId() {
         return id;
     }
@@ -212,5 +214,13 @@ public class AccountDetailResponse {
 
     public void setResources(List<ResourceDto> resources) {
         this.resources = resources;
+    }
+
+    public Long getAccountId() {
+        return AccountId;
+    }
+
+    public void setAccountId(Long accountId) {
+        AccountId = accountId;
     }
 }

@@ -102,13 +102,13 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 //        Account teacher = securityUtil.getCurrentUser();
 
         AccountDetail accountDetail = new AccountDetail();
-
-        if (accountRepository.existsAccountByEmail(accountDetailRequest.getEmail())
-                || accountDetailRequest.getEmail() == null
-                || accountDetailRepository.existsAccountByEmail(accountDetailRequest.getEmail())) {
-            throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Email đã có tà khoản trong hệ thống"));
-        }
+//
+//        if (accountRepository.existsAccountByEmail(accountDetailRequest.getEmail())
+//                || accountDetailRequest.getEmail() == null
+//                || accountDetailRepository.existsAccountByEmail(accountDetailRequest.getEmail())) {
+//            throw ApiException.create(HttpStatus.BAD_REQUEST)
+//                    .withMessage(messageUtil.getLocalMessage("Email đã có tà khoản trong hệ thống"));
+//        }
 
         if (accountDetailRepository.existsAccountByEmail(accountDetailRequest.getPhone()) || accountDetailRequest.getPhone() == null) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
@@ -164,6 +164,8 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
 
         accountDetail.setAccountDetailSubjects(accountDetailSubjectList);
+
+
         List<AccountDetailClassLevel> accountDetailClassLevelList = new ArrayList<>();
         List<Long> classLevels = accountDetailRequest.getClassLevels();
         if (classLevels != null) {
@@ -316,16 +318,16 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
                 account.setUsername(accountDetail.getEmail());
                 account.setPassword(accountDetail.getPassword());
                 account.setActive(true);
-                account.setLastName(accountDetail.getLastName());
-                account.setFirstName(accountDetail.getFirstName());
-                account.setEmail(accountDetail.getEmail());
+//                account.setLastName(accountDetail.getLastName());
+//                account.setFirstName(accountDetail.getFirstName());
+//                account.setEmail(accountDetail.getEmail());
 
-                account.setGender(accountDetail.getGender());
-                account.setPhoneNumber(accountDetail.getPhone());
+//                account.setGender(accountDetail.getGender());
+//                account.setPhoneNumber(accountDetail.getPhone());
                 Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay role"));
 
                 account.setRole(role);
-                account.setBirthday(accountDetail.getBirthDay());
+//                account.setBirthday(accountDetail.getBirthDay());
                 account.setAccountDetail(accountDetail);
 
 
@@ -357,12 +359,15 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
         return PageUtil.convert(accountDetailPage.map(accountDetail -> {
             AccountDetailResponse accountDetailResponse = ObjectUtil.copyProperties(accountDetail, new AccountDetailResponse(), AccountDetailResponse.class);
-
+            if (accountDetail.getAccount()!= null) {
+                accountDetailResponse.setAccountId(accountDetail.getAccount().getId());
+            }
             List<AccountDetailSubject> accountDetailSubjects = accountDetail.getAccountDetailSubjects();
             List<SubjectDto> subjects = new ArrayList<>();
             accountDetailSubjects.forEach(accountDetailSubject -> {
                 subjects.add(ObjectUtil.copyProperties(accountDetailSubject.getSubject(), new SubjectDto(), SubjectDto.class));
             });
+
             accountDetailResponse.setSubjects(subjects);
             List<ResourceDto> resourceDtoList = new ArrayList<>();
             List<Resource> resources = accountDetail.getResources();

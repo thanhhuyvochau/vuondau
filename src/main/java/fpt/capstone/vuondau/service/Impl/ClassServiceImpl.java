@@ -46,6 +46,7 @@ public class ClassServiceImpl implements IClassService {
 
     private final MoodleCourseRepository moodleCourseRepository;
 
+    private final ClassLevelRepository classLevelRepository ;
     private final CourseServiceImpl courseServiceImpl;
     private final StudentClassRepository studentClassRepository;
     private final MessageUtil messageUtil;
@@ -55,13 +56,14 @@ public class ClassServiceImpl implements IClassService {
     private final InfoFindTutorRepository infoFindTutorRepository;
     protected final ClassTeacherCandicateRepository classTeacherCandicateRepository;
 
-    public ClassServiceImpl(RequestUtil requestUtil, AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil, SecurityUtil securityUtil, InfoFindTutorRepository infoFindTutorRepository, ClassTeacherCandicateRepository classTeacherCandicateRepository) {
+    public ClassServiceImpl(RequestUtil requestUtil, AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, ClassLevelRepository classLevelRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil, SecurityUtil securityUtil, InfoFindTutorRepository infoFindTutorRepository, ClassTeacherCandicateRepository classTeacherCandicateRepository) {
         this.requestUtil = requestUtil;
         this.accountRepository = accountRepository;
         this.subjectRepository = subjectRepository;
         this.classRepository = classRepository;
         this.courseRepository = courseRepository;
         this.moodleCourseRepository = moodleCourseRepository;
+        this.classLevelRepository = classLevelRepository;
         this.courseServiceImpl = courseServiceImpl;
         this.studentClassRepository = studentClassRepository;
         this.messageUtil = messageUtil;
@@ -88,7 +90,8 @@ public class ClassServiceImpl implements IClassService {
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
         clazz.setMinNumberStudent(createClassRequest.getMinNumberStudent());
-        clazz.setClassLevel(createClassRequest.getClassLevel());
+        ClassLevel classLevel = classLevelRepository.findByCode(createClassRequest.getClassLevel()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+        clazz.setClassLevel(classLevel.getId());
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
         clazz.setStatus(EClassStatus.REQUESTING);
         clazz.setStartDate(createClassRequest.getStartDate());
@@ -251,7 +254,7 @@ public class ClassServiceImpl implements IClassService {
         List<Long> classIds = query.getSubjectIds();
         ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
                 .queryLikeByClassName(query.getQ())
-                .queryLikeByTeacherName(query.getQ())
+//                .queryLikeByTeacherName(query.getQ())
                 .queryByClassStatus(query.getStatus())
                 .queryByEndDate(query.getEndDate())
                 .queryByStartDate(query.getStartDate())
@@ -458,7 +461,8 @@ public class ClassServiceImpl implements IClassService {
         clazz.setStatus(EClassStatus.RECRUITING);
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
-        clazz.setClassLevel(createClassRequest.getClassLevel());
+        ClassLevel classLevel = classLevelRepository.findByCode(createClassRequest.getClassLevel()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+        clazz.setClassLevel(classLevel.getId());
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setActive(false);
         clazz.setCourse(course);

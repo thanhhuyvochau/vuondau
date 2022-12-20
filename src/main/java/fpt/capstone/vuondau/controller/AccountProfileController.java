@@ -10,7 +10,6 @@ import fpt.capstone.vuondau.entity.dto.ResourceDto;
 import fpt.capstone.vuondau.entity.request.AccountDetailRequest;
 import fpt.capstone.vuondau.entity.request.UploadAvatarRequest;
 import fpt.capstone.vuondau.entity.response.AccountDetailResponse;
-import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.GenderResponse;
 import fpt.capstone.vuondau.service.IAccountDetailService;
 import fpt.capstone.vuondau.service.ISendMailService;
@@ -23,14 +22,14 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/account-detail")
-public class AccountDetailController {
+@RequestMapping("api/account-profile")
+public class AccountProfileController {
+
 
     private final RestTemplate restTemplate;
     private final IAccountDetailService iAccountDetailService;
@@ -40,7 +39,7 @@ public class AccountDetailController {
     @Value("${provinces}")
     private String province;
 
-    public AccountDetailController(RestTemplate restTemplate, IAccountDetailService iAccountDetailService, ISendMailService iSendMailService) {
+    public AccountProfileController(RestTemplate restTemplate, IAccountDetailService iAccountDetailService, ISendMailService iSendMailService) {
         this.restTemplate = restTemplate;
         this.iAccountDetailService = iAccountDetailService;
         this.iSendMailService = iSendMailService;

@@ -68,17 +68,17 @@ public class ClassSpecificationBuilder {
         return this;
     }
 
-    public ClassSpecificationBuilder queryLikeByTeacherName(String q) {
-        if (q == null || q.trim().isEmpty()) {
-            return this;
-        }
-        specifications.add((root, query, criteriaBuilder) -> {
-            Path<Account> objectPath = root.get(Class_.ACCOUNT);
-            Expression<String> stringExpression = objectPath.get(Account_.FIRST_NAME);
-            return criteriaBuilder.like(stringExpression, '%' + q + '%');
-        });
-        return this;
-    }
+//    public ClassSpecificationBuilder queryLikeByTeacherName(String q) {
+//        if (q == null || q.trim().isEmpty()) {
+//            return this;
+//        }
+//        specifications.add((root, query, criteriaBuilder) -> {
+//            Path<Account> objectPath = root.get(Class_.ACCOUNT);
+////            Expression<String> stringExpression = objectPath.get(Account_.FIRST_NAME);
+////            return criteriaBuilder.like(stringExpression, '%' + q + '%');
+//        });
+//        return this;
+//    }
 
     public Specification<Class> build() {
         return specifications.stream().filter(Objects::nonNull)

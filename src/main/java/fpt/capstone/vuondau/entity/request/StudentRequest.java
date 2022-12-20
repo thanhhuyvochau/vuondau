@@ -2,10 +2,13 @@ package fpt.capstone.vuondau.entity.request;
 
 
 import fpt.capstone.vuondau.entity.common.EAccountRole;
+import fpt.capstone.vuondau.entity.common.EGenderType;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 
+import java.time.Instant;
+import java.util.List;
+
 public class StudentRequest {
-    private AccountRequest account;
 
     private String firstName;
 
@@ -13,24 +16,22 @@ public class StudentRequest {
 
     private String email;
 
-    private String phoneNumber;
-    private String genderCode;
+    private String password;
 
-    public String getGenderCode() {
-        return genderCode;
-    }
+    private String phone;
 
-    public void setGenderCode(String genderCode) {
-        this.genderCode = genderCode;
-    }
+    private Instant birthDay;
 
-    public AccountRequest getAccount() {
-        return account;
-    }
+    private String gender;
 
-    public void setAccount(AccountRequest account) {
-        this.account = account;
-    }
+
+    private String currentAddress;
+
+    private String schoolName;
+
+    private List<Long> subjects ;
+
+    private Long classLevel ;
 
     public String getFirstName() {
         return firstName;
@@ -56,11 +57,69 @@ public class StudentRequest {
         this.email = email;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public Instant getBirthDay() {
+        return birthDay;
+    }
+
+    public void setBirthDay(Instant birthDay) {
+        this.birthDay = birthDay;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+
+
+    public String getCurrentAddress() {
+        return currentAddress;
+    }
+
+    public void setCurrentAddress(String currentAddress) {
+        this.currentAddress = currentAddress;
+    }
+
+    public String getSchoolName() {
+        return schoolName;
+    }
+
+    public void setSchoolName(String schoolName) {
+        this.schoolName = schoolName;
+    }
+
+    public List<Long> getSubjects() {
+        return subjects;
+    }
+
+    public void setSubjects(List<Long> subjects) {
+        this.subjects = subjects;
+    }
+
+    public Long getClassLevel() {
+        return classLevel;
+    }
+
+    public void setClassLevel(Long classLevel) {
+        this.classLevel = classLevel;
     }
 }
