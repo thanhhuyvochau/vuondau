@@ -357,12 +357,15 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
         return PageUtil.convert(accountDetailPage.map(accountDetail -> {
             AccountDetailResponse accountDetailResponse = ObjectUtil.copyProperties(accountDetail, new AccountDetailResponse(), AccountDetailResponse.class);
-
+            if (accountDetail.getAccount()!= null) {
+                accountDetailResponse.setAccountId(accountDetail.getAccount().getId());
+            }
             List<AccountDetailSubject> accountDetailSubjects = accountDetail.getAccountDetailSubjects();
             List<SubjectDto> subjects = new ArrayList<>();
             accountDetailSubjects.forEach(accountDetailSubject -> {
                 subjects.add(ObjectUtil.copyProperties(accountDetailSubject.getSubject(), new SubjectDto(), SubjectDto.class));
             });
+
             accountDetailResponse.setSubjects(subjects);
             List<ResourceDto> resourceDtoList = new ArrayList<>();
             List<Resource> resources = accountDetail.getResources();
