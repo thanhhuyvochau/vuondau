@@ -212,7 +212,6 @@ public class AccountServiceImpl implements IAccountService {
         accountDetail.setAccountDetailClassLevels(accountDetailClassLevelList);
         accountDetail.setActive(true);
 
-
         account.setAccountDetail(accountDetail);
         Account accountSave = accountRepository.save(account);
 

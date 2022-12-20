@@ -41,7 +41,7 @@ public class Account {
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @OneToOne(mappedBy = "account", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "account", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private AccountDetail accountDetail;
 
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
