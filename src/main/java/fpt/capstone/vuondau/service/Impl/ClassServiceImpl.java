@@ -130,18 +130,17 @@ public class ClassServiceImpl implements IClassService {
 
     @Override
     public ClassDto adminApproveRequestCreateClass(Long id) throws JsonProcessingException {
-        Class aClass = classRepository.findById(id)
+        Class clazz = classRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
-        if (!aClass.getStatus().equals(EClassStatus.REQUESTING)) {
+        if (!clazz.getStatus().equals(EClassStatus.REQUESTING)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("class khong phai trang thai de Active"));
         }
-
-
-        aClass.setActive(true);
-        aClass.setStatus(EClassStatus.NOTSTART);
-        Class save = classRepository.save(aClass);
-
+        clazz.setActive(true);
+        clazz.setStatus(EClassStatus.NOTSTART);
+        Forum classForum = createClassForum(clazz);
+        clazz.getForums().add(classForum);
+        Class save = classRepository.save(clazz);
         S1CourseRequest s1CourseRequest = new S1CourseRequest();
         List<MoodleCourseDataRequest.MoodleCourseBody> moodleCourseBodyList = new ArrayList<>();
 
@@ -164,10 +163,7 @@ public class ClassServiceImpl implements IClassService {
         List<MoodleClassResponse> moodleClassResponses = moodleCourseRepository.postCourse(s1CourseRequest);
 
 
-        ClassDto classDto = ObjectUtil.copyProperties(save, new ClassDto(), ClassDto.class);
-
-
-        return classDto;
+        return ObjectUtil.copyProperties(save, new ClassDto(), ClassDto.class);
     }
 
     @Override
@@ -904,5 +900,31 @@ public class ClassServiceImpl implements IClassService {
         } else {
             throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Class status invalid!");
         }
+    }
+
+    private Forum createClassForum(Class clazz) {
+        Forum forum = new Forum();
+        forum.setName(clazz.getName());
+        forum.setCode(clazz.getCode());
+        forum.setType(EForumType.CLASS);
+        Course course = clazz.getCourse();
+        if (course != null) {
+            Subject subject = course.getSubject();
+            forum.setSubject(subject);
+        }
+        List<Section> sections = clazz.getSections();
+        List<ForumLesson> forumLessons = new ArrayList<>();
+        for (Section section : sections) {
+            for (Module module : section.getModules()) {
+                if (module.getType().name().equals(EModuleType.LESSON.name())) {
+                    ForumLesson forumLesson = new ForumLesson();
+                    forumLesson.setLessonName(module.getName());
+                    forumLesson.setForum(forum);
+                    forumLessons.add(forumLesson);
+                }
+            }
+        }
+        forum.getForumLessons().addAll(forumLessons);
+        return forum;
     }
 }
