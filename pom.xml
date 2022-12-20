@@ -27,11 +27,11 @@
             <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.spothero.emailvalidator/EmailValidator -->
+
         <dependency>
-            <groupId>com.spothero.emailvalidator</groupId>
-            <artifactId>EmailValidator</artifactId>
-            <version>1.0.0</version>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jackson-provider</artifactId>
+            <version>3.0.10.Final</version>
         </dependency>
 
 

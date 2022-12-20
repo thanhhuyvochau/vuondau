@@ -3,7 +3,7 @@ package fpt.capstone.vuondau.entity.response;
 import fpt.capstone.vuondau.entity.common.EClassLevel;
 
 
-public class ClassTypeResponse {
+public class ClassLevelResponse {
     private Long id;
     private String name;
 
