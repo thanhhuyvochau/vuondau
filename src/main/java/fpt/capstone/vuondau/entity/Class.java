@@ -64,10 +64,8 @@ public class Class {
     @Column(name = "is_avtive")
     private boolean isActive;
 
-    @Column(name = "class_level")
-    @Enumerated(EnumType.STRING)
-    private EClassLevel classLevel;
-
+    @Column(name = "class_level_id")
+    private Long classLevel;
 
     @Column(name = "class_type")
     @Enumerated(EnumType.STRING)
@@ -88,9 +86,9 @@ public class Class {
     @OneToMany(mappedBy = "clazz", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Forum> forums = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(name = "image_id")
-    private Resource image;
+//    @ManyToOne
+//    @JoinColumn(name = "image_id")
+//    private Resource image;
     @OneToMany(mappedBy = "clazz", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections;
     @OneToMany(mappedBy = "clazz", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -110,14 +108,6 @@ public class Class {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public EClassType getClassType() {
-        return classType;
-    }
-
-    public void setClassType(EClassType classType) {
-        this.classType = classType;
     }
 
     public String getCode() {
@@ -152,14 +142,6 @@ public class Class {
         this.endDate = endDate;
     }
 
-//    public ClassType getClassType() {
-//        return classType;
-//    }
-//
-//    public void setClassType(ClassType classType) {
-//        this.classType = classType;
-//    }
-
     public Course getCourse() {
         return course;
     }
@@ -174,15 +156,6 @@ public class Class {
 
     public void setAccount(Account account) {
         this.account = account;
-    }
-
-
-    public EClassLevel getClassLevel() {
-        return classLevel;
-    }
-
-    public void setClassLevel(EClassLevel classLevel) {
-        this.classLevel = classLevel;
     }
 
     public List<StudentClass> getStudentClasses() {
@@ -201,6 +174,30 @@ public class Class {
         this.feedBacks = feedBacks;
     }
 
+    public Long getNumberStudent() {
+        return numberStudent;
+    }
+
+    public void setNumberStudent(Long numberStudent) {
+        this.numberStudent = numberStudent;
+    }
+
+    public Long getMaxNumberStudent() {
+        return maxNumberStudent;
+    }
+
+    public void setMaxNumberStudent(Long maxNumberStudent) {
+        this.maxNumberStudent = maxNumberStudent;
+    }
+
+    public Long getMinNumberStudent() {
+        return minNumberStudent;
+    }
+
+    public void setMinNumberStudent(Long minNumberStudent) {
+        this.minNumberStudent = minNumberStudent;
+    }
+
     public boolean isActive() {
         return isActive;
     }
@@ -209,13 +206,20 @@ public class Class {
         isActive = active;
     }
 
-
-    public Long getMaxNumberStudent() {
-        return maxNumberStudent;
+    public Long getClassLevel() {
+        return classLevel;
     }
 
-    public void setMaxNumberStudent(Long maxNumberStudent) {
-        this.maxNumberStudent = maxNumberStudent;
+    public void setClassLevel(Long classLevel) {
+        this.classLevel = classLevel;
+    }
+
+    public EClassType getClassType() {
+        return classType;
+    }
+
+    public void setClassType(EClassType classType) {
+        this.classType = classType;
     }
 
     public BigDecimal getUnitPrice() {
@@ -258,13 +262,7 @@ public class Class {
         this.forums = forums;
     }
 
-    public Resource getImage() {
-        return image;
-    }
 
-    public void setImage(Resource image) {
-        this.image = image;
-    }
 
     public List<Section> getSections() {
         return sections;
@@ -280,21 +278,5 @@ public class Class {
 
     public void setCandicates(List<ClassTeacherCandicate> candicates) {
         this.candicates = candicates;
-    }
-
-    public Long getMinNumberStudent() {
-        return minNumberStudent;
-    }
-
-    public void setMinNumberStudent(Long minNumberStudent) {
-        this.minNumberStudent = minNumberStudent;
-    }
-
-    public Long getNumberStudent() {
-        return numberStudent;
-    }
-
-    public void setNumberStudent(Long numberStudent) {
-        this.numberStudent = numberStudent;
     }
 }

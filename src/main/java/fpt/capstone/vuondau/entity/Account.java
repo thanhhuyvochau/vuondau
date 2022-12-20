@@ -26,44 +26,26 @@ public class Account {
     @Column(name = "password")
     private String password;
 
+//    @Column(name = "first_name")
+//    private String firstName;
+//    @Column(name = "last_name")
+//    private String lastName;
+//
+//    @Column(name = "email")
+//    private String email;
+
     @Column(name = "is_active")
     private Boolean isActive = false;
-
-
-    @Column(name = "first_name")
-    private String firstName;
-    @Column(name = "last_name")
-    private String lastName;
-
-    @Column(name = "email")
-    private String email;
-
-    @Column(name = "cv_url")
-    private String cvUrl;
-
-    @Column(name = "birthday")
-    private Instant birthday;
-
-    @Column(name = "introduce")
-    private String introduce;
-
-    @Column(name = "degree")
-    private EDegreeType degree;
-
-    @Column(name = "phone_number")
-    private String phoneNumber;
-
-    @Column(name = "gender")
-    @Enumerated(EnumType.STRING)
-    private EGenderType gender;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
     private Role role;
+
+    @OneToOne(mappedBy = "account", fetch = FetchType.LAZY)
+    private AccountDetail accountDetail;
+
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<Transaction> transactions = new ArrayList<>();
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TeacherCourse> teacherCourses;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudentClass> studentClasses;
@@ -74,21 +56,17 @@ public class Account {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Request> requests;
 
-
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<StudentAnswer> studentAnswers;
 
     @Column(name = "keycloak_id")
     private String keycloakId;
 
-
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<Question> questions = new ArrayList<>();
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToOne(mappedBy = "account", fetch = FetchType.LAZY)
-    private AccountDetail accountDetail;
 
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
     private List<InfoFindTutorAccount> infoFindTutorAccounts = new ArrayList<>();
@@ -97,22 +75,51 @@ public class Account {
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<FileAttachment> fileAttachments = new ArrayList<>();
 
-
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "avatar_id")
     private Resource resource;
 
 
+//    @Column(name = "first_name")
+//    private String firstName;
+//    @Column(name = "last_name")
+//    private String lastName;
+
+//    @Column(name = "email")
+//    private String email;
+//
+//    @Column(name = "cv_url")
+//    private String cvUrl;
+
+//    @Column(name = "birthday")
+//    private Instant birthday;
+//
+//    @Column(name = "introduce")
+//    private String introduce;
+//
+//    @Column(name = "degree")
+//    private EDegreeType degree;
+
+//    @Column(name = "phone_number")
+//    private String phoneNumber;
+//
+//    @Column(name = "gender")
+//    @Enumerated(EnumType.STRING)
+//    private EGenderType gender;
 
 
-    public EGenderType getGender() {
-        return gender;
-    }
+//    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<TeacherCourse> teacherCourses;
 
-    public void setGender(EGenderType gender) {
-        this.gender = gender;
-    }
+
+
+//    public EGenderType getGender() {
+//        return gender;
+//    }
+//
+//    public void setGender(EGenderType gender) {
+//        this.gender = gender;
+//    }
 
 
 
@@ -156,71 +163,94 @@ public class Account {
         this.infoFindTutorAccounts = infoFindTutorAccounts;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
+//    public String getFirstName() {
+//        return firstName;
+//    }
+//
+//    public void setFirstName(String firstName) {
+//        this.firstName = firstName;
+//    }
+//
+//    public String getLastName() {
+//        return lastName;
+//    }
+//
+//    public void setLastName(String lastName) {
+//        this.lastName = lastName;
+//    }
+//
+//    public Instant getBirthday() {
+//        return birthday;
+//    }
+//
+//    public void setBirthday(Instant birthday) {
+//        this.birthday = birthday;
+//    }
+//
+//    public String getEmail() {
+//        return email;
+//    }
+//
+//    public void setEmail(String email) {
+//        this.email = email;
+//    }
+//
+//    public String getCvUrl() {
+//        return cvUrl;
+//    }
+//
+//    public void setCvUrl(String cvUrl) {
+//        this.cvUrl = cvUrl;
+//    }
+//
+//    public String getIntroduce() {
+//        return introduce;
+//    }
+//
+//    public void setIntroduce(String introduce) {
+//        this.introduce = introduce;
+//    }
+//
+//    public EDegreeType getDegree() {
+//        return degree;
+//    }
+//
+//    public void setDegree(EDegreeType degree) {
+//        this.degree = degree;
+//    }
+//
+//    public String getPhoneNumber() {
+//        return phoneNumber;
+//    }
+//
+//    public void setPhoneNumber(String phoneNumber) {
+//        this.phoneNumber = phoneNumber;
+//    }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
 
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public Instant getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(Instant birthday) {
-        this.birthday = birthday;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getCvUrl() {
-        return cvUrl;
-    }
-
-    public void setCvUrl(String cvUrl) {
-        this.cvUrl = cvUrl;
-    }
-
-    public String getIntroduce() {
-        return introduce;
-    }
-
-    public void setIntroduce(String introduce) {
-        this.introduce = introduce;
-    }
-
-    public EDegreeType getDegree() {
-        return degree;
-    }
-
-    public void setDegree(EDegreeType degree) {
-        this.degree = degree;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-
+//    public String getFirstName() {
+//        return firstName;
+//    }
+//
+//    public void setFirstName(String firstName) {
+//        this.firstName = firstName;
+//    }
+//
+//    public String getLastName() {
+//        return lastName;
+//    }
+//
+//    public void setLastName(String lastName) {
+//        this.lastName = lastName;
+//    }
+//
+//    public String getEmail() {
+//        return email;
+//    }
+//
+//    public void setEmail(String email) {
+//        this.email = email;
+//    }
 
     public Role getRole() {
         return role;
@@ -230,13 +260,13 @@ public class Account {
         this.role = role;
     }
 
-    public List<TeacherCourse> getTeacherCourses() {
-        return teacherCourses;
-    }
-
-    public void setTeacherCourses(List<TeacherCourse> teacherCourses) {
-        this.teacherCourses = teacherCourses;
-    }
+//    public List<TeacherCourse> getTeacherCourses() {
+//        return teacherCourses;
+//    }
+//
+//    public void setTeacherCourses(List<TeacherCourse> teacherCourses) {
+//        this.teacherCourses = teacherCourses;
+//    }
 
     public List<StudentClass> getStudentClasses() {
         return studentClasses;
@@ -331,16 +361,18 @@ public class Account {
         this.fileAttachments = fileAttachments;
     }
 
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Account account = (Account) o;
-        return Objects.equals(id, account.id) && Objects.equals(username, account.username) && Objects.equals(password, account.password) && Objects.equals(isActive, account.isActive) && Objects.equals(firstName, account.firstName) && Objects.equals(lastName, account.lastName) && Objects.equals(email, account.email) && Objects.equals(cvUrl, account.cvUrl) && Objects.equals(birthday, account.birthday) && Objects.equals(introduce, account.introduce) && degree == account.degree && Objects.equals(phoneNumber, account.phoneNumber) && gender == account.gender && Objects.equals(role, account.role) && Objects.equals(transactions, account.transactions) && Objects.equals(teacherCourses, account.teacherCourses) && Objects.equals(studentClasses, account.studentClasses) && Objects.equals(teacherClass, account.teacherClass) && Objects.equals(requests, account.requests) && Objects.equals(studentAnswers, account.studentAnswers) && Objects.equals(keycloakId, account.keycloakId) && Objects.equals(questions, account.questions) && Objects.equals(comments, account.comments) && Objects.equals(accountDetail, account.accountDetail) && Objects.equals(infoFindTutorAccounts, account.infoFindTutorAccounts) && Objects.equals(fileAttachments, account.fileAttachments) && Objects.equals(resource, account.resource);
+        return Objects.equals(id, account.id) && Objects.equals(username, account.username) && Objects.equals(password, account.password) && Objects.equals(isActive, account.isActive) && Objects.equals(role, account.role) && Objects.equals(transactions, account.transactions)  && Objects.equals(studentClasses, account.studentClasses) && Objects.equals(teacherClass, account.teacherClass) && Objects.equals(requests, account.requests) && Objects.equals(studentAnswers, account.studentAnswers) && Objects.equals(keycloakId, account.keycloakId) && Objects.equals(questions, account.questions) && Objects.equals(comments, account.comments) && Objects.equals(accountDetail, account.accountDetail) && Objects.equals(infoFindTutorAccounts, account.infoFindTutorAccounts) && Objects.equals(fileAttachments, account.fileAttachments) && Objects.equals(resource, account.resource);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, password, isActive, firstName, lastName, email, cvUrl, birthday, introduce, degree, phoneNumber, gender, role, transactions, teacherCourses, studentClasses, teacherClass, requests, studentAnswers, keycloakId, questions, comments, accountDetail, infoFindTutorAccounts, fileAttachments, resource);
+        return Objects.hash(id, username, password, isActive,  role, transactions, studentClasses, teacherClass, requests, studentAnswers, keycloakId, questions, comments, accountDetail, infoFindTutorAccounts, fileAttachments, resource);
     }
 }

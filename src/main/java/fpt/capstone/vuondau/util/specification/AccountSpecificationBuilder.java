@@ -29,10 +29,8 @@ public class AccountSpecificationBuilder {
         }
 
         specifications.add((root, query, criteriaBuilder) -> {
-            Expression<String> lastName = root.get(Account_.lastName);
-            Expression<String> firstName = root.get(Account_.firstName);
             Expression<String> username = root.get(Account_.username);
-            Expression<String> stringExpression = SpecificationUtil.concat(criteriaBuilder, " ", lastName, firstName, username);
+            Expression<String> stringExpression = SpecificationUtil.concat(criteriaBuilder, " ",  username);
             return criteriaBuilder.like(stringExpression, '%' + q + '%');
         });
         return this;

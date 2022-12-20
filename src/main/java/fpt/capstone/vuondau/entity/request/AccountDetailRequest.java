@@ -17,10 +17,10 @@ public class AccountDetailRequest implements Serializable {
     private String lastName;
     private Instant birthDay;
 
-
     private String email;
 
     private String password;
+
     private String phone;
 
 
@@ -42,9 +42,6 @@ public class AccountDetailRequest implements Serializable {
 
     private List<Long> subjects ;
     private List<Long> classLevels ;
-
-
-
 
     public String getFirstName() {
         return firstName;
@@ -181,12 +178,4 @@ public class AccountDetailRequest implements Serializable {
     public void setClassLevels(List<Long> classLevels) {
         this.classLevels = classLevels;
     }
-
-//    public List<UploadAvatarRequest> getUploadFiles() {
-//        return uploadFiles;
-//    }
-//
-//    public void setUploadFiles(List<UploadAvatarRequest> uploadFiles) {
-//        this.uploadFiles = uploadFiles;
-//    }
 }

@@ -34,12 +34,12 @@ public class CourseSpecificationBuilder {
             Expression<String> courseName = root.get(Course_.NAME);
             Join<Course, TeacherCourse> teacherCourseJoin = root.join(Course_.teacherCourses, JoinType.INNER);
             Join<TeacherCourse, Account> teacherCourseAccountJoin = teacherCourseJoin.join(TeacherCourse_.ACCOUNT, JoinType.INNER);
-            Expression<String> lastName = teacherCourseAccountJoin.get(Account_.LAST_NAME);
-            Expression<String> firstName = teacherCourseAccountJoin.get(Account_.FIRST_NAME);
+//            Expression<String> lastName = teacherCourseAccountJoin.get(Account_.LAST_NAME);
+//            Expression<String> firstName = teacherCourseAccountJoin.get(Account_.FIRST_NAME);
             Join<Course, Subject> courseSubjectJoin = root.join(Course_.subject, JoinType.INNER);
             Expression<String> subject = courseSubjectJoin.get(Subject_.name);
 
-            Expression<String> stringExpression = SpecificationUtil.concat(criteriaBuilder, " " ,courseCode, courseName, lastName,firstName, subject);
+            Expression<String> stringExpression = SpecificationUtil.concat(criteriaBuilder, " " ,courseCode, courseName, subject);
             return criteriaBuilder.like(stringExpression, '%' + q + '%');
         });
 
