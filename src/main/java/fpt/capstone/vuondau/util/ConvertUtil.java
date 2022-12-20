@@ -49,13 +49,13 @@ public class ConvertUtil {
 
     public static AccountResponse doConvertEntityToResponse(Account account) {
         AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class, true);
-        EGenderType gender = account.getGender();
-        if (gender != null) {
-            GenderResponse genderResponse = new GenderResponse();
-            genderResponse.setCode(gender.name());
-            genderResponse.setName(gender.getLabel());
-            accountResponse.setGender(genderResponse);
-        }
+//        EGenderType gender = account.getGender();
+//        if (gender != null) {
+//            GenderResponse genderResponse = new GenderResponse();
+//            genderResponse.setCode(gender.name());
+//            genderResponse.setName(gender.getLabel());
+//            accountResponse.setGender(genderResponse);
+//        }
         RoleDto roleDto = doConvertEntityToResponse(account.getRole());
         accountResponse.setRole(roleDto);
         if (account.getResource() != null) {

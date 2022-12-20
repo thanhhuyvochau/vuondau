@@ -280,8 +280,8 @@ public class CourseServiceImpl implements ICourseService {
             teacherCourseDto.setTopicId(teacherCourse.getCourse().getId());
             teacherCourseDto.setIsAllowed(teacherCourse.getIsAllowed());
             teacherCourseDto.setTeacherId(teacherCourse.getAccount().getId());
-            teacherCourseDto.setFirstName(teacherCourse.getAccount().getFirstName());
-            teacherCourseDto.setLastName(teacherCourse.getAccount().getLastName());
+//            teacherCourseDto.setFirstName(teacherCourse.getAccount().getFirstName());
+//            teacherCourseDto.setLastName(teacherCourse.getAccount().getLastName());
             teacherCourseDtoList.add(teacherCourseDto);
         }).collect(Collectors.toList());
 
