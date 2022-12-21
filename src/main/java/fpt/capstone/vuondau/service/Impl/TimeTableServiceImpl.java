@@ -62,30 +62,9 @@ public class TimeTableServiceImpl implements ITimeTableService {
     }
 
 
-    private boolean checkDay(String one, String two) throws ParseException {
-
-        Instant datOne = Instant.parse(one);
-        String oneSubString = datOne.toString().substring(0, 10).replaceAll("-", " ");
 
 
-        Instant dayTwo = Instant.parse(two);
-        String twoSubString = dayTwo.toString().substring(0, 10).replaceAll("-", " ");
-
-
-        SimpleDateFormat myFormat = new SimpleDateFormat("yyyy MM dd");
-
-
-        Date dateOne = myFormat.parse(oneSubString);
-        Date dateTwo = myFormat.parse(twoSubString);
-        long check = dateOne.getTime() - dateTwo.getTime();
-        if (check > 0) {
-            return false;
-        }
-        return true;
-
-    }
-
-    public static Boolean getDatesBetweenUsingJava8(String startDate, java.time.DayOfWeek dow) throws ParseException {
+    public static Boolean getDatesBetweenUsingJava8(String startDate, java.time.DayOfWeek dow ) throws ParseException {
         Instant start = Instant.parse(startDate);
         String oneSubString = start.toString().substring(0, 10);
         LocalDate startLocalDate = LocalDate.parse(oneSubString);

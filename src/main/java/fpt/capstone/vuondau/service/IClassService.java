@@ -18,12 +18,13 @@ import fpt.capstone.vuondau.entity.response.*;
 import org.springframework.data.domain.Pageable;
 
 
+import java.text.ParseException;
 import java.util.List;
 
 public interface IClassService {
 
 
-    Boolean teacherRequestCreateClass(CreateClassRequest createClassRequest) throws JsonProcessingException;
+    Long teacherRequestCreateClass(CreateClassRequest createClassRequest) throws JsonProcessingException, ParseException;
 
     Boolean synchronizedClassToMoodle(MoodleCourseDataRequest moodleCourseDataRequest) throws JsonProcessingException;
 
