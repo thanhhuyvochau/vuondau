@@ -17,6 +17,13 @@ public class AccountDetailResponse {
 
     private Long id;
 
+    private Long accountId ;
+
+    private String userName ;
+
+    private Boolean isKeycloak ;
+
+
     private String firstName;
     private String lastName;
 
@@ -68,7 +75,7 @@ public class AccountDetailResponse {
 
     private  List<ResourceDto> resources;
 
-    private Long AccountId ;
+
 
     public Long getId() {
         return id;
@@ -217,10 +224,26 @@ public class AccountDetailResponse {
     }
 
     public Long getAccountId() {
-        return AccountId;
+        return accountId;
     }
 
     public void setAccountId(Long accountId) {
-        AccountId = accountId;
+        this.accountId = accountId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public Boolean getKeycloak() {
+        return isKeycloak;
+    }
+
+    public void setKeycloak(Boolean keycloak) {
+        isKeycloak = keycloak;
     }
 }

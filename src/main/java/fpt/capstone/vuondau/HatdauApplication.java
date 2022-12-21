@@ -18,24 +18,14 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAccessor;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static fpt.capstone.vuondau.entity.common.EAccountRole.STUDENT;
 import static fpt.capstone.vuondau.entity.common.EAccountRole.TEACHER;
 import static fpt.capstone.vuondau.entity.common.EResourceType.AVATAR;
 import static fpt.capstone.vuondau.entity.common.EResourceType.FILE;
 import static fpt.capstone.vuondau.entity.common.ESubjectCode.*;
-import static java.time.DayOfWeek.MONDAY;
-import static java.time.DayOfWeek.TUESDAY;
-import static java.time.temporal.ChronoUnit.DAYS;
 
 
 @SpringBootApplication
@@ -56,9 +46,7 @@ public class HatdauApplication {
 
     private final ClassRepository classRepository;
 
-    private final ClassTypeRepository classTypeRepository;
-
-    public HatdauApplication(RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository, MoodleCourseRepository moodleCourseRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ClassRepository classRepository, ClassTypeRepository classTypeRepository) {
+    public HatdauApplication(RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository, MoodleCourseRepository moodleCourseRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ClassRepository classRepository) {
         this.roleRepository = roleRepository;
         this.subjectRepository = subjectRepository;
         this.requestTypeRepository = requestTypeRepository;
@@ -66,41 +54,12 @@ public class HatdauApplication {
         this.slotRepository = slotRepository;
         this.dayOfWeekRepository = dayOfWeekRepository;
         this.classRepository = classRepository;
-        this.classTypeRepository = classTypeRepository;
     }
+
 
     public static void main(String[] args) throws ParseException {
 
         SpringApplication.run(HatdauApplication.class, args);
-//
-//        Instant start = Instant.parse("2022-12-20T04:29:08.293Z");
-//        String oneSubString = start.toString().substring(0, 10);
-//
-//
-//
-//        LocalDate startDate = LocalDate.parse(oneSubString);
-//        System.out.println(startDate);
-//
-//        LocalDate endDate = startDate.plusDays(7);
-//        System.out.println(endDate);
-//
-//        long numOfDaysBetween = ChronoUnit.DAYS.between(startDate, endDate);
-//        List<LocalDate> collectDay = IntStream.iterate(0, i -> i + 1)
-//                .limit(numOfDaysBetween)
-//                .mapToObj(startDate::plusDays)
-//                .collect(Collectors.toList());
-//        System.out.println(collectDay);
-//
-//        java.time.DayOfWeek tuesday = MONDAY;
-//
-//        for (LocalDate ld : collectDay) {
-//                java.time.DayOfWeek dayf = ld.getDayOfWeek();
-//                System.out.println(dayf);
-//                if (tuesday.equals(dayf)){
-//                    System.out.println("có ne");
-//                }
-//
-//            }
 
     }
 
@@ -589,55 +548,55 @@ public class HatdauApplication {
 
     }
 
-    @EventListener(ApplicationReadyEvent.class)
-    public void intiDataClasType() {
-
-        List<ClassType> all = classTypeRepository.findAll();
-        Boolean existClass10 = false;
-        Boolean existClass11 = false;
-        Boolean existClass12 = false;
-
-        for (ClassType classType : all) {
-            if (classType.getCode().equals(EClassLevel.TEN)) {
-                existClass10 = true;
-            }
-            if (classType.getCode().equals(EClassLevel.ELEVENT)) {
-                existClass11 = true;
-            }
-            if (classType.getCode().equals(EClassLevel.TWELFTH)) {
-                existClass12 = true;
-            }
-        }
-
-        List<ClassType> classTypeList = new ArrayList<>();
-        if (!existClass10) {
-            ClassType classType = new ClassType();
-            classType.setCode(EClassLevel.TEN);
-            classType.setName("Lớp 10");
-
-            classTypeList.add(classType);
-        }
-        if (!existClass11) {
-
-            ClassType classType = new ClassType();
-            classType.setCode(EClassLevel.ELEVENT);
-            classType.setName("Lớp 11");
-
-            classTypeList.add(classType);
-
-        }
-
-        if (!existClass12) {
-            ClassType classType = new ClassType();
-            classType.setCode(EClassLevel.TWELFTH);
-            classType.setName("Lớp 12");
-
-            classTypeList.add(classType);
-        }
-
-        classTypeRepository.saveAll(classTypeList);
-
-
-    }
+//    @EventListener(ApplicationReadyEvent.class)
+//    public void intiDataClasType() {
+//
+//        List<ClassType> all = classTypeRepository.findAll();
+//        Boolean existClass10 = false;
+//        Boolean existClass11 = false;
+//        Boolean existClass12 = false;
+//
+//        for (ClassType classType : all) {
+//            if (classType.getCode().equals(EClassLevel.TEN)) {
+//                existClass10 = true;
+//            }
+//            if (classType.getCode().equals(EClassLevel.ELEVENT)) {
+//                existClass11 = true;
+//            }
+//            if (classType.getCode().equals(EClassLevel.TWELFTH)) {
+//                existClass12 = true;
+//            }
+//        }
+//
+//        List<ClassType> classTypeList = new ArrayList<>();
+//        if (!existClass10) {
+//            ClassType classType = new ClassType();
+//            classType.setCode(EClassLevel.TEN);
+//            classType.setName("Lớp 10");
+//
+//            classTypeList.add(classType);
+//        }
+//        if (!existClass11) {
+//
+//            ClassType classType = new ClassType();
+//            classType.setCode(EClassLevel.ELEVENT);
+//            classType.setName("Lớp 11");
+//
+//            classTypeList.add(classType);
+//
+//        }
+//
+//        if (!existClass12) {
+//            ClassType classType = new ClassType();
+//            classType.setCode(EClassLevel.TWELFTH);
+//            classType.setName("Lớp 12");
+//
+//            classTypeList.add(classType);
+//        }
+//
+//        classTypeRepository.saveAll(classTypeList);
+//
+//
+//    }
 
 }

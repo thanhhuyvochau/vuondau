@@ -34,6 +34,8 @@ public class KeycloakUserUtil {
     }
 
     public Boolean create(Account account) {
+
+
         CredentialRepresentation credentialRepresentation = preparePasswordRepresentation(account.getPassword());
         UserRepresentation userRepresentation = prepareUserRepresentation(account, credentialRepresentation);
         RealmResource realmResource = keycloak.realm(realm);
@@ -65,9 +67,11 @@ public class KeycloakUserUtil {
         UserRepresentation userRepresentation = getUserRepresentation(account);
         return keycloakRealmUtil.getRealmReSource().users().get(userRepresentation.getId());
     }
+
     protected UsersResource getUsersResource() {
         return keycloakRealmUtil.getRealmReSource().users();
     }
+
     private CredentialRepresentation preparePasswordRepresentation(String password) {
         CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
         credentialRepresentation.setTemporary(false);
