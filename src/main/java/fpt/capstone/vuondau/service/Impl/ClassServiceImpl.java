@@ -430,7 +430,7 @@ public class ClassServiceImpl implements IClassService {
 
     @Override
     public ApiPage<ClassDto> getAllClass(Pageable pageable) {
-        Page<Class> classesPage = classRepository.findAll(pageable);
+        Page<Class> classesPage = classRepository.findAllByIsActiveIsTrue(pageable);
         return PageUtil.convert(classesPage.map(ConvertUtil::doConvertEntityToResponse));
     }
 
@@ -597,7 +597,7 @@ public class ClassServiceImpl implements IClassService {
                 classesPage = new PageImpl<>(classList, pageable, classList.size());
 
             } else if (role.getCode().equals(EAccountRole.TEACHER)) {
-                classesPage = classRepository.findAllByAccountAndActiveIsTrue(account, pageable);
+                classesPage = classRepository.findAllByAccountAndIsActiveIsTrue(account, pageable);
             }
         }
 
