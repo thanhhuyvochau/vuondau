@@ -36,7 +36,7 @@ public class AccountDetail {
     @Column(name = "domicile")
     private String domicile;
 
-    @Column(name = "teaching_province")
+    @Column(name = "province")
     private String teachingProvince;
 
     @Column(name = "voice")
@@ -50,7 +50,7 @@ public class AccountDetail {
     private String idCard;
 
 
-    @Column(name = "training_school_name")
+    @Column(name = "school_name")
     private String trainingSchoolName;
 
     @Column(name = "majors")
