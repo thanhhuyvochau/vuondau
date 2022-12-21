@@ -10,10 +10,7 @@ import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.*;
 import fpt.capstone.vuondau.entity.dto.*;
-import fpt.capstone.vuondau.entity.request.ClassCandicateRequest;
-import fpt.capstone.vuondau.entity.request.ClassSearchRequest;
-import fpt.capstone.vuondau.entity.request.CourseIdRequest;
-import fpt.capstone.vuondau.entity.request.CreateClassRequest;
+import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.*;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IClassService;
@@ -27,6 +24,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,6 +52,8 @@ public class ClassServiceImpl implements IClassService {
 
     private final SecurityUtil securityUtil;
 
+
+
     private final InfoFindTutorRepository infoFindTutorRepository;
     protected final ClassTeacherCandicateRepository classTeacherCandicateRepository;
 
@@ -74,7 +75,7 @@ public class ClassServiceImpl implements IClassService {
 
 
     @Override
-    public Boolean teacherRequestCreateClass(CreateClassRequest createClassRequest) throws JsonProcessingException {
+    public Long teacherRequestCreateClass(CreateClassRequest createClassRequest) throws JsonProcessingException, ParseException {
 
         Account teacher = securityUtil.getCurrentUser();
 
@@ -85,26 +86,51 @@ public class ClassServiceImpl implements IClassService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("class code da ton tai"));
         }
-        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+//        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
         clazz.setCode(createClassRequest.getCode());
+
+        Instant now = Instant.now() ;
+        if (!DayUtil.checkDate(now.toString()  , createClassRequest.getStartDate().toString() , 3) ){
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày hiện tại la 3 ngay"));
+        }
+
+        if (!DayUtil.checkDate( createClassRequest.getStartDate().toString()  , createClassRequest.getEndDate().toString() , 30) ){
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày kêt thúc lớp la 30 ngay"));
+        }
+
+
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
         clazz.setMinNumberStudent(createClassRequest.getMinNumberStudent());
-        ClassLevel classLevel = classLevelRepository.findByCode(createClassRequest.getClassLevel()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+        clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
+        ClassLevel classLevel = classLevelRepository.findByCode(createClassRequest.getClassLevel()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getClassLevel()));
         clazz.setClassLevel(classLevel.getId());
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
-        clazz.setStatus(EClassStatus.REQUESTING);
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
         clazz.setActive(false);
         clazz.setAccount(teacher);
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setUnitPrice(createClassRequest.getUnitPrice());
-        clazz.setCourse(course);
-        classRepository.save(clazz);
+//        clazz.setCourse(course);
+        Class save = classRepository.save(clazz);
 
 
-        return true;
+        return save.getId();
+    }
+
+    @Override
+    public Long teacherRequestCreateClassSubjectCourse(Long id, CreateClassSubjectRequest createClassRequest) {
+        Account teacher = securityUtil.getCurrentUser();
+        Class aClass = classRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
+
+        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+        aClass.setCourse(course);
+        Class save = classRepository.save(aClass);
+
+        return save.getId();
     }
 
     @Override
@@ -139,7 +165,7 @@ public class ClassServiceImpl implements IClassService {
         clazz.setActive(true);
         clazz.setStatus(EClassStatus.NOTSTART);
         Forum classForum = createClassForum(clazz);
-        clazz.getForums().add(classForum);
+        clazz.setForum(classForum);
         Class save = classRepository.save(clazz);
         S1CourseRequest s1CourseRequest = new S1CourseRequest();
         List<MoodleCourseDataRequest.MoodleCourseBody> moodleCourseBodyList = new ArrayList<>();
@@ -412,7 +438,7 @@ public class ClassServiceImpl implements IClassService {
 
     @Override
     public ApiPage<ClassDto> getAllClass(Pageable pageable) {
-        Page<Class> classesPage = classRepository.findAll(pageable);
+        Page<Class> classesPage = classRepository.findAllByIsActiveIsTrue(pageable);
         return PageUtil.convert(classesPage.map(ConvertUtil::doConvertEntityToResponse));
     }
 
@@ -573,11 +599,17 @@ public class ClassServiceImpl implements IClassService {
 
         if (role != null) {
             if (role.getCode().equals(EAccountRole.STUDENT)) {
-                List<Class> classList = account.getStudentClasses().stream().map(StudentClass::getaClass).collect(Collectors.toList());
+                List<Class> classList = account.getStudentClasses().stream().map(StudentClass::getaClass)
+                        .filter(Class::isActive)
+                        .collect(Collectors.toList());
                 classesPage = new PageImpl<>(classList, pageable, classList.size());
 
             } else if (role.getCode().equals(EAccountRole.TEACHER)) {
-                classesPage = classRepository.findAllByAccount(account, pageable);
+
+                classesPage = classRepository.findAllByAccountAndIsActiveIsTrue(account, pageable);
+
+                classesPage = classRepository.findAllByAccountAndActiveIsTrue(account, pageable);
+
             }
         }
 
@@ -887,6 +919,8 @@ public class ClassServiceImpl implements IClassService {
         }
         return classTeacherResponse;
     }
+
+
 
     @Override
     public ApiPage<ClassDto> getAllClassForUser(Pageable pageable, EClassStatus classStatus) {

@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -46,6 +47,8 @@ public class AccountServiceImpl implements IAccountService {
     private final RoleRepository roleRepository;
     private final Keycloak keycloak;
 
+    private final PasswordEncoder passwordEncoder;
+
     private final KeycloakUserUtil keycloakUserUtil;
     private final KeycloakRoleUtil keycloakRoleUtil;
 
@@ -63,11 +66,12 @@ public class AccountServiceImpl implements IAccountService {
     private final ClassLevelRepository classLevelRepository;
 
 
-    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository, MessageUtil messageUtil, RoleRepository roleRepository1, Keycloak keycloak, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, AccountDetailRepository accountDetailRepository, SecurityUtil securityUtil, SubjectRepository subjectRepository, ClassLevelRepository classLevelRepository) {
+    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository, MessageUtil messageUtil, RoleRepository roleRepository1, Keycloak keycloak, PasswordEncoder passwordEncoder, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, AccountDetailRepository accountDetailRepository, SecurityUtil securityUtil, SubjectRepository subjectRepository, ClassLevelRepository classLevelRepository) {
         this.accountRepository = accountRepository;
         this.messageUtil = messageUtil;
         this.roleRepository = roleRepository1;
         this.keycloak = keycloak;
+        this.passwordEncoder = passwordEncoder;
         this.keycloakUserUtil = keycloakUserUtil;
         this.keycloakRoleUtil = keycloakRoleUtil;
         this.minioAdapter = minioAdapter;
@@ -154,16 +158,19 @@ public class AccountServiceImpl implements IAccountService {
             throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage("Email không đúng định dạng. ");
         }
         account.setUsername(studentRequest.getEmail());
+        if (!PasswordUtil.validationPassword(studentRequest.getPassword()) || studentRequest.getPassword() == null){
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Mật khẩu phải có ít nhất một ký tự số, ký tự viết thường, ký tự viết hoa, ký hiệu đặc biệt trong số @#$% và độ dài phải từ 8 đến 20"));
+        }
         account.setPassword(studentRequest.getPassword());
-//        account.setLastName(studentRequest.getLastName());
-//        account.setFirstName(studentRequest.getFirstName());
-//        account.setEmail(studentRequest.getEmail());
+        account.setKeycloak(true);
         account.setActive(true);
         Role role = roleRepository.findRoleByCode(EAccountRole.STUDENT)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
         account.setRole(role);
 
         //set Account Profile
+
 
         AccountDetail accountDetail = new AccountDetail();
         accountDetail.setAccount(account);
@@ -176,6 +183,16 @@ public class AccountServiceImpl implements IAccountService {
         accountDetail.setFirstName(studentRequest.getFirstName());
         accountDetail.setLastName(studentRequest.getLastName());
         accountDetail.setCurrentAddress(studentRequest.getCurrentAddress());
+        accountDetail.setActive(true);
+
+        accountDetail.setPassword(passwordEncoder.encode(studentRequest.getPassword()));
+        accountDetail.setTrainingSchoolName(studentRequest.getSchoolName());
+
+        if (!PasswordUtil.validationPassword(studentRequest.getPassword()) || studentRequest.getPassword() == null){
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Mật khẩu phải có ít nhất một ký tự số, ký tự viết thường, ký tự viết hoa, ký hiệu đặc biệt trong số @#$% và độ dài phải từ 8 đến 20"));
+        }
+
 
         List<Long> subjects = studentRequest.getSubjects();
         List<AccountDetailSubject> accountDetailSubjectList = new ArrayList<>();
@@ -208,24 +225,22 @@ public class AccountServiceImpl implements IAccountService {
             accountDetailClassLevelList.add(accountDetailClassLevel);
         }
 
-
         accountDetail.setAccountDetailClassLevels(accountDetailClassLevelList);
-        accountDetail.setActive(true);
-
         account.setAccountDetail(accountDetail);
-        Account accountSave = accountRepository.save(account);
-
+        StudentResponse studentResponse = new StudentResponse();
         Boolean saveAccountSuccess = keycloakUserUtil.create(account);
         Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getCode().name(), account);
         if (saveAccountSuccess && assignRoleSuccess) {
-            StudentResponse studentResponse = new StudentResponse();
+            account.setPassword(passwordEncoder.encode(studentRequest.getPassword()));
+            Account accountSave = accountRepository.save(account);
             studentResponse.setId(accountSave.getId());
             studentResponse.setEmail(studentRequest.getEmail());
             studentResponse.setName(studentRequest.getFirstName() + " " + studentRequest.getLastName());
             return studentResponse;
         }
-        return null;
+        return studentResponse;
     }
+
 
 
     @Override

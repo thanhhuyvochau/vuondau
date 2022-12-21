@@ -14,10 +14,7 @@ import fpt.capstone.vuondau.entity.dto.ClassDetailDto;
 import fpt.capstone.vuondau.entity.dto.ClassDto;
 import fpt.capstone.vuondau.entity.dto.ClassStudentDto;
 import fpt.capstone.vuondau.entity.dto.StudentDto;
-import fpt.capstone.vuondau.entity.request.ClassCandicateRequest;
-import fpt.capstone.vuondau.entity.request.ClassSearchRequest;
-import fpt.capstone.vuondau.entity.request.CreateClassRequest;
-import fpt.capstone.vuondau.entity.request.SubjectSearchRequest;
+import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.*;
 import fpt.capstone.vuondau.service.IClassService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.List;
 
 @RestController
@@ -41,11 +39,17 @@ public class ClassController {
     }
 
 
-    @Operation(summary = "Giáo viên yêu cầu tạo class ( subject - course) chờ admin phê duyệt ")
+    @Operation(summary = "Giáo viên yêu cầu tạo class (class) chờ admin phê duyệt ")
     @PostMapping({"/teacher-request-create-class"})
-    public ResponseEntity<ApiResponse<Boolean>> teacherRequestCreateClass(@Nullable @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException {
+    public ResponseEntity<ApiResponse<Long>> teacherRequestCreateClass(@Nullable @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException, ParseException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClass(createClassRequest)));
 
+    }
+
+    @Operation(summary = "Giáo viên yêu cầu tạo class (class) chờ admin phê duyệt ")
+    @PostMapping({"/{id}/teacher-request-create-class-subject-course"})
+    public ResponseEntity<ApiResponse<Long>> teacherRequestCreateClassSubjectCourse(@PathVariable Long id ,@Nullable @RequestBody CreateClassSubjectRequest createClassRequest) throws JsonProcessingException, ParseException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClassSubjectCourse(id,createClassRequest)));
     }
 
     @Operation(summary = "lấy tất cả class chờ duyệt")

@@ -60,35 +60,6 @@ public class HatdauApplication {
     public static void main(String[] args) throws ParseException {
 
         SpringApplication.run(HatdauApplication.class, args);
-//
-//        Instant start = Instant.parse("2022-12-20T04:29:08.293Z");
-//        String oneSubString = start.toString().substring(0, 10);
-//
-//
-//
-//        LocalDate startDate = LocalDate.parse(oneSubString);
-//        System.out.println(startDate);
-//
-//        LocalDate endDate = startDate.plusDays(7);
-//        System.out.println(endDate);
-//
-//        long numOfDaysBetween = ChronoUnit.DAYS.between(startDate, endDate);
-//        List<LocalDate> collectDay = IntStream.iterate(0, i -> i + 1)
-//                .limit(numOfDaysBetween)
-//                .mapToObj(startDate::plusDays)
-//                .collect(Collectors.toList());
-//        System.out.println(collectDay);
-//
-//        java.time.DayOfWeek tuesday = MONDAY;
-//
-//        for (LocalDate ld : collectDay) {
-//                java.time.DayOfWeek dayf = ld.getDayOfWeek();
-//                System.out.println(dayf);
-//                if (tuesday.equals(dayf)){
-//                    System.out.println("có ne");
-//                }
-//
-//            }
 
     }
 

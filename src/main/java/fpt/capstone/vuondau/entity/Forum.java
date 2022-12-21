@@ -20,10 +20,10 @@ public class Forum {
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private EForumType type;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subject_id")
     private Subject subject;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id")
     private Class clazz;
 

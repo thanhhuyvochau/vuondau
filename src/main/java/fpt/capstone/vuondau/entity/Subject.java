@@ -22,8 +22,9 @@ public class Subject {
     private List<Course> courses;
     @Column(name = "moodle_category_id")
     private Long categoryMoodleId;
-    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Forum> forums = new ArrayList<>();
+
+    @OneToOne(mappedBy = "subject", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Forum forum;
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AccountDetailSubject> accountDetailSubjects;
@@ -80,12 +81,12 @@ public class Subject {
         this.accountDetailSubjects = accountDetailSubjects;
     }
 
-    public List<Forum> getForums() {
-        return forums;
+    public Forum getForum() {
+        return forum;
     }
 
-    public void setForums(List<Forum> forums) {
-        this.forums = forums;
+    public void setForum(Forum forum) {
+        this.forum = forum;
     }
 
     public List<InfoFindTutorSubject> getInfoFindTutorSubjects() {
@@ -101,13 +102,11 @@ public class Subject {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Subject subject = (Subject) o;
-        return Objects.equals(id, subject.id) && Objects.equals(name, subject.name) && code == subject.code && Objects.equals(courses, subject.courses) && Objects.equals(categoryMoodleId, subject.categoryMoodleId) && Objects.equals(forums, subject.forums);
+        return Objects.equals(id, subject.id) && Objects.equals(name, subject.name) && code == subject.code && Objects.equals(courses, subject.courses) && Objects.equals(categoryMoodleId, subject.categoryMoodleId) && Objects.equals(forum, subject.forum) && Objects.equals(accountDetailSubjects, subject.accountDetailSubjects) && Objects.equals(infoFindTutorSubjects, subject.infoFindTutorSubjects);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, code, courses, categoryMoodleId, forums);
+        return Objects.hash(id, name, code, courses, categoryMoodleId, forum, accountDetailSubjects, infoFindTutorSubjects);
     }
-
-
 }
