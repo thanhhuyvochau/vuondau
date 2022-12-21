@@ -30,11 +30,10 @@ public class PasswordUtil {
     }
 
     public static String BCryptPasswordEncoder(String password) {
-        int strength = 10;
-        BCryptPasswordEncoder bCryptPasswordEncoder =
-                new BCryptPasswordEncoder(strength, new SecureRandom());
-        String encodedPassword = bCryptPasswordEncoder.encode(password);
-        return encodedPassword;
+        org.springframework.security.crypto.password.PasswordEncoder encoder
+                = new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
+        String passwd = encoder.encode(password);
+        return passwd;
     }
 
 

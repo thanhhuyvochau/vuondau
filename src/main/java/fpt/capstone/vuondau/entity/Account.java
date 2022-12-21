@@ -59,8 +59,8 @@ public class Account {
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<StudentAnswer> studentAnswers;
 
-    @Column(name = "keycloak_id")
-    private String keycloakId;
+    @Column(name = "is_keycloak")
+    private Boolean isKeycloak;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<Question> questions = new ArrayList<>();
@@ -277,14 +277,13 @@ public class Account {
     }
 
 
-    public String getKeycloakId() {
-        return keycloakId;
+    public Boolean getKeycloak() {
+        return isKeycloak;
     }
 
-    public void setKeycloakId(String keycloakId) {
-        this.keycloakId = keycloakId;
+    public void setKeycloak(Boolean keycloak) {
+        isKeycloak = keycloak;
     }
-
 
     public List<Request> getRequests() {
         return requests;
@@ -368,11 +367,11 @@ public class Account {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Account account = (Account) o;
-        return Objects.equals(id, account.id) && Objects.equals(username, account.username) && Objects.equals(password, account.password) && Objects.equals(isActive, account.isActive) && Objects.equals(role, account.role) && Objects.equals(transactions, account.transactions)  && Objects.equals(studentClasses, account.studentClasses) && Objects.equals(teacherClass, account.teacherClass) && Objects.equals(requests, account.requests) && Objects.equals(studentAnswers, account.studentAnswers) && Objects.equals(keycloakId, account.keycloakId) && Objects.equals(questions, account.questions) && Objects.equals(comments, account.comments) && Objects.equals(accountDetail, account.accountDetail) && Objects.equals(infoFindTutorAccounts, account.infoFindTutorAccounts) && Objects.equals(fileAttachments, account.fileAttachments) && Objects.equals(resource, account.resource);
+        return Objects.equals(id, account.id) && Objects.equals(username, account.username) && Objects.equals(password, account.password) && Objects.equals(isActive, account.isActive) && Objects.equals(role, account.role) && Objects.equals(transactions, account.transactions)  && Objects.equals(studentClasses, account.studentClasses) && Objects.equals(teacherClass, account.teacherClass) && Objects.equals(requests, account.requests) && Objects.equals(studentAnswers, account.studentAnswers) && Objects.equals(questions, account.questions) && Objects.equals(comments, account.comments) && Objects.equals(accountDetail, account.accountDetail) && Objects.equals(infoFindTutorAccounts, account.infoFindTutorAccounts) && Objects.equals(fileAttachments, account.fileAttachments) && Objects.equals(resource, account.resource);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, password, isActive,  role, transactions, studentClasses, teacherClass, requests, studentAnswers, keycloakId, questions, comments, accountDetail, infoFindTutorAccounts, fileAttachments, resource);
+        return Objects.hash(id, username, password, isActive,  role, transactions, studentClasses, teacherClass, requests, studentAnswers, questions, comments, accountDetail, infoFindTutorAccounts, fileAttachments, resource);
     }
 }

@@ -20,15 +20,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -36,6 +35,8 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
     private final AccountRepository accountRepository;
 
     private final MessageUtil messageUtil;
+
+    private final PasswordEncoder passwordEncoder;
 
     private final AccountDetailRepository accountDetailRepository;
 
@@ -61,9 +62,10 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
     @Value("${minio.url}")
     String minioUrl;
 
-    public AccountDetailServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, AccountDetailRepository accountDetailRepository, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, RoleRepository roleRepository, SecurityUtil securityUtil, SubjectRepository subjectRepository, ClassLevelRepository classLevelRepository, SendMailServiceImplServiceImpl sendMailServiceImplService) {
+    public AccountDetailServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, PasswordEncoder passwordEncoder, AccountDetailRepository accountDetailRepository, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, RoleRepository roleRepository, SecurityUtil securityUtil, SubjectRepository subjectRepository, ClassLevelRepository classLevelRepository, SendMailServiceImplServiceImpl sendMailServiceImplService) {
         this.accountRepository = accountRepository;
         this.messageUtil = messageUtil;
+        this.passwordEncoder = passwordEncoder;
         this.accountDetailRepository = accountDetailRepository;
         this.keycloakUserUtil = keycloakUserUtil;
         this.keycloakRoleUtil = keycloakRoleUtil;
@@ -125,6 +127,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
             }
         }
 
+
         //Nguyên quán
         accountDetail.setDomicile(accountDetailRequest.getDomicile());
         accountDetail.setGender(accountDetailRequest.getGender());
@@ -137,6 +140,10 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         accountDetail.setIdCard(accountDetailRequest.getIdCard());
         accountDetail.setEmail(accountDetailRequest.getEmail());
         accountDetail.setPhone(accountDetailRequest.getPhone());
+        if (!PasswordUtil.validationPassword(accountDetailRequest.getPassword()) || accountDetailRequest.getPassword() == null){
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Mật khẩu phải có ít nhất một ký tự số, ký tự viết thường, ký tự viết hoa, ký hiệu đặc biệt trong số @#$% và độ dài phải từ 8 đến 20"));
+        }
         accountDetail.setPassword(accountDetailRequest.getPassword());
         // tên trươnng đh / cao đang đã học
         accountDetail.setTrainingSchoolName(accountDetailRequest.getTrainingSchoolName());
@@ -188,7 +195,16 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         accountDetail.setStatus(EAccountDetailStatus.REQUESTED);
         accountDetail.setActive(false);
 
+        Account account = new Account();
+        account.setUsername(accountDetailRequest.getEmail());
+        account.setActive(false);
+        account.setKeycloak(false);
+        account.setPassword(accountDetail.getPassword());
+        Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
+        account.setRole(role);
 
+        accountDetail.setAccount(account);
         AccountDetail save = accountDetailRepository.save(accountDetail);
 
 
@@ -265,8 +281,8 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
         try {
             String name = uploadImageRequest.getFile().getOriginalFilename() + "-" + Instant.now().toString();
-            ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name,  uploadImageRequest.getFile().getContentType(),
-                    uploadImageRequest.getFile().getInputStream(),  uploadImageRequest.getFile().getSize());
+            ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, uploadImageRequest.getFile().getContentType(),
+                    uploadImageRequest.getFile().getInputStream(), uploadImageRequest.getFile().getSize());
 
             Resource resource = new Resource();
             resource.setName(name);
@@ -291,7 +307,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         resourceList.forEach(resource -> {
             ResourceDto resourceDto = ObjectUtil.copyProperties(resource, new ResourceDto(), ResourceDto.class);
             resourceDto.setResourceType(resource.getResourceType());
-            resourceDtoList.add(resourceDto) ;
+            resourceDtoList.add(resourceDto);
         });
         return resourceDtoList;
     }
@@ -300,13 +316,17 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
     public List<EmailDto> approveRegisterAccount(List<Long> id) {
         List<EmailDto> mail = new ArrayList<>();
         List<AccountDetail> accountDetailList = new ArrayList<>();
-        List<AccountDetail> accountDetails = accountDetailRepository.findAllByIdInAndIsActiveIsFalse(id);
-        if (accountDetails != null) {
-            accountDetails.forEach(accountDetail -> {
+        List<Account> accounts = accountRepository.findAllByIdInAndIsActiveIsFalse(id);
+        if (accounts.size() == 0) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Không tìm thấy tài khoản để phê duyêt"));
+        }
+        accounts.forEach(account -> {
+            AccountDetail accountDetail = account.getAccountDetail();
+            if (accountDetail != null) {
                 EmailDto emailDto = new EmailDto();
 
-                accountDetail.setActive(true);
-                Account account = new Account();
+
                 if (accountDetail.getEmail() == null) {
                     throw ApiException.create(HttpStatus.BAD_REQUEST)
                             .withMessage(messageUtil.getLocalMessage("Không thể phê duyệt tài khoản vì không có email"));
@@ -315,37 +335,31 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
                     throw ApiException.create(HttpStatus.BAD_REQUEST)
                             .withMessage(messageUtil.getLocalMessage("Không thể phê duyệt tài khoản vì không có password"));
                 }
-                account.setUsername(accountDetail.getEmail());
-                account.setPassword(accountDetail.getPassword());
-                account.setActive(true);
-//                account.setLastName(accountDetail.getLastName());
-//                account.setFirstName(accountDetail.getFirstName());
-//                account.setEmail(accountDetail.getEmail());
 
-//                account.setGender(accountDetail.getGender());
-//                account.setPhoneNumber(accountDetail.getPhone());
+
                 Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay role"));
-
-                account.setRole(role);
-//                account.setBirthday(accountDetail.getBirthDay());
-                account.setAccountDetail(accountDetail);
-
-
                 Boolean saveAccountSuccess = keycloakUserUtil.create(account);
                 Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getCode().name(), account);
                 Account save = accountRepository.save(account);
 
+                account.setActive(true);
+                account.setPassword(passwordEncoder.encode(account.getPassword()));
+                account.setKeycloak(true);
 
+                accountDetail.setActive(true);
                 accountDetail.setStatus(EAccountDetailStatus.REQUESTED);
-                accountDetail.setAccount(account);
+                accountDetail.setPassword(passwordEncoder.encode(accountDetail.getPassword()));
+                accountDetail.setActive(true);
                 accountDetailList.add(accountDetail);
                 emailDto.setMail(accountDetail.getEmail());
                 emailDto.setName(accountDetail.getFirstName() + "" + accountDetail.getLastName());
                 emailDto.setPassword(accountDetail.getPassword());
 
                 mail.add(emailDto);
-            });
-        }
+
+            }
+        });
+
 
         sendMailServiceImplService.sendMail(mail);
         List<AccountDetail> accountDetailList1 = accountDetailRepository.saveAll(accountDetailList);
@@ -354,30 +368,46 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
     }
 
     @Override
-    public ApiPage<AccountDetailResponse> getRequestToActiveAccount( Boolean isActive , Pageable pageable) {
-        Page<AccountDetail> accountDetailPage = accountDetailRepository.findAllByIsActive(isActive,pageable);
+    public ApiPage<AccountDetailResponse> getRequestToActiveAccount(Boolean isActive, Pageable pageable) {
 
-        return PageUtil.convert(accountDetailPage.map(accountDetail -> {
-            AccountDetailResponse accountDetailResponse = ObjectUtil.copyProperties(accountDetail, new AccountDetailResponse(), AccountDetailResponse.class);
-            if (accountDetail.getAccount()!= null) {
+        Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
+
+        Page<Account> accountByRoleAndIsActiveIsFalse = null;
+        if (!isActive) {
+            accountByRoleAndIsActiveIsFalse = accountRepository.findAccountByRoleAndIsActiveIsFalse(pageable, role);
+        }
+        if (isActive) {
+            accountByRoleAndIsActiveIsFalse = accountRepository.findAccountByRoleAndIsActiveIsTrue(pageable, role);
+        }
+
+        return PageUtil.convert(accountByRoleAndIsActiveIsFalse.map(account -> {
+            if (account.getAccountDetail() != null) {
+                AccountDetail accountDetail = account.getAccountDetail();
+                AccountDetailResponse accountDetailResponse = ObjectUtil.copyProperties(accountDetail, new AccountDetailResponse(), AccountDetailResponse.class);
                 accountDetailResponse.setAccountId(accountDetail.getAccount().getId());
+                accountDetailResponse.setKeycloak(account.getKeycloak());
+                accountDetailResponse.setUserName(account.getUsername());
+                accountDetailResponse.setActive(account.getActive());
+                List<AccountDetailSubject> accountDetailSubjects = accountDetail.getAccountDetailSubjects();
+                List<SubjectDto> subjects = new ArrayList<>();
+                accountDetailSubjects.forEach(accountDetailSubject -> {
+                    subjects.add(ObjectUtil.copyProperties(accountDetailSubject.getSubject(), new SubjectDto(), SubjectDto.class));
+                });
+
+                accountDetailResponse.setSubjects(subjects);
+                List<ResourceDto> resourceDtoList = new ArrayList<>();
+                List<Resource> resources = accountDetail.getResources();
+                resources.forEach(resource -> {
+                    resourceDtoList.add(ObjectUtil.copyProperties(resource, new ResourceDto(), ResourceDto.class));
+                });
+
+                accountDetailResponse.setResources(resourceDtoList);
+                accountDetailResponse.setActive(accountDetail.getActive());
+                return accountDetailResponse;
             }
-            List<AccountDetailSubject> accountDetailSubjects = accountDetail.getAccountDetailSubjects();
-            List<SubjectDto> subjects = new ArrayList<>();
-            accountDetailSubjects.forEach(accountDetailSubject -> {
-                subjects.add(ObjectUtil.copyProperties(accountDetailSubject.getSubject(), new SubjectDto(), SubjectDto.class));
-            });
 
-            accountDetailResponse.setSubjects(subjects);
-            List<ResourceDto> resourceDtoList = new ArrayList<>();
-            List<Resource> resources = accountDetail.getResources();
-            resources.forEach(resource -> {
-                resourceDtoList.add(ObjectUtil.copyProperties(resource, new ResourceDto(), ResourceDto.class));
-            });
-
-            accountDetailResponse.setResources(resourceDtoList);
-            accountDetailResponse.setActive(accountDetail.getActive());
-            return accountDetailResponse;
+            return null;
         }));
 
     }
@@ -405,7 +435,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         accountDetailResponse.setResources(resourceDtoList);
 
         EGenderType gender = accountDetail.getGender();
-        if (gender!= null){
+        if (gender != null) {
             accountDetailResponse.setGender(gender.getLabel());
         }
 
