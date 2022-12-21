@@ -157,7 +157,7 @@ public class ClassServiceImpl implements IClassService {
         clazz.setActive(true);
         clazz.setStatus(EClassStatus.NOTSTART);
         Forum classForum = createClassForum(clazz);
-        clazz.getForums().add(classForum);
+        clazz.setForum(classForum);
         Class save = classRepository.save(clazz);
         S1CourseRequest s1CourseRequest = new S1CourseRequest();
         List<MoodleCourseDataRequest.MoodleCourseBody> moodleCourseBodyList = new ArrayList<>();
@@ -597,7 +597,11 @@ public class ClassServiceImpl implements IClassService {
                 classesPage = new PageImpl<>(classList, pageable, classList.size());
 
             } else if (role.getCode().equals(EAccountRole.TEACHER)) {
+
                 classesPage = classRepository.findAllByAccountAndIsActiveIsTrue(account, pageable);
+
+                classesPage = classRepository.findAllByAccountAndActiveIsTrue(account, pageable);
+
             }
         }
 
