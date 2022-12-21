@@ -1,7 +1,6 @@
 package fpt.capstone.vuondau.entity;
 
 
-import fpt.capstone.vuondau.entity.common.EClassLevel;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.common.EClassType;
 
@@ -83,8 +82,8 @@ public class Class {
     @Column(name = "resource_mooodle_id")
     private Long resourceMoodleId;
 
-    @OneToMany(mappedBy = "clazz", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Forum> forums = new ArrayList<>();
+    @OneToOne(mappedBy = "clazz", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Forum forum;
 
 //    @ManyToOne
 //    @JoinColumn(name = "image_id")
@@ -254,15 +253,13 @@ public class Class {
         this.resourceMoodleId = resourceMoodleId;
     }
 
-    public List<Forum> getForums() {
-        return forums;
+    public Forum getForum() {
+        return forum;
     }
 
-    public void setForums(List<Forum> forums) {
-        this.forums = forums;
+    public void setForum(Forum forums) {
+        this.forum = forums;
     }
-
-
 
     public List<Section> getSections() {
         return sections;

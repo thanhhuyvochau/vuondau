@@ -3,6 +3,7 @@ package fpt.capstone.vuondau.service;
 import fpt.capstone.vuondau.MoodleRepository.Response.MoodleSectionResponse;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.dto.ForumDto;
+import fpt.capstone.vuondau.entity.dto.SimpleForumDto;
 import org.springframework.data.domain.Pageable;
 
 public interface IForumService {
@@ -16,8 +17,8 @@ public interface IForumService {
 
     ForumDto getForumBySubject(Long subjectId);
 
-    ApiPage<ForumDto> getAllClassForums(Pageable pageable);
+    ApiPage<SimpleForumDto> getAllClassForums(Pageable pageable);
 
-    ApiPage<ForumDto> getAllSubjectForums(Pageable pageable);
+    ApiPage<SimpleForumDto> getAllSubjectForums(Pageable pageable);
 
 }
