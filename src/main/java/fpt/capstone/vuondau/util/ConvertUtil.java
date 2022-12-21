@@ -146,6 +146,20 @@ public class ConvertUtil {
         return forumDto;
     }
 
+    public static SimpleForumDto doConvertEntityToSimpleResponse(Forum forum) {
+        SimpleForumDto forumDto = ObjectUtil.copyProperties(forum, new SimpleForumDto(), SimpleForumDto.class, true);
+        if (forum.getType().name().equals(EForumType.CLASS.name())) {
+            Class clazz = forum.getaClazz();
+            forumDto.setClassName(clazz.getName());
+            forumDto.setClassCode(clazz.getCode());
+        } else {
+            Subject subject = forum.getSubject();
+            forumDto.setSubjectCode(subject.getCode().name());
+            forumDto.setSubjectName(subject.getName());
+        }
+        return forumDto;
+    }
+
     public static ClassDto doConvertEntityToResponse(Class aclass) {
         ClassDto classDto = ObjectUtil.copyProperties(aclass, new ClassDto(), ClassDto.class, true);
         Course course = aclass.getCourse();
