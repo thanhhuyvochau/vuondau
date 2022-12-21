@@ -48,18 +48,31 @@ public class ConvertUtil {
     }
 
     public static AccountResponse doConvertEntityToResponse(Account account) {
-        AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class, true);
-//        EGenderType gender = account.getGender();
-//        if (gender != null) {
-//            GenderResponse genderResponse = new GenderResponse();
-//            genderResponse.setCode(gender.name());
-//            genderResponse.setName(gender.getLabel());
-//            accountResponse.setGender(genderResponse);
-//        }
+        AccountResponse accountResponse = new AccountResponse() ;
+        accountResponse.setUsername(account.getUsername());
+
+
+
         RoleDto roleDto = doConvertEntityToResponse(account.getRole());
         accountResponse.setRole(roleDto);
         if (account.getResource() != null) {
             accountResponse.setAvatar(account.getResource().getUrl());
+        }
+
+        AccountDetail accountDetail = account.getAccountDetail();
+        if (accountDetail != null) {
+            EGenderType gender = accountDetail.getGender();
+            if (gender != null) {
+                GenderResponse genderResponse = new GenderResponse();
+                genderResponse.setCode(gender.name());
+                genderResponse.setName(gender.getLabel());
+                accountResponse.setGender(genderResponse);
+            }
+            accountResponse.setPhoneNumber(accountResponse.getPhoneNumber());
+            accountResponse.setBirthday(accountResponse.getBirthday());
+            accountResponse.setLastName(accountResponse.getLastName());
+            accountResponse.setFirstName(accountResponse.getFirstName());
+
         }
 
         return accountResponse;

@@ -69,6 +69,9 @@ public class AccountDetail {
     @Column(name = "is_active")
     private Boolean isActive;
 
+    @Column(name = "gender")
+    private EGenderType gender;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id")
     private Account account;
@@ -82,7 +85,7 @@ public class AccountDetail {
     @OneToMany(mappedBy = "accountDetail")
     private List<Resource> resources;
 
-    private EGenderType gender;
+
 
     public Long getId() {
         return id;

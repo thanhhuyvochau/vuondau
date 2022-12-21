@@ -102,15 +102,15 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 //        Account teacher = securityUtil.getCurrentUser();
 
         AccountDetail accountDetail = new AccountDetail();
-//
-//        if (accountRepository.existsAccountByEmail(accountDetailRequest.getEmail())
-//                || accountDetailRequest.getEmail() == null
-//                || accountDetailRepository.existsAccountByEmail(accountDetailRequest.getEmail())) {
-//            throw ApiException.create(HttpStatus.BAD_REQUEST)
-//                    .withMessage(messageUtil.getLocalMessage("Email đã có tà khoản trong hệ thống"));
-//        }
 
-        if (accountDetailRepository.existsAccountByEmail(accountDetailRequest.getPhone()) || accountDetailRequest.getPhone() == null) {
+        if (accountRepository.existsAccountByUsername(accountDetailRequest.getEmail())
+                || accountDetailRequest.getEmail() == null
+                || accountDetailRepository.existsAccountByEmail(accountDetailRequest.getEmail())) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Email đã có tà khoản trong hệ thống"));
+        }
+
+        if (accountDetailRepository.existsAccountDetailByPhone(accountDetailRequest.getPhone()) || accountDetailRequest.getPhone() == null) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Phone đã có tà khoản trong hệ thống"));
         }
