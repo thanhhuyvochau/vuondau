@@ -58,7 +58,7 @@ public class AccountProfileController {
     }
 
     @Operation(summary = "Admin phê duyệt request đăng ký giang dạy của giao vien")
-    @PostMapping("/{id}/approve-request-register-profile")
+    @PutMapping("/approve-request-register-profile")
     public ResponseEntity<List<EmailDto>> approveRegisterAccount(@RequestBody List<Long> id) {
         return ResponseEntity.ok(iAccountDetailService.approveRegisterAccount(id));
     }

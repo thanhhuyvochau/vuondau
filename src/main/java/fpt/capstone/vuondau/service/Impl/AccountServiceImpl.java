@@ -158,8 +158,12 @@ public class AccountServiceImpl implements IAccountService {
             throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage("Email không đúng định dạng. ");
         }
         account.setUsername(studentRequest.getEmail());
+        if (!PasswordUtil.validationPassword(studentRequest.getPassword()) || studentRequest.getPassword() == null){
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Mật khẩu phải có ít nhất một ký tự số, ký tự viết thường, ký tự viết hoa, ký hiệu đặc biệt trong số @#$% và độ dài phải từ 8 đến 20"));
+        }
         account.setPassword(studentRequest.getPassword());
-
+        account.setKeycloak(true);
         account.setActive(true);
         Role role = roleRepository.findRoleByCode(EAccountRole.STUDENT)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
@@ -180,9 +184,15 @@ public class AccountServiceImpl implements IAccountService {
         accountDetail.setLastName(studentRequest.getLastName());
         accountDetail.setCurrentAddress(studentRequest.getCurrentAddress());
         accountDetail.setActive(true);
-        accountDetail.setPassword(studentRequest.getPassword());
-        accountDetail.setTrainingSchoolName(studentRequest.getSchoolName());
+
         accountDetail.setPassword(passwordEncoder.encode(studentRequest.getPassword()));
+        accountDetail.setTrainingSchoolName(studentRequest.getSchoolName());
+
+        if (!PasswordUtil.validationPassword(studentRequest.getPassword()) || studentRequest.getPassword() == null){
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Mật khẩu phải có ít nhất một ký tự số, ký tự viết thường, ký tự viết hoa, ký hiệu đặc biệt trong số @#$% và độ dài phải từ 8 đến 20"));
+        }
+
 
         List<Long> subjects = studentRequest.getSubjects();
         List<AccountDetailSubject> accountDetailSubjectList = new ArrayList<>();
