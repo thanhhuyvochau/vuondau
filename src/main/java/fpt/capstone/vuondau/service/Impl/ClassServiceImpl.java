@@ -27,6 +27,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,6 +55,8 @@ public class ClassServiceImpl implements IClassService {
 
     private final SecurityUtil securityUtil;
 
+
+
     private final InfoFindTutorRepository infoFindTutorRepository;
     protected final ClassTeacherCandicateRepository classTeacherCandicateRepository;
 
@@ -74,7 +78,7 @@ public class ClassServiceImpl implements IClassService {
 
 
     @Override
-    public Boolean teacherRequestCreateClass(CreateClassRequest createClassRequest) throws JsonProcessingException {
+    public Long teacherRequestCreateClass(CreateClassRequest createClassRequest) throws JsonProcessingException, ParseException {
 
         Account teacher = securityUtil.getCurrentUser();
 
@@ -87,9 +91,23 @@ public class ClassServiceImpl implements IClassService {
         }
         Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
         clazz.setCode(createClassRequest.getCode());
+
+        Instant now = Instant.now() ;
+        if (!DayUtil.checkDate(now.toString()  , createClassRequest.getStartDate().toString() , 3) ){
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày hiện tại la 3 ngay"));
+        }
+
+        if (!DayUtil.checkDate( createClassRequest.getStartDate().toString()  , createClassRequest.getEndDate().toString() , 30) ){
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày kêt thúc lớp la 30 ngay"));
+        }
+
+
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
         clazz.setMinNumberStudent(createClassRequest.getMinNumberStudent());
+        clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
         ClassLevel classLevel = classLevelRepository.findByCode(createClassRequest.getClassLevel()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
         clazz.setClassLevel(classLevel.getId());
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
@@ -101,10 +119,10 @@ public class ClassServiceImpl implements IClassService {
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setUnitPrice(createClassRequest.getUnitPrice());
         clazz.setCourse(course);
-        classRepository.save(clazz);
+        Class save = classRepository.save(clazz);
 
 
-        return true;
+        return save.getId();
     }
 
     @Override
@@ -573,11 +591,13 @@ public class ClassServiceImpl implements IClassService {
 
         if (role != null) {
             if (role.getCode().equals(EAccountRole.STUDENT)) {
-                List<Class> classList = account.getStudentClasses().stream().map(StudentClass::getaClass).collect(Collectors.toList());
+                List<Class> classList = account.getStudentClasses().stream().map(StudentClass::getaClass)
+                        .filter(Class::isActive)
+                        .collect(Collectors.toList());
                 classesPage = new PageImpl<>(classList, pageable, classList.size());
 
             } else if (role.getCode().equals(EAccountRole.TEACHER)) {
-                classesPage = classRepository.findAllByAccount(account, pageable);
+                classesPage = classRepository.findAllByAccountAndActiveIsTrue(account, pageable);
             }
         }
 

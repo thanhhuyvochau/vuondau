@@ -28,6 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.List;
 
 @RestController
@@ -43,7 +44,7 @@ public class ClassController {
 
     @Operation(summary = "Giáo viên yêu cầu tạo class ( subject - course) chờ admin phê duyệt ")
     @PostMapping({"/teacher-request-create-class"})
-    public ResponseEntity<ApiResponse<Boolean>> teacherRequestCreateClass(@Nullable @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException {
+    public ResponseEntity<ApiResponse<Long>> teacherRequestCreateClass(@Nullable @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException, ParseException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClass(createClassRequest)));
 
     }
