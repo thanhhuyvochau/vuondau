@@ -46,7 +46,7 @@ public class ClassController {
 
     }
 
-    @Operation(summary = "Giáo viên yêu cầu tạo class (class) chờ admin phê duyệt ")
+    @Operation(summary = "Giáo viên yêu cầu tạo class (subject-course) chờ admin phê duyệt ")
     @PostMapping({"/{id}/teacher-request-create-class-subject-course"})
     public ResponseEntity<ApiResponse<Long>> teacherRequestCreateClassSubjectCourse(@PathVariable Long id ,@Nullable @RequestBody CreateClassSubjectRequest createClassRequest) throws JsonProcessingException, ParseException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClassSubjectCourse(id,createClassRequest)));
