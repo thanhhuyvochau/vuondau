@@ -14,6 +14,7 @@ public class Attendance {
     @GeneratedValue
     @Column(name = "id")
     private Long id;
+
     private StudentClassKey studentClassKeyId = new StudentClassKey();
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -21,7 +22,7 @@ public class Attendance {
     private TimeTable timeTable;
 
     @Column(name = "is_present")
-    private Boolean isPresent ;
+    private Boolean isPresent;
 
     public Long getId() {
         return id;
@@ -30,8 +31,6 @@ public class Attendance {
     public void setId(Long id) {
         this.id = id;
     }
-
-
 
     public TimeTable getTimeTable() {
         return timeTable;
@@ -47,5 +46,14 @@ public class Attendance {
 
     public void setPresent(Boolean present) {
         isPresent = present;
+    }
+
+
+    public StudentClassKey getStudentClassKeyId() {
+        return studentClassKeyId;
+    }
+
+    public void setStudentClassKeyId(StudentClassKey studentClassKeyId) {
+        this.studentClassKeyId = studentClassKeyId;
     }
 }

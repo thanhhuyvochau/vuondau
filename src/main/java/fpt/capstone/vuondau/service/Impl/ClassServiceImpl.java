@@ -101,8 +101,8 @@ public class ClassServiceImpl implements IClassService {
         }
 
 
-        clazz.setStartDate(createClassRequest.getStartDate());
-        clazz.setEndDate(createClassRequest.getEndDate());
+        clazz.setStartDate( DayUtil.convertDayInstant(createClassRequest.getStartDate()));
+        clazz.setEndDate(DayUtil.convertDayInstant(createClassRequest.getEndDate()));
         clazz.setMinNumberStudent(createClassRequest.getMinNumberStudent());
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
         ClassLevel classLevel = classLevelRepository.findByCode(createClassRequest.getClassLevel()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getClassLevel()));
@@ -608,7 +608,7 @@ public class ClassServiceImpl implements IClassService {
 
                 classesPage = classRepository.findAllByAccountAndIsActiveIsTrue(account, pageable);
 
-                classesPage = classRepository.findAllByAccountAndActiveIsTrue(account, pageable);
+//                classesPage = classRepository.findAllByAccountAndActiveIsTrue(account, pageable);
 
             }
         }

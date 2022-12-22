@@ -16,8 +16,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.http.HttpStatus;
 
+
+import java.sql.Timestamp;
 import java.text.ParseException;
+import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,6 +31,7 @@ import static fpt.capstone.vuondau.entity.common.EAccountRole.TEACHER;
 import static fpt.capstone.vuondau.entity.common.EResourceType.AVATAR;
 import static fpt.capstone.vuondau.entity.common.EResourceType.FILE;
 import static fpt.capstone.vuondau.entity.common.ESubjectCode.*;
+import static fpt.capstone.vuondau.util.DayUtil.getDatesBetweenUsingJava8;
 
 
 @SpringBootApplication
@@ -61,6 +67,15 @@ public class HatdauApplication {
 
         SpringApplication.run(HatdauApplication.class, args);
 
+
+        LocalDate date = LocalDate.now();
+        Instant instant = date.atStartOfDay().toInstant(ZoneOffset.UTC);
+        System.out.println(instant);
+        ZoneId zone = ZoneId.of("America/Edmonton");
+        LocalDate localDate = instant.atZone(zone).toLocalDate();
+        Instant instant1 = localDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
+        Instant plus = instant1.plus(7, ChronoUnit.HOURS);
+        System.out.println(plus);
     }
 
 
