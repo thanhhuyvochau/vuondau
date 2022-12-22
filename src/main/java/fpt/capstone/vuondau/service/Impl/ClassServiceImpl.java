@@ -10,10 +10,7 @@ import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.*;
 import fpt.capstone.vuondau.entity.dto.*;
-import fpt.capstone.vuondau.entity.request.ClassCandicateRequest;
-import fpt.capstone.vuondau.entity.request.ClassSearchRequest;
-import fpt.capstone.vuondau.entity.request.CourseIdRequest;
-import fpt.capstone.vuondau.entity.request.CreateClassRequest;
+import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.*;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IClassService;
@@ -89,7 +86,7 @@ public class ClassServiceImpl implements IClassService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("class code da ton tai"));
         }
-        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+//        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
         clazz.setCode(createClassRequest.getCode());
 
         Instant now = Instant.now() ;
@@ -108,19 +105,30 @@ public class ClassServiceImpl implements IClassService {
         clazz.setEndDate(createClassRequest.getEndDate());
         clazz.setMinNumberStudent(createClassRequest.getMinNumberStudent());
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
-        ClassLevel classLevel = classLevelRepository.findByCode(createClassRequest.getClassLevel()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+        ClassLevel classLevel = classLevelRepository.findByCode(createClassRequest.getClassLevel()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getClassLevel()));
         clazz.setClassLevel(classLevel.getId());
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
-        clazz.setStatus(EClassStatus.REQUESTING);
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
         clazz.setActive(false);
         clazz.setAccount(teacher);
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setUnitPrice(createClassRequest.getUnitPrice());
-        clazz.setCourse(course);
+//        clazz.setCourse(course);
         Class save = classRepository.save(clazz);
 
+
+        return save.getId();
+    }
+
+    @Override
+    public Long teacherRequestCreateClassSubjectCourse(Long id, CreateClassSubjectRequest createClassRequest) {
+        Account teacher = securityUtil.getCurrentUser();
+        Class aClass = classRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
+
+        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+        aClass.setCourse(course);
+        Class save = classRepository.save(aClass);
 
         return save.getId();
     }
@@ -911,6 +919,8 @@ public class ClassServiceImpl implements IClassService {
         }
         return classTeacherResponse;
     }
+
+
 
     @Override
     public ApiPage<ClassDto> getAllClassForUser(Pageable pageable, EClassStatus classStatus) {

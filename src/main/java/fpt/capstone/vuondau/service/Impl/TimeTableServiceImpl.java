@@ -6,6 +6,7 @@ import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
+import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.dto.*;
 import fpt.capstone.vuondau.entity.request.TimeTableRequest;
 import fpt.capstone.vuondau.entity.request.TimeTableSearchRequest;
@@ -180,7 +181,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
         }
         aClass.getTimeTables().clear();
         aClass.getTimeTables().addAll(timeTableList);
-
+        aClass.setStatus(EClassStatus.REQUESTING);
 
         classRepository.save(aClass);
 

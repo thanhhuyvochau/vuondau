@@ -26,6 +26,8 @@ public interface IClassService {
 
     Long teacherRequestCreateClass(CreateClassRequest createClassRequest) throws JsonProcessingException, ParseException;
 
+    Long teacherRequestCreateClassSubjectCourse(Long id, CreateClassSubjectRequest createClassRequest);
+
     Boolean synchronizedClassToMoodle(MoodleCourseDataRequest moodleCourseDataRequest) throws JsonProcessingException;
 
     ClassDto adminApproveRequestCreateClass(Long id) throws JsonProcessingException;
@@ -72,4 +74,6 @@ public interface IClassService {
     List<ClassTimeTableResponse> accountGetTimeTableOfClass(Long id);
 
     ClassTeacherResponse studentGetTeacherInfoOfClass(Long id);
+
+
 }
