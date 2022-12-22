@@ -48,7 +48,8 @@ public class ConvertUtil {
     }
 
     public static AccountResponse doConvertEntityToResponse(Account account) {
-        AccountResponse accountResponse = new AccountResponse() ;
+
+        AccountResponse accountResponse = new AccountResponse();
         accountResponse.setUsername(account.getUsername());
 
 
@@ -68,10 +69,21 @@ public class ConvertUtil {
                 genderResponse.setName(gender.getLabel());
                 accountResponse.setGender(genderResponse);
             }
-            accountResponse.setPhoneNumber(accountResponse.getPhoneNumber());
-            accountResponse.setBirthday(accountResponse.getBirthday());
-            accountResponse.setLastName(accountResponse.getLastName());
-            accountResponse.setFirstName(accountResponse.getFirstName());
+            accountResponse.setPhoneNumber(accountDetail.getPhone());
+            accountResponse.setBirthday(accountDetail.getBirthDay());
+            accountResponse.setLastName(accountDetail.getLastName());
+            accountResponse.setFirstName(accountDetail.getFirstName());
+            accountResponse.setDomicile(accountDetail.getDomicile());
+            accountResponse.setCurrentAddress(accountDetail.getCurrentAddress());
+            accountResponse.setIdCard(accountDetail.getIdCard());
+            accountResponse.setLevel(accountDetail.getLevel());
+            accountResponse.setSchoolName(accountDetail.getTrainingSchoolName());
+            accountResponse.setMajors(accountDetail.getMajors());
+            accountResponse.setActive(accountDetail.getActive());
+            accountResponse.setVoice(accountDetail.getVoice());
+            accountResponse.setStatus(accountDetail.getStatus());
+            accountResponse.setEmail(accountDetail.getEmail());
+            accountResponse.setProvince(accountDetail.getTeachingProvince());
 
         }
 

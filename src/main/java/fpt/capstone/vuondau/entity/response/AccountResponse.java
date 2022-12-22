@@ -1,7 +1,12 @@
 package fpt.capstone.vuondau.entity.response;
 
+import fpt.capstone.vuondau.entity.common.EAccountDetailStatus;
+import fpt.capstone.vuondau.entity.common.EGenderType;
 import fpt.capstone.vuondau.entity.dto.RoleDto;
 
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.time.Instant;
 
 public class AccountResponse {
@@ -20,6 +25,118 @@ public class AccountResponse {
     private RoleDto role;
     private GenderResponse gender;
     private String avatar;
+
+
+    private String domicile;
+
+
+    private String province;
+
+
+    private String voice;
+
+
+    private String currentAddress;
+
+
+
+    private String idCard;
+
+
+
+    private String schoolName;
+
+
+    private String majors;
+
+    private EAccountDetailStatus status;
+
+
+    private String level;
+
+
+    private String password;
+
+
+    public String getDomicile() {
+        return domicile;
+    }
+
+    public void setDomicile(String domicile) {
+        this.domicile = domicile;
+    }
+
+    public String getProvince() {
+        return province;
+    }
+
+    public void setProvince(String province) {
+        this.province = province;
+    }
+
+    public String getVoice() {
+        return voice;
+    }
+
+    public void setVoice(String voice) {
+        this.voice = voice;
+    }
+
+    public String getCurrentAddress() {
+        return currentAddress;
+    }
+
+    public void setCurrentAddress(String currentAddress) {
+        this.currentAddress = currentAddress;
+    }
+
+    public String getIdCard() {
+        return idCard;
+    }
+
+    public void setIdCard(String idCard) {
+        this.idCard = idCard;
+    }
+
+    public String getSchoolName() {
+        return schoolName;
+    }
+
+    public void setSchoolName(String schoolName) {
+        this.schoolName = schoolName;
+    }
+
+    public String getMajors() {
+        return majors;
+    }
+
+    public void setMajors(String majors) {
+        this.majors = majors;
+    }
+
+    public EAccountDetailStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(EAccountDetailStatus status) {
+        this.status = status;
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public String getAvatar() {
         return avatar;

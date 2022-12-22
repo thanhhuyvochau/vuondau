@@ -85,9 +85,6 @@ public class Class {
     @OneToOne(mappedBy = "clazz", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Forum forum;
 
-//    @ManyToOne
-//    @JoinColumn(name = "image_id")
-//    private Resource image;
     @OneToMany(mappedBy = "clazz", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections;
     @OneToMany(mappedBy = "clazz", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
