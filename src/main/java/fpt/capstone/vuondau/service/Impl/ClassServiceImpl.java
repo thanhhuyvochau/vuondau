@@ -10,10 +10,7 @@ import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.*;
 import fpt.capstone.vuondau.entity.dto.*;
-import fpt.capstone.vuondau.entity.request.ClassCandicateRequest;
-import fpt.capstone.vuondau.entity.request.ClassSearchRequest;
-import fpt.capstone.vuondau.entity.request.CourseIdRequest;
-import fpt.capstone.vuondau.entity.request.CreateClassRequest;
+import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.*;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IClassService;
@@ -27,6 +24,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,17 +45,20 @@ public class ClassServiceImpl implements IClassService {
 
     private final MoodleCourseRepository moodleCourseRepository;
 
-    private final ClassLevelRepository classLevelRepository ;
+    private final ClassLevelRepository classLevelRepository;
     private final CourseServiceImpl courseServiceImpl;
     private final StudentClassRepository studentClassRepository;
     private final MessageUtil messageUtil;
 
     private final SecurityUtil securityUtil;
 
+    private final AttendanceRepository attendanceRepository;
+
+
     private final InfoFindTutorRepository infoFindTutorRepository;
     protected final ClassTeacherCandicateRepository classTeacherCandicateRepository;
 
-    public ClassServiceImpl(RequestUtil requestUtil, AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, ClassLevelRepository classLevelRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil, SecurityUtil securityUtil, InfoFindTutorRepository infoFindTutorRepository, ClassTeacherCandicateRepository classTeacherCandicateRepository) {
+    public ClassServiceImpl(RequestUtil requestUtil, AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, ClassLevelRepository classLevelRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil, SecurityUtil securityUtil, AttendanceRepository attendanceRepository, InfoFindTutorRepository infoFindTutorRepository, ClassTeacherCandicateRepository classTeacherCandicateRepository) {
         this.requestUtil = requestUtil;
         this.accountRepository = accountRepository;
         this.subjectRepository = subjectRepository;
@@ -68,13 +70,14 @@ public class ClassServiceImpl implements IClassService {
         this.studentClassRepository = studentClassRepository;
         this.messageUtil = messageUtil;
         this.securityUtil = securityUtil;
+        this.attendanceRepository = attendanceRepository;
         this.infoFindTutorRepository = infoFindTutorRepository;
         this.classTeacherCandicateRepository = classTeacherCandicateRepository;
     }
 
 
     @Override
-    public Boolean teacherRequestCreateClass(CreateClassRequest createClassRequest) throws JsonProcessingException {
+    public Long teacherRequestCreateClass(TeacherCreateClassRequest createClassRequest) throws JsonProcessingException, ParseException {
 
         Account teacher = securityUtil.getCurrentUser();
 
@@ -85,26 +88,51 @@ public class ClassServiceImpl implements IClassService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("class code da ton tai"));
         }
-        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+//        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
         clazz.setCode(createClassRequest.getCode());
-        clazz.setStartDate(createClassRequest.getStartDate());
-        clazz.setEndDate(createClassRequest.getEndDate());
+
+        Instant now = Instant.now();
+        if (!DayUtil.checkDate(now.toString(), createClassRequest.getStartDate().toString(), 3)) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày hiện tại la 3 ngay"));
+        }
+
+        if (!DayUtil.checkDate(createClassRequest.getStartDate().toString(), createClassRequest.getEndDate().toString(), 30)) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày kêt thúc lớp la 30 ngay"));
+        }
+
+
+        clazz.setStartDate(DayUtil.convertDayInstant(createClassRequest.getStartDate()));
+        clazz.setEndDate(DayUtil.convertDayInstant(createClassRequest.getEndDate()));
         clazz.setMinNumberStudent(createClassRequest.getMinNumberStudent());
-        ClassLevel classLevel = classLevelRepository.findByCode(createClassRequest.getClassLevel()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+        clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
+        ClassLevel classLevel = classLevelRepository.findByCode(createClassRequest.getClassLevel()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getClassLevel()));
         clazz.setClassLevel(classLevel.getId());
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
-        clazz.setStatus(EClassStatus.REQUESTING);
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
         clazz.setActive(false);
         clazz.setAccount(teacher);
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setUnitPrice(createClassRequest.getUnitPrice());
-        clazz.setCourse(course);
-        classRepository.save(clazz);
+//        clazz.setCourse(course);
+        Class save = classRepository.save(clazz);
 
 
-        return true;
+        return save.getId();
+    }
+
+    @Override
+    public Long teacherRequestCreateClassSubjectCourse(Long id, CreateClassSubjectRequest createClassRequest) {
+        Account teacher = securityUtil.getCurrentUser();
+        Class aClass = classRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
+
+        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+        aClass.setCourse(course);
+        Class save = classRepository.save(aClass);
+
+        return save.getId();
     }
 
     @Override
@@ -412,7 +440,7 @@ public class ClassServiceImpl implements IClassService {
 
     @Override
     public ApiPage<ClassDto> getAllClass(Pageable pageable) {
-        Page<Class> classesPage = classRepository.findAll(pageable);
+        Page<Class> classesPage = classRepository.findAllByIsActiveIsTrue(pageable);
         return PageUtil.convert(classesPage.map(ConvertUtil::doConvertEntityToResponse));
     }
 
@@ -573,11 +601,17 @@ public class ClassServiceImpl implements IClassService {
 
         if (role != null) {
             if (role.getCode().equals(EAccountRole.STUDENT)) {
-                List<Class> classList = account.getStudentClasses().stream().map(StudentClass::getaClass).collect(Collectors.toList());
+                List<Class> classList = account.getStudentClasses().stream().map(StudentClass::getaClass)
+                        .filter(Class::isActive)
+                        .collect(Collectors.toList());
                 classesPage = new PageImpl<>(classList, pageable, classList.size());
 
             } else if (role.getCode().equals(EAccountRole.TEACHER)) {
-                classesPage = classRepository.findAllByAccount(account, pageable);
+
+                classesPage = classRepository.findAllByAccountAndIsActiveIsTrue(account, pageable);
+
+//                classesPage = classRepository.findAllByAccountAndActiveIsTrue(account, pageable);
+
             }
         }
 
@@ -872,6 +906,77 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
+    public ClassAttendanceResponse accountGetAttendanceOfClass(Long id) {
+        Account account = securityUtil.getCurrentUser();
+        Class aClass = findClassByRoleAccount(id);
+        StudentClassKey studentClassKey = new StudentClassKey();
+        studentClassKey.setStudentId(account.getId());
+        studentClassKey.setClassId(aClass.getId());
+        List<Attendance> attendanceList = null;
+        if (account.getRole().getCode().equals(EAccountRole.STUDENT)) {
+            attendanceList = attendanceRepository.findAllByStudentClassKeyId(studentClassKey);
+        } else if (account.getRole().getCode().equals(EAccountRole.TEACHER)) {
+//            List<Attendance> attendanceList = attendanceRepository.findAll(studentClassKey);
+            if (aClass.getAccount().getId().equals(account.getId())) {
+                if (aClass.getTimeTables() != null) {
+                    List<TimeTable> timeTables = aClass.getTimeTables();
+                    List<Long> idTimeTable = timeTables.stream().map(TimeTable::getId).collect(Collectors.toList());
+                    attendanceList = attendanceRepository.findAllByTimeTableIn(timeTables);
+                }
+
+            }
+        }
+
+
+        ClassAttendanceResponse classAttendanceResponse = new ClassAttendanceResponse();
+
+        classAttendanceResponse.setAccountId(account.getId());
+        classAttendanceResponse.setClassId(aClass.getId());
+
+        List<AttendanceDto> attendanceDtoList = new ArrayList<>();
+        attendanceList.forEach(attendance -> {
+            AttendanceDto attendanceDto = new AttendanceDto();
+            attendanceDto.setId(attendance.getId());
+            attendanceDto.setPresent(attendance.getPresent());
+
+            TimeTable timeTable = attendance.getTimeTable();
+            if (timeTable != null) {
+                attendanceDto.setDate(timeTable.getDate());
+                attendanceDto.setSlotNumber(timeTable.getSlotNumber());
+                ArchetypeTime archetypeTime = timeTable.getArchetypeTime();
+                if (archetypeTime != null) {
+                    if (archetypeTime.getSlot() != null) {
+                        attendanceDto.setSlotCode(archetypeTime.getSlot().getCode());
+                        attendanceDto.setSlotName(archetypeTime.getSlot().getName());
+                        Slot slot = archetypeTime.getSlot();
+                        attendanceDto.setStartTime(slot.getStartTime());
+                        attendanceDto.setEndTime(slot.getEndTime());
+                    }
+                    if (archetypeTime.getDayOfWeek() != null) {
+                        attendanceDto.setDowCode(archetypeTime.getDayOfWeek().getCode());
+                        attendanceDto.setDowName(archetypeTime.getDayOfWeek().getName());
+                    }
+
+                    Archetype archetype = archetypeTime.getArchetype();
+                    if (archetype != null) {
+                        attendanceDto.setArchetypeCode(archetype.getCode());
+                        attendanceDto.setArchetypeName(archetype.getName());
+                    }
+                }
+
+
+            }
+
+            attendanceDtoList.add(attendanceDto);
+
+        });
+        classAttendanceResponse.setAttendance(attendanceDtoList);
+        return classAttendanceResponse;
+
+    }
+
+
+    @Override
     public ClassTeacherResponse studentGetTeacherInfoOfClass(Long id) {
         Class aClass = findClassByRoleAccount(id);
         Account account = aClass.getAccount();
@@ -887,6 +992,7 @@ public class ClassServiceImpl implements IClassService {
         }
         return classTeacherResponse;
     }
+
 
     @Override
     public ApiPage<ClassDto> getAllClassForUser(Pageable pageable, EClassStatus classStatus) {

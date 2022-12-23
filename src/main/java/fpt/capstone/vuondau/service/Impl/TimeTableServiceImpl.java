@@ -6,6 +6,7 @@ import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
+import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.dto.*;
 import fpt.capstone.vuondau.entity.request.TimeTableRequest;
 import fpt.capstone.vuondau.entity.request.TimeTableSearchRequest;
@@ -20,13 +21,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.DayOfWeek;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+
+import static fpt.capstone.vuondau.util.DayUtil.getDatesBetweenUsingJava8;
 
 @Service
 public class TimeTableServiceImpl implements ITimeTableService {
@@ -43,73 +44,25 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
     private final MessageUtil messageUtil;
 
+    private final StudentClassRepository studentClassRepository;
+
     private final TimeTableRepository timeTableRepository;
 
     private final AccountRepository accountRepository;
 
     private final SecurityUtil SecurityUtil;
 
-    public TimeTableServiceImpl(ClassRepository classRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ArchetypeRepository archetypeRepository, ArchetypeTimeRepository archetypeTimeRepository, MessageUtil messageUtil, TimeTableRepository timeTableRepository, AccountRepository accountRepository, fpt.capstone.vuondau.util.SecurityUtil securityUtil) {
+    public TimeTableServiceImpl(ClassRepository classRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ArchetypeRepository archetypeRepository, ArchetypeTimeRepository archetypeTimeRepository, MessageUtil messageUtil, StudentClassRepository studentClassRepository, TimeTableRepository timeTableRepository, AccountRepository accountRepository, fpt.capstone.vuondau.util.SecurityUtil securityUtil) {
         this.classRepository = classRepository;
         this.slotRepository = slotRepository;
         this.dayOfWeekRepository = dayOfWeekRepository;
         this.archetypeRepository = archetypeRepository;
         this.archetypeTimeRepository = archetypeTimeRepository;
         this.messageUtil = messageUtil;
+        this.studentClassRepository = studentClassRepository;
         this.timeTableRepository = timeTableRepository;
         this.accountRepository = accountRepository;
         SecurityUtil = securityUtil;
-    }
-
-
-    private boolean checkDay(String one, String two) throws ParseException {
-
-        Instant datOne = Instant.parse(one);
-        String oneSubString = datOne.toString().substring(0, 10).replaceAll("-", " ");
-
-
-        Instant dayTwo = Instant.parse(two);
-        String twoSubString = dayTwo.toString().substring(0, 10).replaceAll("-", " ");
-
-
-        SimpleDateFormat myFormat = new SimpleDateFormat("yyyy MM dd");
-
-
-        Date dateOne = myFormat.parse(oneSubString);
-        Date dateTwo = myFormat.parse(twoSubString);
-        long check = dateOne.getTime() - dateTwo.getTime();
-        if (check > 0) {
-            return false;
-        }
-        return true;
-
-    }
-
-    public static Boolean getDatesBetweenUsingJava8(String startDate, java.time.DayOfWeek dow) throws ParseException {
-        Instant start = Instant.parse(startDate);
-        String oneSubString = start.toString().substring(0, 10);
-        LocalDate startLocalDate = LocalDate.parse(oneSubString);
-        LocalDate endDate = startLocalDate.plusDays(7);
-
-        // lấy tất cả ngày / thứ trong 1 tuần : tính từ ngày bắt dầu
-
-        long numOfDaysBetween = ChronoUnit.DAYS.between(startLocalDate, endDate);
-        List<LocalDate> collectDay = IntStream.iterate(0, i -> i + 1)
-                .limit(numOfDaysBetween)
-                .mapToObj(startLocalDate::plusDays)
-                .collect(Collectors.toList());
-
-        for (LocalDate ld : collectDay) {
-            java.time.DayOfWeek dayf = ld.getDayOfWeek();
-            System.out.println(dayf);
-            if (dow.equals(dayf)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return true;
-
     }
 
 
@@ -160,22 +113,64 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
         List<TimeTable> timeTableList = new ArrayList<>();
 
-        int slotNumber = 1;
+
         Instant startDate = aClass.getStartDate();
 
         Instant endDate = aClass.getEndDate();
 
+        // kiem tra slot va thu trùng nhau 
+        List<Integer> allSlotNumber = slotDows.stream().map(SlotDowDto::getSlotNumber).collect(Collectors.toList());
+        Set<Integer> items = new HashSet<>();
+        List<Integer> checkDuplicateSlotNumber = allSlotNumber.stream().filter(n -> !items.add(n)).collect(Collectors.toList());
+        if (checkDuplicateSlotNumber.size() > 0) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Slot number không thể trùng"));
+        }
 
-        for (SlotDowDto slotDowDto : slotDows) {
+        int slotNumber = 1;
+
+        List<Long> allDayOfWeek = slotDows.stream().map(SlotDowDto::getDayOfWeekId).collect(Collectors.toList());
+        Set<Long> itemDayOfWeek = new HashSet<>();
+        List<Long> checkDuplicateDayOfWeek = allDayOfWeek.stream().filter(n -> !itemDayOfWeek.add(n)).collect(Collectors.toList());
+        if (checkDuplicateDayOfWeek.size() > 0) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Thứ không thể trùng"));
+        }
+
+        List<TimeTable> timeTableList1 = setDateOfWeek(timeTableRequest.getSlotDow(), slotNumber, startDate, endDate, archetype, aClass, timeTableList);
+
+
+        aClass.getTimeTables().clear();
+        aClass.getTimeTables().addAll(timeTableList1);
+        aClass.setStatus(EClassStatus.REQUESTING);
+
+        classRepository.save(aClass);
+
+        return aClass.getId();
+    }
+
+    private List<TimeTable> setDateOfWeek(List<SlotDowDto> slotDowDtoList, int slotNumber, Instant startDate,
+                                          Instant endDate, Archetype archetype, Class aClass, List<TimeTable> timeTableList) throws ParseException {
+
+        List<Slot> slotList = slotRepository.findAll();
+        Map<Long, Slot> slotMap = HashMapUtil.convertSlotListToMap(slotList);
+
+        List<fpt.capstone.vuondau.entity.DayOfWeek> dayOfWeekList = dayOfWeekRepository.findAll();
+        Map<Long, fpt.capstone.vuondau.entity.DayOfWeek> dayOfWeekMap = HashMapUtil.convertDoWListToMap(dayOfWeekList);
+
+        Instant date = null;
+        for (SlotDowDto slotDowDto : slotDowDtoList) {
             fpt.capstone.vuondau.entity.DayOfWeek dayOfWeek = dayOfWeekMap.get(slotDowDto.getDayOfWeekId());
-
+            if (dayOfWeek == null) {
+                throw ApiException.create(HttpStatus.BAD_REQUEST)
+                        .withMessage(messageUtil.getLocalMessage("Không tìm thấy thứ "));
+            }
             Slot slot = null;
-            if (!getDatesBetweenUsingJava8(startDate.toString(), DayOfWeek.valueOf(dayOfWeek.getCode().name()))){
+            LocalDate datesBetweenUsingJava81 = getDatesBetweenUsingJava8(startDate.toString(), DayOfWeek.valueOf(dayOfWeek.getCode().name()));
+            if (datesBetweenUsingJava81 == null) {
                 throw ApiException.create(HttpStatus.BAD_REQUEST)
                         .withMessage(messageUtil.getLocalMessage("Khong tim thấy thứ trong tuần"));
             }
-
-            // Set  Archetype_Time
             {
                 slot = slotMap.get(slotDowDto.getSlotId());
             }
@@ -193,19 +188,43 @@ public class TimeTableServiceImpl implements ITimeTableService {
             timeTable.setSlotNumber(slotNumber);
             ++slotNumber;
 
+             date = datesBetweenUsingJava81.atStartOfDay().toInstant(ZoneOffset.UTC);
+            if (date != null) {
+                timeTable.setDate(DayUtil.convertDayInstant(date));
+            }
             timeTable.setClazz(aClass);
             timeTable.setArchetypeTime(archetypeTime);
-            timeTableList.add(timeTable);
 
 
+            List<StudentClass> studentClasses = aClass.getStudentClasses();
+            List<Account> students = studentClasses.stream().map(StudentClass::getAccount).collect(Collectors.toList());
+            List<Attendance> attendanceList = new ArrayList<>();
+            students.forEach(account -> {
+                Attendance attendance = new Attendance();
+                attendance.setTimeTable(timeTable);
+                StudentClassKey studentClassKey = new StudentClassKey();
+                studentClassKey.setClassId(aClass.getId());
+                studentClassKey.setStudentId(account.getId());
+                attendance.setStudentClassKeyId(studentClassKey);
+                attendanceList.add(attendance);
+            });
+            timeTable.setAttendances(attendanceList);
+            if (date != null) {
+                if (date.isAfter(endDate)) {
+                    return timeTableList;
+                }else {
+                    timeTableList.add(timeTable);
+                }
+            }
         }
-        aClass.getTimeTables().clear();
-        aClass.getTimeTables().addAll(timeTableList);
-
-
-        classRepository.save(aClass);
-
-        return aClass.getId();
+        if (date != null) {
+            if (date.isAfter(endDate)) {
+                return timeTableList;
+            } else {
+                setDateOfWeek(slotDowDtoList, slotNumber, startDate.plus(7, ChronoUnit.DAYS), endDate, archetype, aClass, timeTableList);
+            }
+        }
+        return timeTableList;
     }
 
     @Override
