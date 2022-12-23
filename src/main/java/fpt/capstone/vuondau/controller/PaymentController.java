@@ -29,23 +29,23 @@ public class PaymentController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<PaymentResponse>> getPayment(HttpServletRequest req, @RequestBody VpnPayRequest request) throws IOException {
-        return ResponseEntity.ok(ApiResponse.success(transactionService.startPayment(req, request)));
+    public ResponseEntity<ApiResponse<PaymentResponse>> getPayment(HttpServletRequest req, @RequestBody VpnPayRequest request, final Principal principal) throws IOException {
+        return ResponseEntity.ok(ApiResponse.success(transactionService.startPayment(req, request,principal)));
     }
 
 
     @GetMapping("/payment-result")
     public void executeAfterPayment(HttpServletRequest request) {
         Transaction transaction = transactionService.executeAfterPayment(request);
-        Account student = transaction.getAccount();
-        Boolean success = transaction.getSuccess();
-        ResponseEntity<ApiResponse<String>> response = null;
-        if (success) {
-            response = ResponseEntity.ok(ApiResponse.success("Thanh toán thành công"));
-        } else {
-            response = ResponseEntity.ok(ApiResponse.success("Thanh toán thất bại"));
-        }
-        simpMessagingTemplate.convertAndSendToUser(student.getUsername(), "/queue/payment-reply", response);
+//        Account student = transaction.getAccount();
+//        Boolean success = transaction.getSuccess();
+//        ResponseEntity<ApiResponse<String>> response = null;
+//        if (success) {
+//            response = ResponseEntity.ok(ApiResponse.success("Thanh toán thành công"));
+//        } else {
+//            response = ResponseEntity.ok(ApiResponse.success("Thanh toán thất bại"));
+//        }
+//        simpMessagingTemplate.convertAndSendToUser(student.getUsername(), "/queue/payment-reply", response);
     }
 
 

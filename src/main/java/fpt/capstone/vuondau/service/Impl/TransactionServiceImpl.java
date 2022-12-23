@@ -11,6 +11,7 @@ import fpt.capstone.vuondau.repository.ClassRepository;
 import fpt.capstone.vuondau.repository.TransactionRepository;
 import fpt.capstone.vuondau.service.ITransactionService;
 import fpt.capstone.vuondau.util.SecurityUtil;
+import fpt.capstone.vuondau.util.WebSocketUtil;
 import fpt.capstone.vuondau.util.vnpay.VnpConfig;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
@@ -32,16 +34,18 @@ public class TransactionServiceImpl implements ITransactionService {
     private final SecurityUtil securityUtil;
     private final TransactionRepository transactionRepository;
     private final ClassRepository classRepository;
+    private final WebSocketUtil webSocketUtil;
 
-    public TransactionServiceImpl(VnpConfig vnpConfig, SecurityUtil securityUtil, TransactionRepository transactionRepository, ClassRepository classRepository) {
+    public TransactionServiceImpl(VnpConfig vnpConfig, SecurityUtil securityUtil, TransactionRepository transactionRepository, ClassRepository classRepository, WebSocketUtil webSocketUtil) {
         this.vnpConfig = vnpConfig;
         this.securityUtil = securityUtil;
         this.transactionRepository = transactionRepository;
         this.classRepository = classRepository;
+        this.webSocketUtil = webSocketUtil;
     }
 
     @Override
-    public PaymentResponse startPayment(HttpServletRequest req, VpnPayRequest request) throws UnsupportedEncodingException {
+    public PaymentResponse startPayment(HttpServletRequest req, VpnPayRequest request, Principal principal) throws UnsupportedEncodingException {
         Class clazz = classRepository.findById(request.getClassId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
                         .withMessage("Class not found with id:" + request.getClassId()));
@@ -72,7 +76,7 @@ public class TransactionServiceImpl implements ITransactionService {
         transaction.setPaymentClass(clazz);
         transactionRepository.save(transaction);
         String vnp_TxnRef = transaction.getId().toString();
-        vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
+        vnp_Params.put("vnp_TxnRef", vnp_TxnRef + "&" + principal.getName());
         vnp_Params.put("vnp_OrderInfo", vnp_OrderInfo);
         vnp_Params.put("vnp_OrderType", orderType);
 
@@ -91,12 +95,12 @@ public class TransactionServiceImpl implements ITransactionService {
         //Add Params of 2.0.1 Version
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
         SimpleDateFormat formatterCheck = new SimpleDateFormat("dd-MM-yyyy");
-        System.out.println("EXPIRED:"+formatterCheck.format(cld.getTime()));
+        System.out.println("EXPIRED:" + formatterCheck.format(cld.getTime()));
         //Billing
         vnp_Params.put("vnp_Bill_Mobile", request.getTxt_billing_mobile());
         vnp_Params.put("vnp_Bill_Email", request.getTxt_billing_email());
         String fullName = (request.getTxt_billing_fullname()).trim();
-        if (fullName != null && !fullName.isEmpty()) {
+        if (!fullName.isEmpty()) {
             int idx = fullName.indexOf(' ');
             String firstName = fullName.substring(0, idx);
             String lastName = fullName.substring(fullName.lastIndexOf(' ') + 1);
@@ -156,7 +160,10 @@ public class TransactionServiceImpl implements ITransactionService {
         String transactionNo = request.getParameter("vnp_TransactionNo");
         String responseCode = request.getParameter("vnp_ResponseCode");
         String transactionStatus = request.getParameter("vnp_TransactionStatus");
-        String transactionId = request.getParameter("vnp_TxnRef");
+        String[] referenceValues = request.getParameter("vnp_TxnRef").split("&");
+
+        String transactionId = referenceValues[0];
+        String sessionId = referenceValues[1];
 
         Transaction transaction = transactionRepository
                 .findById(Long.valueOf(transactionId)).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
@@ -181,6 +188,11 @@ public class TransactionServiceImpl implements ITransactionService {
             transaction.setSuccess(false);
         }
         transactionRepository.save(transaction);
+        if (sessionId != null) {
+            String message = "";
+            message = transaction.getSuccess() ? "Thanh toán thành công" : "Thanh toán thất bại";
+            webSocketUtil.sendPrivateMessage(message, sessionId);
+        }
         return transaction;
     }
 }
