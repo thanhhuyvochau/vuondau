@@ -45,16 +45,16 @@ public class DayUtil {
 
     }
 
-    public static  Instant convertDayInstant (Instant day ) {
+    public static Instant convertDayInstant(String day) {
 
-        ZoneId zone = ZoneId.of("Asia/Ho_Chi_Minh");
-        LocalDate localDate = day.atZone(zone).toLocalDate();
-        Instant instant1 = localDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
-        return instant1.plus(2, ChronoUnit.HOURS);
 
+        String s = Instant.parse(day)
+                .truncatedTo(ChronoUnit.DAYS)
+                .toString();
+        return Instant.parse(s);
     }
 
-    public static Boolean checkDate(String one, String two , Integer plusDay ) throws ParseException {
+    public static Boolean checkDate(String one, String two, Integer plusDay) throws ParseException {
 
         Instant datOne = Instant.parse(one).plus(plusDay, ChronoUnit.DAYS);
         String oneSubString = datOne.toString().substring(0, 10).replaceAll("-", " ");
@@ -70,17 +70,17 @@ public class DayUtil {
         Date dateOne = myFormat.parse(oneSubString);
         Date dateTwo = myFormat.parse(twoSubString);
         long check = dateOne.getTime() - dateTwo.getTime();
-        if (check >= 0) {
+        if (check > 0) {
             return false;
         }
         return true;
 
     }
 
-    public static LocalDate getDatesBetweenUsingJava8(String startDate, java.time.DayOfWeek dow ) throws ParseException {
+    public static LocalDate getDatesBetweenUsingJava8(String startDate, java.time.DayOfWeek dow) throws ParseException {
         Instant start = Instant.parse(startDate);
         String oneSubString = start.toString().substring(0, 10);
-        LocalDate startLocalDate = LocalDate.parse(oneSubString) ;
+        LocalDate startLocalDate = LocalDate.parse(oneSubString);
         LocalDate endDate = startLocalDate.plusDays(8);
 
         // lấy tất cả ngày / thứ trong 1 tuần : tính từ ngày bắt dầu
@@ -91,7 +91,7 @@ public class DayUtil {
                 .mapToObj(startLocalDate::plusDays)
                 .collect(Collectors.toList());
 
-        for (LocalDate ld: collectDay) {
+        for (LocalDate ld : collectDay) {
             java.time.DayOfWeek dayf = ld.getDayOfWeek();
             System.out.println(dayf);
 
