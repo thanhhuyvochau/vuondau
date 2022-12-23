@@ -765,7 +765,7 @@ public class ClassServiceImpl implements IClassService {
 
     }
 
-    private Class findClassByRoleAccount(Long id) {
+    public Class findClassByRoleAccount(Long id) {
         Account account = securityUtil.getCurrentUser();
         Class aClass = null;
         Role role = account.getRole();
