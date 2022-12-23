@@ -91,7 +91,7 @@ public class ClassServiceImpl implements IClassService {
 //        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
         clazz.setCode(createClassRequest.getCode());
 
-        Instant now = Instant.now();
+        Instant now = DayUtil.convertDayInstant(Instant.now().toString() ) ;
         if (!DayUtil.checkDate(now.toString(), createClassRequest.getStartDate().toString(), 3)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày hiện tại la 3 ngay"));
@@ -103,22 +103,18 @@ public class ClassServiceImpl implements IClassService {
         }
 
 
-        clazz.setStartDate(DayUtil.convertDayInstant(createClassRequest.getStartDate()));
-        clazz.setEndDate(DayUtil.convertDayInstant(createClassRequest.getEndDate()));
+        clazz.setStartDate(DayUtil.convertDayInstant(createClassRequest.getStartDate().toString()));
+        clazz.setEndDate(DayUtil.convertDayInstant(createClassRequest.getEndDate().toString()));
         clazz.setMinNumberStudent(createClassRequest.getMinNumberStudent());
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
         ClassLevel classLevel = classLevelRepository.findByCode(createClassRequest.getClassLevel()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getClassLevel()));
         clazz.setClassLevel(classLevel.getId());
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
-        clazz.setStartDate(createClassRequest.getStartDate());
-        clazz.setEndDate(createClassRequest.getEndDate());
         clazz.setActive(false);
         clazz.setAccount(teacher);
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setUnitPrice(createClassRequest.getUnitPrice());
-//        clazz.setCourse(course);
         Class save = classRepository.save(clazz);
-
 
         return save.getId();
     }
@@ -869,16 +865,22 @@ public class ClassServiceImpl implements IClassService {
     @Override
     public List<ClassTimeTableResponse> accountGetTimeTableOfClass(Long id) {
         Class aClass = findClassByRoleAccount(id);
+        Account account = securityUtil.getCurrentUser();
+
 
         List<TimeTable> timeTables = aClass.getTimeTables();
 
         List<ClassTimeTableResponse> classTimeTableResponseList = new ArrayList<>();
+
+
 
         timeTables.forEach(timeTable -> {
             ClassTimeTableResponse classTimeTableResponse = new ClassTimeTableResponse();
             classTimeTableResponse.setId(timeTable.getId());
             classTimeTableResponse.setDate(timeTable.getDate());
             classTimeTableResponse.setSlotNumber(timeTable.getSlotNumber());
+
+
             ArchetypeTime archetypeTime = timeTable.getArchetypeTime();
             if (archetypeTime != null) {
                 Archetype archetype = archetypeTime.getArchetype();
@@ -916,11 +918,9 @@ public class ClassServiceImpl implements IClassService {
         if (account.getRole().getCode().equals(EAccountRole.STUDENT)) {
             attendanceList = attendanceRepository.findAllByStudentClassKeyId(studentClassKey);
         } else if (account.getRole().getCode().equals(EAccountRole.TEACHER)) {
-//            List<Attendance> attendanceList = attendanceRepository.findAll(studentClassKey);
             if (aClass.getAccount().getId().equals(account.getId())) {
                 if (aClass.getTimeTables() != null) {
                     List<TimeTable> timeTables = aClass.getTimeTables();
-                    List<Long> idTimeTable = timeTables.stream().map(TimeTable::getId).collect(Collectors.toList());
                     attendanceList = attendanceRepository.findAllByTimeTableIn(timeTables);
                 }
 
@@ -941,6 +941,7 @@ public class ClassServiceImpl implements IClassService {
 
             TimeTable timeTable = attendance.getTimeTable();
             if (timeTable != null) {
+                attendanceDto.setTimeTableId(timeTable.getId());
                 attendanceDto.setDate(timeTable.getDate());
                 attendanceDto.setSlotNumber(timeTable.getSlotNumber());
                 ArchetypeTime archetypeTime = timeTable.getArchetypeTime();

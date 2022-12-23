@@ -184,13 +184,13 @@ public class ClassController {
         return ResponseEntity.ok(ApiResponse.success(iClassService.accountGetStudentOfClass(id, pageable)));
     }
 
-    @Operation(summary = "giao vien/ học sinh xem chi tiết  thời khoá biểu của lớp")
-    @GetMapping("/{id}/timetable")
-    public ResponseEntity<ApiResponse<List<ClassTimeTableResponse>>> accountGetTimeTableOfClass(@PathVariable Long id) throws JsonProcessingException {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.accountGetTimeTableOfClass(id)));
-    }
+//    @Operation(summary = "giao vien/ học sinh xem chi tiết  thời khoá biểu của lớp")
+//    @GetMapping("/{id}/timetable")
+//    public ResponseEntity<ApiResponse<List<ClassTimeTableResponse>>> accountGetTimeTableOfClass(@PathVariable Long id) throws JsonProcessingException {
+//        return ResponseEntity.ok(ApiResponse.success(iClassService.accountGetTimeTableOfClass(id)));
+//    }
 
-    @Operation(summary = "giao vien/ học sinh xem chi tiết  điểm danh của môt lớp")
+    @Operation(summary = "giao vien/ học sinh xem thời khoá biểu/điểm danh của môt lớp")
     @GetMapping("/{id}/attendance")
     public ResponseEntity<ApiResponse<ClassAttendanceResponse>> accountGetAttendanceOfClass(@PathVariable Long id) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.accountGetAttendanceOfClass(id)));

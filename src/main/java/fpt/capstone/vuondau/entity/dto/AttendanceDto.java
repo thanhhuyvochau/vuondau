@@ -20,7 +20,7 @@ public class AttendanceDto {
     private String slotName  ;
     private String startTime  ;
     private String endTime  ;
-
+    private Long timeTableId;
     private String dowName;
     private EDayOfWeekCode dowCode ;
 
@@ -46,6 +46,14 @@ public class AttendanceDto {
 
     public void setDate(Instant date) {
         this.date = date;
+    }
+
+    public Long getTimeTableId() {
+        return timeTableId;
+    }
+
+    public void setTimeTableId(Long timeTableId) {
+        this.timeTableId = timeTableId;
     }
 
     public int getSlotNumber() {
