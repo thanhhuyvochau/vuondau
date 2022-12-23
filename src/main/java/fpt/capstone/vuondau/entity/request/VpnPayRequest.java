@@ -4,17 +4,17 @@ public class VpnPayRequest {
     private String vnp_OrderInfo;
     private String ordertype;
     private String amount;
-    private String txt_billing_mobile = "0934998386";
-    private String txt_billing_email = "xonv@vnpay.vn";
-    private String txt_billing_fullname = "NGUYEN VAN XO";
-    private String txt_inv_addr1 = "22 Lang Ha Dong Da Ha Noi";
-    private String txt_bill_city = "Ha Noi";
-    private String txt_bill_country = "VN";
-    private String txt_inv_mobile = "02437764668";
-    private String txt_inv_email = "xonv@vnpay.vn";
-    private String txt_inv_customer = "Nguyen Van A";
-    private String txt_inv_taxcode = "0102182292";
-    private String cbo_inv_type = "I";
+    private String txt_billing_mobile;
+    private String txt_billing_email;
+    private String txt_billing_fullname;
+    private String txt_inv_addr1;
+    private String txt_bill_city;
+    private String txt_bill_country;
+    private String txt_inv_mobile;
+    private String txt_inv_email;
+    private String txt_inv_customer;
+    private String txt_inv_taxcode;
+    private String cbo_inv_type;
 
     private Long classId;
 
