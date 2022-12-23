@@ -6,9 +6,10 @@ import fpt.capstone.vuondau.entity.response.PaymentResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
+import java.security.Principal;
 
 public interface ITransactionService {
-    PaymentResponse startPayment(HttpServletRequest req, VpnPayRequest request) throws UnsupportedEncodingException;
+    PaymentResponse startPayment(HttpServletRequest req, VpnPayRequest request, Principal principal) throws UnsupportedEncodingException;
 
     Transaction executeAfterPayment(HttpServletRequest request);
 }

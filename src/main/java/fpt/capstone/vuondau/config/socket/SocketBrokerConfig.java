@@ -20,13 +20,14 @@ public class SocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry
-                .addEndpoint("/vuondau-socket")
+                .addEndpoint("/websocket").setAllowedOriginPatterns("*")
+//                .setHandshakeHandler(new ClientHandshakeHandler())
                 .withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic/", "/queue/");
-        registry.setApplicationDestinationPrefixes("/app");
+        registry.enableSimpleBroker("/topic", "/queue");
+        registry.setApplicationDestinationPrefixes("/ws");
     }
 }
