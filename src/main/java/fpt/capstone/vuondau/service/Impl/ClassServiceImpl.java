@@ -45,19 +45,20 @@ public class ClassServiceImpl implements IClassService {
 
     private final MoodleCourseRepository moodleCourseRepository;
 
-    private final ClassLevelRepository classLevelRepository ;
+    private final ClassLevelRepository classLevelRepository;
     private final CourseServiceImpl courseServiceImpl;
     private final StudentClassRepository studentClassRepository;
     private final MessageUtil messageUtil;
 
     private final SecurityUtil securityUtil;
 
+    private final AttendanceRepository attendanceRepository;
 
 
     private final InfoFindTutorRepository infoFindTutorRepository;
     protected final ClassTeacherCandicateRepository classTeacherCandicateRepository;
 
-    public ClassServiceImpl(RequestUtil requestUtil, AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, ClassLevelRepository classLevelRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil, SecurityUtil securityUtil, InfoFindTutorRepository infoFindTutorRepository, ClassTeacherCandicateRepository classTeacherCandicateRepository) {
+    public ClassServiceImpl(RequestUtil requestUtil, AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, ClassLevelRepository classLevelRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil, SecurityUtil securityUtil, AttendanceRepository attendanceRepository, InfoFindTutorRepository infoFindTutorRepository, ClassTeacherCandicateRepository classTeacherCandicateRepository) {
         this.requestUtil = requestUtil;
         this.accountRepository = accountRepository;
         this.subjectRepository = subjectRepository;
@@ -69,13 +70,14 @@ public class ClassServiceImpl implements IClassService {
         this.studentClassRepository = studentClassRepository;
         this.messageUtil = messageUtil;
         this.securityUtil = securityUtil;
+        this.attendanceRepository = attendanceRepository;
         this.infoFindTutorRepository = infoFindTutorRepository;
         this.classTeacherCandicateRepository = classTeacherCandicateRepository;
     }
 
 
     @Override
-    public Long teacherRequestCreateClass(CreateClassRequest createClassRequest) throws JsonProcessingException, ParseException {
+    public Long teacherRequestCreateClass(TeacherCreateClassRequest createClassRequest) throws JsonProcessingException, ParseException {
 
         Account teacher = securityUtil.getCurrentUser();
 
@@ -89,19 +91,19 @@ public class ClassServiceImpl implements IClassService {
 //        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
         clazz.setCode(createClassRequest.getCode());
 
-        Instant now = Instant.now() ;
-        if (!DayUtil.checkDate(now.toString()  , createClassRequest.getStartDate().toString() , 3) ){
+        Instant now = Instant.now();
+        if (!DayUtil.checkDate(now.toString(), createClassRequest.getStartDate().toString(), 3)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày hiện tại la 3 ngay"));
         }
 
-        if (!DayUtil.checkDate( createClassRequest.getStartDate().toString()  , createClassRequest.getEndDate().toString() , 30) ){
+        if (!DayUtil.checkDate(createClassRequest.getStartDate().toString(), createClassRequest.getEndDate().toString(), 30)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày kêt thúc lớp la 30 ngay"));
         }
 
 
-        clazz.setStartDate( DayUtil.convertDayInstant(createClassRequest.getStartDate()));
+        clazz.setStartDate(DayUtil.convertDayInstant(createClassRequest.getStartDate()));
         clazz.setEndDate(DayUtil.convertDayInstant(createClassRequest.getEndDate()));
         clazz.setMinNumberStudent(createClassRequest.getMinNumberStudent());
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
@@ -904,6 +906,77 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
+    public ClassAttendanceResponse accountGetAttendanceOfClass(Long id) {
+        Account account = securityUtil.getCurrentUser();
+        Class aClass = findClassByRoleAccount(id);
+        StudentClassKey studentClassKey = new StudentClassKey();
+        studentClassKey.setStudentId(account.getId());
+        studentClassKey.setClassId(aClass.getId());
+        List<Attendance> attendanceList = null;
+        if (account.getRole().getCode().equals(EAccountRole.STUDENT)) {
+            attendanceList = attendanceRepository.findAllByStudentClassKeyId(studentClassKey);
+        } else if (account.getRole().getCode().equals(EAccountRole.TEACHER)) {
+//            List<Attendance> attendanceList = attendanceRepository.findAll(studentClassKey);
+            if (aClass.getAccount().getId().equals(account.getId())) {
+                if (aClass.getTimeTables() != null) {
+                    List<TimeTable> timeTables = aClass.getTimeTables();
+                    List<Long> idTimeTable = timeTables.stream().map(TimeTable::getId).collect(Collectors.toList());
+                    attendanceList = attendanceRepository.findAllByTimeTableIn(timeTables);
+                }
+
+            }
+        }
+
+
+        ClassAttendanceResponse classAttendanceResponse = new ClassAttendanceResponse();
+
+        classAttendanceResponse.setAccountId(account.getId());
+        classAttendanceResponse.setClassId(aClass.getId());
+
+        List<AttendanceDto> attendanceDtoList = new ArrayList<>();
+        attendanceList.forEach(attendance -> {
+            AttendanceDto attendanceDto = new AttendanceDto();
+            attendanceDto.setId(attendance.getId());
+            attendanceDto.setPresent(attendance.getPresent());
+
+            TimeTable timeTable = attendance.getTimeTable();
+            if (timeTable != null) {
+                attendanceDto.setDate(timeTable.getDate());
+                attendanceDto.setSlotNumber(timeTable.getSlotNumber());
+                ArchetypeTime archetypeTime = timeTable.getArchetypeTime();
+                if (archetypeTime != null) {
+                    if (archetypeTime.getSlot() != null) {
+                        attendanceDto.setSlotCode(archetypeTime.getSlot().getCode());
+                        attendanceDto.setSlotName(archetypeTime.getSlot().getName());
+                        Slot slot = archetypeTime.getSlot();
+                        attendanceDto.setStartTime(slot.getStartTime());
+                        attendanceDto.setEndTime(slot.getEndTime());
+                    }
+                    if (archetypeTime.getDayOfWeek() != null) {
+                        attendanceDto.setDowCode(archetypeTime.getDayOfWeek().getCode());
+                        attendanceDto.setDowName(archetypeTime.getDayOfWeek().getName());
+                    }
+
+                    Archetype archetype = archetypeTime.getArchetype();
+                    if (archetype != null) {
+                        attendanceDto.setArchetypeCode(archetype.getCode());
+                        attendanceDto.setArchetypeName(archetype.getName());
+                    }
+                }
+
+
+            }
+
+            attendanceDtoList.add(attendanceDto);
+
+        });
+        classAttendanceResponse.setAttendance(attendanceDtoList);
+        return classAttendanceResponse;
+
+    }
+
+
+    @Override
     public ClassTeacherResponse studentGetTeacherInfoOfClass(Long id) {
         Class aClass = findClassByRoleAccount(id);
         Account account = aClass.getAccount();
@@ -919,7 +992,6 @@ public class ClassServiceImpl implements IClassService {
         }
         return classTeacherResponse;
     }
-
 
 
     @Override

@@ -24,7 +24,7 @@ import java.util.List;
 public interface IClassService {
 
 
-    Long teacherRequestCreateClass(CreateClassRequest createClassRequest) throws JsonProcessingException, ParseException;
+    Long teacherRequestCreateClass(TeacherCreateClassRequest createClassRequest) throws JsonProcessingException, ParseException;
 
     Long teacherRequestCreateClassSubjectCourse(Long id, CreateClassSubjectRequest createClassRequest);
 
@@ -76,4 +76,5 @@ public interface IClassService {
     ClassTeacherResponse studentGetTeacherInfoOfClass(Long id);
 
 
+    ClassAttendanceResponse accountGetAttendanceOfClass(Long id);
 }

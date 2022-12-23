@@ -41,7 +41,7 @@ public class ClassController {
 
     @Operation(summary = "Giáo viên yêu cầu tạo class (class) chờ admin phê duyệt ")
     @PostMapping({"/teacher-request-create-class"})
-    public ResponseEntity<ApiResponse<Long>> teacherRequestCreateClass(@Nullable @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException, ParseException {
+    public ResponseEntity<ApiResponse<Long>> teacherRequestCreateClass(@Nullable @RequestBody TeacherCreateClassRequest createClassRequest) throws JsonProcessingException, ParseException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClass(createClassRequest)));
 
     }
@@ -189,6 +189,13 @@ public class ClassController {
     public ResponseEntity<ApiResponse<List<ClassTimeTableResponse>>> accountGetTimeTableOfClass(@PathVariable Long id) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.accountGetTimeTableOfClass(id)));
     }
+
+    @Operation(summary = "giao vien/ học sinh xem chi tiết  điểm danh của môt lớp")
+    @GetMapping("/{id}/attendance")
+    public ResponseEntity<ApiResponse<ClassAttendanceResponse>> accountGetAttendanceOfClass(@PathVariable Long id) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.accountGetAttendanceOfClass(id)));
+    }
+
 
     @Operation(summary = "học sinh xem thông tin giáo viên của lớp")
     @GetMapping("/{id}/teacher")

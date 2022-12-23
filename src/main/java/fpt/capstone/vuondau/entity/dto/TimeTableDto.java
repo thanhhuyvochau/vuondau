@@ -1,19 +1,14 @@
 package fpt.capstone.vuondau.entity.dto;
 
 
-import fpt.capstone.vuondau.entity.common.EClassStatus;
-import fpt.capstone.vuondau.entity.response.AccountResponse;
-import fpt.capstone.vuondau.entity.response.CourseDetailResponse;
-
-import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.List;
 
 public class TimeTableDto {
 
     private Long id ;
     private Instant date;
     private int slotNumber ;
+
 
     private ArchetypeTimeDto archetypeTime ;
 
