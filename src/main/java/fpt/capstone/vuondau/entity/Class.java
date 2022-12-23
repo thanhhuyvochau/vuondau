@@ -53,12 +53,12 @@ public class Class {
     private List<FeedBack> feedBacks;
 
     @Column(name = "number_student")
-    private Long numberStudent;
+    private Long numberStudent = 0L;
 
     @Column(name = "max_number_student")
-    private Long maxNumberStudent;
+    private Long maxNumberStudent = 0L;
     @Column(name = "min_number_student")
-    private Long minNumberStudent;
+    private Long minNumberStudent = 0L;
 
     @Column(name = "is_avtive")
     private boolean isActive;
