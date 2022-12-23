@@ -17,6 +17,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
+import org.threeten.bp.format.DateTimeFormatter;
 
 
 import java.sql.Timestamp;
@@ -68,14 +69,6 @@ public class HatdauApplication {
         SpringApplication.run(HatdauApplication.class, args);
 
 
-        LocalDate date = LocalDate.now();
-        Instant instant = date.atStartOfDay().toInstant(ZoneOffset.UTC);
-        System.out.println(instant);
-        ZoneId zone = ZoneId.of("America/Edmonton");
-        LocalDate localDate = instant.atZone(zone).toLocalDate();
-        Instant instant1 = localDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
-        Instant plus = instant1.plus(7, ChronoUnit.HOURS);
-        System.out.println(plus);
     }
 
 

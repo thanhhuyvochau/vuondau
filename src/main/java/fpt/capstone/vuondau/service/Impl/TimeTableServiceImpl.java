@@ -10,6 +10,7 @@ import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.dto.*;
 import fpt.capstone.vuondau.entity.request.TimeTableRequest;
 import fpt.capstone.vuondau.entity.request.TimeTableSearchRequest;
+import fpt.capstone.vuondau.entity.response.ClassAttendanceResponse;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.ITimeTableService;
 import fpt.capstone.vuondau.util.*;
@@ -52,7 +53,9 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
     private final SecurityUtil SecurityUtil;
 
-    public TimeTableServiceImpl(ClassRepository classRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ArchetypeRepository archetypeRepository, ArchetypeTimeRepository archetypeTimeRepository, MessageUtil messageUtil, StudentClassRepository studentClassRepository, TimeTableRepository timeTableRepository, AccountRepository accountRepository, fpt.capstone.vuondau.util.SecurityUtil securityUtil) {
+    private final AttendanceRepository attendanceRepository;
+
+    public TimeTableServiceImpl(ClassRepository classRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ArchetypeRepository archetypeRepository, ArchetypeTimeRepository archetypeTimeRepository, MessageUtil messageUtil, StudentClassRepository studentClassRepository, TimeTableRepository timeTableRepository, AccountRepository accountRepository, fpt.capstone.vuondau.util.SecurityUtil securityUtil, AttendanceRepository attendanceRepository) {
         this.classRepository = classRepository;
         this.slotRepository = slotRepository;
         this.dayOfWeekRepository = dayOfWeekRepository;
@@ -63,6 +66,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
         this.timeTableRepository = timeTableRepository;
         this.accountRepository = accountRepository;
         SecurityUtil = securityUtil;
+        this.attendanceRepository = attendanceRepository;
     }
 
 
@@ -188,9 +192,9 @@ public class TimeTableServiceImpl implements ITimeTableService {
             timeTable.setSlotNumber(slotNumber);
             ++slotNumber;
 
-             date = datesBetweenUsingJava81.atStartOfDay().toInstant(ZoneOffset.UTC);
+            date = datesBetweenUsingJava81.atStartOfDay().toInstant(ZoneOffset.UTC);
             if (date != null) {
-                timeTable.setDate(DayUtil.convertDayInstant(date));
+                timeTable.setDate(DayUtil.convertDayInstant(date.toString()));
             }
             timeTable.setClazz(aClass);
             timeTable.setArchetypeTime(archetypeTime);
@@ -212,7 +216,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
             if (date != null) {
                 if (date.isAfter(endDate)) {
                     return timeTableList;
-                }else {
+                } else {
                     timeTableList.add(timeTable);
                 }
             }
@@ -288,5 +292,69 @@ public class TimeTableServiceImpl implements ITimeTableService {
         Page<TimeTableDto> page = new PageImpl<>(timeTableDtoList, pageable, timeTableDtoList.size());
 
         return PageUtil.convert(page);
+    }
+
+    @Override
+    public List<ClassAttendanceResponse> accountGetAllTimeTable() {
+        Account currentUser = SecurityUtil.getCurrentUser();
+        List<Attendance> attendanceList = null;
+        if (currentUser.getRole().getCode().equals(EAccountRole.STUDENT)) {
+
+        } else if (currentUser.getRole().getCode().equals(EAccountRole.TEACHER)) {
+            List<Class> teacherClass = currentUser.getTeacherClass();
+            for (Class aClass : teacherClass) {
+                List<TimeTable> timeTables = aClass.getTimeTables();
+                if (aClass.getTimeTables() != null) {
+                    for (TimeTable timeTable : timeTables) {
+                        attendanceList = attendanceRepository.findAllByTimeTableIn(timeTables);
+                    }
+                }
+            }
+
+        }
+        List<ClassAttendanceResponse> classAttendanceResponseArrayList = new ArrayList<>( );
+        ClassAttendanceResponse classAttendanceResponse = new ClassAttendanceResponse();
+
+        classAttendanceResponse.setAccountId(currentUser.getId());
+
+
+        List<AttendanceDto> attendanceDtoList = new ArrayList<>();
+        attendanceList.forEach(attendance -> {
+            AttendanceDto attendanceDto = new AttendanceDto();
+            attendanceDto.setId(attendance.getId());
+            attendanceDto.setPresent(attendance.getPresent());
+
+            TimeTable timeTable = attendance.getTimeTable();
+            if (timeTable != null) {
+                attendanceDto.setTimeTableId(timeTable.getId());
+                attendanceDto.setDate(timeTable.getDate());
+                attendanceDto.setSlotNumber(timeTable.getSlotNumber());
+                ArchetypeTime archetypeTime = timeTable.getArchetypeTime();
+                if (archetypeTime != null) {
+                    if (archetypeTime.getSlot() != null) {
+                        attendanceDto.setSlotCode(archetypeTime.getSlot().getCode());
+                        attendanceDto.setSlotName(archetypeTime.getSlot().getName());
+                        Slot slot = archetypeTime.getSlot();
+                        attendanceDto.setStartTime(slot.getStartTime());
+                        attendanceDto.setEndTime(slot.getEndTime());
+                    }
+                    if (archetypeTime.getDayOfWeek() != null) {
+                        attendanceDto.setDowCode(archetypeTime.getDayOfWeek().getCode());
+                        attendanceDto.setDowName(archetypeTime.getDayOfWeek().getName());
+                    }
+
+                    Archetype archetype = archetypeTime.getArchetype();
+                    if (archetype != null) {
+                        attendanceDto.setArchetypeCode(archetype.getCode());
+                        attendanceDto.setArchetypeName(archetype.getName());
+                    }
+                }
+            }
+            attendanceDtoList.add(attendanceDto);
+
+        });
+        classAttendanceResponse.setAttendance(attendanceDtoList);
+        classAttendanceResponseArrayList.add(classAttendanceResponse) ;
+        return classAttendanceResponseArrayList;
     }
 }

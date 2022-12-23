@@ -1,11 +1,13 @@
 package fpt.capstone.vuondau.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.dto.TimeTableDto;
 import fpt.capstone.vuondau.entity.request.ClassRequest;
 import fpt.capstone.vuondau.entity.request.TimeTableRequest;
 import fpt.capstone.vuondau.entity.request.TimeTableSearchRequest;
+import fpt.capstone.vuondau.entity.response.ClassAttendanceResponse;
 import fpt.capstone.vuondau.entity.response.ClassSubjectResponse;
 import fpt.capstone.vuondau.service.ITimeTableService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,6 +42,12 @@ public class TimeTableController {
     @GetMapping({"/time-table-day/class"})
     public ResponseEntity<ApiResponse<ApiPage<TimeTableDto>>> getTimeTableInDay(@Nullable  TimeTableSearchRequest timeTableSearchRequest, Pageable pageable)  {
         return ResponseEntity.ok(ApiResponse.success(iTimeTableService.getTimeTableInDay( timeTableSearchRequest,pageable)));
+    }
+
+    @Operation(summary = "giao vien/ học sinh xem tất cả thời khoá biểu/điểm danh ")
+    @GetMapping("/all-time-table")
+    public ResponseEntity<ApiResponse<List<ClassAttendanceResponse>>> accountGetAllTimeTable() throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iTimeTableService.accountGetAllTimeTable()));
     }
 
 
