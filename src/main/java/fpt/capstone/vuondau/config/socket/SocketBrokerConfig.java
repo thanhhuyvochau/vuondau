@@ -21,7 +21,7 @@ public class SocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry
                 .addEndpoint("/websocket").setAllowedOriginPatterns("*")
-//                .setHandshakeHandler(new ClientHandshakeHandler())
+                .setHandshakeHandler(new ClientHandshakeHandler())
                 .withSockJS();
     }
 

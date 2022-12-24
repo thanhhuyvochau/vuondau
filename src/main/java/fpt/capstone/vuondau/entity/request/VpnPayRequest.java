@@ -17,6 +17,7 @@ public class VpnPayRequest {
     private String cbo_inv_type = "I";
 
     private Long classId;
+    private String sessionId;
 
     public Long getClassId() {
         return classId;
@@ -136,5 +137,13 @@ public class VpnPayRequest {
 
     public void setCbo_inv_type(String cbo_inv_type) {
         this.cbo_inv_type = cbo_inv_type;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 }
