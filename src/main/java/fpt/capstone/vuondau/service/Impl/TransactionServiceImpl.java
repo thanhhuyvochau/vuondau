@@ -26,6 +26,7 @@ import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -49,6 +50,12 @@ public class TransactionServiceImpl implements ITransactionService {
         Class clazz = classRepository.findById(request.getClassId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
                         .withMessage("Class not found with id:" + request.getClassId()));
+
+        Account student = securityUtil.getCurrentUser();
+        boolean isInClass = clazz.getStudentClasses().stream().map(StudentClass::getAccount).collect(Collectors.toList()).contains(student);
+        if (isInClass) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage("Student already in this class!");
+        }
         if (clazz.getNumberStudent() >= clazz.getMaxNumberStudent()) {
             throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage("Class got maximum number of student :(( !");
         }

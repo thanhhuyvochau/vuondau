@@ -23,4 +23,6 @@ moodle:
 app:
   firebase-configuration-file: /store/vuondau-450bf-firebase-adminsdk-al83z-5d94e1225d.json
 
+payment-redirect: http://localhost:10000/trang-chu/
+
 
