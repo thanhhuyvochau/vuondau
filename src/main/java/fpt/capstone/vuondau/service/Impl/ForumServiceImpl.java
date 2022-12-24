@@ -23,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -176,6 +177,7 @@ public class ForumServiceImpl implements IForumService {
     private ApiPage<SimpleForumDto> getAllClassForumsOfTeacher(Account account, Pageable pageable) {
         List<SimpleForumDto> forumClass = account.getTeacherClass().stream()
                 .map(Class::getForum)
+                .filter(Objects::nonNull)
                 .map(ConvertUtil::doConvertEntityToSimpleResponse)
                 .collect(Collectors.toList());
         Page<SimpleForumDto> page = new PageImpl<>(forumClass, pageable, forumClass.size());
