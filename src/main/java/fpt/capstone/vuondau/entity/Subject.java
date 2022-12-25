@@ -23,7 +23,7 @@ public class Subject {
     @Column(name = "moodle_category_id")
     private Long categoryMoodleId;
 
-    @OneToOne(mappedBy = "subject", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "subject", cascade = CascadeType.ALL)
     private Forum forum;
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)

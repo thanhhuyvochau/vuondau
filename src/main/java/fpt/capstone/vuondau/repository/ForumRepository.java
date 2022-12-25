@@ -19,4 +19,6 @@ public interface ForumRepository extends JpaRepository<Forum, Long> {
     Optional<Forum> findForumBySubject(Subject subject);
 
     Page<Forum> findAllByType(EForumType forumType, Pageable pageable);
+
+    Page<Forum> findAllByClazzIn(List<Class> classes);
 }
