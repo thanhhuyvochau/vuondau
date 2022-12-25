@@ -65,7 +65,7 @@ public class ClassController {
     }
 
     @Operation(summary = "Admin phê duyệt request tao class của teacher ")
-    @PostMapping({"/{id}/approve-class"})
+    @PutMapping({"/{id}/approve-class"})
     public ResponseEntity<ApiResponse<ClassDto>> adminApproveRequestCreateClass(@PathVariable Long id) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.adminApproveRequestCreateClass(id)));
     }
