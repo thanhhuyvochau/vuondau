@@ -26,6 +26,15 @@ public class ConvertUtil {
         return questionDto;
     }
 
+    public static QuestionSimpleDto doConvertEntityToSimpleResponse(Question question) {
+        QuestionSimpleDto questionSimpleDto = ObjectUtil.copyProperties(question, new QuestionSimpleDto(), QuestionSimpleDto.class, true);
+        AccountSimpleResponse accountResponse = doConvertEntityToSimpleResponse(question.getStudent());
+
+        questionSimpleDto.setUser(accountResponse);
+
+        return questionSimpleDto;
+    }
+
     public static CommentDto doConvertEntityToResponse(Comment comment) {
         return doConvertEntityToResponseAsTree(comment, comment.getParentComment());
     }
@@ -51,7 +60,6 @@ public class ConvertUtil {
 
         AccountResponse accountResponse = new AccountResponse();
         accountResponse.setUsername(account.getUsername());
-
 
 
         RoleDto roleDto = doConvertEntityToResponse(account.getRole());
@@ -88,6 +96,34 @@ public class ConvertUtil {
         }
 
         return accountResponse;
+    }
+
+    public static AccountSimpleResponse doConvertEntityToSimpleResponse(Account account) {
+
+        AccountSimpleResponse response = new AccountSimpleResponse();
+
+        RoleDto roleDto = doConvertEntityToResponse(account.getRole());
+        response.setRole(roleDto);
+        if (account.getResource() != null) {
+            response.setAvatar(account.getResource().getUrl());
+        }
+
+        AccountDetail accountDetail = account.getAccountDetail();
+        if (accountDetail != null) {
+            EGenderType gender = accountDetail.getGender();
+            if (gender != null) {
+                GenderResponse genderResponse = new GenderResponse();
+                genderResponse.setCode(gender.name());
+                genderResponse.setName(gender.getLabel());
+                response.setGender(genderResponse);
+            }
+            response.setLastName(accountDetail.getLastName());
+            response.setFirstName(accountDetail.getFirstName());
+            response.setLevel(accountDetail.getLevel());
+            response.setStatus(accountDetail.getStatus());
+        }
+
+        return response;
     }
 
     public static RoleDto doConvertEntityToResponse(Role role) {
@@ -165,7 +201,7 @@ public class ConvertUtil {
             List<ForumLessonDto> lessonDtos = forum.getForumLessons().stream().map(ConvertUtil::doConvertEntityToResponse).collect(Collectors.toList());
             forumDto.setForumLessonDtos(lessonDtos);
         } else {
-            List<QuestionDto> questionDtos = forum.getQuestions().stream().map(ConvertUtil::doConvertEntityToResponse).collect(Collectors.toList());
+            List<QuestionSimpleDto> questionDtos = forum.getQuestions().stream().map(ConvertUtil::doConvertEntityToSimpleResponse).collect(Collectors.toList());
             forumDto.setQuestions(questionDtos);
         }
         return forumDto;
@@ -201,7 +237,7 @@ public class ConvertUtil {
         if (aclass.getAccount() != null) {
             Account teacher = aclass.getAccount();
 //            AccountResponse accountResponse = ObjectUtil.copyProperties(teacher, new AccountResponse(), AccountResponse.class);
-            AccountResponse accountResponse1 = doConvertEntityToResponse(teacher);
+            AccountSimpleResponse accountResponse1 = doConvertEntityToSimpleResponse(teacher);
             classDto.setTeacher(accountResponse1);
 //            accountResponse.setBirthday(teacher.getBirthday());
 //            accountResponse.setIntroduce(teacher.getIntroduce());
@@ -219,7 +255,7 @@ public class ConvertUtil {
 
     public static ForumLessonDto doConvertEntityToResponse(ForumLesson forumLesson) {
         ForumLessonDto forumLessonDto = ObjectUtil.copyProperties(forumLesson, new ForumLessonDto(), ForumLessonDto.class, true);
-        List<QuestionDto> questionDtos = forumLesson.getQuestions().stream().map(ConvertUtil::doConvertEntityToResponse).collect(Collectors.toList());
+        List<QuestionSimpleDto> questionDtos = forumLesson.getQuestions().stream().map(ConvertUtil::doConvertEntityToSimpleResponse).collect(Collectors.toList());
         forumLessonDto.setQuestions(questionDtos);
         return forumLessonDto;
     }

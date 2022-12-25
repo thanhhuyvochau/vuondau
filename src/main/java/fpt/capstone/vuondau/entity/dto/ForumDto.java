@@ -24,7 +24,7 @@ public class ForumDto {
     private List<ForumLessonDto> forumLessonDtos = new ArrayList<>();
 
     private ClassDto aClass;
-    private List<QuestionDto> questions = new ArrayList<>();
+    private List<QuestionSimpleDto> questions = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -74,11 +74,11 @@ public class ForumDto {
         this.aClass = aClass;
     }
 
-    public List<QuestionDto> getQuestions() {
+    public List<QuestionSimpleDto> getQuestions() {
         return questions;
     }
 
-    public void setQuestions(List<QuestionDto> questions) {
+    public void setQuestions(List<QuestionSimpleDto> questions) {
         this.questions = questions;
     }
 

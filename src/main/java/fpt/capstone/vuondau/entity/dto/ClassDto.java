@@ -5,6 +5,7 @@ import fpt.capstone.vuondau.entity.common.EClassLevel;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.common.EClassType;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
+import fpt.capstone.vuondau.entity.response.AccountSimpleResponse;
 import fpt.capstone.vuondau.entity.response.CourseResponse;
 
 import java.math.BigDecimal;
@@ -39,7 +40,7 @@ public class ClassDto {
 
     private BigDecimal finalPrice ;
 
-    private AccountResponse teacher  ;
+    private AccountSimpleResponse teacher  ;
 
     public Long getId() {
         return id;
@@ -49,11 +50,11 @@ public class ClassDto {
         this.id = id;
     }
 
-    public AccountResponse getTeacher() {
+    public AccountSimpleResponse getTeacher() {
         return teacher;
     }
 
-    public void setTeacher(AccountResponse teacher) {
+    public void setTeacher(AccountSimpleResponse teacher) {
         this.teacher = teacher;
     }
 
