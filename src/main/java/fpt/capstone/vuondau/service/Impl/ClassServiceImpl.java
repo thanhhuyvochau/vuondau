@@ -91,7 +91,7 @@ public class ClassServiceImpl implements IClassService {
 //        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
         clazz.setCode(createClassRequest.getCode());
 
-        Instant now = DayUtil.convertDayInstant(Instant.now().toString() ) ;
+        Instant now = DayUtil.convertDayInstant(Instant.now().toString());
         if (!DayUtil.checkDate(now.toString(), createClassRequest.getStartDate().toString(), 3)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày hiện tại la 3 ngay"));
@@ -873,7 +873,6 @@ public class ClassServiceImpl implements IClassService {
         List<ClassTimeTableResponse> classTimeTableResponseList = new ArrayList<>();
 
 
-
         timeTables.forEach(timeTable -> {
             ClassTimeTableResponse classTimeTableResponse = new ClassTimeTableResponse();
             classTimeTableResponse.setId(timeTable.getId());
@@ -984,6 +983,37 @@ public class ClassServiceImpl implements IClassService {
         ClassTeacherResponse classTeacherResponse = new ClassTeacherResponse();
         if (account != null) {
             AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class);
+            AccountDetail accountDetail = account.getAccountDetail();
+            if (accountDetail != null) {
+                EGenderType gender = accountDetail.getGender();
+                if (gender != null) {
+                    GenderResponse genderResponse = new GenderResponse();
+                    genderResponse.setCode(gender.name());
+                    genderResponse.setName(gender.getLabel());
+                    accountResponse.setGender(genderResponse);
+                }
+                accountResponse.setFirstName(accountDetail.getFirstName());
+                accountResponse.setLastName(accountDetail.getLastName());
+                accountResponse.setPhoneNumber(accountDetail.getPhone());
+                accountResponse.setEmail(accountDetail.getEmail());
+                accountResponse.setBirthday(accountDetail.getBirthDay());
+
+                if (account.getResource() != null) {
+                    accountResponse.setAvatar(account.getResource().getUrl());
+                }
+
+                accountResponse.setDomicile(accountDetail.getDomicile());
+                accountResponse.setProvince(accountDetail.getTeachingProvince());
+                accountResponse.setVoice(accountDetail.getVoice());
+                accountResponse.setCurrentAddress(accountDetail.getCurrentAddress());
+                accountResponse.setIdCard(accountDetail.getIdCard());
+                accountResponse.setSchoolName(accountDetail.getTrainingSchoolName());
+                accountResponse.setMajors(accountDetail.getMajors());
+                accountResponse.setStatus(accountDetail.getStatus());
+                accountResponse.setLevel(accountDetail.getLevel());
+                accountResponse.setActive(accountDetail.getActive());
+
+            }
             accountResponse.setRole(ObjectUtil.copyProperties(account.getRole(), new RoleDto(), RoleDto.class));
             Resource resource = account.getResource();
             if (resource != null) {

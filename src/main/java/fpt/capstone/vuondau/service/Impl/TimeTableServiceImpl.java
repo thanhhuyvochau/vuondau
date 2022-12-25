@@ -309,6 +309,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
                     .stream().map(StudentClass::getaClass).collect(Collectors.toList());
         }
 
+
         classList.forEach(aClass -> {
             List<TimeTable> timeTables = aClass.getTimeTables();
             ClassAttendanceResponse classAttendanceResponse = new ClassAttendanceResponse();
@@ -363,6 +364,8 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
         });
         return classAttendanceResponseList;
+
+
 
     }
 }
