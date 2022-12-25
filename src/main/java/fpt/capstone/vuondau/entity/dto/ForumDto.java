@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.entity.dto;
 
 import fpt.capstone.vuondau.entity.common.EForumType;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
+import fpt.capstone.vuondau.entity.response.SubjectSimpleResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ public class ForumDto {
     private EForumType type;
 
 
-    private SubjectResponse subject;
+    private SubjectSimpleResponse subject;
 
     private List<ForumLessonDto> forumLessonDtos = new ArrayList<>();
 
@@ -58,11 +59,11 @@ public class ForumDto {
         this.type = type;
     }
 
-    public SubjectResponse getSubject() {
+    public SubjectSimpleResponse getSubject() {
         return subject;
     }
 
-    public void setSubject(SubjectResponse subject) {
+    public void setSubject(SubjectSimpleResponse subject) {
         this.subject = subject;
     }
 

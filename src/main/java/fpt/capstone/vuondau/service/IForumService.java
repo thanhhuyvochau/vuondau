@@ -18,8 +18,7 @@ public interface IForumService {
 
     ForumDto getForumBySubject(Long subjectId);
 
-    ApiPage<SimpleForumDto> getAllClassForums(Pageable pageable, EForumType forumType);
+    ApiPage<SimpleForumDto> getAllForumByTypes(Pageable pageable,EForumType forumType);
 
-    ApiPage<SimpleForumDto> getAllSubjectForums(Pageable pageable);
 
 }

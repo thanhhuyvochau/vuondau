@@ -1,12 +1,8 @@
 package fpt.capstone.vuondau.entity.dto;
 
-import fpt.capstone.vuondau.entity.Account;
-import fpt.capstone.vuondau.entity.Comment;
-import fpt.capstone.vuondau.entity.Subject;
-import fpt.capstone.vuondau.entity.response.AccountResponse;
-import fpt.capstone.vuondau.entity.response.SubjectResponse;
+import fpt.capstone.vuondau.entity.response.AccountSimpleResponse;
+import fpt.capstone.vuondau.entity.response.SubjectSimpleResponse;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,10 +17,10 @@ public class QuestionDto {
     private Boolean isClosed;
 
 
-    private AccountResponse student;
+    private AccountSimpleResponse user;
 
 
-    private SubjectResponse subject;
+    private SubjectSimpleResponse subject;
 
     private Integer upvoteNumber;
 
@@ -56,19 +52,19 @@ public class QuestionDto {
         isClosed = closed;
     }
 
-    public AccountResponse getStudent() {
-        return student;
+    public AccountSimpleResponse getUser() {
+        return user;
     }
 
-    public void setStudent(AccountResponse student) {
-        this.student = student;
+    public void setUser(AccountSimpleResponse user) {
+        this.user = user;
     }
 
-    public SubjectResponse getSubject() {
+    public SubjectSimpleResponse getSubject() {
         return subject;
     }
 
-    public void setSubject(SubjectResponse subject) {
+    public void setSubject(SubjectSimpleResponse subject) {
         this.subject = subject;
     }
 

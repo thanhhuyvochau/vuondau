@@ -14,14 +14,14 @@ import java.util.stream.Collectors;
 public class ConvertUtil {
     public static QuestionDto doConvertEntityToResponse(Question question) {
         QuestionDto questionDto = ObjectUtil.copyProperties(question, new QuestionDto(), QuestionDto.class, true);
-        AccountResponse accountResponse = doConvertEntityToResponse(question.getStudent());
+        AccountSimpleResponse accountResponse = doConvertEntityToSimpleResponse(question.getStudent());
         // filter(comment -> comment.getParentComment() == null)
         // -> Để lấy tất cả các comment trực tiếp của câu hỏi (Không hỏi comment con) mục đích để get được ra dạng cây của các comment
         // -> Nếu không filter thì sẽ trả ra tất cả comment của câu hỏi và không handle ra dạng cây được.
         List<CommentDto> comments = question.getComments().stream().filter(comment -> comment.getParentComment() == null)
                 .map(ConvertUtil::doConvertEntityToResponse)
                 .collect(Collectors.toList());
-        questionDto.setStudent(accountResponse);
+        questionDto.setUser(accountResponse);
         questionDto.setComments(comments);
         return questionDto;
     }
@@ -41,8 +41,8 @@ public class ConvertUtil {
 
     private static CommentDto doConvertEntityToResponseAsTree(Comment comment, Comment parentComment) {
         CommentDto commentDto = ObjectUtil.copyProperties(comment, new CommentDto(), CommentDto.class, true);
-        AccountResponse accountResponse = doConvertEntityToResponse(comment.getAccount());
-        commentDto.setStudent(accountResponse);
+        AccountSimpleResponse accountResponse = doConvertEntityToSimpleResponse(comment.getAccount());
+        commentDto.setUser(accountResponse);
         if (parentComment != null) {
             CommentDto parentCommentDto = ObjectUtil.copyProperties(parentComment, new CommentDto(), CommentDto.class, true);
             commentDto.setParentComment(parentCommentDto);
@@ -140,6 +140,14 @@ public class ConvertUtil {
         return subjectResponse;
     }
 
+    public static SubjectSimpleResponse doConvertEntityToSimpleResponse(Subject subject) {
+        SubjectSimpleResponse response = new SubjectSimpleResponse();
+        response.setId(subject.getId());
+        response.setCode(subject.getCode());
+        response.setName(subject.getName());
+        return response;
+    }
+
     public static RequestFormResponese doConvertEntityToResponse(Request request) {
         RequestFormResponese requestFormResponese = ObjectUtil.copyProperties(request, new RequestFormResponese(), RequestFormResponese.class);
         requestFormResponese.setRequestType(ObjectUtil.copyProperties(request.getRequestType(), new RequestTypeDto(), RequestTypeDto.class));
@@ -198,11 +206,14 @@ public class ConvertUtil {
         if (forum.getType().name().equals(EForumType.CLASS.name())) {
             ClassDto classDto = doConvertEntityToResponse(forum.getaClazz());
             forumDto.setaClass(classDto);
-            List<ForumLessonDto> lessonDtos = forum.getForumLessons().stream().map(ConvertUtil::doConvertEntityToResponse).collect(Collectors.toList());
+            List<ForumLessonDto> lessonDtos = forum.getForumLessons().stream().map(ConvertUtil::doConvertEntityToResponse)
+                    .collect(Collectors.toList());
             forumDto.setForumLessonDtos(lessonDtos);
         } else {
             List<QuestionSimpleDto> questionDtos = forum.getQuestions().stream().map(ConvertUtil::doConvertEntityToSimpleResponse).collect(Collectors.toList());
             forumDto.setQuestions(questionDtos);
+            SubjectSimpleResponse subject = doConvertEntityToSimpleResponse(forum.getSubject());
+            forumDto.setSubject(subject);
         }
         return forumDto;
     }
