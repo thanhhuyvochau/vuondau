@@ -300,7 +300,69 @@ public class TimeTableServiceImpl implements ITimeTableService {
     @Override
     public List<ClassAttendanceResponse> accountGetAllTimeTable() {
         Account currentUser = SecurityUtil.getCurrentUser();
+        List<ClassAttendanceResponse> classAttendanceResponseList = new ArrayList<>();
+        List<Class> classList = null;
+        if (currentUser.getRole().getCode().equals(EAccountRole.TEACHER)) {
+            classList = currentUser.getTeacherClass();
+        } else if (currentUser.getRole().getCode().equals(EAccountRole.TEACHER)) {
+            classList = currentUser.getStudentClasses()
+                    .stream().map(StudentClass::getaClass).collect(Collectors.toList());
+        }
 
+        classList.forEach(aClass -> {
+            List<TimeTable> timeTables = aClass.getTimeTables();
+            ClassAttendanceResponse classAttendanceResponse = new ClassAttendanceResponse();
+            classAttendanceResponse.setClassId(aClass.getId());
+            timeTables.forEach(timeTable -> {
+
+                List<Attendance> attendances = timeTable.getAttendances();
+                List<AttendanceDto> attendanceDtoList = new ArrayList<>();
+                if (attendances != null) {
+
+
+                    attendances.forEach(attendance -> {
+                        AttendanceDto attendanceDto = new AttendanceDto();
+                        attendanceDto.setId(attendance.getId());
+                        attendanceDto.setPresent(attendance.getPresent());
+                        attendanceDto.setTimeTableId(timeTable.getId());
+                        attendanceDto.setDate(timeTable.getDate());
+                        attendanceDto.setSlotNumber(timeTable.getSlotNumber());
+
+                        ArchetypeTime archetypeTime = timeTable.getArchetypeTime();
+                        if (archetypeTime != null) {
+                            if (archetypeTime.getSlot() != null) {
+                                attendanceDto.setSlotCode(archetypeTime.getSlot().getCode());
+                                attendanceDto.setSlotName(archetypeTime.getSlot().getName());
+                                Slot slot = archetypeTime.getSlot();
+                                attendanceDto.setStartTime(slot.getStartTime());
+                                attendanceDto.setEndTime(slot.getEndTime());
+                            }
+                            if (archetypeTime.getDayOfWeek() != null) {
+                                attendanceDto.setDowCode(archetypeTime.getDayOfWeek().getCode());
+                                attendanceDto.setDowName(archetypeTime.getDayOfWeek().getName());
+                            }
+
+                            Archetype archetype = archetypeTime.getArchetype();
+                            if (archetype != null) {
+                                attendanceDto.setArchetypeCode(archetype.getCode());
+                                attendanceDto.setArchetypeName(archetype.getName());
+                            }
+                        }
+
+
+                        attendanceDtoList.add(attendanceDto);
+
+
+                    });
+                    classAttendanceResponse.setAttendance(attendanceDtoList);
+                    classAttendanceResponseList.add(classAttendanceResponse);
+                }
+
+
+            });
+
+        });
+        return classAttendanceResponseList;
 
     }
 }
