@@ -1,10 +1,7 @@
 package fpt.capstone.vuondau.entity.dto;
 
-import fpt.capstone.vuondau.entity.Account;
-import fpt.capstone.vuondau.entity.Question;
-import fpt.capstone.vuondau.entity.response.AccountResponse;
+import fpt.capstone.vuondau.entity.response.AccountSimpleResponse;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,10 +23,7 @@ public class CommentDto {
     private CommentDto parentComment;
 
 
-    private AccountResponse student;
-
-
-    private Question question;
+    private AccountSimpleResponse user;
 
     public Long getId() {
         return id;
@@ -79,19 +73,11 @@ public class CommentDto {
         this.parentComment = parentComment;
     }
 
-    public Question getQuestion() {
-        return question;
+    public AccountSimpleResponse getUser() {
+        return user;
     }
 
-    public void setQuestion(Question question) {
-        this.question = question;
-    }
-
-    public AccountResponse getStudent() {
-        return student;
-    }
-
-    public void setStudent(AccountResponse student) {
-        this.student = student;
+    public void setUser(AccountSimpleResponse user) {
+        this.user = user;
     }
 }

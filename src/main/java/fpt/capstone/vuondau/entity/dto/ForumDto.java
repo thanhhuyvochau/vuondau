@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.entity.dto;
 
 import fpt.capstone.vuondau.entity.common.EForumType;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
+import fpt.capstone.vuondau.entity.response.SubjectSimpleResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +20,12 @@ public class ForumDto {
     private EForumType type;
 
 
-    private SubjectResponse subject;
+    private SubjectSimpleResponse subject;
 
     private List<ForumLessonDto> forumLessonDtos = new ArrayList<>();
 
     private ClassDto aClass;
-    private List<QuestionDto> questions = new ArrayList<>();
+    private List<QuestionSimpleDto> questions = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -58,11 +59,11 @@ public class ForumDto {
         this.type = type;
     }
 
-    public SubjectResponse getSubject() {
+    public SubjectSimpleResponse getSubject() {
         return subject;
     }
 
-    public void setSubject(SubjectResponse subject) {
+    public void setSubject(SubjectSimpleResponse subject) {
         this.subject = subject;
     }
 
@@ -74,11 +75,11 @@ public class ForumDto {
         this.aClass = aClass;
     }
 
-    public List<QuestionDto> getQuestions() {
+    public List<QuestionSimpleDto> getQuestions() {
         return questions;
     }
 
-    public void setQuestions(List<QuestionDto> questions) {
+    public void setQuestions(List<QuestionSimpleDto> questions) {
         this.questions = questions;
     }
 

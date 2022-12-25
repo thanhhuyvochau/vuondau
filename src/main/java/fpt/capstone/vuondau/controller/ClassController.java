@@ -3,24 +3,16 @@ package fpt.capstone.vuondau.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCourseDataRequest;
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
-import fpt.capstone.vuondau.entity.Class;
-import fpt.capstone.vuondau.entity.Subject;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
-import fpt.capstone.vuondau.entity.common.EClassType;
-import fpt.capstone.vuondau.entity.dto.ClassDetailDto;
-import fpt.capstone.vuondau.entity.dto.ClassDto;
-import fpt.capstone.vuondau.entity.dto.ClassStudentDto;
-import fpt.capstone.vuondau.entity.dto.StudentDto;
+import fpt.capstone.vuondau.entity.dto.*;
 import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.*;
 import fpt.capstone.vuondau.service.IClassService;
+import fpt.capstone.vuondau.service.IForumService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.headers.Header;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
@@ -33,9 +25,11 @@ import java.util.List;
 public class ClassController {
 
     private final IClassService iClassService;
+    private final IForumService forumService;
 
-    public ClassController(IClassService iClassService) {
+    public ClassController(IClassService iClassService, IForumService forumService) {
         this.iClassService = iClassService;
+        this.forumService = forumService;
     }
 
 
@@ -201,5 +195,10 @@ public class ClassController {
     @GetMapping("/{id}/teacher")
     public ResponseEntity<ApiResponse<ClassTeacherResponse>> studentGetTeacherInfoOfClass(@PathVariable Long id) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.studentGetTeacherInfoOfClass(id)));
+    }
+    @Operation(summary = "Lấy chi tiết diễn đàn của một lớp học")
+    @GetMapping("/forum")
+    public ResponseEntity<ApiResponse<ForumDto>> getForumOfClass(@RequestParam Long classId) {
+        return ResponseEntity.ok(ApiResponse.success(forumService.getForumByClass(classId)));
     }
 }
