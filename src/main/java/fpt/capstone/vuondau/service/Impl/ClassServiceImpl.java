@@ -28,6 +28,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -158,7 +159,7 @@ public class ClassServiceImpl implements IClassService {
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
         if (!clazz.getStatus().equals(EClassStatus.REQUESTING)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("class khong phai trang thai de Active"));
+                    .withMessage(messageUtil.getLocalMessage("class đã được active"));
         }
         clazz.setActive(true);
         clazz.setStatus(EClassStatus.NOTSTART);
@@ -173,6 +174,8 @@ public class ClassServiceImpl implements IClassService {
         moodleCourseBody.setShortname(save.getCode());
         Course course = save.getCourse();
         if (course != null) {
+
+
             moodleCourseBody.setCategoryid(course.getSubject().getCategoryMoodleId());
         }
         if (save.getStartDate() != null) {
@@ -187,7 +190,25 @@ public class ClassServiceImpl implements IClassService {
         List<MoodleClassResponse> moodleClassResponses = moodleCourseRepository.postCourse(s1CourseRequest);
 
 
-        return ObjectUtil.copyProperties(save, new ClassDto(), ClassDto.class);
+        ClassDto classDto = ObjectUtil.copyProperties(save, new ClassDto(), ClassDto.class);
+        if (save.getClassLevel()!= null){
+            ClassLevel classLevel = classLevelRepository.findById(save.getClassLevel()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class level" + save.getClassLevel()));
+            classDto.setClassLevel(classLevel.getCode()) ;
+        }
+        if (clazz.getCourse()!=null) {
+
+
+            classDto.setCourse( ConvertUtil.doConvertCourseToCourseResponse(course));
+        }
+        if (save.getAccount()!=null) {
+
+            classDto.setTeacher( ConvertUtil.doConvertEntityToResponse(save.getAccount()) );
+        }
+
+
+
+
+        return classDto ;
     }
 
     @Override
