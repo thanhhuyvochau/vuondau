@@ -292,7 +292,7 @@ public class ClassServiceImpl implements IClassService {
         return PageUtil.convert(classes.map(aClass -> {
             ClassDto classDto = ObjectUtil.copyProperties(aClass, new ClassDto(), ClassDto.class);
             if (aClass.getAccount() != null) {
-                classDto.setTeacher(ConvertUtil.doConvertEntityToResponse(aClass.getAccount()));
+                classDto.setTeacher(ConvertUtil.doConvertEntityToSimpleResponse(aClass.getAccount()));
             }
             if (aClass.getCourse() != null) {
                 classDto.setCourse(ConvertUtil.doConvertCourseToCourseResponse(aClass.getCourse()));

@@ -12,7 +12,7 @@ public class ForumLessonDto {
 
     private String lessonName;
 
-    private List<QuestionDto> questions;
+    private List<QuestionSimpleDto> questions;
 
     public Long getId() {
         return id;
@@ -30,11 +30,11 @@ public class ForumLessonDto {
         this.lessonName = lessonName;
     }
 
-    public List<QuestionDto> getQuestions() {
+    public List<QuestionSimpleDto> getQuestions() {
         return questions;
     }
 
-    public void setQuestions(List<QuestionDto> questions) {
+    public void setQuestions(List<QuestionSimpleDto> questions) {
         this.questions = questions;
     }
 }

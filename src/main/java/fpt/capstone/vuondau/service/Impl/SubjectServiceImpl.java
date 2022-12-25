@@ -8,6 +8,7 @@ import fpt.capstone.vuondau.MoodleRepository.Response.CategoryResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
+import fpt.capstone.vuondau.entity.common.EForumType;
 import fpt.capstone.vuondau.entity.request.SubjectRequest;
 import fpt.capstone.vuondau.entity.request.SubjectSearchRequest;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
@@ -45,8 +46,9 @@ public class SubjectServiceImpl implements ISubjectService {
     private final SecurityUtil securityUtil;
 
     private final InfoFindTutorRepository infoFindTutorRepository;
+    private final ForumRepository forumRepository;
 
-    public SubjectServiceImpl(CourseRepository courseRepository, SubjectRepository subjectRepository, AccountRepository accountRepository, MessageUtil messageUtil, StudentAnswerRepository studentAnswerRepository, MoodleCourseRepository moodleCourseRepository, SecurityUtil securityUtil, InfoFindTutorRepository infoFindTutorRepository) {
+    public SubjectServiceImpl(CourseRepository courseRepository, SubjectRepository subjectRepository, AccountRepository accountRepository, MessageUtil messageUtil, StudentAnswerRepository studentAnswerRepository, MoodleCourseRepository moodleCourseRepository, SecurityUtil securityUtil, InfoFindTutorRepository infoFindTutorRepository, ForumRepository forumRepository) {
         this.courseRepository = courseRepository;
         this.subjectRepository = subjectRepository;
         this.accountRepository = accountRepository;
@@ -55,6 +57,7 @@ public class SubjectServiceImpl implements ISubjectService {
         this.moodleCourseRepository = moodleCourseRepository;
         this.securityUtil = securityUtil;
         this.infoFindTutorRepository = infoFindTutorRepository;
+        this.forumRepository = forumRepository;
     }
 
     @Override
@@ -67,40 +70,32 @@ public class SubjectServiceImpl implements ISubjectService {
         subject.setName(subjectRequest.getName());
 
 
-
-
-
         MoodleCategoryRequest moodleCategoryRequest = new MoodleCategoryRequest();
         List<CategoryResponse> categoryList = moodleCourseRepository.getCategory(moodleCategoryRequest);
         List<MoodleCreateCategoryRequest.MoodleCreateCategoryBody> moodleCreateCategoryRequestList = new ArrayList<>();
 
 
-
-        List<String> stringList = new ArrayList<>() ;
+        List<String> stringList = new ArrayList<>();
 
         for (CategoryResponse categoryResponse : categoryList) {
-             if(categoryResponse.getName().equals(subjectRequest.getCode().name())){
-                 stringList.add(subjectRequest.getCode().name());
-             }
+            if (categoryResponse.getName().equals(subjectRequest.getCode().name())) {
+                stringList.add(subjectRequest.getCode().name());
+            }
         }
 
-         if (stringList.isEmpty()) {
+        if (stringList.isEmpty()) {
 
-             MoodleCreateCategoryRequest request = new MoodleCreateCategoryRequest();
-             MoodleCreateCategoryRequest.MoodleCreateCategoryBody moodleCreateCategoryBody = new MoodleCreateCategoryRequest.MoodleCreateCategoryBody();
-             moodleCreateCategoryBody.setName(subjectRequest.getCode().name());
-             moodleCreateCategoryRequestList.add(moodleCreateCategoryBody);
-             request.setCategories(moodleCreateCategoryRequestList);
-             try {
-                 moodleCourseRepository.postCategory(request);
-             } catch (JsonProcessingException e) {
-                 throw new RuntimeException(e);
-             }
-         }
-
-
-
-
+            MoodleCreateCategoryRequest request = new MoodleCreateCategoryRequest();
+            MoodleCreateCategoryRequest.MoodleCreateCategoryBody moodleCreateCategoryBody = new MoodleCreateCategoryRequest.MoodleCreateCategoryBody();
+            moodleCreateCategoryBody.setName(subjectRequest.getCode().name());
+            moodleCreateCategoryRequestList.add(moodleCreateCategoryBody);
+            request.setCategories(moodleCreateCategoryRequestList);
+            try {
+                moodleCourseRepository.postCategory(request);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
 
         Subject subjectSaved = subjectRepository.save(subject);
@@ -108,8 +103,7 @@ public class SubjectServiceImpl implements ISubjectService {
         response.setId(subjectSaved.getId());
         response.setName(subjectSaved.getName());
         response.setCode(subjectSaved.getCode());
-
-
+        createSubjectForum(subjectSaved);
         return response;
     }
 
@@ -210,17 +204,25 @@ public class SubjectServiceImpl implements ISubjectService {
         AccountDetail accountDetail = teacher.getAccountDetail();
 
         List<Subject> subjectList = null;
-        if (accountDetail!= null) {
-        subjectList = accountDetail.getAccountDetailSubjects().stream().map(AccountDetailSubject::getSubject).collect(Collectors.toList());
+        if (accountDetail != null) {
+            subjectList = accountDetail.getAccountDetailSubjects().stream().map(AccountDetailSubject::getSubject).collect(Collectors.toList());
         }
-        if (subjectList!=null){
+        if (subjectList != null) {
             subjectList.forEach(subject -> {
-                subjectResponseList.add( ObjectUtil.copyProperties(subject, new SubjectResponse() , SubjectResponse.class ) );
+                subjectResponseList.add(ObjectUtil.copyProperties(subject, new SubjectResponse(), SubjectResponse.class));
 
             });
         }
-        return subjectResponseList ;
+        return subjectResponseList;
+    }
 
-
+    private Boolean createSubjectForum(Subject subject) {
+        Forum forum = new Forum();
+        forum.setName(subject.getName());
+        forum.setCode(subject.getCode().name());
+        forum.setSubject(subject);
+        forum.setType(EForumType.SUBJECT);
+        forumRepository.save(forum);
+        return true;
     }
 }

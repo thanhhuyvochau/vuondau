@@ -47,20 +47,11 @@ public class PaymentController {
     public void executeAfterPayment(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Transaction transaction = transactionService.executeAfterPayment(request);
         response.sendRedirect(paymentRedirect);
-//        Account student = transaction.getAccount();
-//        Boolean success = transaction.getSuccess();
-//        ResponseEntity<ApiResponse<String>> response = null;
-//        if (success) {
-//            response = ResponseEntity.ok(ApiResponse.success("Thanh toán thành công"));
-//        } else {
-//            response = ResponseEntity.ok(ApiResponse.success("Thanh toán thất bại"));
-//        }
-//        simpMessagingTemplate.convertAndSendToUser(student.getUsername(), "/queue/payment-reply", response);
     }
 
-    @PostMapping("/send-private-message/{id}")
-    public void sendPrivateMessage(@RequestBody ResponseMessage message, @PathVariable String id) {
-        logger.debug("SESSION ID:" + id);
-        webSocketUtil.sendPrivateMessage(message.getContent(), id.trim());
-    }
+//    @PostMapping("/send-private-message/{id}")
+//    public void sendPrivateMessage(@RequestBody ResponseMessage message, @PathVariable String id) {
+//        logger.debug("SESSION ID:" + id);
+//        webSocketUtil.sendPrivateMessage(message.getContent(), id.trim());
+//    }
 }

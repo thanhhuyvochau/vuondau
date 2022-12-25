@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.controller;
 
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
+import fpt.capstone.vuondau.entity.common.EForumType;
 import fpt.capstone.vuondau.entity.dto.ForumDto;
 import fpt.capstone.vuondau.entity.dto.SimpleForumDto;
 import fpt.capstone.vuondau.service.IForumService;
@@ -18,24 +19,9 @@ public class ForumController {
         this.forumService = forumService;
     }
 
-    @GetMapping("/class-type")
-    public ResponseEntity<ApiResponse<ApiPage<SimpleForumDto>>> getClassesForumForStudent(Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.success(forumService.getAllClassForums(pageable)));
-    }
-
-    @GetMapping("/subject-type")
-    public ResponseEntity<ApiResponse<ApiPage<SimpleForumDto>>> getSubjectForumForStudent(Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.success(forumService.getAllSubjectForums(pageable)));
-    }
-
-    @GetMapping("/class-type/{classId}")
-    public ResponseEntity<ApiResponse<ForumDto>> getDetailClassForum(@PathVariable Long classId) {
-        return ResponseEntity.ok(ApiResponse.success(forumService.getForumByClass(classId)));
-    }
-
-    @GetMapping("/subject-type/{subjectId}")
-    public ResponseEntity<ApiResponse<ForumDto>> getSubjetClassForum(@PathVariable Long subjectId) {
-        return ResponseEntity.ok(ApiResponse.success(forumService.getForumBySubject(subjectId)));
+    @GetMapping
+    public ResponseEntity<ApiResponse<ApiPage<SimpleForumDto>>> getAllForum(Pageable pageable, @RequestParam EForumType forumType) {
+        return ResponseEntity.ok(ApiResponse.success(forumService.getAllForumByTypes(pageable, forumType)));
     }
 
     @PutMapping("/{id}")
