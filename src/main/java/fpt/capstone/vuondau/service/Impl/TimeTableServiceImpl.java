@@ -91,7 +91,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
                     .withMessage(messageUtil.getLocalMessage("Vui lòng kiểm tra lại số buổi trong tuần "));
         }
 
-        if (archetypeRepository.existsByIdAndCode(aClass.getId(), timeTableRequest.getArchetypeCode())) {
+        if (archetypeRepository.existsByCode(aClass.getCode())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("time table code da ton tai"));
         }
@@ -102,7 +102,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
         //Set Archetype
         Archetype archetype = new Archetype();
-        archetype.setCode(timeTableRequest.getArchetypeCode());
+        archetype.setCode(aClass.getCode());
         archetype.setName(timeTableRequest.getArchetypeName());
         if (aClass.getAccount() != null) {
             archetype.setCreatedByTeacherId(aClass.getAccount().getId());
@@ -300,7 +300,60 @@ public class TimeTableServiceImpl implements ITimeTableService {
     @Override
     public List<ClassAttendanceResponse> accountGetAllTimeTable() {
         Account currentUser = SecurityUtil.getCurrentUser();
+        List<ClassAttendanceResponse> classAttendanceResponseList = new ArrayList<>();
+        List<Class> classList = null;
+        if (currentUser.getRole().getCode().equals(EAccountRole.TEACHER)) {
+            classList = currentUser.getTeacherClass();
+        } else if (currentUser.getRole().getCode().equals(EAccountRole.STUDENT)) {
+            classList = currentUser.getStudentClasses()
+                    .stream().map(StudentClass::getaClass).collect(Collectors.toList());
+        }
+        classList.forEach(aClass -> {
+            List<TimeTable> timeTables = aClass.getTimeTables();
+            ClassAttendanceResponse classAttendanceResponse = new ClassAttendanceResponse();
+            classAttendanceResponse.setClassId(aClass.getId());
+            List<AttendanceDto> attendanceDtoList = new ArrayList<>();
+            timeTables.forEach(timeTable -> {
 
-        return null;
+                List<Attendance> attendances = timeTable.getAttendances();
+                AttendanceDto attendanceDto = new AttendanceDto();
+                attendanceDto.setTimeTableId(timeTable.getId());
+                attendanceDto.setDate(timeTable.getDate());
+                attendanceDto.setSlotNumber(timeTable.getSlotNumber());
+                attendances.forEach(attendance -> {
+
+                    attendanceDto.setId(attendance.getId());
+                    attendanceDto.setPresent(attendance.getPresent());
+
+                    ArchetypeTime archetypeTime = timeTable.getArchetypeTime();
+                    if (archetypeTime != null) {
+                        if (archetypeTime.getSlot() != null) {
+                            attendanceDto.setSlotCode(archetypeTime.getSlot().getCode());
+                            attendanceDto.setSlotName(archetypeTime.getSlot().getName());
+                            Slot slot = archetypeTime.getSlot();
+                            attendanceDto.setStartTime(slot.getStartTime());
+                            attendanceDto.setEndTime(slot.getEndTime());
+                        }
+                        if (archetypeTime.getDayOfWeek() != null) {
+                            attendanceDto.setDowCode(archetypeTime.getDayOfWeek().getCode());
+                            attendanceDto.setDowName(archetypeTime.getDayOfWeek().getName());
+                        }
+
+                        Archetype archetype = archetypeTime.getArchetype();
+                        if (archetype != null) {
+                            attendanceDto.setArchetypeCode(archetype.getCode());
+                            attendanceDto.setArchetypeName(archetype.getName());
+                        }
+                    }
+
+                });
+                attendanceDtoList.add(attendanceDto);
+            });
+            classAttendanceResponse.setAttendance(attendanceDtoList);
+            classAttendanceResponseList.add(classAttendanceResponse);
+        });
+        return classAttendanceResponseList;
+
+
     }
 }

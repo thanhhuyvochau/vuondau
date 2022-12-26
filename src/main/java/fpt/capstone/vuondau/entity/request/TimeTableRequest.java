@@ -13,7 +13,7 @@ public class TimeTableRequest implements Serializable {
 
     private String archetypeName  ;
 
-    private String archetypeCode  ;
+//    private String archetypeCode  ;
 
 
     private List<SlotDowDto> slotDow ;
@@ -30,13 +30,13 @@ public class TimeTableRequest implements Serializable {
         this.archetypeName = archetypeName;
     }
 
-    public String getArchetypeCode() {
-        return archetypeCode;
-    }
-
-    public void setArchetypeCode(String archetypeCode) {
-        this.archetypeCode = archetypeCode;
-    }
+//    public String getArchetypeCode() {
+//        return archetypeCode;
+//    }
+//
+//    public void setArchetypeCode(String archetypeCode) {
+//        this.archetypeCode = archetypeCode;
+//    }
 
 
 

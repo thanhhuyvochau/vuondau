@@ -100,10 +100,10 @@ public class CourseController {
     }
 
 
-    @Operation(summary = "lấy course theo subject")
+    @Operation(summary = "lấy course theo subject có phân trang")
     @GetMapping("/{subjectId}/subject")
-    public ResponseEntity<ApiResponse<ApiPage<CourseDetailResponse>>> getCourseBySubject(@PathVariable long subjectId) throws JsonProcessingException {
-        return ResponseEntity.ok(ApiResponse.success(courseService.getCourseBySubject(subjectId)));
+    public ResponseEntity<ApiResponse<ApiPage<CourseDetailResponse>>> getCourseBySubject(@PathVariable long subjectId , Pageable pageable) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(courseService.getCourseBySubject(subjectId, pageable)));
     }
 
     @Operation(summary = "lấy course theo subject khong phân trang")

@@ -1,5 +1,6 @@
 package fpt.capstone.vuondau.service.Impl;
 
+import fpt.capstone.vuondau.config.socket.ClientHandshakeHandler;
 import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.StudentClass;
@@ -13,6 +14,8 @@ import fpt.capstone.vuondau.service.ITransactionService;
 import fpt.capstone.vuondau.util.SecurityUtil;
 import fpt.capstone.vuondau.util.WebSocketUtil;
 import fpt.capstone.vuondau.util.vnpay.VnpConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +29,7 @@ import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -35,6 +39,7 @@ public class TransactionServiceImpl implements ITransactionService {
     private final TransactionRepository transactionRepository;
     private final ClassRepository classRepository;
     private final WebSocketUtil webSocketUtil;
+    private final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
     public TransactionServiceImpl(VnpConfig vnpConfig, SecurityUtil securityUtil, TransactionRepository transactionRepository, ClassRepository classRepository, WebSocketUtil webSocketUtil) {
         this.vnpConfig = vnpConfig;
@@ -45,10 +50,16 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
-    public PaymentResponse startPayment(HttpServletRequest req, VpnPayRequest request, Principal principal) throws UnsupportedEncodingException {
+    public PaymentResponse startPayment(HttpServletRequest req, VpnPayRequest request) throws UnsupportedEncodingException {
         Class clazz = classRepository.findById(request.getClassId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
                         .withMessage("Class not found with id:" + request.getClassId()));
+        logger.debug("PRINCIPAL:" + request.getSessionId());
+        Account student = securityUtil.getCurrentUser();
+        boolean isInClass = clazz.getStudentClasses().stream().map(StudentClass::getAccount).collect(Collectors.toList()).contains(student);
+        if (isInClass) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage("Student already in this class!");
+        }
         if (clazz.getNumberStudent() >= clazz.getMaxNumberStudent()) {
             throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage("Class got maximum number of student :(( !");
         }
@@ -76,7 +87,7 @@ public class TransactionServiceImpl implements ITransactionService {
         transaction.setPaymentClass(clazz);
         transactionRepository.save(transaction);
         String vnp_TxnRef = transaction.getId().toString();
-        vnp_Params.put("vnp_TxnRef", vnp_TxnRef + "&" + principal.getName());
+        vnp_Params.put("vnp_TxnRef", vnp_TxnRef + "&" + request.getSessionId());
         vnp_Params.put("vnp_OrderInfo", vnp_OrderInfo);
         vnp_Params.put("vnp_OrderType", orderType);
 

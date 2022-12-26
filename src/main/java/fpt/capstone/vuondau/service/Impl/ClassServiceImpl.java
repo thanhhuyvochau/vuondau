@@ -28,6 +28,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -91,7 +92,7 @@ public class ClassServiceImpl implements IClassService {
 //        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
         clazz.setCode(createClassRequest.getCode());
 
-        Instant now = DayUtil.convertDayInstant(Instant.now().toString() ) ;
+        Instant now = DayUtil.convertDayInstant(Instant.now().toString());
         if (!DayUtil.checkDate(now.toString(), createClassRequest.getStartDate().toString(), 3)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày hiện tại la 3 ngay"));
@@ -158,7 +159,7 @@ public class ClassServiceImpl implements IClassService {
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
         if (!clazz.getStatus().equals(EClassStatus.REQUESTING)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("class khong phai trang thai de Active"));
+                    .withMessage(messageUtil.getLocalMessage("class đã được active"));
         }
         clazz.setActive(true);
         clazz.setStatus(EClassStatus.NOTSTART);
@@ -173,6 +174,8 @@ public class ClassServiceImpl implements IClassService {
         moodleCourseBody.setShortname(save.getCode());
         Course course = save.getCourse();
         if (course != null) {
+
+
             moodleCourseBody.setCategoryid(course.getSubject().getCategoryMoodleId());
         }
         if (save.getStartDate() != null) {
@@ -187,7 +190,20 @@ public class ClassServiceImpl implements IClassService {
         List<MoodleClassResponse> moodleClassResponses = moodleCourseRepository.postCourse(s1CourseRequest);
 
 
-        return ObjectUtil.copyProperties(save, new ClassDto(), ClassDto.class);
+        ClassDto classDto = ObjectUtil.copyProperties(save, new ClassDto(), ClassDto.class);
+        if (save.getClassLevel() != null) {
+            ClassLevel classLevel = classLevelRepository.findById(save.getClassLevel()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class level" + save.getClassLevel()));
+            classDto.setClassLevel(classLevel.getCode());
+        }
+        if (clazz.getCourse() != null) {
+
+
+            classDto.setCourse(ConvertUtil.doConvertCourseToCourseResponse(course));
+        }
+        if (save.getAccount() != null) {
+            classDto.setTeacher(ConvertUtil.doConvertEntityToSimpleResponse(save.getAccount()));
+        }
+        return classDto;
     }
 
     @Override
@@ -292,7 +308,7 @@ public class ClassServiceImpl implements IClassService {
         return PageUtil.convert(classes.map(aClass -> {
             ClassDto classDto = ObjectUtil.copyProperties(aClass, new ClassDto(), ClassDto.class);
             if (aClass.getAccount() != null) {
-                classDto.setTeacher(ConvertUtil.doConvertEntityToResponse(aClass.getAccount()));
+                classDto.setTeacher(ConvertUtil.doConvertEntityToSimpleResponse(aClass.getAccount()));
             }
             if (aClass.getCourse() != null) {
                 classDto.setCourse(ConvertUtil.doConvertCourseToCourseResponse(aClass.getCourse()));
@@ -873,7 +889,6 @@ public class ClassServiceImpl implements IClassService {
         List<ClassTimeTableResponse> classTimeTableResponseList = new ArrayList<>();
 
 
-
         timeTables.forEach(timeTable -> {
             ClassTimeTableResponse classTimeTableResponse = new ClassTimeTableResponse();
             classTimeTableResponse.setId(timeTable.getId());
@@ -984,6 +999,37 @@ public class ClassServiceImpl implements IClassService {
         ClassTeacherResponse classTeacherResponse = new ClassTeacherResponse();
         if (account != null) {
             AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class);
+            AccountDetail accountDetail = account.getAccountDetail();
+            if (accountDetail != null) {
+                EGenderType gender = accountDetail.getGender();
+                if (gender != null) {
+                    GenderResponse genderResponse = new GenderResponse();
+                    genderResponse.setCode(gender.name());
+                    genderResponse.setName(gender.getLabel());
+                    accountResponse.setGender(genderResponse);
+                }
+                accountResponse.setFirstName(accountDetail.getFirstName());
+                accountResponse.setLastName(accountDetail.getLastName());
+                accountResponse.setPhoneNumber(accountDetail.getPhone());
+                accountResponse.setEmail(accountDetail.getEmail());
+                accountResponse.setBirthday(accountDetail.getBirthDay());
+
+                if (account.getResource() != null) {
+                    accountResponse.setAvatar(account.getResource().getUrl());
+                }
+
+                accountResponse.setDomicile(accountDetail.getDomicile());
+                accountResponse.setProvince(accountDetail.getTeachingProvince());
+                accountResponse.setVoice(accountDetail.getVoice());
+                accountResponse.setCurrentAddress(accountDetail.getCurrentAddress());
+                accountResponse.setIdCard(accountDetail.getIdCard());
+                accountResponse.setSchoolName(accountDetail.getTrainingSchoolName());
+                accountResponse.setMajors(accountDetail.getMajors());
+                accountResponse.setStatus(accountDetail.getStatus());
+                accountResponse.setLevel(accountDetail.getLevel());
+                accountResponse.setActive(accountDetail.getActive());
+
+            }
             accountResponse.setRole(ObjectUtil.copyProperties(account.getRole(), new RoleDto(), RoleDto.class));
             Resource resource = account.getResource();
             if (resource != null) {

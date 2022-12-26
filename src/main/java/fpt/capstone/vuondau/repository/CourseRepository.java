@@ -4,6 +4,7 @@ package fpt.capstone.vuondau.repository;
 
 import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.Course;
+import fpt.capstone.vuondau.entity.Subject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -23,5 +24,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
     Page<Course> findAll(Specification<Course> spec, Pageable pageable);
 
     Page<Course> findAllByIsActiveIsTrue( Pageable pageable);
+
+    Page<Course> findAllBySubject(Subject subject , Pageable pageable);
 
 }

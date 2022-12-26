@@ -9,7 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 
 public interface ITransactionService {
-    PaymentResponse startPayment(HttpServletRequest req, VpnPayRequest request, Principal principal) throws UnsupportedEncodingException;
+    PaymentResponse startPayment(HttpServletRequest req, VpnPayRequest request) throws UnsupportedEncodingException;
 
     Transaction executeAfterPayment(HttpServletRequest request);
 }

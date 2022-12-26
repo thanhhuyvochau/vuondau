@@ -3,9 +3,11 @@ package fpt.capstone.vuondau.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
+import fpt.capstone.vuondau.entity.dto.ForumDto;
 import fpt.capstone.vuondau.entity.request.SubjectRequest;
 import fpt.capstone.vuondau.entity.request.SubjectSearchRequest;
 import fpt.capstone.vuondau.entity.response.SubjectResponse;
+import fpt.capstone.vuondau.service.IForumService;
 import fpt.capstone.vuondau.service.ISubjectService;
 import io.swagger.v3.oas.annotations.Operation;
 
@@ -14,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -22,9 +23,11 @@ import java.util.List;
 public class SubjectController {
 
     private final ISubjectService subjectService;
+    private final IForumService forumService;
 
-    public SubjectController(ISubjectService subjectService) {
+    public SubjectController(ISubjectService subjectService, IForumService forumService) {
         this.subjectService = subjectService;
+        this.forumService = forumService;
     }
 
     @Operation(summary = "Tạo mới subject")
@@ -83,5 +86,11 @@ public class SubjectController {
     @GetMapping("/teacher/subjects")
     public ResponseEntity<ApiResponse<List<SubjectResponse>>> getSubjectOfTeacher() {
         return ResponseEntity.ok(ApiResponse.success(subjectService.getSubjectOfTeacher()));
+    }
+
+    @Operation(summary = "Lấy chi tiết diễn đàn của một môn học")
+    @GetMapping("/forum")
+    public ResponseEntity<ApiResponse<ForumDto>> getForumOfSubject(@RequestParam Long subjectId) {
+        return ResponseEntity.ok(ApiResponse.success(forumService.getForumBySubject(subjectId)));
     }
 }

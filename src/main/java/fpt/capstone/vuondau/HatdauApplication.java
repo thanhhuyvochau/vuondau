@@ -16,14 +16,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.http.HttpStatus;
-import org.threeten.bp.format.DateTimeFormatter;
 
 
-import java.sql.Timestamp;
 import java.text.ParseException;
-import java.time.*;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,7 +27,6 @@ import static fpt.capstone.vuondau.entity.common.EAccountRole.TEACHER;
 import static fpt.capstone.vuondau.entity.common.EResourceType.AVATAR;
 import static fpt.capstone.vuondau.entity.common.EResourceType.FILE;
 import static fpt.capstone.vuondau.entity.common.ESubjectCode.*;
-import static fpt.capstone.vuondau.util.DayUtil.getDatesBetweenUsingJava8;
 
 
 @SpringBootApplication
@@ -52,8 +46,9 @@ public class HatdauApplication {
     private final DayOfWeekRepository dayOfWeekRepository;
 
     private final ClassRepository classRepository;
+    private final ForumRepository forumRepository;
 
-    public HatdauApplication(RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository, MoodleCourseRepository moodleCourseRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ClassRepository classRepository) {
+    public HatdauApplication(RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository, MoodleCourseRepository moodleCourseRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ClassRepository classRepository, ForumRepository forumRepository) {
         this.roleRepository = roleRepository;
         this.subjectRepository = subjectRepository;
         this.requestTypeRepository = requestTypeRepository;
@@ -61,6 +56,7 @@ public class HatdauApplication {
         this.slotRepository = slotRepository;
         this.dayOfWeekRepository = dayOfWeekRepository;
         this.classRepository = classRepository;
+        this.forumRepository = forumRepository;
     }
 
 
@@ -70,7 +66,6 @@ public class HatdauApplication {
 
 
     }
-
 
 
     @EventListener(ApplicationReadyEvent.class)
@@ -141,15 +136,15 @@ public class HatdauApplication {
     }
 
     @EventListener(ApplicationReadyEvent.class)
-    public void intiDataSubject() throws JsonProcessingException {
+    public void intiDataSubject() {
         List<Subject> allSubject = subjectRepository.findAll();
-        Boolean existToan = false;
-        Boolean existVatLy = false;
-        Boolean existHoaHoc = false;
-        Boolean existTiengAnh = false;
-        Boolean existSinhHoc = false;
-        Boolean existNguVan = false;
-        Boolean existTinHoc = false;
+        boolean existToan = false;
+        boolean existVatLy = false;
+        boolean existHoaHoc = false;
+        boolean existTiengAnh = false;
+        boolean existSinhHoc = false;
+        boolean existNguVan = false;
+        boolean existTinHoc = false;
 
 
         for (Subject subject : allSubject) {
@@ -180,42 +175,49 @@ public class HatdauApplication {
             Subject subject = new Subject();
             subject.setCode(ESubjectCode.Toan);
             subject.setName(Toan.label);
+            createSubjectForum(subject);
             subjectList.add(subject);
         }
         if (!existVatLy) {
             Subject subject = new Subject();
             subject.setCode(ESubjectCode.VatLy);
             subject.setName(VatLy.label);
+            createSubjectForum(subject);
             subjectList.add(subject);
         }
         if (!existHoaHoc) {
             Subject subject = new Subject();
             subject.setCode(ESubjectCode.HoaHoc);
             subject.setName(HoaHoc.label);
+            createSubjectForum(subject);
             subjectList.add(subject);
         }
         if (!existTiengAnh) {
             Subject subject = new Subject();
             subject.setCode(ESubjectCode.TiengAnh);
             subject.setName(TiengAnh.label);
+            createSubjectForum(subject);
             subjectList.add(subject);
         }
         if (!existSinhHoc) {
             Subject subject = new Subject();
             subject.setCode(ESubjectCode.SinhHoc);
             subject.setName(SinhHoc.label);
+            createSubjectForum(subject);
             subjectList.add(subject);
         }
         if (!existNguVan) {
             Subject subject = new Subject();
             subject.setCode(ESubjectCode.NguVan);
             subject.setName(NguVan.label);
+            createSubjectForum(subject);
             subjectList.add(subject);
         }
         if (!existTinHoc) {
             Subject subject = new Subject();
             subject.setCode(ESubjectCode.TinHoc);
             subject.setName(TinHoc.label);
+            createSubjectForum(subject);
             subjectList.add(subject);
         }
 
@@ -555,6 +557,16 @@ public class HatdauApplication {
 
 
     }
+
+    private Boolean createSubjectForum(Subject subject) {
+        Forum forum = new Forum();
+        forum.setName(subject.getName());
+        forum.setCode(subject.getCode().name());
+        forum.setSubject(subject);
+        forum.setType(EForumType.SUBJECT);
+        return true;
+    }
+
 
 //    @EventListener(ApplicationReadyEvent.class)
 //    public void intiDataClasType() {

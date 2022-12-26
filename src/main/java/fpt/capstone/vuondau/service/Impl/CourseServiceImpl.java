@@ -15,10 +15,7 @@ import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.*;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.ICourseService;
-import fpt.capstone.vuondau.util.ConvertUtil;
-import fpt.capstone.vuondau.util.MessageUtil;
-import fpt.capstone.vuondau.util.ObjectUtil;
-import fpt.capstone.vuondau.util.PageUtil;
+import fpt.capstone.vuondau.util.*;
 import fpt.capstone.vuondau.util.specification.CourseSpecificationBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -506,31 +503,31 @@ public class CourseServiceImpl implements ICourseService {
     }
 
     @Override
-    public ApiPage<CourseDetailResponse> getCourseBySubject(long subjectId) {
+    public ApiPage<CourseDetailResponse> getCourseBySubject(long subjectId, Pageable pageable) {
         Subject subject = subjectRepository.findById(subjectId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay subject"));
         List<CourseDetailResponse> courseDetailResponseList = new ArrayList<>();
         List<Course> courses = subject.getCourses();
-        courses.stream().peek(course -> {
-            if (course.getIsActive()) {
-                CourseDetailResponse courseDetailResponse = new CourseDetailResponse();
-                courseDetailResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class, true);
+        Page<Course> allBySubject = courseRepository.findAllBySubject(subject, pageable);
+        return PageUtil.convert(allBySubject.map(course -> {
+            CourseDetailResponse courseDetailResponse = new CourseDetailResponse();
+            courseDetailResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class, true);
 
-                courseDetailResponse.setActive(course.getIsActive());
+            courseDetailResponse.setActive(course.getIsActive());
 
-                courseDetailResponse.setTitle(course.getTitle());
-                courseDetailResponse.setGrade(course.getGrade());
-                if (course.getResource() != null) {
-                    courseDetailResponse.setImage(course.getResource().getUrl());
-                }
-//                courseDetailResponse.setUnitPrice(course.getUnitPrice());
-
-                courseDetailResponseList.add(courseDetailResponse);
-
+            courseDetailResponse.setTitle(course.getTitle());
+//            courseDetailResponse.setGrade(course.getGrade());
+            if (course.getResource() != null) {
+                courseDetailResponse.setImage(course.getResource().getUrl());
             }
-        }).collect(Collectors.toList());
-        Page<CourseDetailResponse> page = new PageImpl<>(courseDetailResponseList);
-        ApiPage<CourseDetailResponse> convert = PageUtil.convert(page);
-        return convert;
+            if (course.getResource() != null) {
+                courseDetailResponse.setImage(course.getResource().getUrl());
+            }
+
+            courseDetailResponseList.add(courseDetailResponse);
+            return courseDetailResponse;
+        }));
+
+
     }
 
     @Override
@@ -546,7 +543,7 @@ public class CourseServiceImpl implements ICourseService {
             courseDetailResponse.setActive(course.getIsActive());
 
             courseDetailResponse.setTitle(course.getTitle());
-            courseDetailResponse.setGrade(course.getGrade());
+//            courseDetailResponse.setGrade(course.getGrade());
             if (course.getResource() != null) {
                 courseDetailResponse.setImage(course.getResource().getUrl());
             }
