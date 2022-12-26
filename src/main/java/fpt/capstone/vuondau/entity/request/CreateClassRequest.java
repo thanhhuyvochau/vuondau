@@ -23,9 +23,9 @@ public class CreateClassRequest implements Serializable {
 
     private Long maxNumberStudent;
 
-    private Long subjectId;
-
-    private Long courseId;
+//    private Long subjectId;
+//
+//    private Long courseId;
     private BigDecimal unitPrice;
 
 
@@ -90,25 +90,25 @@ public class CreateClassRequest implements Serializable {
         return maxNumberStudent;
     }
 
-    public Long getSubjectId() {
-        return subjectId;
-    }
-
-    public void setSubjectId(Long subjectId) {
-        this.subjectId = subjectId;
-    }
+//    public Long getSubjectId() {
+//        return subjectId;
+//    }
+//
+//    public void setSubjectId(Long subjectId) {
+//        this.subjectId = subjectId;
+//    }
 
     public void setMaxNumberStudent(Long maxNumberStudent) {
         this.maxNumberStudent = maxNumberStudent;
     }
 
-    public Long getCourseId() {
-        return courseId;
-    }
-
-    public void setCourseId(Long courseId) {
-        this.courseId = courseId;
-    }
+//    public Long getCourseId() {
+//        return courseId;
+//    }
+//
+//    public void setCourseId(Long courseId) {
+//        this.courseId = courseId;
+//    }
 
     //    public CreateCourseRequest getCourseRequest() {
 //        return courseRequest;
