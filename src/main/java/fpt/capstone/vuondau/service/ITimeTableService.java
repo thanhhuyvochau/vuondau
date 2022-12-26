@@ -27,4 +27,6 @@ public interface ITimeTableService {
     ApiPage<TimeTableDto> getTimeTableInDay(TimeTableSearchRequest timeTableSearchRequest, Pageable pageable) ;
 
     List<ClassAttendanceResponse> accountGetAllTimeTable();
+
+    Long adminCreateTimeTableClass(Long classId, Long numberSlot, TimeTableRequest timeTableRequest) throws ParseException;
 }
