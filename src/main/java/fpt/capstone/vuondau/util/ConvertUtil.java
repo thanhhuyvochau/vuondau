@@ -179,7 +179,7 @@ public class ConvertUtil {
 
     public static CourseDetailResponse doConvertEntityToResponse(Course course) {
         CourseDetailResponse courseDetailResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class);
-        courseDetailResponse.setGrade(course.getGrade());
+//        courseDetailResponse.setGrade(course.getGrade());
         return courseDetailResponse;
     }
 

@@ -31,7 +31,7 @@ public interface ICourseService {
 
     CourseResponse createCourse(CourseRequest courseRequest);
 
-    ApiPage<CourseDetailResponse> getCourseBySubject(long subjectId);
+    ApiPage<CourseDetailResponse> getCourseBySubject(long subjectId, Pageable pageable);
 
     List<CourseDetailResponse> getListCourseBySubject(long subjectId);
 }
