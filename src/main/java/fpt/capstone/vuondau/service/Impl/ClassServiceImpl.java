@@ -191,24 +191,19 @@ public class ClassServiceImpl implements IClassService {
 
 
         ClassDto classDto = ObjectUtil.copyProperties(save, new ClassDto(), ClassDto.class);
-        if (save.getClassLevel()!= null){
+        if (save.getClassLevel() != null) {
             ClassLevel classLevel = classLevelRepository.findById(save.getClassLevel()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class level" + save.getClassLevel()));
-            classDto.setClassLevel(classLevel.getCode()) ;
+            classDto.setClassLevel(classLevel.getCode());
         }
-        if (clazz.getCourse()!=null) {
+        if (clazz.getCourse() != null) {
 
 
-            classDto.setCourse( ConvertUtil.doConvertCourseToCourseResponse(course));
+            classDto.setCourse(ConvertUtil.doConvertCourseToCourseResponse(course));
         }
-        if (save.getAccount()!=null) {
-
-            classDto.setTeacher( ConvertUtil.doConvertEntityToResponse(save.getAccount()) );
+        if (save.getAccount() != null) {
+            classDto.setTeacher(ConvertUtil.doConvertEntityToSimpleResponse(save.getAccount()));
         }
-
-
-
-
-        return classDto ;
+        return classDto;
     }
 
     @Override
