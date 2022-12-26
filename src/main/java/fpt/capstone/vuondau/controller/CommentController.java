@@ -3,7 +3,9 @@ package fpt.capstone.vuondau.controller;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.dto.CommentDto;
 import fpt.capstone.vuondau.entity.request.CreateCommentRequest;
+import fpt.capstone.vuondau.entity.request.VoteRequest;
 import fpt.capstone.vuondau.service.ICommentService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -44,5 +46,9 @@ public class CommentController {
         return ResponseEntity.ok(ApiResponse.success(commentService.deleteComment(id)));
     }
 
-
+    @PostMapping("/vote")
+    @Operation(description = "Bỏ phiếu cho bình luận")
+    public ResponseEntity<ApiResponse<Boolean>> voteComment(@RequestParam VoteRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(commentService.voteComment(request)));
+    }
 }

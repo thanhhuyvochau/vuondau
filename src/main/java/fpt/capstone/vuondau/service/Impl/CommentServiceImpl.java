@@ -3,11 +3,14 @@ package fpt.capstone.vuondau.service.Impl;
 import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.Comment;
 import fpt.capstone.vuondau.entity.Question;
+import fpt.capstone.vuondau.entity.Vote;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.dto.CommentDto;
 import fpt.capstone.vuondau.entity.request.CreateCommentRequest;
+import fpt.capstone.vuondau.entity.request.VoteRequest;
 import fpt.capstone.vuondau.repository.CommentRepository;
 import fpt.capstone.vuondau.repository.QuestionRepository;
+import fpt.capstone.vuondau.repository.VoteRepository;
 import fpt.capstone.vuondau.service.ICommentService;
 import fpt.capstone.vuondau.util.ConvertUtil;
 import fpt.capstone.vuondau.util.ObjectUtil;
@@ -25,11 +28,13 @@ public class CommentServiceImpl implements ICommentService {
     private final CommentRepository commentRepository;
     private final SecurityUtil securityUtil;
     private final QuestionRepository questionRepository;
+    private final VoteRepository voteRepository;
 
-    public CommentServiceImpl(CommentRepository commentRepository, SecurityUtil securityUtil, QuestionRepository questionRepository) {
+    public CommentServiceImpl(CommentRepository commentRepository, SecurityUtil securityUtil, QuestionRepository questionRepository, VoteRepository voteRepository) {
         this.commentRepository = commentRepository;
         this.securityUtil = securityUtil;
         this.questionRepository = questionRepository;
+        this.voteRepository = voteRepository;
     }
 
     @Override
@@ -92,6 +97,20 @@ public class CommentServiceImpl implements ICommentService {
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
                         .withMessage("Comment not found with id:" + commentId));
         commentRepository.delete(comment);
+        return true;
+    }
+
+    @Override
+    public Boolean voteComment(VoteRequest request) {
+        Account account = securityUtil.getCurrentUser();
+        Comment comment = commentRepository.findById(request.getCommentId())
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
+                        .withMessage("Comment not found with id:" + request.getCommentId()));
+        Vote vote = voteRepository.findByCommentAndAccount(comment, account).orElse(new Vote());
+        vote.setComment(comment);
+        vote.setAccount(account);
+        vote.setVote(request.getVote());
+        voteRepository.save(vote);
         return true;
     }
 }

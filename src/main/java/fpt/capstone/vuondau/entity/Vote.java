@@ -18,8 +18,8 @@ public class Vote {
     @ManyToOne
     @JoinColumn(name = "comment_id")
     private Comment comment;
-    private Boolean upvote;
-    private Boolean downvote;
+    @Column(name = "vote")
+    private Boolean vote; // true is upvote and false is downvote
 
     public Long getId() {
         return id;
@@ -53,20 +53,12 @@ public class Vote {
         this.comment = comment;
     }
 
-    public Boolean getUpvote() {
-        return upvote;
+    public Boolean getVote() {
+        return vote;
     }
 
-    public void setUpvote(Boolean upvote) {
-        this.upvote = upvote;
-    }
-
-    public Boolean getDownvote() {
-        return downvote;
-    }
-
-    public void setDownvote(Boolean downvote) {
-        this.downvote = downvote;
+    public void setVote(Boolean vote) {
+        this.vote = vote;
     }
 }
 
