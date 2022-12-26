@@ -352,7 +352,8 @@ public class TimeTableServiceImpl implements ITimeTableService {
             classAttendanceResponse.setAttendance(attendanceDtoList);
             classAttendanceResponseList.add(classAttendanceResponse);
         });
-        return classAttendanceResponseList;
+
+        return classAttendanceResponseList ;
 
 
     }

@@ -45,7 +45,7 @@ public class TimeTableController {
     }
 
     @Operation(summary = "giao vien/ học sinh xem tất cả thời khoá biểu/điểm danh ")
-    @GetMapping("/all-time-table")
+    @GetMapping("/classes")
     public ResponseEntity<ApiResponse<List<ClassAttendanceResponse>>> accountGetAllTimeTable() throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iTimeTableService.accountGetAllTimeTable()));
     }
