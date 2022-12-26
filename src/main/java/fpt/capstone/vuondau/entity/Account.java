@@ -33,23 +33,23 @@ public class Account {
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @OneToOne(mappedBy = "account", fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private AccountDetail accountDetail;
 
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
     private List<Transaction> transactions = new ArrayList<>();
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StudentClass> studentClasses;
+    private List<StudentClass> studentClasses = new ArrayList<>();
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Class> teacherClass;
+    private List<Class> teacherClass = new ArrayList<>();
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Request> requests;
+    private List<Request> requests = new ArrayList<>();
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
-    private List<StudentAnswer> studentAnswers;
+    private List<StudentAnswer> studentAnswers = new ArrayList<>();
 
     @Column(name = "is_keycloak")
     private Boolean isKeycloak;
@@ -104,7 +104,6 @@ public class Account {
 //    private List<TeacherCourse> teacherCourses;
 
 
-
 //    public EGenderType getGender() {
 //        return gender;
 //    }
@@ -112,7 +111,6 @@ public class Account {
 //    public void setGender(EGenderType gender) {
 //        this.gender = gender;
 //    }
-
 
 
     public Long getId() {
@@ -353,17 +351,16 @@ public class Account {
     }
 
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Account account = (Account) o;
-        return Objects.equals(id, account.id) && Objects.equals(username, account.username) && Objects.equals(password, account.password) && Objects.equals(isActive, account.isActive) && Objects.equals(role, account.role) && Objects.equals(transactions, account.transactions)  && Objects.equals(studentClasses, account.studentClasses) && Objects.equals(teacherClass, account.teacherClass) && Objects.equals(requests, account.requests) && Objects.equals(studentAnswers, account.studentAnswers) && Objects.equals(questions, account.questions) && Objects.equals(comments, account.comments) && Objects.equals(accountDetail, account.accountDetail) && Objects.equals(infoFindTutorAccounts, account.infoFindTutorAccounts) && Objects.equals(fileAttachments, account.fileAttachments) && Objects.equals(resource, account.resource);
+        return Objects.equals(id, account.id) && Objects.equals(username, account.username) && Objects.equals(password, account.password) && Objects.equals(isActive, account.isActive) && Objects.equals(role, account.role) && Objects.equals(transactions, account.transactions) && Objects.equals(studentClasses, account.studentClasses) && Objects.equals(teacherClass, account.teacherClass) && Objects.equals(requests, account.requests) && Objects.equals(studentAnswers, account.studentAnswers) && Objects.equals(questions, account.questions) && Objects.equals(comments, account.comments) && Objects.equals(accountDetail, account.accountDetail) && Objects.equals(infoFindTutorAccounts, account.infoFindTutorAccounts) && Objects.equals(fileAttachments, account.fileAttachments) && Objects.equals(resource, account.resource);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, password, isActive,  role, transactions, studentClasses, teacherClass, requests, studentAnswers, questions, comments, accountDetail, infoFindTutorAccounts, fileAttachments, resource);
+        return Objects.hash(id, username, password, isActive, role, transactions, studentClasses, teacherClass, requests, studentAnswers, questions, comments, accountDetail, infoFindTutorAccounts, fileAttachments, resource);
     }
 }

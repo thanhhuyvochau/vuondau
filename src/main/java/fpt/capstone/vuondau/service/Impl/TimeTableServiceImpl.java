@@ -55,7 +55,9 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
     private final AttendanceRepository attendanceRepository;
 
-    public TimeTableServiceImpl(ClassRepository classRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ArchetypeRepository archetypeRepository, ArchetypeTimeRepository archetypeTimeRepository, MessageUtil messageUtil, StudentClassRepository studentClassRepository, TimeTableRepository timeTableRepository, AccountRepository accountRepository, fpt.capstone.vuondau.util.SecurityUtil securityUtil, AttendanceRepository attendanceRepository) {
+    private final ClassServiceImpl classServiceImpl;
+
+    public TimeTableServiceImpl(ClassRepository classRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ArchetypeRepository archetypeRepository, ArchetypeTimeRepository archetypeTimeRepository, MessageUtil messageUtil, StudentClassRepository studentClassRepository, TimeTableRepository timeTableRepository, AccountRepository accountRepository, fpt.capstone.vuondau.util.SecurityUtil securityUtil, AttendanceRepository attendanceRepository, ClassServiceImpl classServiceImpl) {
         this.classRepository = classRepository;
         this.slotRepository = slotRepository;
         this.dayOfWeekRepository = dayOfWeekRepository;
@@ -67,6 +69,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
         this.accountRepository = accountRepository;
         SecurityUtil = securityUtil;
         this.attendanceRepository = attendanceRepository;
+        this.classServiceImpl = classServiceImpl;
     }
 
 
@@ -297,64 +300,72 @@ public class TimeTableServiceImpl implements ITimeTableService {
     @Override
     public List<ClassAttendanceResponse> accountGetAllTimeTable() {
         Account currentUser = SecurityUtil.getCurrentUser();
-        List<Attendance> attendanceList = null;
-        if (currentUser.getRole().getCode().equals(EAccountRole.STUDENT)) {
-
+        List<ClassAttendanceResponse> classAttendanceResponseList = new ArrayList<>();
+        List<Class> classList = null;
+        if (currentUser.getRole().getCode().equals(EAccountRole.TEACHER)) {
+            classList = currentUser.getTeacherClass();
         } else if (currentUser.getRole().getCode().equals(EAccountRole.TEACHER)) {
-            List<Class> teacherClass = currentUser.getTeacherClass();
-            for (Class aClass : teacherClass) {
-                List<TimeTable> timeTables = aClass.getTimeTables();
-                if (aClass.getTimeTables() != null) {
-                    for (TimeTable timeTable : timeTables) {
-                        attendanceList = attendanceRepository.findAllByTimeTableIn(timeTables);
-                    }
-                }
-            }
-
+            classList = currentUser.getStudentClasses()
+                    .stream().map(StudentClass::getaClass).collect(Collectors.toList());
         }
-        List<ClassAttendanceResponse> classAttendanceResponseArrayList = new ArrayList<>( );
-        ClassAttendanceResponse classAttendanceResponse = new ClassAttendanceResponse();
-
-        classAttendanceResponse.setAccountId(currentUser.getId());
 
 
-        List<AttendanceDto> attendanceDtoList = new ArrayList<>();
-        attendanceList.forEach(attendance -> {
-            AttendanceDto attendanceDto = new AttendanceDto();
-            attendanceDto.setId(attendance.getId());
-            attendanceDto.setPresent(attendance.getPresent());
+        classList.forEach(aClass -> {
+            List<TimeTable> timeTables = aClass.getTimeTables();
+            ClassAttendanceResponse classAttendanceResponse = new ClassAttendanceResponse();
+            classAttendanceResponse.setClassId(aClass.getId());
+            timeTables.forEach(timeTable -> {
 
-            TimeTable timeTable = attendance.getTimeTable();
-            if (timeTable != null) {
-                attendanceDto.setTimeTableId(timeTable.getId());
-                attendanceDto.setDate(timeTable.getDate());
-                attendanceDto.setSlotNumber(timeTable.getSlotNumber());
-                ArchetypeTime archetypeTime = timeTable.getArchetypeTime();
-                if (archetypeTime != null) {
-                    if (archetypeTime.getSlot() != null) {
-                        attendanceDto.setSlotCode(archetypeTime.getSlot().getCode());
-                        attendanceDto.setSlotName(archetypeTime.getSlot().getName());
-                        Slot slot = archetypeTime.getSlot();
-                        attendanceDto.setStartTime(slot.getStartTime());
-                        attendanceDto.setEndTime(slot.getEndTime());
-                    }
-                    if (archetypeTime.getDayOfWeek() != null) {
-                        attendanceDto.setDowCode(archetypeTime.getDayOfWeek().getCode());
-                        attendanceDto.setDowName(archetypeTime.getDayOfWeek().getName());
-                    }
+                List<Attendance> attendances = timeTable.getAttendances();
+                List<AttendanceDto> attendanceDtoList = new ArrayList<>();
+                if (attendances != null) {
 
-                    Archetype archetype = archetypeTime.getArchetype();
-                    if (archetype != null) {
-                        attendanceDto.setArchetypeCode(archetype.getCode());
-                        attendanceDto.setArchetypeName(archetype.getName());
-                    }
+
+                    attendances.forEach(attendance -> {
+                        AttendanceDto attendanceDto = new AttendanceDto();
+                        attendanceDto.setId(attendance.getId());
+                        attendanceDto.setPresent(attendance.getPresent());
+                        attendanceDto.setTimeTableId(timeTable.getId());
+                        attendanceDto.setDate(timeTable.getDate());
+                        attendanceDto.setSlotNumber(timeTable.getSlotNumber());
+
+                        ArchetypeTime archetypeTime = timeTable.getArchetypeTime();
+                        if (archetypeTime != null) {
+                            if (archetypeTime.getSlot() != null) {
+                                attendanceDto.setSlotCode(archetypeTime.getSlot().getCode());
+                                attendanceDto.setSlotName(archetypeTime.getSlot().getName());
+                                Slot slot = archetypeTime.getSlot();
+                                attendanceDto.setStartTime(slot.getStartTime());
+                                attendanceDto.setEndTime(slot.getEndTime());
+                            }
+                            if (archetypeTime.getDayOfWeek() != null) {
+                                attendanceDto.setDowCode(archetypeTime.getDayOfWeek().getCode());
+                                attendanceDto.setDowName(archetypeTime.getDayOfWeek().getName());
+                            }
+
+                            Archetype archetype = archetypeTime.getArchetype();
+                            if (archetype != null) {
+                                attendanceDto.setArchetypeCode(archetype.getCode());
+                                attendanceDto.setArchetypeName(archetype.getName());
+                            }
+                        }
+
+
+                        attendanceDtoList.add(attendanceDto);
+
+
+                    });
+                    classAttendanceResponse.setAttendance(attendanceDtoList);
+                    classAttendanceResponseList.add(classAttendanceResponse);
                 }
-            }
-            attendanceDtoList.add(attendanceDto);
+
+
+            });
 
         });
-        classAttendanceResponse.setAttendance(attendanceDtoList);
-        classAttendanceResponseArrayList.add(classAttendanceResponse) ;
-        return classAttendanceResponseArrayList;
+        return classAttendanceResponseList;
+
+
+
     }
 }

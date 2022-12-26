@@ -10,9 +10,13 @@ import java.util.Optional;
 
 
 @Repository
-public interface AttendanceRepository extends JpaRepository<Attendance,Long> {
+public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
-    List<Attendance> findAllByStudentClassKeyId(StudentClassKey studentClassKey ) ;
-    List<Attendance> findAllByTimeTableIn(List<TimeTable>timeTables  ) ;
+    List<Attendance> findAllByStudentClassKeyId(StudentClassKey studentClassKey);
+
+    List<Attendance> findAllByStudentClassKeyIdIn(List<StudentClassKey> studentClassKeys);
+//    List<Attendance> findAllByStudentClassKeyIdIn(List<StudentClassKey> studentClassKeys ) ;
+
+    List<Attendance> findAllByTimeTableIn(List<TimeTable> timeTables);
 
 }
