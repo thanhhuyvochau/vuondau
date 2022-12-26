@@ -40,7 +40,7 @@ public class CommentServiceImpl implements ICommentService {
 
     @Override
     public List<CommentDto> getCommentByQuestion(Long questionId) {
-        List<Comment> comments = commentRepository.findAllByQuestion_Id(questionId);
+        List<Comment> comments = commentRepository.findAllByQuestion_IdAndParentCommentIsNull(questionId);
         if (!comments.isEmpty()) {
             return comments.stream().map(ConvertUtil::doConvertEntityToResponse)
                     .collect(Collectors.toList());

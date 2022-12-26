@@ -10,6 +10,7 @@ import fpt.capstone.vuondau.service.ITransactionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +30,7 @@ public class PaymentController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('STUDENT')")
     public ResponseEntity<ApiResponse<PaymentResponse>> getPayment(HttpServletRequest req, @RequestBody VpnPayRequest request, final Principal principal) throws IOException {
         return ResponseEntity.ok(ApiResponse.success(transactionService.startPayment(req, request,principal)));
     }
