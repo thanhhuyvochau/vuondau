@@ -3,14 +3,15 @@ package fpt.capstone.vuondau.service.Impl;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiException;
+import fpt.capstone.vuondau.entity.common.EAccountRole;
+import fpt.capstone.vuondau.entity.common.EForumType;
 import fpt.capstone.vuondau.entity.dto.QuestionDto;
 import fpt.capstone.vuondau.entity.request.CreateQuestionRequest;
-import fpt.capstone.vuondau.repository.ForumLessonRepository;
-import fpt.capstone.vuondau.repository.ForumRepository;
-import fpt.capstone.vuondau.repository.QuestionRepository;
-import fpt.capstone.vuondau.repository.SubjectRepository;
+import fpt.capstone.vuondau.entity.request.VoteRequest;
+import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IQuestionService;
 import fpt.capstone.vuondau.util.ConvertUtil;
+import fpt.capstone.vuondau.util.ForumUtil;
 import fpt.capstone.vuondau.util.ObjectUtil;
 import fpt.capstone.vuondau.util.SecurityUtil;
 import org.springframework.http.HttpStatus;
@@ -26,13 +27,15 @@ public class QuestionServiceImpl implements IQuestionService {
     private final SecurityUtil securityUtil;
     private final ForumRepository forumRepository;
     private final ForumLessonRepository forumLessonRepository;
+    private final VoteRepository voteRepository;
 
-    public QuestionServiceImpl(QuestionRepository questionRepository, SubjectRepository subjectRepository, SecurityUtil securityUtil, ForumRepository forumRepository, ForumLessonRepository forumLessonRepository) {
+    public QuestionServiceImpl(QuestionRepository questionRepository, SubjectRepository subjectRepository, SecurityUtil securityUtil, ForumRepository forumRepository, ForumLessonRepository forumLessonRepository, VoteRepository voteRepository) {
         this.questionRepository = questionRepository;
         this.subjectRepository = subjectRepository;
         this.securityUtil = securityUtil;
         this.forumRepository = forumRepository;
         this.forumLessonRepository = forumLessonRepository;
+        this.voteRepository = voteRepository;
     }
 
     @Override
@@ -45,19 +48,24 @@ public class QuestionServiceImpl implements IQuestionService {
     @Override
     public QuestionDto createQuestion(CreateQuestionRequest createQuestionRequest) {
         Question question = ObjectUtil.copyProperties(createQuestionRequest, new Question(), Question.class, true);
-        Account student = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUser();
 
         Forum forum = forumRepository.findById(createQuestionRequest.getForumId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
                         .withMessage("Subject not found with id:" + createQuestionRequest.getForumId()));
 
-        ForumLesson forumLesson = forumLessonRepository.findById(createQuestionRequest
-                .getForumLessonId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
-                .withMessage("Lesson not found with id:" + createQuestionRequest.getForumLessonId()));
-
-        question.setForumLesson(forumLesson);
+        if (!ForumUtil.isValidForumMember(forum, account)) {
+            throw ApiException.create(HttpStatus.CONFLICT)
+                    .withMessage("User not a valid member of this forum");
+        }
+        if (forum.getType().name().equals(EForumType.CLASS.name())) {
+            ForumLesson forumLesson = forumLessonRepository.findById(createQuestionRequest
+                    .getForumLessonId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
+                    .withMessage("Lesson not found with id:" + createQuestionRequest.getForumLessonId()));
+            question.setForumLesson(forumLesson);
+        }
         question.setForum(forum);
-        question.setStudent(student);
+        question.setStudent(account);
         questionRepository.save(question);
         return ConvertUtil.doConvertEntityToResponse(question);
     }
@@ -68,14 +76,27 @@ public class QuestionServiceImpl implements IQuestionService {
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
                         .withMessage("Question not found with id:" + questionId));
         Question newQuestion = ObjectUtil.copyProperties(createQuestionRequest, question, Question.class, true);
-        Account student = securityUtil.getCurrentUser();
-        Forum forum = forumRepository.findById(createQuestionRequest.getForumId())
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
-                        .withMessage("Forum not found with id:" + createQuestionRequest.getForumId()));
-        newQuestion.setForum(forum);
-        newQuestion.setStudent(student);
-        questionRepository.save(newQuestion);
-        return ConvertUtil.doConvertEntityToResponse(newQuestion);
+        Account account = securityUtil.getCurrentUser();
+        EAccountRole roleCode = account.getRole().getCode();
+        boolean isValidToUpdate = false;
+        if (account.getId().equals(question.getStudent().getId())) {
+            isValidToUpdate = true;
+        } else if (roleCode.equals(EAccountRole.ADMIN)) {
+            isValidToUpdate = true;
+        } else if (roleCode.equals(EAccountRole.TEACHER)) {
+            isValidToUpdate = true;
+        }
+        if (isValidToUpdate) {
+            Forum forum = forumRepository.findById(createQuestionRequest.getForumId())
+                    .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
+                            .withMessage("Forum not found with id:" + createQuestionRequest.getForumId()));
+            newQuestion.setForum(forum);
+            questionRepository.save(newQuestion);
+            return ConvertUtil.doConvertEntityToResponse(newQuestion);
+        } else {
+            throw ApiException.create(HttpStatus.NOT_FOUND)
+                    .withMessage("You not have the right to modify question!");
+        }
     }
 
     @Override
@@ -108,6 +129,20 @@ public class QuestionServiceImpl implements IQuestionService {
                 .filter(aClass -> aClass.getCourse().getSubject() != null)
                 .filter(aClass -> aClass.getCourse().getSubject().getId().equals(subject.getId()))
                 .findFirst().orElseThrow(() -> ApiException.create(HttpStatus.CONFLICT).withMessage("Student not enrolled to this subject!!"));
+        return true;
+    }
+
+    @Override
+    public Boolean voteQuestion(VoteRequest request) {
+        Account account = securityUtil.getCurrentUser();
+        Long questionId = request.getQuestionId();
+        Question question = questionRepository.findById(questionId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Question not found by id:" + questionId));
+        Vote vote = voteRepository.findByQuestionAndAccount(question, account).orElse(new Vote());
+        vote.setQuestion(question);
+        vote.setVote(request.getVote());
+        vote.setAccount(account);
+        voteRepository.save(vote);
         return true;
     }
 }

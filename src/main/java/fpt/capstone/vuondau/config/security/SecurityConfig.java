@@ -4,6 +4,7 @@ import fpt.capstone.vuondau.config.security.converter.JwtGrantedAuthoritiesConve
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,10 +17,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Collections;
 
 
-//@EnableGlobalMethodSecurity(
-//        prePostEnabled = true,
-//        securedEnabled = true,
-//        jsr250Enabled = true)
+@EnableGlobalMethodSecurity(
+        prePostEnabled = true,
+        securedEnabled = true,
+        jsr250Enabled = true)
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override

@@ -56,4 +56,6 @@ vnp_apiUrl: https://sandbox.vnpayment.vn/merchant_webapi/merchant.html
 
 # provinces
 provinces : https://provinces.open-api.vn/api/?depth=1
+
+# Return URL after payment
 payment-redirect: http://localhost:10000/processing

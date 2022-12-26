@@ -71,6 +71,8 @@ public class Account {
     @JoinColumn(name = "avatar_id")
     private Resource resource;
 
+    @OneToMany(mappedBy = "account")
+    private List<Vote> votes = new ArrayList<>();
 
 //    @Column(name = "first_name")
 //    private String firstName;
@@ -350,6 +352,13 @@ public class Account {
         this.fileAttachments = fileAttachments;
     }
 
+    public List<Vote> getVotes() {
+        return votes;
+    }
+
+    public void setVotes(List<Vote> votes) {
+        this.votes = votes;
+    }
 
     @Override
     public boolean equals(Object o) {

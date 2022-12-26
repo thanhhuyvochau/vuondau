@@ -200,8 +200,10 @@ public class ClassServiceImpl implements IClassService {
 
             classDto.setCourse(ConvertUtil.doConvertCourseToCourseResponse(course));
         }
+
         if (save.getAccount() != null) {
             classDto.setTeacher(ConvertUtil.doConvertEntityToSimpleResponse(save.getAccount()));
+
         }
         return classDto;
     }

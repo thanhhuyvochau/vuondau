@@ -8,11 +8,13 @@ import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EForumType;
 import fpt.capstone.vuondau.entity.dto.ForumDto;
 import fpt.capstone.vuondau.entity.dto.SimpleForumDto;
+import fpt.capstone.vuondau.entity.request.UpdateForumRequest;
 import fpt.capstone.vuondau.repository.ClassRepository;
 import fpt.capstone.vuondau.repository.ForumRepository;
 import fpt.capstone.vuondau.repository.SubjectRepository;
 import fpt.capstone.vuondau.service.IForumService;
 import fpt.capstone.vuondau.util.ConvertUtil;
+import fpt.capstone.vuondau.util.ForumUtil;
 import fpt.capstone.vuondau.util.PageUtil;
 import fpt.capstone.vuondau.util.SecurityUtil;
 import org.jetbrains.annotations.NotNull;
@@ -86,8 +88,17 @@ public class ForumServiceImpl implements IForumService {
     }
 
     @Override
-    public ForumDto updateForum(Long id) {
-        return null;
+    public ForumDto updateForum(Long id, UpdateForumRequest request) {
+        Forum forum = forumRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Forum not found with id:" + id));
+        String forumName = request.getName();
+        if (forumName != null && !forumName.trim().isEmpty()) {
+            forum.setName(forumName);
+        }
+        String forumCode = request.getCode();
+        if (forumCode != null && !forumCode.trim().isEmpty()) {
+            forum.setCode(forumCode);
+        }
+        return ConvertUtil.doConvertEntityToResponse(forum);
     }
 
     @Override
@@ -95,15 +106,27 @@ public class ForumServiceImpl implements IForumService {
         Account account = securityUtil.getCurrentUser();
         Class clazz = classRepository.findById(classId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Class not found with id:" + classId));
-
-        if (!isValidClassForStudent(account, clazz)) {
-            throw ApiException.create(HttpStatus.CONFLICT).withMessage("Student not enrolled to this class or some error happened!!");
+        Forum forum = clazz.getForum();
+        if (forum == null) {
+            throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Forum of this class not found, contact admin for help!");
         }
-        Forum forum = forumRepository.findForumByClazz(clazz)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
-                        .withMessage("Forum not found with class:" + clazz.getName()));
-
-        return ConvertUtil.doConvertEntityToResponse(forum);
+        String roleCode = account.getRole().getCode().name();
+        switch (roleCode) {
+            case "ADMIN":
+                return ConvertUtil.doConvertEntityToResponse(forum);
+            case "TEACHER":
+                Account teacher = clazz.getAccount();
+                if (!teacher.getId().equals(account.getId())) {
+                    throw ApiException.create(HttpStatus.CONFLICT).withMessage("This forum subject invalid for you!");
+                }
+                return ConvertUtil.doConvertEntityToResponse(forum);
+            case "STUDENT":
+                if (!ForumUtil.isValidClassForStudent(account, clazz)) {
+                    throw ApiException.create(HttpStatus.CONFLICT).withMessage("This forum subject invalid for you!");
+                }
+                return ConvertUtil.doConvertEntityToResponse(forum);
+        }
+        return null;
     }
 
     @Override
@@ -119,37 +142,21 @@ public class ForumServiceImpl implements IForumService {
         String roleCode = account.getRole().getCode().name();
         switch (roleCode) {
             case "ADMIN":
-                return ConvertUtil.doConvertEntityToResponse(subject.getForum());
+                return ConvertUtil.doConvertEntityToResponse(forum);
             case "TEACHER":
-                if (!isValidSubjectForTeacher(account, subject)) {
+                if (!ForumUtil.isValidSubjectForTeacher(account, subject)) {
                     throw ApiException.create(HttpStatus.CONFLICT).withMessage("This forum subject invalid for you!");
                 }
-                return ConvertUtil.doConvertEntityToResponse(subject.getForum());
+                return ConvertUtil.doConvertEntityToResponse(forum);
             case "STUDENT":
-                if (!isValidSubjectForStudent(account, subject)) {
+                if (!ForumUtil.isValidSubjectForStudent(account, subject)) {
                     throw ApiException.create(HttpStatus.CONFLICT).withMessage("This forum subject invalid for you!");
                 }
-                return ConvertUtil.doConvertEntityToResponse(subject.getForum());
+                return ConvertUtil.doConvertEntityToResponse(forum);
         }
         return null;
     }
 
-
-    private Boolean isValidSubjectForTeacher(Account account, Subject subject) {
-        AccountDetail teacherAccountDetail = account.getAccountDetail();
-        if (teacherAccountDetail == null) {
-            throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Cannot find the profile of this teacher, contact admin for help!");
-        }
-        AccountDetail result = subject.getAccountDetailSubjects()
-                .stream()
-                .map(AccountDetailSubject::getAccountDetail)
-                .filter(accountDetail -> accountDetail.getId().equals(teacherAccountDetail.getId()))
-                .findFirst().orElse(null);
-        if (result == null) {
-            return false;
-        }
-        return true;
-    }
 
     @Override
     public ApiPage<SimpleForumDto> getAllForumByTypes(Pageable pageable, EForumType forumType) {
@@ -234,25 +241,5 @@ public class ForumServiceImpl implements IForumService {
         return PageUtil.convert(forums.map(ConvertUtil::doConvertEntityToSimpleResponse));
     }
 
-    private Boolean isValidSubjectForStudent(Account student, Subject subject) {
-        List<Class> enrolledClass = student.getStudentClasses().stream().map(StudentClass::getaClass).collect(Collectors.toList());
-        Class classMatchSubject = enrolledClass.stream()
-                .filter(aClass -> aClass.getCourse().getSubject() != null)
-                .filter(aClass -> aClass.getCourse().getSubject().getId().equals(subject.getId()))
-                .findFirst().orElse(null);
-        if (classMatchSubject == null) {
-            return false;
-        }
-        return true;
-    }
 
-    private Boolean isValidClassForStudent(Account student, Class clazz) {
-        long enrolled = clazz.getStudentClasses()
-                .stream()
-                .filter(studentClass -> studentClass.getAccount().getId().equals(student.getId())).count();
-        if (enrolled != 1) {
-            return false;
-        }
-        return true;
-    }
 }

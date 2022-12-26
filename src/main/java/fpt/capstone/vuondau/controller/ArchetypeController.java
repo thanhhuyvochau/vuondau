@@ -6,6 +6,7 @@ import fpt.capstone.vuondau.entity.dto.SlotDto;
 import fpt.capstone.vuondau.service.IArchetypeService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,7 @@ public class ArchetypeController {
 
     @Operation(summary = "Lấy thời khóa biểu có sẵn của giáo viên ne")
     @GetMapping("/{teacherId}/archetype")
+    @PreAuthorize("hasAnyAuthority('ADMIN','TEACHER')")
     public ResponseEntity<ApiResponse<List<ArchetypeTeacherDto>>> getArchetypeOfTeacher(@PathVariable long teacherId) {
         return ResponseEntity.ok(ApiResponse.success(iArchetypeService.getArchetypeOfTeacher(teacherId)));
     }

@@ -5,6 +5,7 @@ import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.common.EForumType;
 import fpt.capstone.vuondau.entity.dto.ForumDto;
 import fpt.capstone.vuondau.entity.dto.SimpleForumDto;
+import fpt.capstone.vuondau.entity.request.UpdateForumRequest;
 import fpt.capstone.vuondau.service.IForumService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +26,8 @@ public class ForumController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<ForumDto>> updateForum(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.success(forumService.updateForum(id)));
+    public ResponseEntity<ApiResponse<ForumDto>> updateForum(@PathVariable Long id, @RequestBody UpdateForumRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(forumService.updateForum(id, request)));
     }
 
 }

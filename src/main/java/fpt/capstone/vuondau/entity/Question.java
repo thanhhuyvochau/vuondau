@@ -25,15 +25,14 @@ public class Question {
     @ManyToOne
     @JoinColumn(name = "forum_id")
     private Forum forum;
-    @Column(name = "upvote_number")
-    private Integer upvoteNumber = 0;
-    @Column(name = "downVote_number")
-    private Integer downVoteNumber = 0;
     @OneToMany(mappedBy = "question")
     private List<Comment> comments = new ArrayList<>();
     @ManyToOne
     @JoinColumn(name = "forum_lesson_id")
     private ForumLesson forumLesson;
+
+    @OneToMany(mappedBy = "question")
+    private List<Vote> votes = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -75,22 +74,6 @@ public class Question {
         this.forum = forum;
     }
 
-    public Integer getUpvoteNumber() {
-        return upvoteNumber;
-    }
-
-    public void setUpvoteNumber(Integer upvoteNumber) {
-        this.upvoteNumber = upvoteNumber;
-    }
-
-    public Integer getDownVoteNumber() {
-        return downVoteNumber;
-    }
-
-    public void setDownVoteNumber(Integer downVoteNumber) {
-        this.downVoteNumber = downVoteNumber;
-    }
-
     public List<Comment> getComments() {
         return comments;
     }
@@ -105,5 +88,13 @@ public class Question {
 
     public void setForumLesson(ForumLesson forumLesson) {
         this.forumLesson = forumLesson;
+    }
+
+    public List<Vote> getVotes() {
+        return votes;
+    }
+
+    public void setVotes(List<Vote> votes) {
+        this.votes = votes;
     }
 }
