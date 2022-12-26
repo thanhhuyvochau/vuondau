@@ -486,7 +486,7 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
-    public Boolean createClassForRecruiting(CreateClassRequest createClassRequest) throws JsonProcessingException {
+    public Long createClassForRecruiting(CreateClassRequest createClassRequest) throws JsonProcessingException {
         // set class bên vườn đậu
         Class clazz = new Class();
         clazz.setName(createClassRequest.getName());
@@ -494,7 +494,7 @@ public class ClassServiceImpl implements IClassService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("class code da ton tai"));
         }
-        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+//        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
         clazz.setCode(createClassRequest.getCode());
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
@@ -503,14 +503,14 @@ public class ClassServiceImpl implements IClassService {
         clazz.setStatus(EClassStatus.RECRUITING);
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
-        ClassLevel classLevel = classLevelRepository.findByCode(createClassRequest.getClassLevel()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+        ClassLevel classLevel = classLevelRepository.findByCode(createClassRequest.getClassLevel()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getClassLevel()));
         clazz.setClassLevel(classLevel.getId());
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setActive(false);
-        clazz.setCourse(course);
+//        clazz.setCourse(course);
         clazz.setUnitPrice(createClassRequest.getUnitPrice());
-        classRepository.save(clazz);
-        return true;
+        Class save = classRepository.save(clazz);
+        return save.getId();
     }
 
     @Override

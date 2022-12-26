@@ -133,7 +133,7 @@ public class ClassController {
 
     @Operation(summary = "Admin tạo class để tuyển giáo viên ")
     @PostMapping({"/for-recruiting"})
-    public ResponseEntity<ApiResponse<Boolean>> createClassForRecruiting(@Nullable @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException {
+    public ResponseEntity<ApiResponse<Long>> createClassForRecruiting(@Nullable @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.createClassForRecruiting(createClassRequest)));
     }
 
