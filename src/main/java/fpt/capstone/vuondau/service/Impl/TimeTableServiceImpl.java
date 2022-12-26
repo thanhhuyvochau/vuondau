@@ -301,6 +301,6 @@ public class TimeTableServiceImpl implements ITimeTableService {
     public List<ClassAttendanceResponse> accountGetAllTimeTable() {
         Account currentUser = SecurityUtil.getCurrentUser();
 
-
+        return null;
     }
 }
