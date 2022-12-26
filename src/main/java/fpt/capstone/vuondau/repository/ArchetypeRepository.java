@@ -19,5 +19,7 @@ public interface ArchetypeRepository extends JpaRepository<Archetype, Long> {
 
     boolean existsByIdAndCode(Long id, String code);
 
+    boolean existsByCode(String code);
+
     List<Archetype> findByCreatedByTeacherId(Long teacherId);
 }

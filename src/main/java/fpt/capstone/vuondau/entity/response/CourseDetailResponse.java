@@ -22,13 +22,9 @@ public class CourseDetailResponse {
 
     private String description ;
 
-    private EGradeType grade;
 
     @Schema(description = "hình đại diện course")
     private String image;
-
-    @Schema(description = "Giá tiền của course")
-    private BigDecimal unitPrice;
 
 
     private List<ClassDto> clazz ;
@@ -89,13 +85,7 @@ public class CourseDetailResponse {
         this.teacherCourse = teacherCourse;
     }
 
-    public EGradeType getGrade() {
-        return grade;
-    }
 
-    public void setGrade(EGradeType grade) {
-        this.grade = grade;
-    }
 
 
     public String getDescription() {
@@ -122,13 +112,7 @@ public class CourseDetailResponse {
         this.image = image;
     }
 
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
-    }
 
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
-    }
 
 
 //    public List<MoodleRecourseClassResponse> getResources() {

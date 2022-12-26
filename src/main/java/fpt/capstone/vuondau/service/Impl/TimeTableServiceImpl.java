@@ -91,7 +91,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
                     .withMessage(messageUtil.getLocalMessage("Vui lòng kiểm tra lại số buổi trong tuần "));
         }
 
-        if (archetypeRepository.existsByIdAndCode(aClass.getId(), timeTableRequest.getArchetypeCode())) {
+        if (archetypeRepository.existsByCode(aClass.getCode())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("time table code da ton tai"));
         }
@@ -102,7 +102,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
         //Set Archetype
         Archetype archetype = new Archetype();
-        archetype.setCode(timeTableRequest.getArchetypeCode());
+        archetype.setCode(aClass.getCode());
         archetype.setName(timeTableRequest.getArchetypeName());
         if (aClass.getAccount() != null) {
             archetype.setCreatedByTeacherId(aClass.getAccount().getId());
@@ -304,68 +304,139 @@ public class TimeTableServiceImpl implements ITimeTableService {
         List<Class> classList = null;
         if (currentUser.getRole().getCode().equals(EAccountRole.TEACHER)) {
             classList = currentUser.getTeacherClass();
-        } else if (currentUser.getRole().getCode().equals(EAccountRole.TEACHER)) {
+        } else if (currentUser.getRole().getCode().equals(EAccountRole.STUDENT)) {
             classList = currentUser.getStudentClasses()
                     .stream().map(StudentClass::getaClass).collect(Collectors.toList());
         }
-
-
         classList.forEach(aClass -> {
             List<TimeTable> timeTables = aClass.getTimeTables();
             ClassAttendanceResponse classAttendanceResponse = new ClassAttendanceResponse();
             classAttendanceResponse.setClassId(aClass.getId());
+            List<AttendanceDto> attendanceDtoList = new ArrayList<>();
             timeTables.forEach(timeTable -> {
 
                 List<Attendance> attendances = timeTable.getAttendances();
-                List<AttendanceDto> attendanceDtoList = new ArrayList<>();
-                if (attendances != null) {
+                AttendanceDto attendanceDto = new AttendanceDto();
+                attendanceDto.setTimeTableId(timeTable.getId());
+                attendanceDto.setDate(timeTable.getDate());
+                attendanceDto.setSlotNumber(timeTable.getSlotNumber());
+                attendances.forEach(attendance -> {
 
+                    attendanceDto.setId(attendance.getId());
+                    attendanceDto.setPresent(attendance.getPresent());
 
-                    attendances.forEach(attendance -> {
-                        AttendanceDto attendanceDto = new AttendanceDto();
-                        attendanceDto.setId(attendance.getId());
-                        attendanceDto.setPresent(attendance.getPresent());
-                        attendanceDto.setTimeTableId(timeTable.getId());
-                        attendanceDto.setDate(timeTable.getDate());
-                        attendanceDto.setSlotNumber(timeTable.getSlotNumber());
-
-                        ArchetypeTime archetypeTime = timeTable.getArchetypeTime();
-                        if (archetypeTime != null) {
-                            if (archetypeTime.getSlot() != null) {
-                                attendanceDto.setSlotCode(archetypeTime.getSlot().getCode());
-                                attendanceDto.setSlotName(archetypeTime.getSlot().getName());
-                                Slot slot = archetypeTime.getSlot();
-                                attendanceDto.setStartTime(slot.getStartTime());
-                                attendanceDto.setEndTime(slot.getEndTime());
-                            }
-                            if (archetypeTime.getDayOfWeek() != null) {
-                                attendanceDto.setDowCode(archetypeTime.getDayOfWeek().getCode());
-                                attendanceDto.setDowName(archetypeTime.getDayOfWeek().getName());
-                            }
-
-                            Archetype archetype = archetypeTime.getArchetype();
-                            if (archetype != null) {
-                                attendanceDto.setArchetypeCode(archetype.getCode());
-                                attendanceDto.setArchetypeName(archetype.getName());
-                            }
+                    ArchetypeTime archetypeTime = timeTable.getArchetypeTime();
+                    if (archetypeTime != null) {
+                        if (archetypeTime.getSlot() != null) {
+                            attendanceDto.setSlotCode(archetypeTime.getSlot().getCode());
+                            attendanceDto.setSlotName(archetypeTime.getSlot().getName());
+                            Slot slot = archetypeTime.getSlot();
+                            attendanceDto.setStartTime(slot.getStartTime());
+                            attendanceDto.setEndTime(slot.getEndTime());
+                        }
+                        if (archetypeTime.getDayOfWeek() != null) {
+                            attendanceDto.setDowCode(archetypeTime.getDayOfWeek().getCode());
+                            attendanceDto.setDowName(archetypeTime.getDayOfWeek().getName());
                         }
 
+                        Archetype archetype = archetypeTime.getArchetype();
+                        if (archetype != null) {
+                            attendanceDto.setArchetypeCode(archetype.getCode());
+                            attendanceDto.setArchetypeName(archetype.getName());
+                        }
+                    }
 
-                        attendanceDtoList.add(attendanceDto);
-
-
-                    });
-                    classAttendanceResponse.setAttendance(attendanceDtoList);
-                    classAttendanceResponseList.add(classAttendanceResponse);
-                }
-
-
+                });
+                attendanceDtoList.add(attendanceDto);
             });
-
+            classAttendanceResponse.setAttendance(attendanceDtoList);
+            classAttendanceResponseList.add(classAttendanceResponse);
         });
         return classAttendanceResponseList;
 
 
+    }
 
+    @Override
+    public Long adminCreateTimeTableClass(Long classId, Long numberSlot, TimeTableRequest timeTableRequest) throws ParseException {
+        Account currentUser = SecurityUtil.getCurrentUser();
+
+        Class aClass = classRepository.findById(classId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" +classId));
+        if (aClass == null) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Class không tồn tai"));
+        }
+        if (aClass.getTimeTables().size() > 0) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("class đã có thời khoá biểu"));
+        }
+        if (timeTableRequest.getSlotDow().size() > 3 || timeTableRequest.getSlotDow().size() < 2) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Vui lòng kiểm tra lại số buổi trong tuần "));
+        }
+
+        if (archetypeRepository.existsByCode(aClass.getCode())) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("time table code da ton tai"));
+        }
+        if (timeTableRequest.getSlotDow().size() != numberSlot) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Thêm số buổi dạy trong tuần đang lớn / nhỏ hơn với số buổi bạn đã chọn "));
+        }
+
+        //Set Archetype
+        Archetype archetype = new Archetype();
+        archetype.setCode(aClass.getCode());
+        archetype.setName(timeTableRequest.getArchetypeName());
+        if (aClass.getAccount() != null) {
+            archetype.setCreatedByTeacherId(aClass.getAccount().getId());
+        }
+
+
+        List<SlotDowDto> slotDows = timeTableRequest.getSlotDow();
+
+
+        List<Slot> slotList = slotRepository.findAll();
+        Map<Long, Slot> slotMap = HashMapUtil.convertSlotListToMap(slotList);
+
+        List<fpt.capstone.vuondau.entity.DayOfWeek> dayOfWeekList = dayOfWeekRepository.findAll();
+        Map<Long, fpt.capstone.vuondau.entity.DayOfWeek> dayOfWeekMap = HashMapUtil.convertDoWListToMap(dayOfWeekList);
+
+        List<TimeTable> timeTableList = new ArrayList<>();
+
+
+        Instant startDate = aClass.getStartDate();
+
+        Instant endDate = aClass.getEndDate();
+
+        // kiem tra slot va thu trùng nhau
+        List<Integer> allSlotNumber = slotDows.stream().map(SlotDowDto::getSlotNumber).collect(Collectors.toList());
+        Set<Integer> items = new HashSet<>();
+        List<Integer> checkDuplicateSlotNumber = allSlotNumber.stream().filter(n -> !items.add(n)).collect(Collectors.toList());
+        if (checkDuplicateSlotNumber.size() > 0) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Slot number không thể trùng"));
+        }
+
+        int slotNumber = 1;
+
+        List<Long> allDayOfWeek = slotDows.stream().map(SlotDowDto::getDayOfWeekId).collect(Collectors.toList());
+        Set<Long> itemDayOfWeek = new HashSet<>();
+        List<Long> checkDuplicateDayOfWeek = allDayOfWeek.stream().filter(n -> !itemDayOfWeek.add(n)).collect(Collectors.toList());
+        if (checkDuplicateDayOfWeek.size() > 0) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Thứ không thể trùng"));
+        }
+
+        List<TimeTable> timeTableList1 = setDateOfWeek(timeTableRequest.getSlotDow(), slotNumber, startDate, endDate, archetype, aClass, timeTableList);
+
+
+        aClass.getTimeTables().clear();
+        aClass.getTimeTables().addAll(timeTableList1);
+        aClass.setStatus(EClassStatus.REQUESTING);
+
+        classRepository.save(aClass);
+
+        return aClass.getId();
     }
 }
