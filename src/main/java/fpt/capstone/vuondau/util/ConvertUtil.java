@@ -243,7 +243,7 @@ public class ConvertUtil {
         classDto.setEndDate(aclass.getEndDate());
         classDto.setNumberStudent(aclass.getNumberStudent());
         classDto.setMaxNumberStudent(aclass.getMaxNumberStudent());
-        classDto.setUnitPrice(aclass.getUnitPrice());
+        classDto.setEachStudentPayPrice(aclass.getEachStudentPayPrice());
         classDto.setFinalPrice(aclass.getFinalPrice());
 
         if (aclass.getAccount() != null) {

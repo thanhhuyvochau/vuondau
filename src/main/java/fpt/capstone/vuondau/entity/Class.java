@@ -70,8 +70,8 @@ public class Class {
     @Enumerated(EnumType.STRING)
     private EClassType classType;
 
-    @Column(name = "unit_price")
-    private BigDecimal unitPrice;
+    @Column(name = "each_student_pay_price")
+    private BigDecimal eachStudentPayPrice;
 
     @Column(name = "final_price")
     private BigDecimal finalPrice;
@@ -218,12 +218,12 @@ public class Class {
         this.classType = classType;
     }
 
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
+    public BigDecimal getEachStudentPayPrice() {
+        return eachStudentPayPrice;
     }
 
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
+    public void setEachStudentPayPrice(BigDecimal eachStudentPayPrice) {
+        this.eachStudentPayPrice = eachStudentPayPrice;
     }
 
     public BigDecimal getFinalPrice() {
