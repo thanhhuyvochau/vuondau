@@ -108,28 +108,8 @@ public class TransactionServiceImpl implements ITransactionService {
         SimpleDateFormat formatterCheck = new SimpleDateFormat("dd-MM-yyyy");
         System.out.println("EXPIRED:" + formatterCheck.format(cld.getTime()));
         //Billing
-        vnp_Params.put("vnp_Bill_Mobile", request.getTxt_billing_mobile());
-        vnp_Params.put("vnp_Bill_Email", request.getTxt_billing_email());
-        String fullName = (request.getTxt_billing_fullname()).trim();
-        if (!fullName.isEmpty()) {
-            int idx = fullName.indexOf(' ');
-            String firstName = fullName.substring(0, idx);
-            String lastName = fullName.substring(fullName.lastIndexOf(' ') + 1);
-            vnp_Params.put("vnp_Bill_FirstName", firstName);
-            vnp_Params.put("vnp_Bill_LastName", lastName);
 
-        }
-        vnp_Params.put("vnp_Bill_Address", request.getTxt_inv_addr1());
-        vnp_Params.put("vnp_Bill_City", request.getTxt_bill_city());
-        vnp_Params.put("vnp_Bill_Country", request.getTxt_bill_country());
 
-        // Invoice
-        vnp_Params.put("vnp_Inv_Phone", request.getTxt_inv_mobile());
-        vnp_Params.put("vnp_Inv_Email", request.getTxt_inv_email());
-        vnp_Params.put("vnp_Inv_Customer", request.getTxt_inv_customer());
-        vnp_Params.put("vnp_Inv_Address", request.getTxt_inv_addr1());
-        vnp_Params.put("vnp_Inv_Taxcode", request.getTxt_inv_taxcode());
-        vnp_Params.put("vnp_Inv_Type", request.getCbo_inv_type());
         //Build data to hash and querystring
         List fieldNames = new ArrayList(vnp_Params.keySet());
         Collections.sort(fieldNames);
