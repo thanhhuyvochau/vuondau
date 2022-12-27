@@ -13,10 +13,6 @@ public class Comment {
     private Long id;
     @Column(name = "content")
     private String content;
-    @Column(name = "upvote_number")
-    private Integer upvoteNumber = 0;
-    @Column(name = "downVote_number")
-    private Integer downVoteNumber = 0;
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "parentComment")
     private List<Comment> subComments = new ArrayList<>();
     @ManyToOne
@@ -29,7 +25,8 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "question_id")
     private Question question;
-
+    @OneToMany(mappedBy = "comment")
+    private List<Vote> votes = new ArrayList<>();
     public Long getId() {
         return id;
     }
@@ -44,22 +41,6 @@ public class Comment {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public Integer getUpvoteNumber() {
-        return upvoteNumber;
-    }
-
-    public void setUpvoteNumber(Integer upvoteNumber) {
-        this.upvoteNumber = upvoteNumber;
-    }
-
-    public Integer getDownVoteNumber() {
-        return downVoteNumber;
-    }
-
-    public void setDownVoteNumber(Integer downVoteNumber) {
-        this.downVoteNumber = downVoteNumber;
     }
 
     public List<Comment> getSubComments() {
@@ -92,5 +73,13 @@ public class Comment {
 
     public void setQuestion(Question question) {
         this.question = question;
+    }
+
+    public List<Vote> getVotes() {
+        return votes;
+    }
+
+    public void setVotes(List<Vote> votes) {
+        this.votes = votes;
     }
 }

@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public class CourseController {
 
     @Operation(summary = "giáo viên request các topic cho subject")
     @PostMapping("/{teacherId}/create-topics-subject")
+    @PreAuthorize("hasAuthority('TEACHER')")
     public ResponseEntity<ApiResponse<TopicsSubjectRequest>> teacherCreateTopicInSubject(@PathVariable Long teacherId, @RequestBody TopicsSubjectRequest topicsSubjectRequest) {
         System.out.println(teacherId);
         return ResponseEntity.ok(ApiResponse.success(courseService.teacherCreateTopicInSubject(teacherId, topicsSubjectRequest)));
@@ -44,6 +46,7 @@ public class CourseController {
 
     @Operation(summary = "Giáo viên đăng ký subject")
     @PostMapping({"/{teacherId}"})
+    @PreAuthorize("hasAuthority('TEACHER')")
     public ResponseEntity<ApiResponse<ClassSubjectResponse>> createRegisterSubject(@PathVariable Long teacherId, Long subjectId, @RequestBody ClassRequest classRequest) {
 
         return ResponseEntity.ok(ApiResponse.success(courseService.createRegisterSubject(teacherId, subjectId, classRequest)));
@@ -52,6 +55,7 @@ public class CourseController {
     // MANGER COURSE
     @Operation(summary = "Tìm Kiếm course")
     @GetMapping("/search-cource")
+    @PreAuthorize("hasAnyAuthority('STUDENT','ADMIN','TEACHER')")
     public ResponseEntity<ApiResponse<ApiPage<CourseResponse>>> searchCourse(@Nullable CourseSearchRequest query,
                                                                              Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(courseService.searchCourse(query, pageable)));
@@ -59,6 +63,7 @@ public class CourseController {
 
     @Operation(summary = "Lấy tất cả course ")
     @GetMapping("/get-all-course")
+    @PreAuthorize("hasAnyAuthority('STUDENT','ADMIN','TEACHER')")
     public ResponseEntity<ApiResponse<ApiPage<CourseResponse>>> viewAllCourse(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(courseService.viewAllCourse(pageable)));
     }
@@ -71,12 +76,14 @@ public class CourseController {
 
     @Operation(summary = "Get resource course từ moodle")
     @GetMapping("get-resource-from-moodle")
+    @PreAuthorize("hasAnyAuthority('ADMIN','TEACHER')")
     public ResponseEntity<ApiResponse<List<MoodleSectionResponse>>> synchronizedResource(@RequestParam Long classId) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(courseService.synchronizedResource(classId)));
     }
 
     @Operation(summary = "sửa course")
     @PutMapping("/{id}/update-course")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ApiResponse<CourseDetailResponse>> updateCourse(@PathVariable long id, @RequestBody CourseRequest subjectRequest) {
         return ResponseEntity.ok(ApiResponse.success(courseService.updateCourse(id, subjectRequest)));
     }
