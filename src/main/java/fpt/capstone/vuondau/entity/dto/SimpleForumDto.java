@@ -17,9 +17,10 @@ public class SimpleForumDto {
 
 
     private EForumType type;
-
+    private Long subjectId;
     private String subjectName;
     private String subjectCode;
+    private Long classId;
     private String className;
     private String classCode;
 
@@ -85,5 +86,21 @@ public class SimpleForumDto {
 
     public void setClassCode(String classCode) {
         this.classCode = classCode;
+    }
+
+    public Long getSubjectId() {
+        return subjectId;
+    }
+
+    public void setSubjectId(Long subjectId) {
+        this.subjectId = subjectId;
+    }
+
+    public Long getClassId() {
+        return classId;
+    }
+
+    public void setClassId(Long classId) {
+        this.classId = classId;
     }
 }

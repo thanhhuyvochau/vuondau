@@ -63,7 +63,6 @@ public class CourseController {
 
     @Operation(summary = "Lấy tất cả course ")
     @GetMapping("/get-all-course")
-    @PreAuthorize("hasAnyAuthority('STUDENT','ADMIN','TEACHER')")
     public ResponseEntity<ApiResponse<ApiPage<CourseResponse>>> viewAllCourse(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(courseService.viewAllCourse(pageable)));
     }

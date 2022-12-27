@@ -225,10 +225,12 @@ public class ConvertUtil {
             Class clazz = forum.getaClazz();
             forumDto.setClassName(clazz.getName());
             forumDto.setClassCode(clazz.getCode());
+            forumDto.setClassId(clazz.getId());
         } else {
             Subject subject = forum.getSubject();
             forumDto.setSubjectCode(subject.getCode().name());
             forumDto.setSubjectName(subject.getName());
+            forumDto.setSubjectId(subject.getId());
         }
         return forumDto;
     }
