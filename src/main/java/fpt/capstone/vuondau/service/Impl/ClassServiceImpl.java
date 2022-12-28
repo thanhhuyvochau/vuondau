@@ -1012,6 +1012,12 @@ public class ClassServiceImpl implements IClassService {
 
     }
 
+    @Override
+    public ApiPage<ClassDto> adminGetClass(EClassStatus status, Pageable pageable) {
+        Page<Class> allByStatus = classRepository.findAllByStatus(status, pageable);
+        return PageUtil.convert(allByStatus != null ? allByStatus.map(ConvertUtil::doConvertEntityToResponse) : null);
+    }
+
 
     @Override
     public ClassTeacherResponse studentGetTeacherInfoOfClass(Long id) {

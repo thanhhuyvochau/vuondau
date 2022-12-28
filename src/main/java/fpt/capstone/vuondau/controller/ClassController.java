@@ -163,17 +163,17 @@ public class ClassController {
     }
 
     @Operation(summary = "(search) lấy tất cả class của giáo viên / học sinh")
-    @GetMapping("/account")
+    @GetMapping("/search-class/account")
     public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getClassByAccount(EClassStatus status, Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getClassByAccount(status, pageable)));
     }
 
-//    @Operation(summary = "admin seach lơp")
-//    @GetMapping("/getClass")
-//    @PreAuthorize("hasAuthority('ADMIN')")
-//    public ResponseEntity<ApiResponse<Boolean>> adminGetClass(@RequestBody EClassStatus status, Pageable pageable) throws JsonProcessingException {
-//        return ResponseEntity.ok(ApiResponse.success(iClassService.adminGetClass(status, pageable)));
-//    }
+    @Operation(summary = "admin seach lơp")
+    @GetMapping("/search-class/admin")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> adminGetClass(@RequestBody EClassStatus status, Pageable pageable) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.adminGetClass(status, pageable)));
+    }
 
     @Operation(summary = "hoc sinh/ giao vien xem chi tiết class")
     @GetMapping("/{id}/account/class-detail")
