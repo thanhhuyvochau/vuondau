@@ -8,7 +8,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "feed_back")
-public class FeedBack {
+public class FeedBack  extends BaseEntity{
 
     @EmbeddedId
     private PostResourceKey id;

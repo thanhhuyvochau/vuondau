@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.util;
 
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
+import fpt.capstone.vuondau.entity.VoteNumberReponse;
 import fpt.capstone.vuondau.entity.common.EForumType;
 import fpt.capstone.vuondau.entity.common.EGenderType;
 import fpt.capstone.vuondau.entity.dto.*;
@@ -29,7 +30,8 @@ public class ConvertUtil {
     public static QuestionSimpleDto doConvertEntityToSimpleResponse(Question question) {
         QuestionSimpleDto questionSimpleDto = ObjectUtil.copyProperties(question, new QuestionSimpleDto(), QuestionSimpleDto.class, true);
         AccountSimpleResponse accountResponse = doConvertEntityToSimpleResponse(question.getStudent());
-
+        VoteNumberReponse voteNumberResponse = VoteUtil.getVoteResponse(question);
+        questionSimpleDto.setVoteNumber(voteNumberResponse);
         questionSimpleDto.setUser(accountResponse);
 
         return questionSimpleDto;
@@ -41,6 +43,8 @@ public class ConvertUtil {
 
     private static CommentDto doConvertEntityToResponseAsTree(Comment comment, Comment parentComment) {
         CommentDto commentDto = ObjectUtil.copyProperties(comment, new CommentDto(), CommentDto.class, true);
+        VoteNumberReponse voteResponse = VoteUtil.getVoteResponse(comment);
+        commentDto.setVoteNumber(voteResponse);
         AccountSimpleResponse accountResponse = doConvertEntityToSimpleResponse(comment.getAccount());
         commentDto.setUser(accountResponse);
         if (parentComment != null) {
@@ -102,7 +106,7 @@ public class ConvertUtil {
     public static AccountSimpleResponse doConvertEntityToSimpleResponse(Account account) {
 
         AccountSimpleResponse response = new AccountSimpleResponse();
-
+        response.setId(account.getId());
         RoleDto roleDto = doConvertEntityToResponse(account.getRole());
         response.setRole(roleDto);
         if (account.getResource() != null) {
@@ -122,6 +126,7 @@ public class ConvertUtil {
             response.setFirstName(accountDetail.getFirstName());
             response.setLevel(accountDetail.getLevel());
             response.setStatus(accountDetail.getStatus());
+
         }
 
         return response;

@@ -1,5 +1,6 @@
 package fpt.capstone.vuondau.entity.dto;
 
+import fpt.capstone.vuondau.entity.VoteNumberReponse;
 import fpt.capstone.vuondau.entity.response.AccountSimpleResponse;
 
 import java.util.ArrayList;
@@ -13,9 +14,7 @@ public class CommentDto {
 
     private String content;
 
-    private Integer upvoteNumber;
-
-    private Integer downVoteNumber;
+    private VoteNumberReponse voteNumber;
 
     private List<CommentDto> subComments = new ArrayList<>();
 
@@ -41,20 +40,12 @@ public class CommentDto {
         this.content = content;
     }
 
-    public Integer getUpvoteNumber() {
-        return upvoteNumber;
+    public VoteNumberReponse getVoteNumber() {
+        return voteNumber;
     }
 
-    public void setUpvoteNumber(Integer upvoteNumber) {
-        this.upvoteNumber = upvoteNumber;
-    }
-
-    public Integer getDownVoteNumber() {
-        return downVoteNumber;
-    }
-
-    public void setDownVoteNumber(Integer downVoteNumber) {
-        this.downVoteNumber = downVoteNumber;
+    public void setVoteNumber(VoteNumberReponse voteNumber) {
+        this.voteNumber = voteNumber;
     }
 
     public List<CommentDto> getSubComments() {

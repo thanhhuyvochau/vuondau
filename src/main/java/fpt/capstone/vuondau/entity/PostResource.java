@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "post_resource")
-public class PostResource {
+public class PostResource extends BaseEntity {
 
     @EmbeddedId
     private PostResourceKey id;

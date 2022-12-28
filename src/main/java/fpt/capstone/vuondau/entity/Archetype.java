@@ -6,7 +6,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "archetype")
-public class Archetype {
+public class Archetype extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

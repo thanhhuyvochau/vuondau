@@ -7,7 +7,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "day_of_week")
-public class DayOfWeek {
+public class DayOfWeek extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -12,7 +12,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "account_detail")
-public class AccountDetail {
+public class AccountDetail extends BaseEntity  {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_id_generator")

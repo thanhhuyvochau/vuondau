@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "account_detail_class_level")
-public class AccountDetailClassLevel {
+public class AccountDetailClassLevel extends BaseEntity {
 
     @EmbeddedId
     private AccountDetailClassLevelKey id;

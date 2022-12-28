@@ -5,7 +5,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "forum_lesson")
-public class ForumLesson {
+public class ForumLesson  extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "forum_lesson_sequence_generator")
     @SequenceGenerator(name = "forum_lesson_sequence_generator", sequenceName = "forum_lesson_sequence_generator")

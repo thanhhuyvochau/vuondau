@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "resource")
-public class Resource {
+public class Resource extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

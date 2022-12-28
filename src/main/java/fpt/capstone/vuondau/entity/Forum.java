@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "forum")
-public class Forum {
+public class Forum  extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "forum_sequence_generator")
     @SequenceGenerator(name = "forum_sequence_generator", sequenceName = "forum_sequence_generator")

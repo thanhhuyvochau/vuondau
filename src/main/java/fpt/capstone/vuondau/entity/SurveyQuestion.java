@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "survey_question")
-public class SurveyQuestion {
+public class SurveyQuestion extends BaseEntity {
 
     @Id
     @GeneratedValue

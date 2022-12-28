@@ -7,7 +7,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "class_level")
-public class ClassLevel {
+public class ClassLevel  extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

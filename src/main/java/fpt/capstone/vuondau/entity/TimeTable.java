@@ -11,7 +11,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "time_table")
-public class TimeTable {
+public class TimeTable extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

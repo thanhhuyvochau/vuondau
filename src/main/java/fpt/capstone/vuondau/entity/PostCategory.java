@@ -7,7 +7,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "post_category")
-public class PostCategory {
+public class PostCategory extends BaseEntity {
     @Id
     @GeneratedValue
     @Column(name = "id")

@@ -14,7 +14,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "class")
-public class Class {
+public class Class extends BaseEntity {
     @Id
     @GeneratedValue
     @Column(name = "id")
