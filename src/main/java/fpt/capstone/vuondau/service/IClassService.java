@@ -63,7 +63,7 @@ public interface IClassService {
 
     ApiPage<ClassDto> getRecruitingClasses(Pageable pageable);
 
-    ApiPage<ClassDto> getClassByAccount( Pageable pageable);
+    ApiPage<ClassDto> getClassByAccount( EClassStatus status  , Pageable pageable);
 
     ClassDetailDto accountGetClassDetail(Long id);
 

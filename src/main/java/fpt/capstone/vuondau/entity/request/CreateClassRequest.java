@@ -23,7 +23,9 @@ public class CreateClassRequest implements Serializable {
 
     private Long maxNumberStudent;
 
-    private BigDecimal eachStudentPayPrice;
+
+
+    private BigDecimal eachStudentPayPrice ;
 
 
     public EClassType getClassType() {
@@ -86,7 +88,6 @@ public class CreateClassRequest implements Serializable {
     public Long getMaxNumberStudent() {
         return maxNumberStudent;
     }
-
 
 
     public void setMaxNumberStudent(Long maxNumberStudent) {

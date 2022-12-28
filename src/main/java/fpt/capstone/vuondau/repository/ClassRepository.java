@@ -4,6 +4,7 @@ package fpt.capstone.vuondau.repository;
 import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.Course;
+import fpt.capstone.vuondau.entity.StudentClass;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,8 +26,11 @@ public interface ClassRepository extends JpaRepository<Class, Long> {
 
     List<Class> findByAccountAndStatus(Account account, EClassStatus status);
 
+    Page<Class> findAllByAccount(Account account , Pageable pageable);
 
-    Page<Class> findAllByAccountAndIsActiveIsTrue(Account account, Pageable pageable);
+
+
+    Page<Class> findAllByAccountAndStatus(Account account,EClassStatus status,  Pageable pageable);
 
     Page<Class> findAllByAccountAndActiveIsTrue(Account account, Pageable pageable);
 

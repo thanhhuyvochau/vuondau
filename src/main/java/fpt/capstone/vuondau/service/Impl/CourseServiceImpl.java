@@ -257,8 +257,8 @@ public class CourseServiceImpl implements ICourseService {
                 classDto.setEndDate(aClass.getEndDate());
                 classDto.setNumberStudent(aClass.getNumberStudent());
                 classDto.setMaxNumberStudent(aClass.getMaxNumberStudent());
+//                classDto.setTeacherReceivedPrice(aClass.getFinalPrice());
                 classDto.setEachStudentPayPrice(aClass.getEachStudentPayPrice());
-                classDto.setTeacherReceivedPrice(aClass.getFinalPrice());
                 classDtoList.add(classDto);
             }
 

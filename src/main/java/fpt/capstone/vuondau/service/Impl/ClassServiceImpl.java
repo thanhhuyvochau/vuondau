@@ -325,7 +325,11 @@ public class ClassServiceImpl implements IClassService {
         Class aClass = classRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
         ClassDetailDto classDetail = ObjectUtil.copyProperties(aClass, new ClassDetailDto(), ClassDetailDto.class);
-        classDetail.setUnitPrice(aClass.getEachStudentPayPrice());
+
+        classDetail.setEachStudentPayPrice(aClass.getEachStudentPayPrice());
+
+
+
         classDetail.setFinalPrice(aClass.getFinalPrice());
 
         Course course = aClass.getCourse();
@@ -494,7 +498,7 @@ public class ClassServiceImpl implements IClassService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("class code da ton tai"));
         }
-//        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+
         clazz.setCode(createClassRequest.getCode());
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
@@ -507,9 +511,6 @@ public class ClassServiceImpl implements IClassService {
         clazz.setClassLevel(classLevel.getId());
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setActive(false);
-
-
-
         clazz.setEachStudentPayPrice(createClassRequest.getEachStudentPayPrice());
         Class save = classRepository.save(clazz);
         return save.getId();
@@ -609,7 +610,7 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
-    public ApiPage<ClassDto> getClassByAccount(Pageable pageable) {
+    public ApiPage<ClassDto> getClassByAccount(EClassStatus status, Pageable pageable) {
         Account account = securityUtil.getCurrentUser();
 
         Page<Class> classesPage = null;
@@ -617,16 +618,30 @@ public class ClassServiceImpl implements IClassService {
 
         if (role != null) {
             if (role.getCode().equals(EAccountRole.STUDENT)) {
+                List<Class> classes = new ArrayList<>( );
                 List<Class> classList = account.getStudentClasses().stream().map(StudentClass::getaClass)
                         .filter(Class::isActive)
                         .collect(Collectors.toList());
-                classesPage = new PageImpl<>(classList, pageable, classList.size());
+                if (status.equals(EClassStatus.All)){
+                    classesPage = new PageImpl<>(classList, pageable, classList.size());
+                }
+                else {
+
+                classList.forEach(aClass ->  {
+                    if (aClass.getStatus().equals(status)) {
+                        classes.add(aClass) ;
+                    }
+                });
+                    classesPage = new PageImpl<>(classes, pageable, classList.size());
+                }
 
             } else if (role.getCode().equals(EAccountRole.TEACHER)) {
-
-                classesPage = classRepository.findAllByAccountAndIsActiveIsTrue(account, pageable);
-
-//                classesPage = classRepository.findAllByAccountAndActiveIsTrue(account, pageable);
+                if (status.equals(EClassStatus.All)){
+                    classesPage = classRepository.findAllByAccount(account ,pageable) ;
+                }
+                else {
+                    classesPage = classRepository.findAllByAccountAndStatus(account, status, pageable);
+                }
 
             }
         }
@@ -662,7 +677,9 @@ public class ClassServiceImpl implements IClassService {
         }
 
         ClassDetailDto classDetail = ObjectUtil.copyProperties(aClass, new ClassDetailDto(), ClassDetailDto.class);
-        classDetail.setUnitPrice(aClass.getEachStudentPayPrice());
+
+        classDetail.setEachStudentPayPrice(aClass.getEachStudentPayPrice());
+
 
         Course course = aClass.getCourse();
         if (course != null) {

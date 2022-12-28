@@ -312,6 +312,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
             List<TimeTable> timeTables = aClass.getTimeTables();
             ClassAttendanceResponse classAttendanceResponse = new ClassAttendanceResponse();
             classAttendanceResponse.setClassId(aClass.getId());
+
             List<AttendanceDto> attendanceDtoList = new ArrayList<>();
             timeTables.forEach(timeTable -> {
 
@@ -352,7 +353,8 @@ public class TimeTableServiceImpl implements ITimeTableService {
             classAttendanceResponse.setAttendance(attendanceDtoList);
             classAttendanceResponseList.add(classAttendanceResponse);
         });
-        return classAttendanceResponseList;
+
+        return classAttendanceResponseList ;
 
 
     }
