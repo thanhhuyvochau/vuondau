@@ -11,7 +11,7 @@
 
 ```bash
 ssh: ssh root@103.173.255.39 -p 9020
-password: cyZc9Kz5BD6brG
+password: e4jtysRbbe6KX7
 ```
 
 ## Database Server
