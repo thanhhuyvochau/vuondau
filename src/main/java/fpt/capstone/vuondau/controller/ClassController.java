@@ -45,8 +45,8 @@ public class ClassController {
     @Operation(summary = "Giáo viên yêu cầu tạo class (subject-course) chờ admin phê duyệt ")
     @PostMapping({"/{id}/teacher-request-create-class-subject-course"})
     @PreAuthorize("hasAuthority('TEACHER')")
-    public ResponseEntity<ApiResponse<Long>> teacherRequestCreateClassSubjectCourse(@PathVariable Long id ,@Nullable @RequestBody CreateClassSubjectRequest createClassRequest) throws JsonProcessingException, ParseException {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClassSubjectCourse(id,createClassRequest)));
+    public ResponseEntity<ApiResponse<Long>> teacherRequestCreateClassSubjectCourse(@PathVariable Long id, @Nullable @RequestBody CreateClassSubjectRequest createClassRequest) throws JsonProcessingException, ParseException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClassSubjectCourse(id, createClassRequest)));
     }
 
     @Operation(summary = "lấy tất cả class chờ duyệt")
@@ -89,6 +89,7 @@ public class ClassController {
     public ResponseEntity<ApiResponse<Boolean>> studentEnrollClass(@PathVariable Long studentId, Long classId) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.studentEnrollClass(studentId, classId)));
     }
+
 
     @Operation(summary = "lấy danh sách tất cả hoc sinh dang  chờ duyệt để vào class")
     @GetMapping({"/{classId}/student-waiting-approve"})
@@ -163,9 +164,16 @@ public class ClassController {
 
     @Operation(summary = "(search) lấy tất cả class của giáo viên / học sinh")
     @GetMapping("/account")
-    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getClassByAccount( EClassStatus status ,  Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.getClassByAccount( status , pageable)));
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getClassByAccount(EClassStatus status, Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.getClassByAccount(status, pageable)));
     }
+
+//    @Operation(summary = "admin seach lơp")
+//    @GetMapping("/getClass")
+//    @PreAuthorize("hasAuthority('ADMIN')")
+//    public ResponseEntity<ApiResponse<Boolean>> adminGetClass(@RequestBody EClassStatus status, Pageable pageable) throws JsonProcessingException {
+//        return ResponseEntity.ok(ApiResponse.success(iClassService.adminGetClass(status, pageable)));
+//    }
 
     @Operation(summary = "hoc sinh/ giao vien xem chi tiết class")
     @GetMapping("/{id}/account/class-detail")
@@ -204,6 +212,7 @@ public class ClassController {
     public ResponseEntity<ApiResponse<ClassTeacherResponse>> studentGetTeacherInfoOfClass(@PathVariable Long id) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.studentGetTeacherInfoOfClass(id)));
     }
+
     @Operation(summary = "Lấy chi tiết diễn đàn của một lớp học")
     @GetMapping("/forum")
     public ResponseEntity<ApiResponse<ForumDto>> getForumOfClass(@RequestParam Long classId) {

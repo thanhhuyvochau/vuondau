@@ -24,6 +24,7 @@ public class CreateClassRequest implements Serializable {
     private Long maxNumberStudent;
 
 
+
     private BigDecimal eachStudentPayPrice ;
 
 

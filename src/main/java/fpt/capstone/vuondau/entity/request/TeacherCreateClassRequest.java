@@ -23,7 +23,10 @@ public class TeacherCreateClassRequest implements Serializable {
     private Long maxNumberStudent;
 
 
+
     private BigDecimal eachStudentPayPrice ;
+
+
 
     public String getName() {
         return name;

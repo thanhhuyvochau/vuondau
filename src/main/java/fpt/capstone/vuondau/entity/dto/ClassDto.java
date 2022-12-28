@@ -38,6 +38,7 @@ public class ClassDto {
 
     private BigDecimal eachStudentPayPrice ;
 
+    private BigDecimal teacherReceivedPrice ;
 
 
     private AccountSimpleResponse teacher  ;
@@ -80,6 +81,16 @@ public class ClassDto {
 
     public void setEachStudentPayPrice(BigDecimal eachStudentPayPrice) {
         this.eachStudentPayPrice = eachStudentPayPrice;
+
+    }
+
+    public BigDecimal getTeacherReceivedPrice() {
+        return teacherReceivedPrice;
+    }
+
+    public void setTeacherReceivedPrice(BigDecimal teacherReceivedPrice) {
+        this.teacherReceivedPrice = teacherReceivedPrice;
+
     }
 
     public Instant getStartDate() {

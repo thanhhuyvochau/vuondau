@@ -245,6 +245,8 @@ public class ConvertUtil {
         classDto.setMaxNumberStudent(aclass.getMaxNumberStudent());
         classDto.setEachStudentPayPrice(aclass.getEachStudentPayPrice());
 
+        classDto.setTeacherReceivedPrice(aclass.getFinalPrice());
+
 
         if (aclass.getAccount() != null) {
             Account teacher = aclass.getAccount();
