@@ -38,7 +38,8 @@ public class ClassDto {
 
     private BigDecimal eachStudentPayPrice ;
 
-    private BigDecimal finalPrice ;
+    private BigDecimal teacherReceivedPrice ;
+
 
     private AccountSimpleResponse teacher  ;
 
@@ -82,12 +83,12 @@ public class ClassDto {
         this.eachStudentPayPrice = eachStudentPayPrice;
     }
 
-    public BigDecimal getFinalPrice() {
-        return finalPrice;
+    public BigDecimal getTeacherReceivedPrice() {
+        return teacherReceivedPrice;
     }
 
-    public void setFinalPrice(BigDecimal finalPrice) {
-        this.finalPrice = finalPrice;
+    public void setTeacherReceivedPrice(BigDecimal teacherReceivedPrice) {
+        this.teacherReceivedPrice = teacherReceivedPrice;
     }
 
     public Instant getStartDate() {

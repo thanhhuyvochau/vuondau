@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.common.EClassType;
 
@@ -89,6 +90,10 @@ public class Class {
     private List<Section> sections;
     @OneToMany(mappedBy = "clazz", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ClassTeacherCandicate> candicates = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "paymentClass")
+    private List<Transaction> transactions = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -272,5 +277,13 @@ public class Class {
 
     public void setCandicates(List<ClassTeacherCandicate> candicates) {
         this.candicates = candicates;
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
     }
 }

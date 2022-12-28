@@ -18,6 +18,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -64,7 +65,10 @@ public class HatdauApplication {
 
         SpringApplication.run(HatdauApplication.class, args);
 
-
+        BigDecimal payPriceToTeacher = BigDecimal.ZERO ;
+        BigDecimal multiply = BigDecimal.valueOf(200000).multiply(BigDecimal.valueOf(20));
+        payPriceToTeacher = multiply.multiply(BigDecimal.valueOf(70)).divide(BigDecimal.valueOf(100) );
+        System.out.println(payPriceToTeacher);
     }
 
 

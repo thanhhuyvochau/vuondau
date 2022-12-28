@@ -11,7 +11,7 @@ public class Transaction {
     private Long id;
     @Column(name = "order_info")
     private String orderInfo;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private Account account;
     @Column(name = "amount")
@@ -19,8 +19,9 @@ public class Transaction {
     @Column(name = "vpn_command")
     private String vpnCommand;
 
+    @Column(name = "is_success")
     private Boolean isSuccess;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id")
     private Class paymentClass;
     @Column(name = "transaction_no")

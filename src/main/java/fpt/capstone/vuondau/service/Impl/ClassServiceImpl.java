@@ -507,7 +507,9 @@ public class ClassServiceImpl implements IClassService {
         clazz.setClassLevel(classLevel.getId());
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setActive(false);
-//        clazz.setCourse(course);
+
+
+
         clazz.setEachStudentPayPrice(createClassRequest.getEachStudentPayPrice());
         Class save = classRepository.save(clazz);
         return save.getId();

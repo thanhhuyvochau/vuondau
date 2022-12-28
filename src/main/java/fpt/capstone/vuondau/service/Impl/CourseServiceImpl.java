@@ -258,7 +258,7 @@ public class CourseServiceImpl implements ICourseService {
                 classDto.setNumberStudent(aClass.getNumberStudent());
                 classDto.setMaxNumberStudent(aClass.getMaxNumberStudent());
                 classDto.setEachStudentPayPrice(aClass.getEachStudentPayPrice());
-                classDto.setFinalPrice(aClass.getFinalPrice());
+                classDto.setTeacherReceivedPrice(aClass.getFinalPrice());
                 classDtoList.add(classDto);
             }
 
@@ -267,7 +267,6 @@ public class CourseServiceImpl implements ICourseService {
         }).collect(Collectors.toList());
 
         courseDetailResponse.setClazz(classDtoList);
-
 
         // set teacher course
         List<TeacherCourseDto> teacherCourseDtoList = new ArrayList<>();
