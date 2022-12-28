@@ -23,8 +23,7 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static fpt.capstone.vuondau.entity.common.EAccountRole.STUDENT;
-import static fpt.capstone.vuondau.entity.common.EAccountRole.TEACHER;
+import static fpt.capstone.vuondau.entity.common.EAccountRole.*;
 import static fpt.capstone.vuondau.entity.common.EResourceType.AVATAR;
 import static fpt.capstone.vuondau.entity.common.EResourceType.FILE;
 import static fpt.capstone.vuondau.entity.common.ESubjectCode.*;
@@ -79,12 +78,16 @@ public class HatdauApplication {
         List<Role> allRole = roleRepository.findAll();
         Boolean existTeacherRole = false;
         Boolean existStudentRole = false;
+        Boolean existAdminRole = false;
         for (Role role : allRole) {
             if (role.getCode().equals(TEACHER)) {
                 existTeacherRole = true;
             }
             if (role.getCode().equals(STUDENT)) {
                 existStudentRole = true;
+            }
+            if (role.getCode().equals(ADMIN)) {
+                existAdminRole = true;
             }
         }
 
@@ -100,6 +103,12 @@ public class HatdauApplication {
             roleStudent.setCode(EAccountRole.STUDENT);
             roleStudent.setName("student");
             roleList.add(roleStudent);
+        }
+        if (!existAdminRole) {
+            Role roleAdmin = new Role();
+            roleAdmin.setCode(ADMIN);
+            roleAdmin.setName("admin");
+            roleList.add(roleAdmin);
         }
         roleRepository.saveAll(roleList);
 
