@@ -76,13 +76,14 @@ public class ForumServiceImpl implements IForumService {
 
         Forum existedForum = forumRepository.findForumBySubject(subject).orElse(null);
         if (existedForum != null) {
-            throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage("A class at most one forum");
+            throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage("A subject at most one forum");
         }
 
         Forum forum = new Forum();
         forum.setName(subject.getName());
         forum.setCode(subject.getCode().name());
         forum.setType(EForumType.SUBJECT);
+        forum.setSubject(subject);
         forumRepository.save(forum);
         return ConvertUtil.doConvertEntityToResponse(forum);
     }
