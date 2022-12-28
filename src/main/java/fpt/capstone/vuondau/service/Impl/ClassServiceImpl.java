@@ -329,7 +329,6 @@ public class ClassServiceImpl implements IClassService {
         classDetail.setEachStudentPayPrice(aClass.getEachStudentPayPrice());
 
 
-
         classDetail.setFinalPrice(aClass.getFinalPrice());
 
         Course course = aClass.getCourse();
@@ -618,28 +617,26 @@ public class ClassServiceImpl implements IClassService {
 
         if (role != null) {
             if (role.getCode().equals(EAccountRole.STUDENT)) {
-                List<Class> classes = new ArrayList<>( );
+                List<Class> classes = new ArrayList<>();
                 List<Class> classList = account.getStudentClasses().stream().map(StudentClass::getaClass)
                         .filter(Class::isActive)
                         .collect(Collectors.toList());
-                if (status.equals(EClassStatus.All)){
+                if (status.equals(EClassStatus.All)) {
                     classesPage = new PageImpl<>(classList, pageable, classList.size());
-                }
-                else {
+                } else {
 
-                classList.forEach(aClass ->  {
-                    if (aClass.getStatus().equals(status)) {
-                        classes.add(aClass) ;
-                    }
-                });
+                    classList.forEach(aClass -> {
+                        if (aClass.getStatus().equals(status)) {
+                            classes.add(aClass);
+                        }
+                    });
                     classesPage = new PageImpl<>(classes, pageable, classList.size());
                 }
 
             } else if (role.getCode().equals(EAccountRole.TEACHER)) {
-                if (status.equals(EClassStatus.All)){
-                    classesPage = classRepository.findAllByAccount(account ,pageable) ;
-                }
-                else {
+                if (status.equals(EClassStatus.All)) {
+                    classesPage = classRepository.findAllByAccount(account, pageable);
+                } else {
                     classesPage = classRepository.findAllByAccountAndStatus(account, status, pageable);
                 }
 
@@ -1010,6 +1007,17 @@ public class ClassServiceImpl implements IClassService {
         classAttendanceResponse.setAttendance(attendanceDtoList);
         return classAttendanceResponse;
 
+    }
+
+    @Override
+    public ApiPage<ClassDto> adminGetClass(EClassStatus status, Pageable pageable) {
+        Page<Class> allByStatus = null;
+        if (status.equals(EClassStatus.All)) {
+            allByStatus = classRepository.findAll(pageable);
+        } else {
+            allByStatus = classRepository.findAllByStatus(status, pageable);
+        }
+        return PageUtil.convert(allByStatus != null ? allByStatus.map(ConvertUtil::doConvertEntityToResponse) : null);
     }
 
 
