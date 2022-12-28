@@ -114,7 +114,7 @@ public class ClassServiceImpl implements IClassService {
         clazz.setActive(false);
         clazz.setAccount(teacher);
         clazz.setClassType(createClassRequest.getClassType());
-        clazz.setUnitPrice(createClassRequest.getUnitPrice());
+        clazz.setEachStudentPayPrice(createClassRequest.getEachStudentPayPrice());
         Class save = classRepository.save(clazz);
 
         return save.getId();
@@ -325,7 +325,7 @@ public class ClassServiceImpl implements IClassService {
         Class aClass = classRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
         ClassDetailDto classDetail = ObjectUtil.copyProperties(aClass, new ClassDetailDto(), ClassDetailDto.class);
-        classDetail.setUnitPrice(aClass.getUnitPrice());
+        classDetail.setUnitPrice(aClass.getEachStudentPayPrice());
         classDetail.setFinalPrice(aClass.getFinalPrice());
 
         Course course = aClass.getCourse();
@@ -507,8 +507,10 @@ public class ClassServiceImpl implements IClassService {
         clazz.setClassLevel(classLevel.getId());
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setActive(false);
-//        clazz.setCourse(course);
-        clazz.setUnitPrice(createClassRequest.getUnitPrice());
+
+
+
+        clazz.setEachStudentPayPrice(createClassRequest.getEachStudentPayPrice());
         Class save = classRepository.save(clazz);
         return save.getId();
     }
@@ -660,7 +662,7 @@ public class ClassServiceImpl implements IClassService {
         }
 
         ClassDetailDto classDetail = ObjectUtil.copyProperties(aClass, new ClassDetailDto(), ClassDetailDto.class);
-        classDetail.setUnitPrice(aClass.getUnitPrice());
+        classDetail.setUnitPrice(aClass.getEachStudentPayPrice());
 
         Course course = aClass.getCourse();
         if (course != null) {
