@@ -3,17 +3,19 @@ package fpt.capstone.vuondau.service.Impl;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiException;
+import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.common.EForumType;
 import fpt.capstone.vuondau.entity.dto.QuestionDto;
+import fpt.capstone.vuondau.entity.dto.QuestionSimpleDto;
 import fpt.capstone.vuondau.entity.request.CreateQuestionRequest;
 import fpt.capstone.vuondau.entity.request.VoteRequest;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IQuestionService;
-import fpt.capstone.vuondau.util.ConvertUtil;
-import fpt.capstone.vuondau.util.ForumUtil;
-import fpt.capstone.vuondau.util.ObjectUtil;
-import fpt.capstone.vuondau.util.SecurityUtil;
+import fpt.capstone.vuondau.util.*;
+import fpt.capstone.vuondau.util.specification.QuestionSpecificationBuilder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +44,7 @@ public class QuestionServiceImpl implements IQuestionService {
     public QuestionDto getQuestion(Long id) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Question not found by id:" + id));
-        return ConvertUtil.doConvertEntityToResponse(question);
+        return ConvertUtil.doConvertEntityToResponse(question, securityUtil.getCurrentUser());
     }
 
     @Override
@@ -67,7 +69,7 @@ public class QuestionServiceImpl implements IQuestionService {
         question.setForum(forum);
         question.setStudent(account);
         questionRepository.save(question);
-        return ConvertUtil.doConvertEntityToResponse(question);
+        return ConvertUtil.doConvertEntityToResponse(question, account);
     }
 
     @Override
@@ -92,7 +94,7 @@ public class QuestionServiceImpl implements IQuestionService {
                             .withMessage("Forum not found with id:" + createQuestionRequest.getForumId()));
             newQuestion.setForum(forum);
             questionRepository.save(newQuestion);
-            return ConvertUtil.doConvertEntityToResponse(newQuestion);
+            return ConvertUtil.doConvertEntityToResponse(newQuestion, account);
         } else {
             throw ApiException.create(HttpStatus.NOT_FOUND)
                     .withMessage("You not have the right to modify question!");
@@ -144,5 +146,22 @@ public class QuestionServiceImpl implements IQuestionService {
         vote.setAccount(account);
         voteRepository.save(vote);
         return true;
+    }
+
+    @Override
+    public ApiPage<QuestionSimpleDto> searchQuestion(Long forumId, String q, Pageable pageable) {
+        Forum forum = forumRepository.findById(forumId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
+                        .withMessage("Forum not found with id:" + forumId));
+        Account account = securityUtil.getCurrentUser();
+        Boolean isValidForumForMember = ForumUtil.isValidForumMember(forum, account);
+        if (isValidForumForMember) {
+            QuestionSpecificationBuilder questionSpecificationBuilder = new QuestionSpecificationBuilder();
+            questionSpecificationBuilder.queryByContent(q);
+            Page<Question> questionPage = questionRepository.findAll(questionSpecificationBuilder.build(), pageable);
+            return PageUtil.convert(questionPage.map(ConvertUtil::doConvertEntityToSimpleResponse));
+        } else {
+            throw ApiException.create(HttpStatus.METHOD_NOT_ALLOWED).withMessage("Forum is not valid for you!");
+        }
     }
 }

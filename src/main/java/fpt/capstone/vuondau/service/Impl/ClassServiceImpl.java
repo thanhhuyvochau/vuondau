@@ -634,7 +634,8 @@ public class ClassServiceImpl implements IClassService {
                 }
 
             } else if (role.getCode().equals(EAccountRole.TEACHER)) {
-                if (status.equals(EClassStatus.All)) {
+
+                if (status == null || status.equals(EClassStatus.All)) {
                     classesPage = classRepository.findAllByAccount(account, pageable);
                 } else {
                     classesPage = classRepository.findAllByAccountAndStatus(account, status, pageable);

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "manager")
-public class Manager {
+public class Manager extends BaseEntity {
     @Id
     @GeneratedValue
     @Column(name = "id")

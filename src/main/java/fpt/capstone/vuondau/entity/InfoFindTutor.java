@@ -7,7 +7,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "info_find_tutor")
-public class InfoFindTutor {
+public class InfoFindTutor  extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_id_generator")

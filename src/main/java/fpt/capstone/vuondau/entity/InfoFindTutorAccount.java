@@ -5,7 +5,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "info_find_tutor_account")
-public class InfoFindTutorAccount {
+public class InfoFindTutorAccount extends BaseEntity {
 
     @EmbeddedId
     private InfoFindTutorAccountKey id;

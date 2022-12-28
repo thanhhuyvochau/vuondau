@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "file_attachment")
-public class FileAttachment {
+public class FileAttachment extends BaseEntity {
     @Id
     @GeneratedValue
     @Column(name = "id")

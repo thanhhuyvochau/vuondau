@@ -13,7 +13,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "account")
-public class Account {
+public class Account extends BaseEntity {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_id_generator")

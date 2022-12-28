@@ -6,7 +6,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "answer")
-public class Answer {
+public class Answer extends BaseEntity {
 
     @Id
     @GeneratedValue

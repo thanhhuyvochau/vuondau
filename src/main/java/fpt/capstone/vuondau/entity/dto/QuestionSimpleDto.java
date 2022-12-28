@@ -1,12 +1,8 @@
 package fpt.capstone.vuondau.entity.dto;
 
-import fpt.capstone.vuondau.entity.response.AccountResponse;
+import fpt.capstone.vuondau.entity.VoteNumberReponse;
 import fpt.capstone.vuondau.entity.response.AccountSimpleResponse;
-import fpt.capstone.vuondau.entity.response.SubjectResponse;
 import fpt.capstone.vuondau.entity.response.SubjectSimpleResponse;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class QuestionSimpleDto {
     private Long id;
@@ -19,9 +15,7 @@ public class QuestionSimpleDto {
 
     private SubjectSimpleResponse subject;
 
-    private Integer upvoteNumber;
-
-    private Integer downVoteNumber;
+    private VoteNumberReponse voteNumber;
 
     public Long getId() {
         return id;
@@ -63,19 +57,11 @@ public class QuestionSimpleDto {
         this.subject = subject;
     }
 
-    public Integer getUpvoteNumber() {
-        return upvoteNumber;
+    public VoteNumberReponse getVoteNumber() {
+        return voteNumber;
     }
 
-    public void setUpvoteNumber(Integer upvoteNumber) {
-        this.upvoteNumber = upvoteNumber;
-    }
-
-    public Integer getDownVoteNumber() {
-        return downVoteNumber;
-    }
-
-    public void setDownVoteNumber(Integer downVoteNumber) {
-        this.downVoteNumber = downVoteNumber;
+    public void setVoteNumber(VoteNumberReponse voteNumber) {
+        this.voteNumber = voteNumber;
     }
 }

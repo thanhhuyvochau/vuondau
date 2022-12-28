@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.util;
 
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
+import fpt.capstone.vuondau.entity.VoteNumberReponse;
 import fpt.capstone.vuondau.entity.common.EForumType;
 import fpt.capstone.vuondau.entity.common.EGenderType;
 import fpt.capstone.vuondau.entity.dto.*;
@@ -12,35 +13,42 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ConvertUtil {
-    public static QuestionDto doConvertEntityToResponse(Question question) {
+    public static QuestionDto doConvertEntityToResponse(Question question, Account account) {
         QuestionDto questionDto = ObjectUtil.copyProperties(question, new QuestionDto(), QuestionDto.class, true);
         AccountSimpleResponse accountResponse = doConvertEntityToSimpleResponse(question.getStudent());
         // filter(comment -> comment.getParentComment() == null)
         // -> Để lấy tất cả các comment trực tiếp của câu hỏi (Không hỏi comment con) mục đích để get được ra dạng cây của các comment
         // -> Nếu không filter thì sẽ trả ra tất cả comment của câu hỏi và không handle ra dạng cây được.
         List<CommentDto> comments = question.getComments().stream().filter(comment -> comment.getParentComment() == null)
-                .map(ConvertUtil::doConvertEntityToResponse)
+                .map(comment -> doConvertEntityToResponse(comment, account))
                 .collect(Collectors.toList());
+        questionDto.setVoteNumberReponse(VoteUtil.getVoteResponse(question));
         questionDto.setUser(accountResponse);
         questionDto.setComments(comments);
+        Integer userState = VoteUtil.getUserState(question, account);
+        questionDto.setUserState(userState);
         return questionDto;
     }
 
     public static QuestionSimpleDto doConvertEntityToSimpleResponse(Question question) {
         QuestionSimpleDto questionSimpleDto = ObjectUtil.copyProperties(question, new QuestionSimpleDto(), QuestionSimpleDto.class, true);
         AccountSimpleResponse accountResponse = doConvertEntityToSimpleResponse(question.getStudent());
-
+        VoteNumberReponse voteNumberResponse = VoteUtil.getVoteResponse(question);
+        questionSimpleDto.setVoteNumber(voteNumberResponse);
         questionSimpleDto.setUser(accountResponse);
 
         return questionSimpleDto;
     }
 
-    public static CommentDto doConvertEntityToResponse(Comment comment) {
-        return doConvertEntityToResponseAsTree(comment, comment.getParentComment());
+    public static CommentDto doConvertEntityToResponse(Comment comment, Account currentUser) {
+        return doConvertEntityToResponseAsTree(comment, comment.getParentComment(), currentUser);
     }
 
-    private static CommentDto doConvertEntityToResponseAsTree(Comment comment, Comment parentComment) {
+    private static CommentDto doConvertEntityToResponseAsTree(Comment comment, Comment parentComment, Account currentUser) {
         CommentDto commentDto = ObjectUtil.copyProperties(comment, new CommentDto(), CommentDto.class, true);
+        VoteNumberReponse voteResponse = VoteUtil.getVoteResponse(comment);
+        commentDto.setVoteNumber(voteResponse);
+        commentDto.setUserState(VoteUtil.getUserState(comment, currentUser));
         AccountSimpleResponse accountResponse = doConvertEntityToSimpleResponse(comment.getAccount());
         commentDto.setUser(accountResponse);
         if (parentComment != null) {
@@ -49,7 +57,7 @@ public class ConvertUtil {
         }
         if (!comment.getSubComments().isEmpty()) {
             List<CommentDto> subCommentDtos = comment.getSubComments().stream()
-                    .map(subComment -> doConvertEntityToResponseAsTree(subComment, comment))
+                    .map(subComment -> doConvertEntityToResponseAsTree(subComment, comment, currentUser))
                     .collect(Collectors.toList());
             commentDto.setSubComments(subCommentDtos);
         }
@@ -102,7 +110,7 @@ public class ConvertUtil {
     public static AccountSimpleResponse doConvertEntityToSimpleResponse(Account account) {
 
         AccountSimpleResponse response = new AccountSimpleResponse();
-
+        response.setId(account.getId());
         RoleDto roleDto = doConvertEntityToResponse(account.getRole());
         response.setRole(roleDto);
         if (account.getResource() != null) {
@@ -122,6 +130,7 @@ public class ConvertUtil {
             response.setFirstName(accountDetail.getFirstName());
             response.setLevel(accountDetail.getLevel());
             response.setStatus(accountDetail.getStatus());
+
         }
 
         return response;

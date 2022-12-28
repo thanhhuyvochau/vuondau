@@ -6,7 +6,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "comment")
-public class Comment {
+public class Comment  extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "comment_id_generator")
     @SequenceGenerator(name = "comment_id_generator", sequenceName = "comment_id_generator")

@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "info_find_tutor_subject")
-public class InfoFindTutorSubject {
+public class InfoFindTutorSubject extends BaseEntity {
 
     @EmbeddedId
     private InformationFindTutorSubjectKey id;

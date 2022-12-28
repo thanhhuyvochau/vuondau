@@ -5,7 +5,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "module")
-public class Module {
+public class Module  extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

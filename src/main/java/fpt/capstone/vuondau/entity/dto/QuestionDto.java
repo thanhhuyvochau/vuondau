@@ -1,8 +1,10 @@
 package fpt.capstone.vuondau.entity.dto;
 
+import fpt.capstone.vuondau.entity.VoteNumberReponse;
 import fpt.capstone.vuondau.entity.response.AccountSimpleResponse;
 import fpt.capstone.vuondau.entity.response.SubjectSimpleResponse;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,22 +13,15 @@ public class QuestionDto {
 
 
     private Long id;
-
     private String content;
-
     private Boolean isClosed;
-
-
     private AccountSimpleResponse user;
-
-
     private SubjectSimpleResponse subject;
-
-    private Integer upvoteNumber;
-
-    private Integer downVoteNumber;
-
+    private VoteNumberReponse voteNumberReponse;
     private List<CommentDto> comments = new ArrayList<>();
+    private Integer userState = 0;
+    private Instant created;
+    private Instant lastModified;
 
     public Long getId() {
         return id;
@@ -68,20 +63,20 @@ public class QuestionDto {
         this.subject = subject;
     }
 
-    public Integer getUpvoteNumber() {
-        return upvoteNumber;
+    public VoteNumberReponse getVoteNumberReponse() {
+        return voteNumberReponse;
     }
 
-    public void setUpvoteNumber(Integer upvoteNumber) {
-        this.upvoteNumber = upvoteNumber;
+    public void setVoteNumberReponse(VoteNumberReponse voteNumberReponse) {
+        this.voteNumberReponse = voteNumberReponse;
     }
 
-    public Integer getDownVoteNumber() {
-        return downVoteNumber;
+    public Integer getUserState() {
+        return userState;
     }
 
-    public void setDownVoteNumber(Integer downVoteNumber) {
-        this.downVoteNumber = downVoteNumber;
+    public void setUserState(Integer userState) {
+        this.userState = userState;
     }
 
     public List<CommentDto> getComments() {
@@ -90,5 +85,21 @@ public class QuestionDto {
 
     public void setComments(List<CommentDto> comments) {
         this.comments = comments;
+    }
+
+    public Instant getCreated() {
+        return created;
+    }
+
+    public void setCreated(Instant created) {
+        this.created = created;
+    }
+
+    public Instant getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Instant lastModified) {
+        this.lastModified = lastModified;
     }
 }

@@ -8,7 +8,7 @@ import java.time.Instant;
 @Entity
 @Table(name = "pano")
 
-public class Pano  {
+public class Pano extends BaseEntity  {
     private static final long serialVersionUID = 1L;
     @Id
     @Column(name = "id", nullable = false)
