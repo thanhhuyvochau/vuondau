@@ -170,8 +170,8 @@ public class ClassController {
 
     @Operation(summary = "admin seach lơp")
     @GetMapping("/search-class/admin")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> adminGetClass(@RequestBody EClassStatus status, Pageable pageable) throws JsonProcessingException {
+//    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> adminGetClass( EClassStatus status, Pageable pageable) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.adminGetClass(status, pageable)));
     }
 
