@@ -36,9 +36,9 @@ public class ClassDto {
 
     private CourseResponse course ;
 
-    private BigDecimal  unitPrice ;
+    private BigDecimal eachStudentPayPrice ;
 
-    private BigDecimal finalPrice ;
+
 
     private AccountSimpleResponse teacher  ;
 
@@ -74,20 +74,12 @@ public class ClassDto {
         this.code = code;
     }
 
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
+    public BigDecimal getEachStudentPayPrice() {
+        return eachStudentPayPrice;
     }
 
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
-    }
-
-    public BigDecimal getFinalPrice() {
-        return finalPrice;
-    }
-
-    public void setFinalPrice(BigDecimal finalPrice) {
-        this.finalPrice = finalPrice;
+    public void setEachStudentPayPrice(BigDecimal eachStudentPayPrice) {
+        this.eachStudentPayPrice = eachStudentPayPrice;
     }
 
     public Instant getStartDate() {

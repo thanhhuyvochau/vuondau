@@ -23,7 +23,7 @@ public class TeacherCreateClassRequest implements Serializable {
     private Long maxNumberStudent;
 
 
-    private BigDecimal unitPrice;
+    private BigDecimal eachStudentPayPrice ;
 
     public String getName() {
         return name;
@@ -89,11 +89,11 @@ public class TeacherCreateClassRequest implements Serializable {
         this.maxNumberStudent = maxNumberStudent;
     }
 
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
+    public BigDecimal getEachStudentPayPrice() {
+        return eachStudentPayPrice;
     }
 
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
+    public void setEachStudentPayPrice(BigDecimal eachStudentPayPrice) {
+        this.eachStudentPayPrice = eachStudentPayPrice;
     }
 }
