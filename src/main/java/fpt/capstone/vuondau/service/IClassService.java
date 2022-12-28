@@ -77,4 +77,6 @@ public interface IClassService {
 
 
     ClassAttendanceResponse accountGetAttendanceOfClass(Long id);
+
+    ApiPage<ClassDto> adminGetClass(EClassStatus status, Pageable pageable);
 }

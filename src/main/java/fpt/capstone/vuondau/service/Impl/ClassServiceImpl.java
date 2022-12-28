@@ -634,6 +634,7 @@ public class ClassServiceImpl implements IClassService {
                 }
 
             } else if (role.getCode().equals(EAccountRole.TEACHER)) {
+
                 if (status == null || status.equals(EClassStatus.All)) {
                     classesPage = classRepository.findAllByAccount(account, pageable);
                 } else {
@@ -1007,6 +1008,17 @@ public class ClassServiceImpl implements IClassService {
         classAttendanceResponse.setAttendance(attendanceDtoList);
         return classAttendanceResponse;
 
+    }
+
+    @Override
+    public ApiPage<ClassDto> adminGetClass(EClassStatus status, Pageable pageable) {
+        Page<Class> allByStatus = null;
+        if (status.equals(EClassStatus.All)) {
+            allByStatus = classRepository.findAll(pageable);
+        } else {
+            allByStatus = classRepository.findAllByStatus(status, pageable);
+        }
+        return PageUtil.convert(allByStatus != null ? allByStatus.map(ConvertUtil::doConvertEntityToResponse) : null);
     }
 
 
