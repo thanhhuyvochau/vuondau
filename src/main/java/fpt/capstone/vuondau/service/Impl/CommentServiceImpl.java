@@ -40,14 +40,15 @@ public class CommentServiceImpl implements ICommentService {
     @Override
     public CommentDto getComment(Long id) {
         Comment comment = commentRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Comment not found by id:" + id));
-        return ConvertUtil.doConvertEntityToResponse(comment);
+        return ConvertUtil.doConvertEntityToResponse(comment, securityUtil.getCurrentUser());
     }
 
     @Override
     public List<CommentDto> getCommentByQuestion(Long questionId) {
+        Account currentAccount = securityUtil.getCurrentUser();
         List<Comment> comments = commentRepository.findAllByQuestion_IdAndParentCommentIsNull(questionId);
         if (!comments.isEmpty()) {
-            return comments.stream().map(ConvertUtil::doConvertEntityToResponse)
+            return comments.stream().map(comment -> ConvertUtil.doConvertEntityToResponse(comment, currentAccount))
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();
@@ -73,7 +74,7 @@ public class CommentServiceImpl implements ICommentService {
             comment.setParentComment(parentComment);
         }
         comment = commentRepository.save(comment);
-        return ConvertUtil.doConvertEntityToResponse(comment);
+        return ConvertUtil.doConvertEntityToResponse(comment, account);
     }
 
     @Override
@@ -88,7 +89,7 @@ public class CommentServiceImpl implements ICommentService {
         }
         comment.setContent(createCommentRequest.getContent());
         comment = commentRepository.save(comment);
-        return ConvertUtil.doConvertEntityToResponse(comment);
+        return ConvertUtil.doConvertEntityToResponse(comment, account);
     }
 
     @Override

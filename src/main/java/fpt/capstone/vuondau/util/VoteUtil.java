@@ -41,4 +41,33 @@ public class VoteUtil {
         return new VoteNumberReponse(upvote, downvote);
     }
 
+    public static Integer getUserState(Question question, Account currentUser) {
+        Vote vote = question.getVotes().stream()
+                .filter(v -> v.getAccount().getId().equals(currentUser.getId())).findFirst().orElse(null);
+        int actionState = 0;
+        if (vote != null) {
+            Boolean voteAction = vote.getVote();
+            if (voteAction) {
+                actionState = 1;
+            } else {
+                actionState = -1;
+            }
+        }
+        return actionState;
+    }
+
+    public static Integer getUserState(Comment comment, Account currentUser) {
+        Vote vote = comment.getVotes().stream()
+                .filter(v -> v.getAccount().getId().equals(currentUser.getId())).findFirst().orElse(null);
+        int actionState = 0;
+        if (vote != null) {
+            Boolean voteAction = vote.getVote();
+            if (voteAction) {
+                actionState = 1;
+            } else {
+                actionState = -1;
+            }
+        }
+        return actionState;
+    }
 }

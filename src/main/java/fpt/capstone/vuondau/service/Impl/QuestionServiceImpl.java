@@ -44,7 +44,7 @@ public class QuestionServiceImpl implements IQuestionService {
     public QuestionDto getQuestion(Long id) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Question not found by id:" + id));
-        return ConvertUtil.doConvertEntityToResponse(question);
+        return ConvertUtil.doConvertEntityToResponse(question, securityUtil.getCurrentUser());
     }
 
     @Override
@@ -69,7 +69,7 @@ public class QuestionServiceImpl implements IQuestionService {
         question.setForum(forum);
         question.setStudent(account);
         questionRepository.save(question);
-        return ConvertUtil.doConvertEntityToResponse(question);
+        return ConvertUtil.doConvertEntityToResponse(question, account);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class QuestionServiceImpl implements IQuestionService {
                             .withMessage("Forum not found with id:" + createQuestionRequest.getForumId()));
             newQuestion.setForum(forum);
             questionRepository.save(newQuestion);
-            return ConvertUtil.doConvertEntityToResponse(newQuestion);
+            return ConvertUtil.doConvertEntityToResponse(newQuestion, account);
         } else {
             throw ApiException.create(HttpStatus.NOT_FOUND)
                     .withMessage("You not have the right to modify question!");

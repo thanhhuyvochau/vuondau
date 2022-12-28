@@ -3,6 +3,7 @@ package fpt.capstone.vuondau.entity.dto;
 import fpt.capstone.vuondau.entity.VoteNumberReponse;
 import fpt.capstone.vuondau.entity.response.AccountSimpleResponse;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,16 +14,15 @@ public class CommentDto {
     private Long id;
 
     private String content;
-
     private VoteNumberReponse voteNumber;
-
     private List<CommentDto> subComments = new ArrayList<>();
-
 
     private CommentDto parentComment;
 
-
     private AccountSimpleResponse user;
+    private Integer userState = 0;
+    private Instant created;
+    private Instant lastModified;
 
     public Long getId() {
         return id;
@@ -70,5 +70,29 @@ public class CommentDto {
 
     public void setUser(AccountSimpleResponse user) {
         this.user = user;
+    }
+
+    public Integer getUserState() {
+        return userState;
+    }
+
+    public void setUserState(Integer userState) {
+        this.userState = userState;
+    }
+
+    public Instant getCreated() {
+        return created;
+    }
+
+    public void setCreated(Instant created) {
+        this.created = created;
+    }
+
+    public Instant getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Instant lastModified) {
+        this.lastModified = lastModified;
     }
 }
