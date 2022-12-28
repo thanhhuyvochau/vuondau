@@ -36,7 +36,7 @@ public class ClassDto {
 
     private CourseResponse course ;
 
-    private BigDecimal unitPrice ;
+    private BigDecimal  unitPrice ;
 
     private BigDecimal finalPrice ;
 

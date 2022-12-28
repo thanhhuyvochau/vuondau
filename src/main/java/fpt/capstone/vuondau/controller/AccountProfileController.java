@@ -20,6 +20,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -59,12 +60,14 @@ public class AccountProfileController {
 
     @Operation(summary = "Admin phê duyệt request đăng ký giang dạy của giao vien")
     @PutMapping("/approve-request-register-profile")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<EmailDto>> approveRegisterAccount(@RequestBody List<Long> id) {
         return ResponseEntity.ok(iAccountDetailService.approveRegisterAccount(id));
     }
 
     @GetMapping
     @Operation(summary = "Lấy tất cả request tạo tk để đang ký giang dạy theo trạng thái (đã duyệt/chờ)")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ApiResponse<ApiPage<AccountDetailResponse>>> getRequestToActiveAccount(  Boolean isActive   , Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iAccountDetailService.getRequestToActiveAccount(isActive , pageable)));
     }
@@ -94,6 +97,7 @@ public class AccountProfileController {
 
     @GetMapping("/{accountId}/account-detail")
     @Operation(summary = "Lấy tất cả thông tin của giáo viên")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ApiResponse<AccountDetailResponse>> getAccountDetail(@PathVariable Long accountId) {
         return ResponseEntity.ok(ApiResponse.success(iAccountDetailService.getAccountDetail(accountId)));
     }

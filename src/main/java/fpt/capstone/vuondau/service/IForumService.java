@@ -5,6 +5,7 @@ import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EForumType;
 import fpt.capstone.vuondau.entity.dto.ForumDto;
 import fpt.capstone.vuondau.entity.dto.SimpleForumDto;
+import fpt.capstone.vuondau.entity.request.UpdateForumRequest;
 import org.springframework.data.domain.Pageable;
 
 public interface IForumService {
@@ -12,7 +13,7 @@ public interface IForumService {
 
     ForumDto createForumForSubject(Long subjectId);
 
-    ForumDto updateForum(Long id);
+    ForumDto updateForum(Long id, UpdateForumRequest request);
 
     ForumDto getForumByClass(Long classId);
 

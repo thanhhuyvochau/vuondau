@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -35,6 +36,7 @@ public class ClassController {
 
     @Operation(summary = "Giáo viên yêu cầu tạo class (class) chờ admin phê duyệt ")
     @PostMapping({"/teacher-request-create-class"})
+    @PreAuthorize("hasAuthority('TEACHER')")
     public ResponseEntity<ApiResponse<Long>> teacherRequestCreateClass(@Nullable @RequestBody TeacherCreateClassRequest createClassRequest) throws JsonProcessingException, ParseException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClass(createClassRequest)));
 
@@ -42,18 +44,21 @@ public class ClassController {
 
     @Operation(summary = "Giáo viên yêu cầu tạo class (subject-course) chờ admin phê duyệt ")
     @PostMapping({"/{id}/teacher-request-create-class-subject-course"})
+    @PreAuthorize("hasAuthority('TEACHER')")
     public ResponseEntity<ApiResponse<Long>> teacherRequestCreateClassSubjectCourse(@PathVariable Long id ,@Nullable @RequestBody CreateClassSubjectRequest createClassRequest) throws JsonProcessingException, ParseException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClassSubjectCourse(id,createClassRequest)));
     }
 
     @Operation(summary = "lấy tất cả class chờ duyệt")
     @GetMapping({"/class-request"})
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getClassRequesting(@Nullable ClassSearchRequest query, Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getClassRequesting(query, pageable)));
     }
 
     @Operation(summary = "lấy tất cả class có phân trang")
     @GetMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getAllClass(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getAllClass(pageable)));
     }
@@ -65,13 +70,15 @@ public class ClassController {
     }
 
     @Operation(summary = "Admin phê duyệt request tao class của teacher ")
-    @PutMapping({"/{id}/approve-class"})
+    @PostMapping({"/{id}/approve-class"})
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ApiResponse<ClassDto>> adminApproveRequestCreateClass(@PathVariable Long id) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.adminApproveRequestCreateClass(id)));
     }
 
     @Operation(summary = "Tạo class qua moodle")
     @PostMapping({"/create-class-to-moodle"})
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ApiResponse<Boolean>> synchronizedClassToMoodle(@RequestBody MoodleCourseDataRequest moodleCourseDataRequest) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.synchronizedClassToMoodle(moodleCourseDataRequest)));
     }
@@ -154,10 +161,10 @@ public class ClassController {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getRecruitingClasses(pageable)));
     }
 
-    @Operation(summary = "lấy tất cả class của giáo viên / học sinh")
+    @Operation(summary = "(search) lấy tất cả class của giáo viên / học sinh")
     @GetMapping("/account")
-    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getClassByAccount(Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.getClassByAccount(pageable)));
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getClassByAccount( EClassStatus status ,  Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.getClassByAccount( status , pageable)));
     }
 
     @Operation(summary = "hoc sinh/ giao vien xem chi tiết class")

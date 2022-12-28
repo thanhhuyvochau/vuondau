@@ -3,9 +3,8 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-#
     url: jdbc:mysql://mysql8:3306/vuondau
-#    url: jdbc:mysql://103.173.255.39:3306/vuondau
+    #    url: jdbc:mysql://103.173.255.39:3306/vuondau
     username: root
     password: OOiyw5qptYd6xXDl
   jpa:
@@ -27,8 +26,8 @@ spring:
 minio:
   bucket: requestformstudent
   url: http://103.173.255.39:9000
-  access-key: mGUnihw7IeJ3C6EQ
-  secret-key: KLXCOA4g71xV5SChU3f278AYH3HqKE7I
+  access-key: ELrwUZXIzBLOlp5s
+  secret-key: gCHswS6KZKVohYsIiWKCnfvF5UWbBUWE
 
 
 
@@ -78,4 +77,6 @@ vnp_apiUrl: https://sandbox.vnpayment.vn/merchant_webapi/merchant.html
 
 # provinces
 provinces: https://provinces.open-api.vn/api/?depth=1
+
+# Return URL after payment
 payment-redirect: http://localhost:10000/processing

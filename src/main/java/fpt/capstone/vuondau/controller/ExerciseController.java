@@ -8,6 +8,7 @@ import fpt.capstone.vuondau.service.IExerciseService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -24,6 +25,7 @@ public class ExerciseController {
 
     @Operation(summary = "Lấy bài tập theo lớp ")
     @GetMapping("/class/exercises")
+    @PreAuthorize("hasAnyAuthority('STUDENT','TEACHER')")
     public ResponseEntity<ApiResponse<ApiPage<ClassExerciseDto>>> getExerciseOfLClass(Pageable pageable ) {
         return ResponseEntity.ok(ApiResponse.success(iExerciseService.getExerciseOfLClass(pageable)));
     }

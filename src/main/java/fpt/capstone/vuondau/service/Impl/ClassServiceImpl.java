@@ -200,8 +200,10 @@ public class ClassServiceImpl implements IClassService {
 
             classDto.setCourse(ConvertUtil.doConvertCourseToCourseResponse(course));
         }
+
         if (save.getAccount() != null) {
             classDto.setTeacher(ConvertUtil.doConvertEntityToSimpleResponse(save.getAccount()));
+
         }
         return classDto;
     }
@@ -492,7 +494,7 @@ public class ClassServiceImpl implements IClassService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("class code da ton tai"));
         }
-//        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiExceptio.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+
         clazz.setCode(createClassRequest.getCode());
         clazz.setStartDate(createClassRequest.getStartDate());
         clazz.setEndDate(createClassRequest.getEndDate());
@@ -605,7 +607,7 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
-    public ApiPage<ClassDto> getClassByAccount(Pageable pageable) {
+    public ApiPage<ClassDto> getClassByAccount(EClassStatus status, Pageable pageable) {
         Account account = securityUtil.getCurrentUser();
 
         Page<Class> classesPage = null;
@@ -619,11 +621,7 @@ public class ClassServiceImpl implements IClassService {
                 classesPage = new PageImpl<>(classList, pageable, classList.size());
 
             } else if (role.getCode().equals(EAccountRole.TEACHER)) {
-
-                classesPage = classRepository.findAllByAccountAndIsActiveIsTrue(account, pageable);
-
-//                classesPage = classRepository.findAllByAccountAndActiveIsTrue(account, pageable);
-
+                classesPage = classRepository.findAllByAccountAndStatus(account, status, pageable);
             }
         }
 
