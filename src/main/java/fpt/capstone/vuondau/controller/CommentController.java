@@ -48,7 +48,7 @@ public class CommentController {
 
     @PostMapping("/vote")
     @Operation(description = "Bỏ phiếu cho bình luận")
-    public ResponseEntity<ApiResponse<Boolean>> voteComment(@RequestParam VoteRequest request) {
+    public ResponseEntity<ApiResponse<Boolean>> voteComment(@RequestBody VoteRequest request) {
         return ResponseEntity.ok(ApiResponse.success(commentService.voteComment(request)));
     }
 }
