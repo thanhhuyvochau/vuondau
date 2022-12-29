@@ -11,7 +11,7 @@ public class Comment  extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "comment_id_generator")
     @SequenceGenerator(name = "comment_id_generator", sequenceName = "comment_id_generator")
     private Long id;
-    @Column(name = "content")
+    @Column(name = "content", columnDefinition = "LONGBLOB")
     private String content;
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "parentComment")
     private List<Comment> subComments = new ArrayList<>();
