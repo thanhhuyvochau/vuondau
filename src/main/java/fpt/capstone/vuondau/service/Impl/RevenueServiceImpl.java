@@ -1,10 +1,10 @@
 package fpt.capstone.vuondau.service.Impl;
 
+import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.Transaction;
 import fpt.capstone.vuondau.entity.common.ApiException;
-import fpt.capstone.vuondau.entity.common.ApiPage;
-import fpt.capstone.vuondau.entity.request.RequestSearchRequest;
+import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.request.RevenueSearchRequest;
 import fpt.capstone.vuondau.entity.response.RevenueClassResponse;
 import fpt.capstone.vuondau.entity.response.SalaryEstimatesResponse;
@@ -12,35 +12,34 @@ import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IRevenueService;
 import fpt.capstone.vuondau.util.*;
 import fpt.capstone.vuondau.util.specification.RevenueSpecificationBuilder;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
 public class RevenueServiceImpl implements IRevenueService {
 
-    private final ClassRepository classRepository ;
+    private final ClassRepository classRepository;
 
-    private final TransactionRepository transactionRepository ;
+    private final TransactionRepository transactionRepository;
 
-    public RevenueServiceImpl(ClassRepository classRepository, TransactionRepository transactionRepository) {
+    private final SecurityUtil securityUtil;
+
+    public RevenueServiceImpl(ClassRepository classRepository, TransactionRepository transactionRepository, SecurityUtil securityUtil) {
         this.classRepository = classRepository;
         this.transactionRepository = transactionRepository;
+        this.securityUtil = securityUtil;
     }
 
     @Override
-    public List<SalaryEstimatesResponse> salaryEstimatesTeachers(BigDecimal priceEachStudent, Long numberStudent , Long numberMonth) {
-       return  RevenueUtil.payPriceTeacherReceived(priceEachStudent, numberStudent , numberMonth ) ;
+    public List<SalaryEstimatesResponse> salaryEstimatesTeachers(BigDecimal priceEachStudent, Long numberStudent, Long numberMonth) {
+        return RevenueUtil.payPriceTeacherReceived(priceEachStudent, numberStudent, numberMonth);
     }
 
     @Override
@@ -48,27 +47,27 @@ public class RevenueServiceImpl implements IRevenueService {
 
         Class aClass = classRepository.findById(classId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
         List<Transaction> allByPaymentClass = transactionRepository.findAllByPaymentClass(aClass);
-            Long totalMoney = 0L;
+        Long totalMoney = 0L;
         for (Transaction transaction : allByPaymentClass) {
-            if (transaction.getSuccess()!=null) {
-                if (transaction.getSuccess()){
+            if (transaction.getSuccess() != null) {
+                if (transaction.getSuccess()) {
                     Long l = transaction.getAmount().longValue();
-                    totalMoney += l ;
+                    totalMoney += l;
                 }
             }
 
         }
-        return BigDecimal.valueOf(totalMoney) ;
+        return BigDecimal.valueOf(totalMoney);
 
     }
 
     @Override
     public List<RevenueClassResponse> RevenueAllClass() {
 
-      List<Transaction> allByPaymentClass = transactionRepository.findAll();
+        List<Transaction> allByPaymentClass = transactionRepository.findAll();
         List<Class> allClass = allByPaymentClass.stream().map(Transaction::getPaymentClass).distinct().collect(Collectors.toList());
 
-        List<RevenueClassResponse> revenueClassResponseList = new ArrayList<>( );
+        List<RevenueClassResponse> revenueClassResponseList = new ArrayList<>();
 
         allClass.forEach(aClass -> {
             RevenueClassResponse revenueClassResponse = new RevenueClassResponse();
@@ -76,19 +75,19 @@ public class RevenueServiceImpl implements IRevenueService {
             List<Transaction> transactions = transactionRepository.findAllByPaymentClass(aClass);
             Long totalMoney = 0L;
             for (Transaction transaction : transactions) {
-                if (transaction.getSuccess()!=null) {
-                    if (transaction.getSuccess()){
+                if (transaction.getSuccess() != null) {
+                    if (transaction.getSuccess()) {
                         Long l = transaction.getAmount().longValue();
-                        totalMoney += l ;
+                        totalMoney += l;
                     }
                 }
                 revenueClassResponse.setRevenue(totalMoney);
             }
 
-            revenueClassResponseList.add(revenueClassResponse) ;
+            revenueClassResponseList.add(revenueClassResponse);
         });
 
-        return  revenueClassResponseList ;
+        return revenueClassResponseList;
     }
 
     @Override
@@ -100,36 +99,70 @@ public class RevenueServiceImpl implements IRevenueService {
 //        }
         RevenueSpecificationBuilder builder = RevenueSpecificationBuilder.specification()
 
-                .queryByClasses(query.getClassIds());
+                .queryByClasses(query.getClassIds())
+                .studentPayDate(query.getDateFrom(),query.getDateTo())
+                .queryByTeacherIds(query.getTeacherIds()) ;
 //                .queryByTeacherIds(query.getTeacherIds());
         List<Transaction> transactionPage = transactionRepository.findAll(builder.build());
         List<Class> allClass = transactionPage.stream().map(Transaction::getPaymentClass).distinct().collect(Collectors.toList());
 
-        List<RevenueClassResponse> revenueClassResponseList = new ArrayList<>( );
+        List<RevenueClassResponse> revenueClassResponseList = new ArrayList<>();
         for (Class aClass : allClass) {
             RevenueClassResponse revenueClassResponse = new RevenueClassResponse();
             revenueClassResponse.setClassId(aClass.getId());
             List<Transaction> transactions = transactionRepository.findAllByPaymentClass(aClass);
             Long totalMoney = 0L;
             for (Transaction transaction : transactions) {
-                if (transaction.getSuccess()!=null) {
-                    if (transaction.getSuccess()){
-                        Long l = transaction.getAmount().longValue();
-                        totalMoney += l ;
+
+                    if (transaction.getSuccess() != null) {
+                        if (transaction.getAmount() != null && transaction.getSuccess() && transaction.getTransactionNo() != null) {
+                            Long l = transaction.getAmount().longValue();
+                            totalMoney += l;
+                        }
                     }
-                }
                 revenueClassResponse.setRevenue(totalMoney);
             }
-
-            revenueClassResponseList.add(revenueClassResponse) ;
+            revenueClassResponseList.add(revenueClassResponse);
         }
 
-        return  revenueClassResponseList ;
+        return revenueClassResponseList;
+
 
     }
 
     @Override
-    public List<RevenueClassResponse> studentGetTuitionFee(Long studentId) {
-        return null;
+    public List<RevenueClassResponse> studentGetTuitionFee(RevenueSearchRequest query) {
+        Account account = securityUtil.getCurrentUser();
+        List<Long> ids = new ArrayList<>();
+
+
+        List<RevenueClassResponse> revenueClassResponseList = new ArrayList<>();
+
+        RevenueSpecificationBuilder builder = RevenueSpecificationBuilder.specification()
+                .studentPayDate(query.getDateFrom(), query.getDateTo())
+                .queryByClasses(query.getClassIds());
+
+        if (account.getRole().getCode().equals(EAccountRole.STUDENT)) {
+            ids.add(account.getId());
+            builder.queryByStudentsIn(ids);
+        }
+        if (account.getRole().getCode().equals(EAccountRole.TEACHER)) {
+            ids.add(account.getId());
+            builder.queryByTeacherIds(ids);
+        }
+
+        List<Transaction> transactionPage = transactionRepository.findAll(builder.build());
+
+        for (Transaction transaction : transactionPage) {
+            if (transaction.getSuccess() != null) {
+                if (transaction.getAmount() != null && transaction.getSuccess() && transaction.getTransactionNo() != null) {
+                    RevenueClassResponse revenueClassResponse = new RevenueClassResponse();
+                    revenueClassResponse.setClassId(transaction.getPaymentClass().getId());
+                    revenueClassResponse.setRevenue(transaction.getAmount().longValue());
+                    revenueClassResponseList.add(revenueClassResponse);
+                }
+            }
+        }
+        return revenueClassResponseList;
     }
 }

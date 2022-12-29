@@ -38,17 +38,37 @@ public class RevenueSpecificationBuilder {
 
     }
 
+    public RevenueSpecificationBuilder queryByStudentsIn(List<Long> studentIds) {
+        if (studentIds == null) {
+            return this;
+        }
+        specifications.add((root, query, criteriaBuilder) -> {
+            return criteriaBuilder.or(root.get(Transaction_.ACCOUNT).in(studentIds));
+        });
+
+        return this;
+    }
+
     public RevenueSpecificationBuilder queryByTeacherIds(List<Long> teacherIds) {
         if (teacherIds == null) {
             return this;
         }
         specifications.add((root, query, criteriaBuilder) -> {
             Join<Transaction, Class> classJoin = root.join(Transaction_.PAYMENT_CLASS, JoinType.INNER);
-            return criteriaBuilder.or(criteriaBuilder.or(classJoin.get(Class_.ID).in(teacherIds))
+            return criteriaBuilder.or(criteriaBuilder.or(classJoin.get(Class_.ACCOUNT).in(teacherIds))
 
             );
         });
 
+        return this;
+    }
+
+    public RevenueSpecificationBuilder studentPayDate(Instant dateFrom, Instant dateTo) {
+        if (dateFrom == null && dateTo == null) {
+            return this;
+        }
+        specifications.add((root, query, criteriaBuilder) -> criteriaBuilder.greaterThanOrEqualTo(root.get(Transaction_.PAY_DATE), dateFrom));
+        specifications.add((root, query, criteriaBuilder) -> criteriaBuilder.lessThanOrEqualTo(root.get(Transaction_.PAY_DATE), dateTo));
         return this;
     }
 

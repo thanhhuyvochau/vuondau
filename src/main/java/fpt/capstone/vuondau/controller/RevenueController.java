@@ -61,10 +61,10 @@ public class RevenueController {
         return ResponseEntity.ok(ApiResponse.success(iRevenueService.searchRevenue(query)));
     }
 
-    @Operation(summary = "Học sinh xem số tiền học phí đã đóng ")
-    @GetMapping("/{studentId}")
-    public ResponseEntity<ApiResponse<List<RevenueClassResponse>>> studentGetTuitionFee(@PathVariable Long studentId) {
-        return ResponseEntity.ok(ApiResponse.success(iRevenueService.studentGetTuitionFee(studentId)));
+    @Operation(summary = "Học sinh / giao vien xem số tiền học phí đã đóng / đã nhận")
+    @GetMapping("/student/search-tuition-fee")
+    public ResponseEntity<ApiResponse<List<RevenueClassResponse>>> studentGetTuitionFee(@Nullable RevenueSearchRequest query) {
+        return ResponseEntity.ok(ApiResponse.success(iRevenueService.studentGetTuitionFee(query)));
     }
 
 

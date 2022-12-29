@@ -10,10 +10,8 @@ public class RevenueSearchRequest implements Serializable {
 
     private List<Long> teacherIds ;
 
-    private Instant dateTo;
-
     private Instant dateFrom;
-
+    private Instant dateTo;
 
     public List<Long> getClassIds() {
         return classIds;
@@ -31,19 +29,19 @@ public class RevenueSearchRequest implements Serializable {
         this.teacherIds = teacherIds;
     }
 
-    public Instant getDateTo() {
-        return dateTo;
-    }
-
-    public void setDateTo(Instant dateTo) {
-        this.dateTo = dateTo;
-    }
-
     public Instant getDateFrom() {
         return dateFrom;
     }
 
     public void setDateFrom(Instant dateFrom) {
         this.dateFrom = dateFrom;
+    }
+
+    public Instant getDateTo() {
+        return dateTo;
+    }
+
+    public void setDateTo(Instant dateTo) {
+        this.dateTo = dateTo;
     }
 }
