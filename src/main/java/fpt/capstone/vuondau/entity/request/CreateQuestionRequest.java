@@ -3,7 +3,7 @@ package fpt.capstone.vuondau.entity.request;
 
 public class CreateQuestionRequest {
     private String content;
-
+    private String title;
     private Long forumId;
     private Long forumLessonId;
 
@@ -29,5 +29,13 @@ public class CreateQuestionRequest {
 
     public void setForumLessonId(Long forumLessonId) {
         this.forumLessonId = forumLessonId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
