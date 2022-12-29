@@ -162,9 +162,9 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
         List<TimeTable> timeTableList1 = setDateOfWeek(timeTableRequest.getSlotDow(), slotNumber, startDate, endDate, archetype, aClass, timeTableList);
 
-        aClass.setTimeTables(timeTableList1);
-//        aClass.getTimeTables().clear();
-//        aClass.getTimeTables().addAll(timeTableList1);
+//        aClass.setTimeTables(timeTableList1);
+        aClass.getTimeTables().clear();
+        aClass.getTimeTables().addAll(timeTableList1);
         aClass.setStatus(EClassStatus.REQUESTING);
 
         classRepository.save(aClass);
