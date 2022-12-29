@@ -159,6 +159,10 @@ public class RevenueServiceImpl implements IRevenueService {
                     RevenueClassResponse revenueClassResponse = new RevenueClassResponse();
                     revenueClassResponse.setClassId(transaction.getPaymentClass().getId());
                     revenueClassResponse.setRevenue(transaction.getAmount().longValue());
+                    revenueClassResponse.setOrderInfo(transaction.getOrderInfo());
+                    revenueClassResponse.setPayDate(transaction.getPayDate());
+                    revenueClassResponse.setSuccess(transaction.getSuccess());
+                    revenueClassResponse.setTransactionNo(transaction.getTransactionNo());
                     revenueClassResponseList.add(revenueClassResponse);
                 }
             }
