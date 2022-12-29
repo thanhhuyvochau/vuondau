@@ -77,11 +77,27 @@ public class TimeTableServiceImpl implements ITimeTableService {
     public Long createTimeTableClass(Long classId, Long numberSlot, TimeTableRequest timeTableRequest) throws ParseException {
         Account currentUser = SecurityUtil.getCurrentUser();
 
-        Class aClass = classRepository.findByIdAndAccount(classId, currentUser);
+
+        Class     aClass = new Class() ;
+        if (currentUser.getRole().getCode().equals(EAccountRole.ADMIN)) {
+        aClass   = classRepository.findById(classId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
+            aClass.setStatus(EClassStatus.RECRUITING);
+         }
+        else {
+            aClass = classRepository.findByIdAndAccount(classId, currentUser);
+        }
+
         if (aClass == null) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Class không tồn tai"));
         }
+
+        if (!aClass.getStatus().equals(EClassStatus.REQUESTING) && !aClass.getStatus().equals(EClassStatus.RECRUITING) &&
+                !aClass.getStatus().equals(EClassStatus.NOTSTART)) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Không thể tạo thời khoá biểu cho lớp này, vì trang thái lớp không cho phép"));
+        }
+
         if (aClass.getTimeTables().size() > 0) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("class đã có thời khoá biểu"));
@@ -146,9 +162,9 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
         List<TimeTable> timeTableList1 = setDateOfWeek(timeTableRequest.getSlotDow(), slotNumber, startDate, endDate, archetype, aClass, timeTableList);
 
-
-        aClass.getTimeTables().clear();
-        aClass.getTimeTables().addAll(timeTableList1);
+        aClass.setTimeTables(timeTableList1);
+//        aClass.getTimeTables().clear();
+//        aClass.getTimeTables().addAll(timeTableList1);
         aClass.setStatus(EClassStatus.REQUESTING);
 
         classRepository.save(aClass);
@@ -354,7 +370,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
             classAttendanceResponseList.add(classAttendanceResponse);
         });
 
-        return classAttendanceResponseList ;
+        return classAttendanceResponseList;
 
 
     }
@@ -363,7 +379,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
     public Long adminCreateTimeTableClass(Long classId, Long numberSlot, TimeTableRequest timeTableRequest) throws ParseException {
         Account currentUser = SecurityUtil.getCurrentUser();
 
-        Class aClass = classRepository.findById(classId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" +classId));
+        Class aClass = classRepository.findById(classId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
         if (aClass == null) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Class không tồn tai"));

@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.hibernate.boot.jaxb.hbm.spi.JaxbHbmIndexManyToAnyType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Nullable;
@@ -33,6 +34,7 @@ public class TimeTableController {
 
     @Operation(summary = "Giáo viên tao lich dạy")
     @PostMapping({"/{classId}"})
+    @PreAuthorize("hasAnyAuthority('ADMIN','TEACHER')")
     public ResponseEntity<ApiResponse<Long>> createTimeTableClass(@PathVariable Long classId , Long numberSlot , @RequestBody TimeTableRequest timeTableRequest  ) throws ParseException {
         return ResponseEntity.ok(ApiResponse.success(iTimeTableService.createTimeTableClass(classId, numberSlot, timeTableRequest)));
     }

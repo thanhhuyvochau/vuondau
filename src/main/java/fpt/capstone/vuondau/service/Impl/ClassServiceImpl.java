@@ -137,11 +137,8 @@ public class ClassServiceImpl implements IClassService {
                     .withMessage(messageUtil.getLocalMessage("Bạn không thể cập nhật topic cho khác này"));
         }
         Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
-
-
         aClass.setCourse(course);
         classRepository.save(aClass);
-
         return aClass.getId();
     }
 
