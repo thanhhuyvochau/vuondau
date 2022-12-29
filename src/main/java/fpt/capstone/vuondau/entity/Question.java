@@ -13,6 +13,8 @@ public class Question extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "question_id_generator")
     @SequenceGenerator(name = "question_id_generator", sequenceName = "question_id_generator")
     private Long id;
+    @Column(name = "title")
+    private String title;
     @Column(name = "content", columnDefinition = "LONGBLOB")
     private String content;
     @Column(name = "is_closed")
@@ -96,5 +98,13 @@ public class Question extends BaseEntity {
 
     public void setVotes(List<Vote> votes) {
         this.votes = votes;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

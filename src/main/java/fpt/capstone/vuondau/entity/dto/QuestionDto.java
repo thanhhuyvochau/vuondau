@@ -13,6 +13,7 @@ public class QuestionDto {
 
 
     private Long id;
+    private String title;
     private String content;
     private Boolean isClosed;
     private AccountSimpleResponse user;
@@ -101,5 +102,13 @@ public class QuestionDto {
 
     public void setLastModified(Instant lastModified) {
         this.lastModified = lastModified;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

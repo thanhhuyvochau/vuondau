@@ -55,7 +55,10 @@ public class QuestionServiceImpl implements IQuestionService {
         Forum forum = forumRepository.findById(createQuestionRequest.getForumId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
                         .withMessage("Subject not found with id:" + createQuestionRequest.getForumId()));
-
+        if (createQuestionRequest.getTitle() == null || createQuestionRequest.getTitle().trim().isEmpty()) {
+            throw ApiException.create(HttpStatus.CONFLICT)
+                    .withMessage("Title can not be empty!");
+        }
         if (!ForumUtil.isValidForumMember(forum, account)) {
             throw ApiException.create(HttpStatus.CONFLICT)
                     .withMessage("User not a valid member of this forum");
@@ -66,6 +69,7 @@ public class QuestionServiceImpl implements IQuestionService {
                     .withMessage("Lesson not found with id:" + createQuestionRequest.getForumLessonId()));
             question.setForumLesson(forumLesson);
         }
+        question.setTitle(createQuestionRequest.getTitle());
         question.setForum(forum);
         question.setStudent(account);
         questionRepository.save(question);

@@ -6,6 +6,7 @@ import fpt.capstone.vuondau.entity.response.SubjectSimpleResponse;
 
 public class QuestionSimpleDto {
     private Long id;
+    private String title;
 
     private String content;
 
@@ -63,5 +64,13 @@ public class QuestionSimpleDto {
 
     public void setVoteNumber(VoteNumberReponse voteNumber) {
         this.voteNumber = voteNumber;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }
