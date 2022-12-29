@@ -13,16 +13,9 @@ import java.util.Optional;
 @Configuration
 @EnableJpaAuditing(auditorAwareRef = "auditorProvider")
 public class AuditingConfig {
-    private final SecurityUtil securityUtil;
-
-    public AuditingConfig(SecurityUtil securityUtil) {
-        this.securityUtil = securityUtil;
-    }
 
     @Bean
     public AuditorAware<String> auditorProvider() {
-        Account currentUser = securityUtil.getCurrentUserName();
-        String username = Optional.ofNullable(currentUser.getUsername()).orElse(AuthoritiesConstants.ANONYMOUS);
-        return () -> Optional.of(username);
+        return () -> Optional.of(SecurityUtil.getCurrentUserName().orElse(AuthoritiesConstants.ANONYMOUS));
     }
 }

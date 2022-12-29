@@ -29,14 +29,14 @@ public class SecurityUtil {
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Student not found by username"));
     }
 
-    public Account getCurrentUserName() {
+    public static Optional<String> getCurrentUserName() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
-            return new Account();
+            return Optional.empty();
         }
         Jwt principal = (Jwt) authentication.getPrincipal();
         String username = principal.getClaimAsString("preferred_username");
-        return Optional.ofNullable(accountRepository.findByUsername(username))
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Student not found by username"));
+        return Optional.ofNullable(username);
+
     }
 }
