@@ -28,7 +28,6 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -89,16 +88,22 @@ public class ClassServiceImpl implements IClassService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("class code da ton tai"));
         }
+
+//        if(!DayUtil.checkBiggerDate(createClassRequest.getStartDate().toString(), createClassRequest.getEndDate().toString())){
+//            throw ApiException.create(HttpStatus.BAD_REQUEST)
+//                    .withMessage(messageUtil.getLocalMessage("Ngày"));
+//        }
+
 //        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
         clazz.setCode(createClassRequest.getCode());
 
         Instant now = DayUtil.convertDayInstant(Instant.now().toString());
-        if (!DayUtil.checkDate(now.toString(), createClassRequest.getStartDate().toString(), 3)) {
+        if (!DayUtil.checkTwoDateBigger(now.toString(), createClassRequest.getStartDate().toString(), 3)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày hiện tại la 3 ngay"));
         }
 
-        if (!DayUtil.checkDate(createClassRequest.getStartDate().toString(), createClassRequest.getEndDate().toString(), 30)) {
+        if (!DayUtil.checkTwoDateBigger(createClassRequest.getStartDate().toString(), createClassRequest.getEndDate().toString(), 30)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày kêt thúc lớp la 30 ngay"));
         }
@@ -113,6 +118,7 @@ public class ClassServiceImpl implements IClassService {
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
         clazz.setActive(false);
         clazz.setAccount(teacher);
+        clazz.setStatus(EClassStatus.REQUESTING);
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setEachStudentPayPrice(createClassRequest.getEachStudentPayPrice());
         Class save = classRepository.save(clazz);
@@ -489,7 +495,7 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
-    public Long createClassForRecruiting(CreateClassRequest createClassRequest) throws JsonProcessingException {
+    public Long createClassForRecruiting(CreateClassRequest createClassRequest) throws JsonProcessingException, ParseException {
         // set class bên vườn đậu
         Class clazz = new Class();
         clazz.setName(createClassRequest.getName());
@@ -497,10 +503,21 @@ public class ClassServiceImpl implements IClassService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("class code da ton tai"));
         }
+        Instant now = DayUtil.convertDayInstant(Instant.now().toString());
+        if (!DayUtil.checkTwoDateBigger(now.toString(), createClassRequest.getStartDate().toString(), 3)) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày hiện tại la 3 ngay"));
+        }
+
+        if (!DayUtil.checkTwoDateBigger(createClassRequest.getStartDate().toString(), createClassRequest.getEndDate().toString(), 30)) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày kêt thúc lớp la 30 ngay"));
+        }
+
 
         clazz.setCode(createClassRequest.getCode());
-        clazz.setStartDate(createClassRequest.getStartDate());
-        clazz.setEndDate(createClassRequest.getEndDate());
+        clazz.setStartDate(DayUtil.convertDayInstant(createClassRequest.getStartDate().toString()));
+        clazz.setEndDate(DayUtil.convertDayInstant(createClassRequest.getEndDate().toString()));
         clazz.setMinNumberStudent(createClassRequest.getMinNumberStudent());
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
         clazz.setStatus(EClassStatus.RECRUITING);

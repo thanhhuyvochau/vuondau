@@ -1,22 +1,13 @@
 package fpt.capstone.vuondau.util;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.threeten.bp.ZoneOffset;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
 import java.time.Instant;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -54,7 +45,7 @@ public class DayUtil {
         return Instant.parse(s);
     }
 
-    public static Boolean checkDate(String one, String two, Integer plusDay) throws ParseException {
+    public static Boolean checkTwoDateBigger(String one, String two, Integer plusDay) throws ParseException {
 
         Instant datOne = Instant.parse(one).plus(plusDay, ChronoUnit.DAYS);
         String oneSubString = datOne.toString().substring(0, 10).replaceAll("-", " ");
@@ -103,6 +94,26 @@ public class DayUtil {
         return null;
 
     }
+
+//    public static Boolean checkBiggerDate(String one, String two) throws ParseException {
+//        Instant start = Instant.parse(one);
+//        String oneSubString = start.toString().substring(0, 10);
+//        java.time.LocalDate startLocalDate = java.time.LocalDate.parse(oneSubString);
+//
+//        java.time.LocalDate dayOneToCheck = startLocalDate.plusDays(30);
+//
+//        Instant end = Instant.parse(two);
+//        String TwoSubString = end.toString().substring(0, 10);
+//        java.time.LocalDate dayTwoToCheck = java.time.LocalDate.parse(TwoSubString);
+//
+//
+//        if (dayOneToCheck.isBefore(dayTwoToCheck) || dayOneToCheck.equals(dayTwoToCheck)){
+//            return true ;
+//        }
+//        else {
+//            return false  ;
+//        }
+//    }
 
 
 }
