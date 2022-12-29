@@ -53,7 +53,7 @@ public interface IClassService {
 
     ApiPage<ClassDto> classSuggestion(long infoFindTutorId, Pageable pageable);
 
-    Long createClassForRecruiting(CreateClassRequest createClassRequest) throws JsonProcessingException;
+    Long createClassForRecruiting(CreateClassRequest createClassRequest) throws JsonProcessingException, ParseException;
 
     Boolean applyToRecruitingClass(Long classId);
 
