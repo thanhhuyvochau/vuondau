@@ -37,6 +37,5 @@ public class SecurityUtil {
         Jwt principal = (Jwt) authentication.getPrincipal();
         String username = principal.getClaimAsString("preferred_username");
         return Optional.ofNullable(username);
-
     }
 }
