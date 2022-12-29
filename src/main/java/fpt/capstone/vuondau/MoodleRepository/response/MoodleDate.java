@@ -1,4 +1,4 @@
-package fpt.capstone.vuondau.MoodleRepository.Response;
+package fpt.capstone.vuondau.MoodleRepository.response;
 
 public class MoodleDate {
     private String label;

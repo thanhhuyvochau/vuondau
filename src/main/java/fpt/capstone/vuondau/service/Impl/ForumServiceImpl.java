@@ -1,6 +1,6 @@
 package fpt.capstone.vuondau.service.Impl;
 
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleSectionResponse;
+import fpt.capstone.vuondau.MoodleRepository.response.MoodleSectionResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiException;
@@ -17,7 +17,6 @@ import fpt.capstone.vuondau.util.ConvertUtil;
 import fpt.capstone.vuondau.util.ForumUtil;
 import fpt.capstone.vuondau.util.PageUtil;
 import fpt.capstone.vuondau.util.SecurityUtil;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -242,5 +241,20 @@ public class ForumServiceImpl implements IForumService {
         return PageUtil.convert(forums.map(ConvertUtil::doConvertEntityToSimpleResponse));
     }
 
-
+    @Override
+    public Boolean synchronizeLessonForum(Long classId) {
+        Class clazz = classRepository.findById(classId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Class not found with id:" + classId));
+        List<Section> sections = clazz.getSections();
+        Forum classForum = clazz.getForum();
+        for (Section section : sections) {
+            ForumLesson forumLesson = Optional.ofNullable(section.getForumLesson()).orElse(new ForumLesson());
+            forumLesson.setForum(classForum);
+            forumLesson.setLessonName(section.getName());
+            forumLesson.setSection(section);
+            classForum.getForumLessons().add(forumLesson);
+        }
+        forumRepository.save(classForum);
+        return true;
+    }
 }

@@ -2,17 +2,12 @@ package fpt.capstone.vuondau.service;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCourseDataRequest;
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
-import fpt.capstone.vuondau.entity.Class;
+import fpt.capstone.vuondau.MoodleRepository.request.CreateCourseRequest;
 import fpt.capstone.vuondau.entity.common.ApiPage;
-import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
-import fpt.capstone.vuondau.entity.common.EClassType;
 import fpt.capstone.vuondau.entity.dto.ClassDetailDto;
 import fpt.capstone.vuondau.entity.dto.ClassDto;
 import fpt.capstone.vuondau.entity.dto.ClassStudentDto;
-import fpt.capstone.vuondau.entity.dto.StudentDto;
 import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.*;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +23,7 @@ public interface IClassService {
 
     Long teacherRequestCreateClassSubjectCourse(Long id, CreateClassSubjectRequest createClassRequest);
 
-    Boolean synchronizedClassToMoodle(MoodleCourseDataRequest moodleCourseDataRequest) throws JsonProcessingException;
+    Boolean synchronizedClassToMoodle(CreateCourseRequest createCourseRequest) throws JsonProcessingException;
 
     ClassDto adminApproveRequestCreateClass(Long id) throws JsonProcessingException;
 
@@ -36,9 +31,6 @@ public interface IClassService {
     ApiPage<ClassDto> getClassRequesting(ClassSearchRequest query, Pageable pageable);
 
     Boolean studentEnrollClass(Long studentId, Long classId);
-
-
-    List<ClassDto> studentWaitingApproveIntoClass(Long classId);
 
     List<ClassStudentDto> getStudentWaitingIntoClass(Long classId);
 
@@ -79,4 +71,5 @@ public interface IClassService {
     ClassAttendanceResponse accountGetAttendanceOfClass(Long id);
 
     ApiPage<ClassDto> adminGetClass(EClassStatus status, Pageable pageable);
+     List<ClassDto> getClassByAccountAsList(EClassStatus status);
 }

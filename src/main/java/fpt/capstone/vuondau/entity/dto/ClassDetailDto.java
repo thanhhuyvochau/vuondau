@@ -1,15 +1,10 @@
 package fpt.capstone.vuondau.entity.dto;
 
 
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleRecourseDtoResponse;
-import fpt.capstone.vuondau.entity.TeacherCourseKey;
-import fpt.capstone.vuondau.entity.TimeTable;
+import fpt.capstone.vuondau.MoodleRepository.response.MoodleRecourseDtoResponse;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.CourseDetailResponse;
-import fpt.capstone.vuondau.entity.response.CourseResponse;
-import io.swagger.v3.oas.annotations.media.Schema;
-import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.time.Instant;

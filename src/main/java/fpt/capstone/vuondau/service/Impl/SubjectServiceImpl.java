@@ -2,9 +2,9 @@ package fpt.capstone.vuondau.service.Impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
-import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCategoryRequest;
-import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCreateCategoryRequest;
-import fpt.capstone.vuondau.MoodleRepository.Response.CategoryResponse;
+import fpt.capstone.vuondau.MoodleRepository.request.GetCategoryRequest;
+import fpt.capstone.vuondau.MoodleRepository.request.CreateCategoryRequest;
+import fpt.capstone.vuondau.MoodleRepository.response.CategoryResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
@@ -70,9 +70,9 @@ public class SubjectServiceImpl implements ISubjectService {
         subject.setName(subjectRequest.getName());
 
 
-        MoodleCategoryRequest moodleCategoryRequest = new MoodleCategoryRequest();
-        List<CategoryResponse> categoryList = moodleCourseRepository.getCategory(moodleCategoryRequest);
-        List<MoodleCreateCategoryRequest.MoodleCreateCategoryBody> moodleCreateCategoryRequestList = new ArrayList<>();
+        GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
+        List<CategoryResponse> categoryList = moodleCourseRepository.getCategories(getCategoryRequest);
+        List<CreateCategoryRequest.CreateCategoryBody> moodleCreateCategoryRequestList = new ArrayList<>();
 
 
         List<String> stringList = new ArrayList<>();
@@ -85,13 +85,13 @@ public class SubjectServiceImpl implements ISubjectService {
 
         if (stringList.isEmpty()) {
 
-            MoodleCreateCategoryRequest request = new MoodleCreateCategoryRequest();
-            MoodleCreateCategoryRequest.MoodleCreateCategoryBody moodleCreateCategoryBody = new MoodleCreateCategoryRequest.MoodleCreateCategoryBody();
-            moodleCreateCategoryBody.setName(subjectRequest.getCode().name());
-            moodleCreateCategoryRequestList.add(moodleCreateCategoryBody);
+            CreateCategoryRequest request = new CreateCategoryRequest();
+            CreateCategoryRequest.CreateCategoryBody createCategoryBody = new CreateCategoryRequest.CreateCategoryBody();
+            createCategoryBody.setName(subjectRequest.getCode().name());
+            moodleCreateCategoryRequestList.add(createCategoryBody);
             request.setCategories(moodleCreateCategoryRequestList);
             try {
-                moodleCourseRepository.postCategory(request);
+                moodleCourseRepository.createCategory(request);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }

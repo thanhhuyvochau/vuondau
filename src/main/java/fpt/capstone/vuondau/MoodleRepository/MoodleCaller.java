@@ -1,6 +1,6 @@
 package fpt.capstone.vuondau.MoodleRepository;
 
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleLoginResponse;
+import fpt.capstone.vuondau.MoodleRepository.response.MoodleLoginResponse;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

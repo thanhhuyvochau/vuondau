@@ -1,15 +1,15 @@
-package fpt.capstone.vuondau.MoodleRepository.Request;
+package fpt.capstone.vuondau.MoodleRepository.request;
 
 import java.io.Serializable;
 import java.util.List;
 
-public class MoodleCreateCategoryRequest implements Serializable {
+public class CreateCategoryRequest implements Serializable {
 
 
 
-    private List<MoodleCreateCategoryBody> categories ;
+    private List<CreateCategoryBody> categories ;
 
-    public static class MoodleCreateCategoryBody {
+    public static class CreateCategoryBody {
 
         private String name;
 
@@ -72,11 +72,11 @@ public class MoodleCreateCategoryRequest implements Serializable {
 //        }
     }
 
-    public List<MoodleCreateCategoryBody> getCategories() {
+    public List<CreateCategoryBody> getCategories() {
         return categories;
     }
 
-    public void setCategories(List<MoodleCreateCategoryBody> categories) {
+    public void setCategories(List<CreateCategoryBody> categories) {
         this.categories = categories;
     }
 }

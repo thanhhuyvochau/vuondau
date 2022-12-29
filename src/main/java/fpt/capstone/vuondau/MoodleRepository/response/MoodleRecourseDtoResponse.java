@@ -1,4 +1,4 @@
-package fpt.capstone.vuondau.MoodleRepository.Response;
+package fpt.capstone.vuondau.MoodleRepository.response;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ public class MoodleRecourseDtoResponse {
     private Long id;
     private String name;
 
-    private List<ResourceDtoMoodleResponse> modules;
+    private List<ResourceMoodleResponse> modules;
 
     public Long getId() {
         return id;
@@ -26,11 +26,11 @@ public class MoodleRecourseDtoResponse {
         this.name = name;
     }
 
-    public List<ResourceDtoMoodleResponse> getModules() {
+    public List<ResourceMoodleResponse> getModules() {
         return modules;
     }
 
-    public void setModules(List<ResourceDtoMoodleResponse> modules) {
+    public void setModules(List<ResourceMoodleResponse> modules) {
         this.modules = modules;
     }
 }

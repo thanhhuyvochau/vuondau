@@ -1,8 +1,8 @@
-package fpt.capstone.vuondau.MoodleRepository.Response;
+package fpt.capstone.vuondau.MoodleRepository.response;
 
 import java.util.List;
 
-public class MoodleClassResponse {
+public class CourseResponse {
 
 
     private Long id;
@@ -39,7 +39,7 @@ public class MoodleClassResponse {
     private String lang;
     private String forcetheme;
 
-    private List<MoodleCourseFormatOption> courseformatoptions;
+    private List<CourseFormatOption> courseformatoptions;
 
 
     private boolean showactivitydates;
@@ -261,11 +261,11 @@ public class MoodleClassResponse {
         this.forcetheme = forcetheme;
     }
 
-    public List<MoodleCourseFormatOption> getCourseformatoptions() {
+    public List<CourseFormatOption> getCourseformatoptions() {
         return courseformatoptions;
     }
 
-    public void setCourseformatoptions(List<MoodleCourseFormatOption> courseformatoptions) {
+    public void setCourseformatoptions(List<CourseFormatOption> courseformatoptions) {
         this.courseformatoptions = courseformatoptions;
     }
 

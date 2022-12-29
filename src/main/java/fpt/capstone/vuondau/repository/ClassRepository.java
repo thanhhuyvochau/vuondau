@@ -28,11 +28,12 @@ public interface ClassRepository extends JpaRepository<Class, Long>, JpaSpecific
     List<Class> findByAccountAndStatus(Account account, EClassStatus status);
 
     Page<Class> findAllByAccount(Account account , Pageable pageable);
-
+    List<Class> findAllByAccount(Account account);
 
 
     Page<Class> findAllByAccountAndStatus(Account account,EClassStatus status,  Pageable pageable);
 
+    List<Class> findAllByAccountAndStatus(Account account,EClassStatus status);
     Page<Class> findAllByAccountAndActiveIsTrue(Account account, Pageable pageable);
 
 

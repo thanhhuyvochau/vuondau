@@ -2,7 +2,7 @@ package fpt.capstone.vuondau.controller;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCourseDataRequest;
+import fpt.capstone.vuondau.MoodleRepository.request.CreateCourseRequest;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
@@ -76,12 +76,12 @@ public class ClassController {
         return ResponseEntity.ok(ApiResponse.success(iClassService.adminApproveRequestCreateClass(id)));
     }
 
-    @Operation(summary = "Tạo class qua moodle")
-    @PostMapping({"/create-class-to-moodle"})
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<ApiResponse<Boolean>> synchronizedClassToMoodle(@RequestBody MoodleCourseDataRequest moodleCourseDataRequest) throws JsonProcessingException {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.synchronizedClassToMoodle(moodleCourseDataRequest)));
-    }
+//    @Operation(summary = "Tạo class qua moodle")
+//    @PostMapping({"/create-class-to-moodle"})
+//    @PreAuthorize("hasAuthority('ADMIN')")
+//    public ResponseEntity<ApiResponse<Boolean>> synchronizedClassToMoodle(@RequestBody CreateCourseRequest createCourseRequest) throws JsonProcessingException {
+//        return ResponseEntity.ok(ApiResponse.success(iClassService.synchronizedClassToMoodle(createCourseRequest)));
+//    }
 
 
     @Operation(summary = "Hoc sinh đăng ký vào class")
@@ -112,12 +112,12 @@ public class ClassController {
         return ResponseEntity.ok(ApiResponse.success(iClassService.classDetail(id)));
     }
 
-
-    @Operation(summary = "lấy tất cả hoc sinh request vao lớp ")
-    @GetMapping({"{classId}/students-approve-class"})
-    public ResponseEntity<ApiResponse<List<ClassDto>>> studentWaitingApproveIntoClass(@PathVariable Long classId) {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.studentWaitingApproveIntoClass(classId)));
-    }
+//
+//    @Operation(summary = "lấy tất cả hoc sinh request vao lớp ")
+//    @GetMapping({"{classId}/students-approve-class"})
+//    public ResponseEntity<ApiResponse<List<ClassDto>>> studentWaitingApproveIntoClass(@PathVariable Long classId) {
+//        return ResponseEntity.ok(ApiResponse.success(iClassService.studentWaitingApproveIntoClass(classId)));
+//    }
 
     @Operation(summary = "học sinh / giáo viên xem lớp bằng thời gian (was study, is studying, will study) ")
     @GetMapping("/{accountId}/class-of-account")
@@ -217,5 +217,10 @@ public class ClassController {
     @GetMapping("/forum")
     public ResponseEntity<ApiResponse<ForumDto>> getForumOfClass(@RequestParam Long classId) {
         return ResponseEntity.ok(ApiResponse.success(forumService.getForumByClass(classId)));
+    }
+    @Operation(summary = "(search) lấy tất cả class của giáo viên / học sinh không phân trang")
+    @GetMapping("/search-class/account/list")
+    public ResponseEntity<ApiResponse<List<ClassDto>>> getClassByAccount(EClassStatus status) {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.getClassByAccountAsList(status)));
     }
 }

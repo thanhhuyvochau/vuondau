@@ -31,7 +31,7 @@ public class SecurityUtil {
 
     public static Optional<String> getCurrentUserName() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
+        if (authentication == null || authentication.getPrincipal().equals("anonymousUser")) {
             return Optional.empty();
         }
         Jwt principal = (Jwt) authentication.getPrincipal();

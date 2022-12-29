@@ -1,9 +1,9 @@
-package fpt.capstone.vuondau.MoodleRepository.Response;
+package fpt.capstone.vuondau.MoodleRepository.response;
 
 
 
 
-public class ResourceDtoMoodleResponse {
+public class ResourceMoodleResponse {
     private Long id;
     private String  url;
     private String  name;

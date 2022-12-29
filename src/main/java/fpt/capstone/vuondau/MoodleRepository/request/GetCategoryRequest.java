@@ -1,9 +1,9 @@
-package fpt.capstone.vuondau.MoodleRepository.Request;
+package fpt.capstone.vuondau.MoodleRepository.request;
 
 import java.io.Serializable;
 import java.util.List;
 
-public class MoodleCategoryRequest implements Serializable {
+public class GetCategoryRequest implements Serializable {
 
 
 

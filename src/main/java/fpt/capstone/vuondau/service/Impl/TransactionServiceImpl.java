@@ -5,6 +5,7 @@ import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.StudentClass;
 import fpt.capstone.vuondau.entity.Transaction;
 import fpt.capstone.vuondau.entity.common.ApiException;
+import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.request.VpnPayRequest;
 import fpt.capstone.vuondau.entity.response.PaymentResponse;
 import fpt.capstone.vuondau.repository.ClassRepository;
@@ -55,6 +56,9 @@ public class TransactionServiceImpl implements ITransactionService {
         Class clazz = classRepository.findById(request.getClassId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
                         .withMessage("Class not found with id:" + request.getClassId()));
+        if (!clazz.getStatus().equals(EClassStatus.NEW)) {
+            throw ApiException.create(HttpStatus.METHOD_NOT_ALLOWED).withMessage("You cannot buy this class because status is invalid!");
+        }
         logger.debug("PRINCIPAL:" + request.getSessionId());
         Account student = securityUtil.getCurrentUser();
         boolean isInClass = clazz.getStudentClasses().stream().map(StudentClass::getAccount).collect(Collectors.toList()).contains(student);

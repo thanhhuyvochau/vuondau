@@ -2,11 +2,11 @@ package fpt.capstone.vuondau;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
-import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCategoryRequest;
-import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCreateCategoryRequest;
-import fpt.capstone.vuondau.MoodleRepository.Request.MoodleMasterDataRequest;
-import fpt.capstone.vuondau.MoodleRepository.Response.CategoryResponse;
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
+import fpt.capstone.vuondau.MoodleRepository.request.GetCategoryRequest;
+import fpt.capstone.vuondau.MoodleRepository.request.CreateCategoryRequest;
+import fpt.capstone.vuondau.MoodleRepository.request.MoodleMasterDataRequest;
+import fpt.capstone.vuondau.MoodleRepository.response.CategoryResponse;
+import fpt.capstone.vuondau.MoodleRepository.response.CourseResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.DayOfWeek;
@@ -16,12 +16,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import org.threeten.bp.LocalDate;
 
 
-import java.math.BigDecimal;
 import java.text.ParseException;
-import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -242,14 +239,14 @@ public class HatdauApplication {
     @EventListener(ApplicationReadyEvent.class)
     public void intiSubjectToMoodle() throws JsonProcessingException {
 
-        MoodleCategoryRequest request = new MoodleCategoryRequest();
-        List<MoodleCategoryRequest.MoodleCategoryBody> moodleCategoryBodyList = new ArrayList<>();
-        MoodleCategoryRequest.MoodleCategoryBody moodleCategoryBody = new MoodleCategoryRequest.MoodleCategoryBody();
+        GetCategoryRequest request = new GetCategoryRequest();
+        List<GetCategoryRequest.MoodleCategoryBody> moodleCategoryBodyList = new ArrayList<>();
+        GetCategoryRequest.MoodleCategoryBody moodleCategoryBody = new GetCategoryRequest.MoodleCategoryBody();
         moodleCategoryBody.setKey("id");
         moodleCategoryBody.setValue("");
         moodleCategoryBodyList.add(moodleCategoryBody);
         request.setCriteria(moodleCategoryBodyList);
-        List<CategoryResponse> category = moodleCourseRepository.getCategory(request);
+        List<CategoryResponse> category = moodleCourseRepository.getCategories(request);
 
         List<String> allNameCategory = category.stream().map(CategoryResponse::getName).collect(Collectors.toList());
 
@@ -259,37 +256,37 @@ public class HatdauApplication {
 
         List<String> collect = allNameSubject.stream().filter(s -> !allNameCategory.contains(s)).filter(Objects::nonNull).collect(Collectors.toList());
 
-        MoodleCreateCategoryRequest moodleCreateCategoryRequest = new MoodleCreateCategoryRequest();
+        CreateCategoryRequest createCategoryRequest = new CreateCategoryRequest();
 
-        List<MoodleCreateCategoryRequest.MoodleCreateCategoryBody> moodleCreateCategoryBodyList = new ArrayList<>();
+        List<CreateCategoryRequest.CreateCategoryBody> createCategoryBodyList = new ArrayList<>();
 
         for (String s : collect) {
-            MoodleCreateCategoryRequest.MoodleCreateCategoryBody set = new MoodleCreateCategoryRequest.MoodleCreateCategoryBody();
+            CreateCategoryRequest.CreateCategoryBody set = new CreateCategoryRequest.CreateCategoryBody();
             set.setName(s);
             set.setParent(0L);
             set.setIdnumber("");
             set.setDescription("");
             set.setDescriptionformat(0L);
 
-            moodleCreateCategoryBodyList.add(set);
+            createCategoryBodyList.add(set);
         }
 
 
-        moodleCreateCategoryRequest.setCategories(moodleCreateCategoryBodyList);
-        moodleCourseRepository.postCategory(moodleCreateCategoryRequest);
+        createCategoryRequest.setCategories(createCategoryBodyList);
+        moodleCourseRepository.createCategory(createCategoryRequest);
 
     }
 
     @EventListener(ApplicationReadyEvent.class)
     public void intiMoodleCategoryIdToSubject() throws JsonProcessingException {
-        MoodleCategoryRequest request = new MoodleCategoryRequest();
-        List<MoodleCategoryRequest.MoodleCategoryBody> moodleCategoryBodyList = new ArrayList<>();
-        MoodleCategoryRequest.MoodleCategoryBody moodleCategoryBody = new MoodleCategoryRequest.MoodleCategoryBody();
+        GetCategoryRequest request = new GetCategoryRequest();
+        List<GetCategoryRequest.MoodleCategoryBody> moodleCategoryBodyList = new ArrayList<>();
+        GetCategoryRequest.MoodleCategoryBody moodleCategoryBody = new GetCategoryRequest.MoodleCategoryBody();
         moodleCategoryBody.setKey("id");
         moodleCategoryBody.setValue("");
         moodleCategoryBodyList.add(moodleCategoryBody);
         request.setCriteria(moodleCategoryBodyList);
-        List<CategoryResponse> category = moodleCourseRepository.getCategory(request);
+        List<CategoryResponse> category = moodleCourseRepository.getCategories(request);
 
         List<String> allNameCategory = category.stream().map(CategoryResponse::getName).collect(Collectors.toList());
 
@@ -320,7 +317,7 @@ public class HatdauApplication {
 
         MoodleMasterDataRequest request = new MoodleMasterDataRequest();
 
-        List<MoodleClassResponse> courseMoodle = moodleCourseRepository.getCourse(request);
+        List<CourseResponse> courseMoodle = moodleCourseRepository.getCourses(request);
 
         List<Class> allClass = classRepository.findAll();
         List<Class> classList = new ArrayList<>();

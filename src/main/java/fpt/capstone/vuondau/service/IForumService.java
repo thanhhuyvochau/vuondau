@@ -1,6 +1,6 @@
 package fpt.capstone.vuondau.service;
 
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleSectionResponse;
+import fpt.capstone.vuondau.MoodleRepository.response.MoodleSectionResponse;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EForumType;
 import fpt.capstone.vuondau.entity.dto.ForumDto;
@@ -21,5 +21,6 @@ public interface IForumService {
 
     ApiPage<SimpleForumDto> getAllForumByTypes(Pageable pageable,EForumType forumType);
 
+    Boolean synchronizeLessonForum(Long classId);
 
 }
