@@ -28,7 +28,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 
@@ -1130,5 +1133,46 @@ public class ClassServiceImpl implements IClassService {
         }
         forum.getForumLessons().addAll(forumLessons);
         return forum;
+    }
+
+    @Override
+    public List<ClassDto> getClassByAccountAsList(EClassStatus status) {
+        Account account = securityUtil.getCurrentUser();
+
+        List<Class> choosenClassList = null;
+        Role role = account.getRole();
+
+        if (role != null) {
+            if (role.getCode().equals(EAccountRole.STUDENT)) {
+                List<Class> classes = new ArrayList<>();
+                List<Class> classList = account.getStudentClasses().stream().map(StudentClass::getaClass)
+                        .filter(Class::isActive)
+                        .collect(Collectors.toList());
+                if (status.equals(EClassStatus.All)) {
+                    choosenClassList = classList;
+                } else {
+
+                    classList.forEach(aClass -> {
+                        if (aClass.getStatus().equals(status)) {
+                            classes.add(aClass);
+                        }
+                    });
+                    choosenClassList = classes;
+                }
+
+            } else if (role.getCode().equals(EAccountRole.TEACHER)) {
+
+                if (status == null || status.equals(EClassStatus.All)) {
+                    choosenClassList = classRepository.findAllByAccount(account);
+                } else {
+                    choosenClassList = classRepository.findAllByAccountAndStatus(account, status);
+                }
+
+            }
+        }
+        if (choosenClassList == null) {
+            return Collections.emptyList();
+        }
+        return choosenClassList.stream().map(ConvertUtil::doConvertEntityToResponse).collect(Collectors.toList());
     }
 }

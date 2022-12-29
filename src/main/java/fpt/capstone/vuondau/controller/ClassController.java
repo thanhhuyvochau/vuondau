@@ -218,4 +218,9 @@ public class ClassController {
     public ResponseEntity<ApiResponse<ForumDto>> getForumOfClass(@RequestParam Long classId) {
         return ResponseEntity.ok(ApiResponse.success(forumService.getForumByClass(classId)));
     }
+    @Operation(summary = "(search) lấy tất cả class của giáo viên / học sinh không phân trang")
+    @GetMapping("/search-class/account/list")
+    public ResponseEntity<ApiResponse<List<ClassDto>>> getClassByAccount(EClassStatus status) {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.getClassByAccountAsList(status)));
+    }
 }
