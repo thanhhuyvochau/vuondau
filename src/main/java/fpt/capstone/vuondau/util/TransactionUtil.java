@@ -6,6 +6,8 @@ import fpt.capstone.vuondau.entity.Transaction;
 import fpt.capstone.vuondau.repository.TransactionRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class TransactionUtil {
     private final TransactionRepository transactionRepository;
@@ -15,8 +17,11 @@ public class TransactionUtil {
     }
 
     public boolean isClassPaid(Account student, Class clazz) {
-        Transaction transaction = transactionRepository.findByPaymentClassAndAccount(clazz, student);
-        if (transaction != null && transaction.getSuccess()) return true;
+        List<Transaction> transactions = transactionRepository.findByPaymentClassAndAccount(clazz, student);
+        long count = transactions.stream()
+                .filter(transaction -> transaction.getSuccess() != null)
+                .filter(Transaction::getSuccess).count();
+        if (count==1) return true;
         return false;
     }
 }

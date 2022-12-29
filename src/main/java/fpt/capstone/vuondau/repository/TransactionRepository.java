@@ -21,5 +21,5 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     List<Transaction> findAll(Specification<Transaction> spec);
 
-    Transaction findByPaymentClassAndAccount(Class clazz, Account student);
+    List<Transaction> findByPaymentClassAndAccount(Class clazz, Account student);
 }
