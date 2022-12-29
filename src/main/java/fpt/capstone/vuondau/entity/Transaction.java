@@ -2,10 +2,11 @@ package fpt.capstone.vuondau.entity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.Instant;
 
 @Entity
 @Table(name = "transaction")
-public class Transaction  extends BaseEntity{
+public class Transaction extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,6 +27,9 @@ public class Transaction  extends BaseEntity{
     private Class paymentClass;
     @Column(name = "transaction_no")
     private String transactionNo;
+
+    @Column(name = "pay_date")
+    private Instant payDate;
 
     public String getTransactionNo() {
         return transactionNo;
@@ -89,5 +93,13 @@ public class Transaction  extends BaseEntity{
 
     public void setVpnCommand(String vpnCommand) {
         this.vpnCommand = vpnCommand;
+    }
+
+    public Instant getPayDate() {
+        return payDate;
+    }
+
+    public void setPayDate(Instant payDate) {
+        this.payDate = payDate;
     }
 }
