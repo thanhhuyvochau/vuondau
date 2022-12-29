@@ -164,6 +164,7 @@ public class TransactionServiceImpl implements ITransactionService {
             if (paymentClass.getNumberStudent() < paymentClass.getMaxNumberStudent()) {
                 transaction.setTransactionNo(transactionNo);
                 transaction.setSuccess(true);
+                transaction.setPayDate(Instant.now());
                 StudentClass studentClass = new StudentClass();
                 studentClass.setAClass(paymentClass);
                 studentClass.setAccount(transaction.getAccount());

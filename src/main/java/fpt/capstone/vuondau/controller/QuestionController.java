@@ -51,7 +51,7 @@ public class QuestionController {
 
     @PostMapping("/vote")
     @Operation(description = "Bỏ phiếu cho câu hỏi")
-    public ResponseEntity<ApiResponse<Boolean>> voteQuestion(@RequestParam VoteRequest request) {
+    public ResponseEntity<ApiResponse<Boolean>> voteQuestion(@RequestBody VoteRequest request) {
         return ResponseEntity.ok(ApiResponse.success(iQuestionService.voteQuestion(request)));
     }
 
