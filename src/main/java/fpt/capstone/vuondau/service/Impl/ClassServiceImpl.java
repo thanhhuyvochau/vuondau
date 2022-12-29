@@ -16,6 +16,7 @@ import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IClassService;
 import fpt.capstone.vuondau.util.*;
 import fpt.capstone.vuondau.util.specification.ClassSpecificationBuilder;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -126,16 +127,22 @@ public class ClassServiceImpl implements IClassService {
         return save.getId();
     }
 
+    @Transactional
     @Override
     public Long teacherRequestCreateClassSubjectCourse(Long id, CreateClassSubjectRequest createClassRequest) {
-        Account teacher = securityUtil.getCurrentUser();
-        Class aClass = classRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
-
+        Class aClass = new Class();
+        aClass = classRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
+        if (!aClass.getStatus().equals(EClassStatus.REQUESTING)) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Bạn không thể cập nhật topic cho khác này"));
+        }
         Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
-        aClass.setCourse(course);
-        Class save = classRepository.save(aClass);
 
-        return save.getId();
+
+        aClass.setCourse(course);
+        classRepository.save(aClass);
+
+        return aClass.getId();
     }
 
     @Override

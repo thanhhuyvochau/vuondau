@@ -44,7 +44,7 @@ public class ClassController {
 
     @Operation(summary = "Giáo viên yêu cầu tạo class (subject-course) chờ admin phê duyệt ")
     @PostMapping({"/{id}/teacher-request-create-class-subject-course"})
-    @PreAuthorize("hasAuthority('TEACHER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','TEACHER')")
     public ResponseEntity<ApiResponse<Long>> teacherRequestCreateClassSubjectCourse(@PathVariable Long id, @Nullable @RequestBody CreateClassSubjectRequest createClassRequest) throws JsonProcessingException, ParseException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClassSubjectCourse(id, createClassRequest)));
     }
