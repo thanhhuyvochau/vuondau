@@ -3,14 +3,14 @@ package fpt.capstone.vuondau.MoodleRepository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCategoryRequest;
-import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCreateCategoryRequest;
-import fpt.capstone.vuondau.MoodleRepository.Request.MoodleMasterDataRequest;
-import fpt.capstone.vuondau.MoodleRepository.Request.S1CourseRequest;
-import fpt.capstone.vuondau.MoodleRepository.Response.CategoryResponse;
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleSectionResponse;
-import fpt.capstone.vuondau.entity.request.CourseIdRequest;
+import fpt.capstone.vuondau.MoodleRepository.request.GetCategoryRequest;
+import fpt.capstone.vuondau.MoodleRepository.request.CreateCategoryRequest;
+import fpt.capstone.vuondau.MoodleRepository.request.MoodleMasterDataRequest;
+import fpt.capstone.vuondau.MoodleRepository.request.S1CourseRequest;
+import fpt.capstone.vuondau.MoodleRepository.response.CategoryResponse;
+import fpt.capstone.vuondau.MoodleRepository.response.CourseResponse;
+import fpt.capstone.vuondau.MoodleRepository.response.MoodleSectionResponse;
+import fpt.capstone.vuondau.MoodleRepository.request.GetCourseRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -23,36 +23,36 @@ public class MoodleCourseRepository extends S1BaseRepository {
         super(caller);
     }
 
-    public List<MoodleClassResponse> postCourse(S1CourseRequest request) throws JsonProcessingException {
-        TypeReference<List<MoodleClassResponse>> typeReference = new TypeReference<List<MoodleClassResponse>>() {
+    public List<CourseResponse> createCourse(S1CourseRequest request) throws JsonProcessingException {
+        TypeReference<List<CourseResponse>> typeReference = new TypeReference<List<CourseResponse>>() {
         };
-        return caller.postWithAuthenticationTokeCustom(createCourseUri, request, typeReference);
+        return caller.post(createCourseUri, request, typeReference);
     }
 
 
-    public List<MoodleClassResponse> getCourse(MoodleMasterDataRequest request) throws JsonProcessingException {        TypeReference<List<MoodleClassResponse>> typeReference = new TypeReference<List<MoodleClassResponse>>() {
+    public List<CourseResponse> getCourses(MoodleMasterDataRequest request) throws JsonProcessingException {        TypeReference<List<CourseResponse>> typeReference = new TypeReference<List<CourseResponse>>() {
         };
-        return caller.getWithAuthenticationTokeCustom(courseUri, request, typeReference);
+        return caller.get(courseUri, request, typeReference);
     }
 
 
-    public List<CategoryResponse> getCategory(MoodleCategoryRequest request) throws JsonProcessingException {
+    public List<CategoryResponse> getCategories(GetCategoryRequest request) throws JsonProcessingException {
         TypeReference<List<CategoryResponse>> typeReference = new TypeReference<List<CategoryResponse>>() {
         };
-        return caller.getWithAuthenticationTokeCustom(categoryUri, request, typeReference);
+        return caller.get(categoryUri, request, typeReference);
     }
 
 
-    public List<MoodleClassResponse> postCategory(MoodleCreateCategoryRequest request) throws JsonProcessingException {
-        TypeReference<List<MoodleClassResponse>> typeReference = new TypeReference<List<MoodleClassResponse>>() {
+    public List<CourseResponse> createCategory(CreateCategoryRequest request) throws JsonProcessingException {
+        TypeReference<List<CourseResponse>> typeReference = new TypeReference<List<CourseResponse>>() {
         };
-        return caller.postWithAuthenticationTokeCustom(createCategoryUri, request, typeReference);
+        return caller.post(createCategoryUri, request, typeReference);
     }
 
 
-    public List<MoodleSectionResponse> getResourceCourse(CourseIdRequest classId) throws JsonProcessingException {
+    public List<MoodleSectionResponse> getResourceCourse(GetCourseRequest classId) throws JsonProcessingException {
         TypeReference<List<MoodleSectionResponse>> typeReference = new TypeReference<List<MoodleSectionResponse>>() {
         };
-        return caller.postWithAuthenticationTokeCustom(resourceUri, classId, typeReference);
+        return caller.post(resourceUri, classId, typeReference);
     }
 }

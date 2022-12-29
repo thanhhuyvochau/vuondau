@@ -2,13 +2,10 @@ package fpt.capstone.vuondau.controller;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCourseDataRequest;
-import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCreateCategoryRequest;
-import fpt.capstone.vuondau.MoodleRepository.Response.CategoryResponse;
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
+import fpt.capstone.vuondau.MoodleRepository.response.CategoryResponse;
+import fpt.capstone.vuondau.MoodleRepository.response.CourseResponse;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
-import fpt.capstone.vuondau.entity.dto.SubjectDto;
 import fpt.capstone.vuondau.service.IMoodleService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +38,7 @@ public class MoodleController {
 
     @Operation(summary = "Get từ moodle")
     @GetMapping("get-class-from-moodle")
-    public ResponseEntity<ApiResponse<ApiPage<MoodleClassResponse>>> synchronizedClass() throws JsonProcessingException {
+    public ResponseEntity<ApiResponse<ApiPage<CourseResponse>>> synchronizedClass() throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iMoodleService.synchronizedClass()));
     }
 

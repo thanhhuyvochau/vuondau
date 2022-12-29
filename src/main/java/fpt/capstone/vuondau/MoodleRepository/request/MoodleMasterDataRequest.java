@@ -1,4 +1,4 @@
-package fpt.capstone.vuondau.MoodleRepository.Request;
+package fpt.capstone.vuondau.MoodleRepository.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

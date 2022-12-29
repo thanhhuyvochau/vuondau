@@ -1,6 +1,4 @@
-package fpt.capstone.vuondau.MoodleRepository.Response;
-
-import java.util.List;
+package fpt.capstone.vuondau.MoodleRepository.response;
 
 public class CategoryResponse {
 

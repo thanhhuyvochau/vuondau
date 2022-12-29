@@ -3,9 +3,11 @@ package fpt.capstone.vuondau.service.Impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
-import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCourseDataRequest;
-import fpt.capstone.vuondau.MoodleRepository.Request.S1CourseRequest;
-import fpt.capstone.vuondau.MoodleRepository.Response.*;
+import fpt.capstone.vuondau.MoodleRepository.request.GetCourseRequest;
+import fpt.capstone.vuondau.MoodleRepository.request.CreateCourseRequest;
+import fpt.capstone.vuondau.MoodleRepository.request.S1CourseRequest;
+import fpt.capstone.vuondau.MoodleRepository.response.*;
+import fpt.capstone.vuondau.MoodleRepository.response.CourseResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.*;
@@ -16,7 +18,6 @@ import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IClassService;
 import fpt.capstone.vuondau.util.*;
 import fpt.capstone.vuondau.util.specification.ClassSpecificationBuilder;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -28,10 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 
@@ -90,7 +89,7 @@ public class ClassServiceImpl implements IClassService {
         clazz.setName(createClassRequest.getName());
         if (classRepository.existsByCode(createClassRequest.getCode())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("class code da ton tai"));
+                    .withMessage(messageUtil.getLocalMessage("Class code existed!"));
         }
 
 //        if(!DayUtil.checkBiggerDate(createClassRequest.getStartDate().toString(), createClassRequest.getEndDate().toString())){
@@ -126,7 +125,6 @@ public class ClassServiceImpl implements IClassService {
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setEachStudentPayPrice(createClassRequest.getEachStudentPayPrice());
         Class save = classRepository.save(clazz);
-
         return save.getId();
     }
 
@@ -146,22 +144,22 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
-    public Boolean synchronizedClassToMoodle(MoodleCourseDataRequest moodleCourseDataRequest) throws JsonProcessingException {
+    public Boolean synchronizedClassToMoodle(CreateCourseRequest createCourseRequest) throws JsonProcessingException {
 
 
         S1CourseRequest s1CourseRequest = new S1CourseRequest();
-        List<MoodleCourseDataRequest.MoodleCourseBody> moodleCourseBodyList = new ArrayList<>();
-        for (MoodleCourseDataRequest.MoodleCourseBody request : moodleCourseDataRequest.getCourses()) {
-            MoodleCourseDataRequest.MoodleCourseBody moodleCourseBody = new MoodleCourseDataRequest.MoodleCourseBody();
-            moodleCourseBody.setFullname(request.getFullname());
-            moodleCourseBody.setShortname(request.getShortname());
-            moodleCourseBody.setCategoryid(request.getCategoryid());
-            moodleCourseBodyList.add(moodleCourseBody);
+        List<CreateCourseRequest.CreateCourseBody> createCourseBodyList = new ArrayList<>();
+        for (CreateCourseRequest.CreateCourseBody request : createCourseRequest.getCourses()) {
+            CreateCourseRequest.CreateCourseBody createCourseBody = new CreateCourseRequest.CreateCourseBody();
+            createCourseBody.setFullname(request.getFullname());
+            createCourseBody.setShortname(request.getShortname());
+            createCourseBody.setCategoryid(request.getCategoryid());
+            createCourseBodyList.add(createCourseBody);
         }
 
-        s1CourseRequest.setCourses(moodleCourseBodyList);
+        s1CourseRequest.setCourses(createCourseBodyList);
 
-        List<MoodleClassResponse> moodleClassResponses = moodleCourseRepository.postCourse(s1CourseRequest);
+        List<CourseResponse> courseRespons = moodleCourseRepository.createCourse(s1CourseRequest);
 
         return true;
     }
@@ -180,27 +178,25 @@ public class ClassServiceImpl implements IClassService {
         clazz.setForum(classForum);
         Class save = classRepository.save(clazz);
         S1CourseRequest s1CourseRequest = new S1CourseRequest();
-        List<MoodleCourseDataRequest.MoodleCourseBody> moodleCourseBodyList = new ArrayList<>();
+        List<CreateCourseRequest.CreateCourseBody> createCourseBodyList = new ArrayList<>();
 
-        MoodleCourseDataRequest.MoodleCourseBody moodleCourseBody = new MoodleCourseDataRequest.MoodleCourseBody();
-        moodleCourseBody.setFullname(save.getName());
-        moodleCourseBody.setShortname(save.getCode());
+        CreateCourseRequest.CreateCourseBody createCourseBody = new CreateCourseRequest.CreateCourseBody();
+        createCourseBody.setFullname(save.getName());
+        createCourseBody.setShortname(save.getCode());
         Course course = save.getCourse();
         if (course != null) {
-
-
-            moodleCourseBody.setCategoryid(course.getSubject().getCategoryMoodleId());
+            createCourseBody.setCategoryid(course.getSubject().getCategoryMoodleId());
         }
         if (save.getStartDate() != null) {
-            moodleCourseBody.setStartdate(save.getStartDate().toEpochMilli());
+            createCourseBody.setStartdate(save.getStartDate().toEpochMilli());
         }
         if (save.getEndDate() != null) {
-            moodleCourseBody.setEnddate(save.getEndDate().toEpochMilli());
+            createCourseBody.setEnddate(save.getEndDate().toEpochMilli());
         }
-        moodleCourseBodyList.add(moodleCourseBody);
-        s1CourseRequest.setCourses(moodleCourseBodyList);
+        createCourseBodyList.add(createCourseBody);
+        s1CourseRequest.setCourses(createCourseBodyList);
 
-        List<MoodleClassResponse> moodleClassResponses = moodleCourseRepository.postCourse(s1CourseRequest);
+        List<CourseResponse> courseRespons = moodleCourseRepository.createCourse(s1CourseRequest);
 
 
         ClassDto classDto = ObjectUtil.copyProperties(save, new ClassDto(), ClassDto.class);
@@ -270,10 +266,6 @@ public class ClassServiceImpl implements IClassService {
         return true;
     }
 
-    @Override
-    public List<ClassDto> studentWaitingApproveIntoClass(Long classId) {
-        return null;
-    }
 
     @Override
     public List<ClassStudentDto> getStudentWaitingIntoClass(Long classId) {
@@ -369,15 +361,15 @@ public class ClassServiceImpl implements IClassService {
         }
 
         if (aClass.getResourceMoodleId() != null) {
-            CourseIdRequest courseIdRequest = new CourseIdRequest();
+            GetCourseRequest getCourseRequest = new GetCourseRequest();
 
-            courseIdRequest.setCourseid(aClass.getResourceMoodleId());
+            getCourseRequest.setCourseid(aClass.getResourceMoodleId());
             try {
 
 
                 List<MoodleRecourseDtoResponse> resources = new ArrayList<>();
 
-                List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
+                List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(getCourseRequest);
 
 
                 resourceCourse.stream().skip(1).forEach(moodleRecourseClassResponse -> {
@@ -386,17 +378,17 @@ public class ClassServiceImpl implements IClassService {
                     recourseDtoResponse.setName(moodleRecourseClassResponse.getName());
                     List<MoodleModuleResponse> modules = moodleRecourseClassResponse.getModules();
 
-                    List<ResourceDtoMoodleResponse> resourceDtoMoodleResponseList = new ArrayList<>();
+                    List<ResourceMoodleResponse> resourceMoodleResponseList = new ArrayList<>();
 
                     modules.forEach(moodleResponse -> {
-                        ResourceDtoMoodleResponse resourceDtoMoodleResponse = new ResourceDtoMoodleResponse();
-                        resourceDtoMoodleResponse.setId(moodleResponse.getId());
-                        resourceDtoMoodleResponse.setUrl(moodleResponse.getUrl());
-                        resourceDtoMoodleResponse.setName(moodleResponse.getName());
-                        resourceDtoMoodleResponse.setType(moodleResponse.getModname());
-                        resourceDtoMoodleResponseList.add(resourceDtoMoodleResponse);
+                        ResourceMoodleResponse resourceMoodleResponse = new ResourceMoodleResponse();
+                        resourceMoodleResponse.setId(moodleResponse.getId());
+                        resourceMoodleResponse.setUrl(moodleResponse.getUrl());
+                        resourceMoodleResponse.setName(moodleResponse.getName());
+                        resourceMoodleResponse.setType(moodleResponse.getModname());
+                        resourceMoodleResponseList.add(resourceMoodleResponse);
                     });
-                    recourseDtoResponse.setModules(resourceDtoMoodleResponseList);
+                    recourseDtoResponse.setModules(resourceMoodleResponseList);
                     resources.add(recourseDtoResponse);
                 });
                 classDetail.setResources(resources);
@@ -725,15 +717,15 @@ public class ClassServiceImpl implements IClassService {
             classDetail.setCourse(courseDetailResponse);
         }
         if (aClass.getResourceMoodleId() != null) {
-            CourseIdRequest courseIdRequest = new CourseIdRequest();
+            GetCourseRequest getCourseRequest = new GetCourseRequest();
 
-            courseIdRequest.setCourseid(aClass.getResourceMoodleId());
+            getCourseRequest.setCourseid(aClass.getResourceMoodleId());
             try {
 
 
                 List<MoodleRecourseDtoResponse> resources = new ArrayList<>();
 
-                List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
+                List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(getCourseRequest);
 
 
                 resourceCourse.stream().skip(1).forEach(moodleRecourseClassResponse -> {
@@ -742,17 +734,17 @@ public class ClassServiceImpl implements IClassService {
                     recourseDtoResponse.setName(moodleRecourseClassResponse.getName());
                     List<MoodleModuleResponse> modules = moodleRecourseClassResponse.getModules();
 
-                    List<ResourceDtoMoodleResponse> resourceDtoMoodleResponseList = new ArrayList<>();
+                    List<ResourceMoodleResponse> resourceMoodleResponseList = new ArrayList<>();
 
                     modules.forEach(moodleResponse -> {
-                        ResourceDtoMoodleResponse resourceDtoMoodleResponse = new ResourceDtoMoodleResponse();
-                        resourceDtoMoodleResponse.setId(moodleResponse.getId());
-                        resourceDtoMoodleResponse.setUrl(moodleResponse.getUrl());
-                        resourceDtoMoodleResponse.setName(moodleResponse.getName());
-                        resourceDtoMoodleResponse.setType(moodleResponse.getModname());
-                        resourceDtoMoodleResponseList.add(resourceDtoMoodleResponse);
+                        ResourceMoodleResponse resourceMoodleResponse = new ResourceMoodleResponse();
+                        resourceMoodleResponse.setId(moodleResponse.getId());
+                        resourceMoodleResponse.setUrl(moodleResponse.getUrl());
+                        resourceMoodleResponse.setName(moodleResponse.getName());
+                        resourceMoodleResponse.setType(moodleResponse.getModname());
+                        resourceMoodleResponseList.add(resourceMoodleResponse);
                     });
-                    recourseDtoResponse.setModules(resourceDtoMoodleResponseList);
+                    recourseDtoResponse.setModules(resourceMoodleResponseList);
                     resources.add(recourseDtoResponse);
                 });
                 classDetail.setResources(resources);
@@ -856,14 +848,14 @@ public class ClassServiceImpl implements IClassService {
         ClassResourcesResponse classResourcesResponse = new ClassResourcesResponse();
 
         if (aClass.getResourceMoodleId() != null) {
-            CourseIdRequest courseIdRequest = new CourseIdRequest();
+            GetCourseRequest getCourseRequest = new GetCourseRequest();
 
-            courseIdRequest.setCourseid(aClass.getResourceMoodleId());
+            getCourseRequest.setCourseid(aClass.getResourceMoodleId());
             try {
 
                 List<MoodleRecourseDtoResponse> resources = new ArrayList<>();
 
-                List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
+                List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(getCourseRequest);
 
 
                 resourceCourse.stream().skip(1).forEach(moodleRecourseClassResponse -> {
@@ -872,17 +864,17 @@ public class ClassServiceImpl implements IClassService {
                     recourseDtoResponse.setName(moodleRecourseClassResponse.getName());
                     List<MoodleModuleResponse> modules = moodleRecourseClassResponse.getModules();
 
-                    List<ResourceDtoMoodleResponse> resourceDtoMoodleResponseList = new ArrayList<>();
+                    List<ResourceMoodleResponse> resourceMoodleResponseList = new ArrayList<>();
 
                     modules.forEach(moodleResponse -> {
-                        ResourceDtoMoodleResponse resourceDtoMoodleResponse = new ResourceDtoMoodleResponse();
-                        resourceDtoMoodleResponse.setId(moodleResponse.getId());
-                        resourceDtoMoodleResponse.setUrl(moodleResponse.getUrl());
-                        resourceDtoMoodleResponse.setName(moodleResponse.getName());
-                        resourceDtoMoodleResponse.setType(moodleResponse.getModname());
-                        resourceDtoMoodleResponseList.add(resourceDtoMoodleResponse);
+                        ResourceMoodleResponse resourceMoodleResponse = new ResourceMoodleResponse();
+                        resourceMoodleResponse.setId(moodleResponse.getId());
+                        resourceMoodleResponse.setUrl(moodleResponse.getUrl());
+                        resourceMoodleResponse.setName(moodleResponse.getName());
+                        resourceMoodleResponse.setType(moodleResponse.getModname());
+                        resourceMoodleResponseList.add(resourceMoodleResponse);
                     });
-                    recourseDtoResponse.setModules(resourceDtoMoodleResponseList);
+                    recourseDtoResponse.setModules(resourceMoodleResponseList);
                     resources.add(recourseDtoResponse);
                 });
                 classResourcesResponse.setResources(resources);

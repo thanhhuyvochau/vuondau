@@ -2,9 +2,10 @@ package fpt.capstone.vuondau.service.Impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
-import fpt.capstone.vuondau.MoodleRepository.Request.MoodleMasterDataRequest;
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleModuleResponse;
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleSectionResponse;
+import fpt.capstone.vuondau.MoodleRepository.request.GetCourseRequest;
+import fpt.capstone.vuondau.MoodleRepository.request.MoodleMasterDataRequest;
+import fpt.capstone.vuondau.MoodleRepository.response.MoodleModuleResponse;
+import fpt.capstone.vuondau.MoodleRepository.response.MoodleSectionResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiException;
@@ -18,7 +19,6 @@ import fpt.capstone.vuondau.service.ICourseService;
 import fpt.capstone.vuondau.util.*;
 import fpt.capstone.vuondau.util.specification.CourseSpecificationBuilder;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -285,10 +285,10 @@ public class CourseServiceImpl implements ICourseService {
         courseDetailResponse.setTeacherCourse(teacherCourseDtoList);
 
 
-        CourseIdRequest courseIdRequest = new CourseIdRequest();
-        courseIdRequest.setCourseid(24L);
+        GetCourseRequest getCourseRequest = new GetCourseRequest();
+        getCourseRequest.setCourseid(24L);
         try {
-            List<MoodleSectionResponse> moodleSection = moodleCourseRepository.getResourceCourse(courseIdRequest);
+            List<MoodleSectionResponse> moodleSection = moodleCourseRepository.getResourceCourse(getCourseRequest);
 
             List<MoodleSectionResponse> moodleSectionResponses = new ArrayList<>();
             moodleSection.stream().peek(moodleRecourseClassResponse -> {
@@ -470,10 +470,10 @@ public class CourseServiceImpl implements ICourseService {
 
     @Override
     public List<MoodleSectionResponse> synchronizedResource(Long classId) throws JsonProcessingException {
-        CourseIdRequest courseIdRequest = new CourseIdRequest();
-        courseIdRequest.setCourseid(classId);
+        GetCourseRequest getCourseRequest = new GetCourseRequest();
+        getCourseRequest.setCourseid(classId);
         MoodleMasterDataRequest s1MasterDataRequest = new MoodleMasterDataRequest();
-        List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
+        List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(getCourseRequest);
         System.out.println(resourceCourse);
         return resourceCourse;
     }

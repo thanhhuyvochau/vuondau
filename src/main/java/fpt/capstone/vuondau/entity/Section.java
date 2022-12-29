@@ -20,7 +20,8 @@ public class Section extends BaseEntity {
     private Boolean isVisible;
     @OneToMany(mappedBy = "section", cascade = CascadeType.ALL)
     private List<Module> modules = new ArrayList<>();
-
+    @OneToOne(mappedBy = "section")
+    private ForumLesson forumLesson;
     public Long getId() {
         return id;
     }
@@ -59,6 +60,14 @@ public class Section extends BaseEntity {
 
     public void setModules(List<Module> modules) {
         this.modules = modules;
+    }
+
+    public ForumLesson getForumLesson() {
+        return forumLesson;
+    }
+
+    public void setForumLesson(ForumLesson forumLesson) {
+        this.forumLesson = forumLesson;
     }
 
     @Override

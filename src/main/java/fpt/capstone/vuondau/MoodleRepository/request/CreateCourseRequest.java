@@ -1,4 +1,4 @@
-package fpt.capstone.vuondau.MoodleRepository.Request;
+package fpt.capstone.vuondau.MoodleRepository.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -6,13 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.List;
 
-public class MoodleCourseDataRequest implements Serializable {
+public class CreateCourseRequest implements Serializable {
 
+    private List<CreateCourseBody> courses ;
 
-
-    private List<MoodleCourseBody> courses ;
-
-    public static class  MoodleCourseBody {
+    public static class CreateCourseBody {
         @JsonProperty("fullname")
         private String fullname;
 
@@ -69,11 +67,11 @@ public class MoodleCourseDataRequest implements Serializable {
         }
     }
 
-    public List<MoodleCourseBody> getCourses() {
+    public List<CreateCourseBody> getCourses() {
         return courses;
     }
 
-    public void setCourses(List<MoodleCourseBody> courses) {
+    public void setCourses(List<CreateCourseBody> courses) {
         this.courses = courses;
     }
 }

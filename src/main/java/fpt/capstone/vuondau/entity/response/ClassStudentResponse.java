@@ -1,8 +1,6 @@
 package fpt.capstone.vuondau.entity.response;
 
 
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleRecourseDtoResponse;
-
 import java.util.List;
 
 public class ClassStudentResponse {

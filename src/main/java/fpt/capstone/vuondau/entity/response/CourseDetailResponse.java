@@ -1,13 +1,10 @@
 package fpt.capstone.vuondau.entity.response;
 
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
 import fpt.capstone.vuondau.entity.dto.ClassDto;
 import fpt.capstone.vuondau.entity.dto.SubjectDto;
 import fpt.capstone.vuondau.entity.dto.TeacherCourseDto;
-import fpt.capstone.vuondau.entity.common.EGradeType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public class CourseDetailResponse {

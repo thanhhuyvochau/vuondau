@@ -16,6 +16,9 @@ public class ForumLesson  extends BaseEntity{
     @JoinColumn(name = "forum_id")
     private Forum forum;
 
+    @OneToOne
+    @JoinColumn(name = "section_id")
+    private Section section;
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "forumLesson",fetch = FetchType.LAZY)
     private List<Question> questions;
 
@@ -49,5 +52,13 @@ public class ForumLesson  extends BaseEntity{
 
     public void setQuestions(List<Question> questions) {
         this.questions = questions;
+    }
+
+    public Section getSection() {
+        return section;
+    }
+
+    public void setSection(Section section) {
+        this.section = section;
     }
 }

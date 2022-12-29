@@ -1,13 +1,8 @@
 package fpt.capstone.vuondau.entity.response;
 
 
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleRecourseDtoResponse;
-import fpt.capstone.vuondau.entity.common.EClassStatus;
-import fpt.capstone.vuondau.entity.dto.ClassTypeDto;
-import fpt.capstone.vuondau.entity.dto.TimeTableDto;
+import fpt.capstone.vuondau.MoodleRepository.response.MoodleRecourseDtoResponse;
 
-import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.List;
 
 public class ClassResourcesResponse {

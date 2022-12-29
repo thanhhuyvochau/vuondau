@@ -3,18 +3,17 @@ package fpt.capstone.vuondau.service.Impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
-import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCategoryRequest;
-import fpt.capstone.vuondau.MoodleRepository.Request.MoodleCreateCategoryRequest;
-import fpt.capstone.vuondau.MoodleRepository.Request.MoodleMasterDataRequest;
-import fpt.capstone.vuondau.MoodleRepository.Response.CategoryResponse;
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleClassResponse;
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleModuleResponse;
-import fpt.capstone.vuondau.MoodleRepository.Response.MoodleSectionResponse;
+import fpt.capstone.vuondau.MoodleRepository.request.GetCategoryRequest;
+import fpt.capstone.vuondau.MoodleRepository.request.CreateCategoryRequest;
+import fpt.capstone.vuondau.MoodleRepository.request.MoodleMasterDataRequest;
+import fpt.capstone.vuondau.MoodleRepository.response.CategoryResponse;
+import fpt.capstone.vuondau.MoodleRepository.response.CourseResponse;
+import fpt.capstone.vuondau.MoodleRepository.response.MoodleModuleResponse;
+import fpt.capstone.vuondau.MoodleRepository.response.MoodleSectionResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiPage;
-import fpt.capstone.vuondau.entity.common.EFileType;
-import fpt.capstone.vuondau.entity.request.CourseIdRequest;
+import fpt.capstone.vuondau.MoodleRepository.request.GetCourseRequest;
 import fpt.capstone.vuondau.repository.ClassRepository;
 import fpt.capstone.vuondau.repository.FileAttachmentRepository;
 import fpt.capstone.vuondau.repository.SectionRepository;
@@ -54,43 +53,43 @@ public class MoodleServiceImpl implements IMoodleService {
 
     @Override
     public List<CategoryResponse> getCategoryFromMoodle() throws JsonProcessingException {
-        MoodleCategoryRequest request = new MoodleCategoryRequest();
-        List<MoodleCategoryRequest.MoodleCategoryBody> moodleCategoryBodyList = new ArrayList<>();
-        MoodleCategoryRequest.MoodleCategoryBody moodleCategoryBody = new MoodleCategoryRequest.MoodleCategoryBody();
+        GetCategoryRequest request = new GetCategoryRequest();
+        List<GetCategoryRequest.MoodleCategoryBody> moodleCategoryBodyList = new ArrayList<>();
+        GetCategoryRequest.MoodleCategoryBody moodleCategoryBody = new GetCategoryRequest.MoodleCategoryBody();
         moodleCategoryBody.setKey("id");
         moodleCategoryBody.setValue("");
         moodleCategoryBodyList.add(moodleCategoryBody);
         request.setCriteria(moodleCategoryBodyList);
-        List<CategoryResponse> category = moodleCourseRepository.getCategory(request);
+        List<CategoryResponse> category = moodleCourseRepository.getCategories(request);
         return category;
     }
 
     @Override
-    public Boolean crateCategoryToMoodle(MoodleCreateCategoryRequest.MoodleCreateCategoryBody moodleCreateCategoryBody) throws JsonProcessingException {
-        MoodleCreateCategoryRequest request = new MoodleCreateCategoryRequest();
+    public Boolean crateCategoryToMoodle(CreateCategoryRequest.CreateCategoryBody createCategoryBody) throws JsonProcessingException {
+        CreateCategoryRequest request = new CreateCategoryRequest();
 
-        List<MoodleCreateCategoryRequest.MoodleCreateCategoryBody> moodleCreateCategoryBodyList = new ArrayList<>();
-        MoodleCreateCategoryRequest.MoodleCreateCategoryBody set = new MoodleCreateCategoryRequest.MoodleCreateCategoryBody();
-        set.setName(moodleCreateCategoryBody.getName());
-        set.setParent(moodleCreateCategoryBody.getParent());
-        set.setIdnumber(moodleCreateCategoryBody.getIdnumber());
-        set.setDescription(moodleCreateCategoryBody.getDescription());
-        set.setDescriptionformat(moodleCreateCategoryBody.getDescriptionformat());
+        List<CreateCategoryRequest.CreateCategoryBody> createCategoryBodyList = new ArrayList<>();
+        CreateCategoryRequest.CreateCategoryBody set = new CreateCategoryRequest.CreateCategoryBody();
+        set.setName(createCategoryBody.getName());
+        set.setParent(createCategoryBody.getParent());
+        set.setIdnumber(createCategoryBody.getIdnumber());
+        set.setDescription(createCategoryBody.getDescription());
+        set.setDescriptionformat(createCategoryBody.getDescriptionformat());
 //        set.setTheme(moodleCreateCategoryBody.getTheme());
-        moodleCreateCategoryBodyList.add(set);
+        createCategoryBodyList.add(set);
 
-        request.setCategories(moodleCreateCategoryBodyList);
+        request.setCategories(createCategoryBodyList);
 
-        moodleCourseRepository.postCategory(request);
+        moodleCourseRepository.createCategory(request);
         return true;
     }
 
     @Override
-    public ApiPage<MoodleClassResponse> synchronizedClass() throws JsonProcessingException {
+    public ApiPage<CourseResponse> synchronizedClass() throws JsonProcessingException {
         MoodleMasterDataRequest request = new MoodleMasterDataRequest();
-        List<MoodleClassResponse> course = moodleCourseRepository.getCourse(request);
-        Page<MoodleClassResponse> page = new PageImpl<>(course);
-        return PageUtil.convert(page.map(moodleClassResponse -> ObjectUtil.copyProperties(moodleClassResponse, new MoodleClassResponse(), MoodleClassResponse.class)));
+        List<CourseResponse> course = moodleCourseRepository.getCourses(request);
+        Page<CourseResponse> page = new PageImpl<>(course);
+        return PageUtil.convert(page.map(moodleClassResponse -> ObjectUtil.copyProperties(moodleClassResponse, new CourseResponse(), CourseResponse.class)));
     }
 
     @Override
@@ -99,9 +98,9 @@ public class MoodleServiceImpl implements IMoodleService {
 
 
         for (Class clazz : classes) {
-            CourseIdRequest courseIdRequest = new CourseIdRequest();
-            courseIdRequest.setCourseid(clazz.getResourceMoodleId());
-            List<MoodleSectionResponse> detailCourse = moodleCourseRepository.getResourceCourse(courseIdRequest);
+            GetCourseRequest getCourseRequest = new GetCourseRequest();
+            getCourseRequest.setCourseid(clazz.getResourceMoodleId());
+            List<MoodleSectionResponse> detailCourse = moodleCourseRepository.getResourceCourse(getCourseRequest);
             List<Section> sections = new ArrayList<>();
             for (MoodleSectionResponse moodleSectionResponse : detailCourse) {
                 Section section = createSection(clazz, moodleSectionResponse);
