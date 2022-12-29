@@ -1,6 +1,8 @@
 package fpt.capstone.vuondau.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 
 import javax.persistence.*;
@@ -23,9 +25,11 @@ public class TimeTable extends BaseEntity {
     @Column(name = "slot_number")
     private int slotNumber ;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id" )
-    private Class clazz;
+
+    private Class clazz = new Class();
 
 
     @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.ALL)

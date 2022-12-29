@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.common.EClassType;
 
@@ -77,8 +78,9 @@ public class Class extends BaseEntity {
     @Column(name = "final_price")
     private BigDecimal finalPrice;
 
+
     @OneToMany(mappedBy = "clazz", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<TimeTable> timeTables;
+    private List<TimeTable> timeTables = new ArrayList<>();
 
     @Column(name = "resource_mooodle_id")
     private Long resourceMoodleId;
