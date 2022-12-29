@@ -21,8 +21,10 @@ public class AuditingConfig {
 
     @Bean
     public AuditorAware<String> auditorProvider() {
-        Account currentUser = securityUtil.getCurrentUserName();
-        String username = Optional.ofNullable(currentUser.getUsername()).orElse(AuthoritiesConstants.ANONYMOUS);
-        return () -> Optional.of(username);
+        return () -> Optional.of(Optional.ofNullable(getAuthenticationUserName()).orElse(AuthoritiesConstants.ANONYMOUS));
+    }
+
+    private String getAuthenticationUserName() {
+        return securityUtil.getCurrentUserName();
     }
 }
