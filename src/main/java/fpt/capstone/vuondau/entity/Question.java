@@ -13,7 +13,7 @@ public class Question extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "question_id_generator")
     @SequenceGenerator(name = "question_id_generator", sequenceName = "question_id_generator")
     private Long id;
-    @Column(name = "content")
+    @Column(name = "content", columnDefinition = "LONGBLOB")
     private String content;
     @Column(name = "is_closed")
     private Boolean isClosed = false;
