@@ -127,4 +127,9 @@ public class RevenueServiceImpl implements IRevenueService {
         return  revenueClassResponseList ;
 
     }
+
+    @Override
+    public List<RevenueClassResponse> studentGetTuitionFee(Long studentId) {
+        return null;
+    }
 }

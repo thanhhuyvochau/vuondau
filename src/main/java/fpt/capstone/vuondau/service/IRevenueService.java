@@ -23,4 +23,6 @@ public interface IRevenueService {
     List<RevenueClassResponse> RevenueAllClass();
 
     List<RevenueClassResponse> searchRevenue(RevenueSearchRequest query);
+
+    List<RevenueClassResponse> studentGetTuitionFee(Long studentId);
 }

@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,7 +41,6 @@ public class RevenueController {
         return ResponseEntity.ok(ApiResponse.success(iRevenueService.salaryEstimatesTeachers(priceEachStudent, numberStudent, numberMonth)));
     }
 
-
     @Operation(summary = "Xem doanh thu theo lớp")
     @GetMapping("/{classId}")
     public ResponseEntity<ApiResponse<BigDecimal>> RevenueClass(@PathVariable Long classId) {
@@ -59,6 +59,12 @@ public class RevenueController {
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<List<RevenueClassResponse>>> searchRevenue(@Nullable RevenueSearchRequest query) {
         return ResponseEntity.ok(ApiResponse.success(iRevenueService.searchRevenue(query)));
+    }
+
+    @Operation(summary = "Học sinh xem số tiền học phí đã đóng ")
+    @GetMapping("/{studentId}")
+    public ResponseEntity<ApiResponse<List<RevenueClassResponse>>> studentGetTuitionFee(@PathVariable Long studentId) {
+        return ResponseEntity.ok(ApiResponse.success(iRevenueService.studentGetTuitionFee(studentId)));
     }
 
 
