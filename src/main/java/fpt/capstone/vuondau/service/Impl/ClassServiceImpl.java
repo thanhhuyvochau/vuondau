@@ -133,7 +133,7 @@ public class ClassServiceImpl implements IClassService {
     public Long teacherRequestCreateClassSubjectCourse(Long id, CreateClassSubjectRequest createClassRequest) {
         Class aClass = new Class();
         aClass = classRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
-        if (!aClass.getStatus().equals(EClassStatus.REQUESTING)) {
+        if (!aClass.getStatus().equals(EClassStatus.REQUESTING) && !aClass.getStatus().equals(EClassStatus.RECRUITING)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Bạn không thể cập nhật topic cho khác này"));
         }
