@@ -961,6 +961,7 @@ public class ClassServiceImpl implements IClassService {
     public ClassAttendanceResponse accountGetAttendanceOfClass(Long id) {
         Account account = securityUtil.getCurrentUser();
         Class aClass = findClassByRoleAccount(id);
+
         StudentClassKey studentClassKey = new StudentClassKey();
         studentClassKey.setStudentId(account.getId());
         studentClassKey.setClassId(aClass.getId());

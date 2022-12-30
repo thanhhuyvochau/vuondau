@@ -304,7 +304,6 @@ public class TimeTableServiceImpl implements ITimeTableService {
                 }
             }
 
-
             timeTableDto.setArchetypeTime(archetypeTimeDto);
             timeTableDtoList.add(timeTableDto);
         });
