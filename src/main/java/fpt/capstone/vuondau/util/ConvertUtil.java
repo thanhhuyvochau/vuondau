@@ -67,42 +67,45 @@ public class ConvertUtil {
     public static AccountResponse doConvertEntityToResponse(Account account) {
 
         AccountResponse accountResponse = new AccountResponse();
-        accountResponse.setUsername(account.getUsername());
+        if (account!=null) {
+            accountResponse.setUsername(account.getUsername());
+            accountResponse.setId(account.getId());
 
-
-        RoleDto roleDto = doConvertEntityToResponse(account.getRole());
-        accountResponse.setRole(roleDto);
-        if (account.getResource() != null) {
-            accountResponse.setAvatar(account.getResource().getUrl());
-        }
-
-        AccountDetail accountDetail = account.getAccountDetail();
-        if (accountDetail != null) {
-            EGenderType gender = accountDetail.getGender();
-            if (gender != null) {
-                GenderResponse genderResponse = new GenderResponse();
-                genderResponse.setCode(gender.name());
-                genderResponse.setName(gender.getLabel());
-                accountResponse.setGender(genderResponse);
+            RoleDto roleDto = doConvertEntityToResponse(account.getRole());
+            accountResponse.setRole(roleDto);
+            if (account.getResource() != null) {
+                accountResponse.setAvatar(account.getResource().getUrl());
             }
-            accountResponse.setPhoneNumber(accountDetail.getPhone());
-            accountResponse.setBirthday(accountDetail.getBirthDay());
-            accountResponse.setLastName(accountDetail.getLastName());
-            accountResponse.setFirstName(accountDetail.getFirstName());
-            accountResponse.setDomicile(accountDetail.getDomicile());
-            accountResponse.setCurrentAddress(accountDetail.getCurrentAddress());
-            accountResponse.setIdCard(accountDetail.getIdCard());
-            accountResponse.setLevel(accountDetail.getLevel());
-            accountResponse.setSchoolName(accountDetail.getTrainingSchoolName());
-            accountResponse.setMajors(accountDetail.getMajors());
-            accountResponse.setActive(accountDetail.getActive());
-            accountResponse.setVoice(accountDetail.getVoice());
-            accountResponse.setStatus(accountDetail.getStatus());
-            accountResponse.setEmail(accountDetail.getEmail());
-            accountResponse.setProvince(accountDetail.getTeachingProvince());
+
+            AccountDetail accountDetail = account.getAccountDetail();
+            if (accountDetail != null) {
+                EGenderType gender = accountDetail.getGender();
+                if (gender != null) {
+                    GenderResponse genderResponse = new GenderResponse();
+                    genderResponse.setCode(gender.name());
+                    genderResponse.setName(gender.getLabel());
+                    accountResponse.setGender(genderResponse);
+                }
+                accountResponse.setPhoneNumber(accountDetail.getPhone());
+                accountResponse.setBirthday(accountDetail.getBirthDay());
+                accountResponse.setLastName(accountDetail.getLastName());
+                accountResponse.setFirstName(accountDetail.getFirstName());
+                accountResponse.setDomicile(accountDetail.getDomicile());
+                accountResponse.setCurrentAddress(accountDetail.getCurrentAddress());
+                accountResponse.setIdCard(accountDetail.getIdCard());
+                accountResponse.setLevel(accountDetail.getLevel());
+                accountResponse.setSchoolName(accountDetail.getTrainingSchoolName());
+                accountResponse.setMajors(accountDetail.getMajors());
+                accountResponse.setActive(accountDetail.getActive());
+                accountResponse.setVoice(accountDetail.getVoice());
+                accountResponse.setStatus(accountDetail.getStatus());
+                accountResponse.setEmail(accountDetail.getEmail());
+                accountResponse.setProvince(accountDetail.getTeachingProvince());
 
 
+            }
         }
+
 
         return accountResponse;
     }

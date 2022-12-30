@@ -450,7 +450,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
         aClass.getTimeTables().clear();
         aClass.getTimeTables().addAll(timeTableList1);
-        aClass.setStatus(EClassStatus.REQUESTING);
+//        aClass.setStatus(EClassStatus.REQUESTING);
 
         classRepository.save(aClass);
 
