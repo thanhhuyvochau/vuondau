@@ -1015,16 +1015,11 @@ public class ClassServiceImpl implements IClassService {
                         attendanceDto.setArchetypeName(archetype.getName());
                     }
                 }
-
-
             }
-
             attendanceDtoList.add(attendanceDto);
-
         });
         classAttendanceResponse.setAttendance(attendanceDtoList);
         return classAttendanceResponse;
-
     }
 
     @Override
