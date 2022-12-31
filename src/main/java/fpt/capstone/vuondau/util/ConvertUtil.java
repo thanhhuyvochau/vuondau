@@ -251,7 +251,6 @@ public class ConvertUtil {
         ClassDto classDto = ObjectUtil.copyProperties(aclass, new ClassDto(), ClassDto.class, true);
         Course course = aclass.getCourse();
         CourseResponse courseResponse = ConvertUtil.doConvertCourseToCourseResponse(course);
-
         classDto.setStatus(aclass.getStatus());
         classDto.setStartDate(aclass.getStartDate());
         classDto.setEndDate(aclass.getEndDate());

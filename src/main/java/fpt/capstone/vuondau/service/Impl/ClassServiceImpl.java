@@ -31,6 +31,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -314,6 +315,9 @@ public class ClassServiceImpl implements IClassService {
         Page<Class> classes = classRepository.findAll(builder.build(), pageable);
         return PageUtil.convert(classes.map(aClass -> {
             ClassDto classDto = ObjectUtil.copyProperties(aClass, new ClassDto(), ClassDto.class);
+            Optional<ClassLevel> classLevel = classLevelRepository.findById(aClass.getClassLevel());
+            classLevel.ifPresent(level -> classDto.setClassLevel(level.getCode()));
+
             if (aClass.getAccount() != null) {
                 classDto.setTeacher(ConvertUtil.doConvertEntityToSimpleResponse(aClass.getAccount()));
             }
