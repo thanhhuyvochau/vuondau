@@ -7,12 +7,35 @@ import fpt.capstone.vuondau.entity.common.EForumType;
 import fpt.capstone.vuondau.entity.common.EGenderType;
 import fpt.capstone.vuondau.entity.dto.*;
 import fpt.capstone.vuondau.entity.response.*;
+import fpt.capstone.vuondau.repository.ClassLevelRepository;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+
+@Component
 public class ConvertUtil {
+
+
+    private final ClassLevelRepository classLevelRepository;
+
+    private static ClassLevelRepository staticClassLevelRepository;
+
+    public ConvertUtil(ClassLevelRepository classLevelRepository) {
+        this.classLevelRepository = classLevelRepository;
+    }
+
+
+    @PostConstruct
+    private void init() {
+        staticClassLevelRepository = this.classLevelRepository;
+    }
+
+
     public static QuestionDto doConvertEntityToResponse(Question question, Account account) {
         QuestionDto questionDto = ObjectUtil.copyProperties(question, new QuestionDto(), QuestionDto.class, true);
         AccountSimpleResponse accountResponse = doConvertEntityToSimpleResponse(question.getStudent());
@@ -67,7 +90,7 @@ public class ConvertUtil {
     public static AccountResponse doConvertEntityToResponse(Account account) {
 
         AccountResponse accountResponse = new AccountResponse();
-        if (account!=null) {
+        if (account != null) {
             accountResponse.setUsername(account.getUsername());
             accountResponse.setId(account.getId());
 
@@ -257,7 +280,16 @@ public class ConvertUtil {
         classDto.setNumberStudent(aclass.getNumberStudent());
         classDto.setMaxNumberStudent(aclass.getMaxNumberStudent());
         classDto.setEachStudentPayPrice(aclass.getEachStudentPayPrice());
+        if (aclass.getClassLevel()!= null) {
 
+            Optional<ClassLevel> optionalClassLevel = staticClassLevelRepository.findById((aclass.getClassLevel()));
+
+            if (optionalClassLevel.isPresent()) {
+                ClassLevel classLevel = optionalClassLevel.get();
+                classDto.setClassLevel(classLevel.getCode());
+
+            }
+        }
         classDto.setTeacherReceivedPrice(aclass.getFinalPrice());
 
 

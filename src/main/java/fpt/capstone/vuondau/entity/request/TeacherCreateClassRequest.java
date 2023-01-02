@@ -22,11 +22,19 @@ public class TeacherCreateClassRequest implements Serializable {
 
     private Long maxNumberStudent;
 
+    private Long courseId;
+
+    private BigDecimal eachStudentPayPrice;
 
 
-    private BigDecimal eachStudentPayPrice ;
 
+    public Long getCourseId() {
+        return courseId;
+    }
 
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
+    }
 
     public String getName() {
         return name;

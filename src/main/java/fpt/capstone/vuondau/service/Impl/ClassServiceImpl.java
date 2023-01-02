@@ -98,7 +98,7 @@ public class ClassServiceImpl implements IClassService {
 //                    .withMessage(messageUtil.getLocalMessage("Ngày"));
 //        }
 
-//        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
         clazz.setCode(createClassRequest.getCode());
 
         Instant now = DayUtil.convertDayInstant(Instant.now().toString());
@@ -122,6 +122,7 @@ public class ClassServiceImpl implements IClassService {
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
         clazz.setActive(false);
         clazz.setAccount(teacher);
+        clazz.setCourse(course);
         clazz.setStatus(EClassStatus.REQUESTING);
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setEachStudentPayPrice(createClassRequest.getEachStudentPayPrice());
@@ -1088,17 +1089,19 @@ public class ClassServiceImpl implements IClassService {
 
 
     @Override
-    public ApiPage<ClassDto> getAllClassForUser(Pageable pageable, EClassStatus classStatus) {
-        if (classStatus.name().equals(EClassStatus.NEW.name()) || classStatus.name().equals(EClassStatus.RECRUITING.name())) {
-            ClassSpecificationBuilder builder = new ClassSpecificationBuilder();
-            builder.queryByClassStatus(EClassStatus.NEW, EClassStatus.RECRUITING);
-            builder.isActive(true);
-            Specification<Class> classSpecification = builder.build();
-            Page<Class> classesPage = classRepository.findAll(classSpecification, pageable);
-            return PageUtil.convert(classesPage.map(ConvertUtil::doConvertEntityToResponse));
-        } else {
-            throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Class status invalid!");
-        }
+    public ApiPage<ClassDto> getAllClassForUser(Pageable pageable, GuestSearchClassRequest guestSearchClassRequest) {
+
+
+        ClassSpecificationBuilder builder = new ClassSpecificationBuilder();
+        builder.queryByClassStatus(guestSearchClassRequest.getStatus());
+        builder.queryByClassType(guestSearchClassRequest.getClassType());
+        builder.queryByCSubject(guestSearchClassRequest.getSubject()) ;
+
+//        builder.isActive(true);
+        Specification<Class> classSpecification = builder.build();
+        Page<Class> classesPage = classRepository.findAll(classSpecification, pageable);
+        return PageUtil.convert(classesPage.map(ConvertUtil::doConvertEntityToResponse));
+
     }
 
     private Forum createClassForum(Class clazz) {
