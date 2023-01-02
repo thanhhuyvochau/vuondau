@@ -2,7 +2,6 @@ package fpt.capstone.vuondau.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.common.EClassType;
 
@@ -83,9 +82,9 @@ public class Class extends BaseEntity {
     private List<TimeTable> timeTables = new ArrayList<>();
 
     @Column(name = "resource_mooodle_id")
-    private Long resourceMoodleId;
+    private Long moodleClassId;
 
-    @OneToOne(mappedBy = "clazz", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "clazz", cascade = CascadeType.ALL)
     private Forum forum;
 
     @OneToMany(mappedBy = "clazz", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -249,12 +248,12 @@ public class Class extends BaseEntity {
         this.timeTables = timeTables;
     }
 
-    public Long getResourceMoodleId() {
-        return resourceMoodleId;
+    public Long getMoodleClassId() {
+        return moodleClassId;
     }
 
-    public void setResourceMoodleId(Long resourceMoodleId) {
-        this.resourceMoodleId = resourceMoodleId;
+    public void setMoodleClassId(Long resourceMoodleId) {
+        this.moodleClassId = resourceMoodleId;
     }
 
     public Forum getForum() {

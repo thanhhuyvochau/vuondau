@@ -1,6 +1,6 @@
 package fpt.capstone.vuondau.service;
 
-import fpt.capstone.vuondau.MoodleRepository.response.MoodleSectionResponse;
+import fpt.capstone.vuondau.moodle.response.MoodleSectionResponse;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EForumType;
 import fpt.capstone.vuondau.entity.dto.ForumDto;

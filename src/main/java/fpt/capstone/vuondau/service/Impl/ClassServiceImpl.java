@@ -2,12 +2,12 @@ package fpt.capstone.vuondau.service.Impl;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
-import fpt.capstone.vuondau.MoodleRepository.request.GetCourseRequest;
-import fpt.capstone.vuondau.MoodleRepository.request.CreateCourseRequest;
-import fpt.capstone.vuondau.MoodleRepository.request.S1CourseRequest;
-import fpt.capstone.vuondau.MoodleRepository.response.*;
-import fpt.capstone.vuondau.MoodleRepository.response.CourseResponse;
+import fpt.capstone.vuondau.moodle.repository.MoodleCourseRepository;
+import fpt.capstone.vuondau.moodle.request.GetMoodleCourseRequest;
+import fpt.capstone.vuondau.moodle.request.CreateCourseRequest;
+import fpt.capstone.vuondau.moodle.request.S1CourseRequest;
+import fpt.capstone.vuondau.moodle.response.*;
+import fpt.capstone.vuondau.moodle.response.MoodleCourseResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.*;
@@ -40,7 +40,6 @@ import java.util.stream.Collectors;
 public class ClassServiceImpl implements IClassService {
 
 
-    final private RequestUtil requestUtil;
     private final AccountRepository accountRepository;
     private final SubjectRepository subjectRepository;
     private final ClassRepository classRepository;
@@ -62,8 +61,7 @@ public class ClassServiceImpl implements IClassService {
     private final InfoFindTutorRepository infoFindTutorRepository;
     protected final ClassTeacherCandicateRepository classTeacherCandicateRepository;
 
-    public ClassServiceImpl(RequestUtil requestUtil, AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, ClassLevelRepository classLevelRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil, SecurityUtil securityUtil, AttendanceRepository attendanceRepository, InfoFindTutorRepository infoFindTutorRepository, ClassTeacherCandicateRepository classTeacherCandicateRepository) {
-        this.requestUtil = requestUtil;
+    public ClassServiceImpl( AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, ClassLevelRepository classLevelRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil, SecurityUtil securityUtil, AttendanceRepository attendanceRepository, InfoFindTutorRepository infoFindTutorRepository, ClassTeacherCandicateRepository classTeacherCandicateRepository) {
         this.accountRepository = accountRepository;
         this.subjectRepository = subjectRepository;
         this.classRepository = classRepository;
@@ -161,7 +159,7 @@ public class ClassServiceImpl implements IClassService {
 
         s1CourseRequest.setCourses(createCourseBodyList);
 
-        List<CourseResponse> courseRespons = moodleCourseRepository.createCourse(s1CourseRequest);
+        List<MoodleCourseResponse> courseRespons = moodleCourseRepository.createCourse(s1CourseRequest);
 
         return true;
     }
@@ -198,7 +196,7 @@ public class ClassServiceImpl implements IClassService {
         createCourseBodyList.add(createCourseBody);
         s1CourseRequest.setCourses(createCourseBodyList);
 
-        List<CourseResponse> courseRespons = moodleCourseRepository.createCourse(s1CourseRequest);
+        List<MoodleCourseResponse> courseResponses = moodleCourseRepository.createCourse(s1CourseRequest);
 
 
         ClassDto classDto = ObjectUtil.copyProperties(save, new ClassDto(), ClassDto.class);
@@ -365,16 +363,16 @@ public class ClassServiceImpl implements IClassService {
 
         }
 
-        if (aClass.getResourceMoodleId() != null) {
-            GetCourseRequest getCourseRequest = new GetCourseRequest();
+        if (aClass.getMoodleClassId() != null) {
+            GetMoodleCourseRequest getMoodleCourseRequest = new GetMoodleCourseRequest();
 
-            getCourseRequest.setCourseid(aClass.getResourceMoodleId());
+            getMoodleCourseRequest.setCourseid(aClass.getMoodleClassId());
             try {
 
 
                 List<MoodleRecourseDtoResponse> resources = new ArrayList<>();
 
-                List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(getCourseRequest);
+                List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(getMoodleCourseRequest);
 
 
                 resourceCourse.stream().skip(1).forEach(moodleRecourseClassResponse -> {
@@ -383,17 +381,17 @@ public class ClassServiceImpl implements IClassService {
                     recourseDtoResponse.setName(moodleRecourseClassResponse.getName());
                     List<MoodleModuleResponse> modules = moodleRecourseClassResponse.getModules();
 
-                    List<ResourceMoodleResponse> resourceMoodleResponseList = new ArrayList<>();
+                    List<MoodleResourceResponse> moodleResourceResponseList = new ArrayList<>();
 
                     modules.forEach(moodleResponse -> {
-                        ResourceMoodleResponse resourceMoodleResponse = new ResourceMoodleResponse();
-                        resourceMoodleResponse.setId(moodleResponse.getId());
-                        resourceMoodleResponse.setUrl(moodleResponse.getUrl());
-                        resourceMoodleResponse.setName(moodleResponse.getName());
-                        resourceMoodleResponse.setType(moodleResponse.getModname());
-                        resourceMoodleResponseList.add(resourceMoodleResponse);
+                        MoodleResourceResponse moodleResourceResponse = new MoodleResourceResponse();
+                        moodleResourceResponse.setId(moodleResponse.getId());
+                        moodleResourceResponse.setUrl(moodleResponse.getUrl());
+                        moodleResourceResponse.setName(moodleResponse.getName());
+                        moodleResourceResponse.setType(moodleResponse.getModname());
+                        moodleResourceResponseList.add(moodleResourceResponse);
                     });
-                    recourseDtoResponse.setModules(resourceMoodleResponseList);
+                    recourseDtoResponse.setModules(moodleResourceResponseList);
                     resources.add(recourseDtoResponse);
                 });
                 classDetail.setResources(resources);
@@ -721,16 +719,16 @@ public class ClassServiceImpl implements IClassService {
             }
             classDetail.setCourse(courseDetailResponse);
         }
-        if (aClass.getResourceMoodleId() != null) {
-            GetCourseRequest getCourseRequest = new GetCourseRequest();
+        if (aClass.getMoodleClassId() != null) {
+            GetMoodleCourseRequest getMoodleCourseRequest = new GetMoodleCourseRequest();
 
-            getCourseRequest.setCourseid(aClass.getResourceMoodleId());
+            getMoodleCourseRequest.setCourseid(aClass.getMoodleClassId());
             try {
 
 
                 List<MoodleRecourseDtoResponse> resources = new ArrayList<>();
 
-                List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(getCourseRequest);
+                List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(getMoodleCourseRequest);
 
 
                 resourceCourse.stream().skip(1).forEach(moodleRecourseClassResponse -> {
@@ -739,17 +737,17 @@ public class ClassServiceImpl implements IClassService {
                     recourseDtoResponse.setName(moodleRecourseClassResponse.getName());
                     List<MoodleModuleResponse> modules = moodleRecourseClassResponse.getModules();
 
-                    List<ResourceMoodleResponse> resourceMoodleResponseList = new ArrayList<>();
+                    List<MoodleResourceResponse> moodleResourceResponseList = new ArrayList<>();
 
                     modules.forEach(moodleResponse -> {
-                        ResourceMoodleResponse resourceMoodleResponse = new ResourceMoodleResponse();
-                        resourceMoodleResponse.setId(moodleResponse.getId());
-                        resourceMoodleResponse.setUrl(moodleResponse.getUrl());
-                        resourceMoodleResponse.setName(moodleResponse.getName());
-                        resourceMoodleResponse.setType(moodleResponse.getModname());
-                        resourceMoodleResponseList.add(resourceMoodleResponse);
+                        MoodleResourceResponse moodleResourceResponse = new MoodleResourceResponse();
+                        moodleResourceResponse.setId(moodleResponse.getId());
+                        moodleResourceResponse.setUrl(moodleResponse.getUrl());
+                        moodleResourceResponse.setName(moodleResponse.getName());
+                        moodleResourceResponse.setType(moodleResponse.getModname());
+                        moodleResourceResponseList.add(moodleResourceResponse);
                     });
-                    recourseDtoResponse.setModules(resourceMoodleResponseList);
+                    recourseDtoResponse.setModules(moodleResourceResponseList);
                     resources.add(recourseDtoResponse);
                 });
                 classDetail.setResources(resources);
@@ -852,15 +850,15 @@ public class ClassServiceImpl implements IClassService {
 
         ClassResourcesResponse classResourcesResponse = new ClassResourcesResponse();
 
-        if (aClass.getResourceMoodleId() != null) {
-            GetCourseRequest getCourseRequest = new GetCourseRequest();
+        if (aClass.getMoodleClassId() != null) {
+            GetMoodleCourseRequest getMoodleCourseRequest = new GetMoodleCourseRequest();
 
-            getCourseRequest.setCourseid(aClass.getResourceMoodleId());
+            getMoodleCourseRequest.setCourseid(aClass.getMoodleClassId());
             try {
 
                 List<MoodleRecourseDtoResponse> resources = new ArrayList<>();
 
-                List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(getCourseRequest);
+                List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(getMoodleCourseRequest);
 
 
                 resourceCourse.stream().skip(1).forEach(moodleRecourseClassResponse -> {
@@ -869,17 +867,17 @@ public class ClassServiceImpl implements IClassService {
                     recourseDtoResponse.setName(moodleRecourseClassResponse.getName());
                     List<MoodleModuleResponse> modules = moodleRecourseClassResponse.getModules();
 
-                    List<ResourceMoodleResponse> resourceMoodleResponseList = new ArrayList<>();
+                    List<MoodleResourceResponse> moodleResourceResponseList = new ArrayList<>();
 
                     modules.forEach(moodleResponse -> {
-                        ResourceMoodleResponse resourceMoodleResponse = new ResourceMoodleResponse();
-                        resourceMoodleResponse.setId(moodleResponse.getId());
-                        resourceMoodleResponse.setUrl(moodleResponse.getUrl());
-                        resourceMoodleResponse.setName(moodleResponse.getName());
-                        resourceMoodleResponse.setType(moodleResponse.getModname());
-                        resourceMoodleResponseList.add(resourceMoodleResponse);
+                        MoodleResourceResponse moodleResourceResponse = new MoodleResourceResponse();
+                        moodleResourceResponse.setId(moodleResponse.getId());
+                        moodleResourceResponse.setUrl(moodleResponse.getUrl());
+                        moodleResourceResponse.setName(moodleResponse.getName());
+                        moodleResourceResponse.setType(moodleResponse.getModname());
+                        moodleResourceResponseList.add(moodleResourceResponse);
                     });
-                    recourseDtoResponse.setModules(resourceMoodleResponseList);
+                    recourseDtoResponse.setModules(moodleResourceResponseList);
                     resources.add(recourseDtoResponse);
                 });
                 classResourcesResponse.setResources(resources);
@@ -1170,4 +1168,5 @@ public class ClassServiceImpl implements IClassService {
         }
         return choosenClassList.stream().map(ConvertUtil::doConvertEntityToResponse).collect(Collectors.toList());
     }
+
 }

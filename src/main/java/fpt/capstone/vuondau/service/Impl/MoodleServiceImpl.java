@@ -2,25 +2,24 @@ package fpt.capstone.vuondau.service.Impl;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
-import fpt.capstone.vuondau.MoodleRepository.request.GetCategoryRequest;
-import fpt.capstone.vuondau.MoodleRepository.request.CreateCategoryRequest;
-import fpt.capstone.vuondau.MoodleRepository.request.MoodleMasterDataRequest;
-import fpt.capstone.vuondau.MoodleRepository.response.CategoryResponse;
-import fpt.capstone.vuondau.MoodleRepository.response.CourseResponse;
-import fpt.capstone.vuondau.MoodleRepository.response.MoodleModuleResponse;
-import fpt.capstone.vuondau.MoodleRepository.response.MoodleSectionResponse;
+import fpt.capstone.vuondau.entity.common.EAccountRole;
+import fpt.capstone.vuondau.moodle.repository.MoodleCourseRepository;
+import fpt.capstone.vuondau.moodle.repository.MoodleRoleRepository;
+import fpt.capstone.vuondau.moodle.repository.MoodleUserRepository;
+import fpt.capstone.vuondau.moodle.request.*;
+import fpt.capstone.vuondau.moodle.response.*;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiPage;
-import fpt.capstone.vuondau.MoodleRepository.request.GetCourseRequest;
 import fpt.capstone.vuondau.repository.ClassRepository;
 import fpt.capstone.vuondau.repository.FileAttachmentRepository;
+import fpt.capstone.vuondau.repository.RoleRepository;
 import fpt.capstone.vuondau.repository.SectionRepository;
 import fpt.capstone.vuondau.service.IMoodleService;
+import fpt.capstone.vuondau.util.MoodleUtil;
 import fpt.capstone.vuondau.util.ObjectUtil;
 import fpt.capstone.vuondau.util.PageUtil;
-import fpt.capstone.vuondau.util.RequestUtil;
+import fpt.capstone.vuondau.util.SecurityUtil;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -29,30 +28,41 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 
 @Service
 @Transactional
 public class MoodleServiceImpl implements IMoodleService {
 
-    final private RequestUtil requestUtil;
     private final MoodleCourseRepository moodleCourseRepository;
     private final ClassRepository classRepository;
     private final SectionRepository sectionRepository;
+    private final FileAttachmentRepository fileAttachmentRepository;
+    private final MoodleRoleRepository moodleRoleRepository;
+    private final RoleRepository roleRepository;
 
-    private final FileAttachmentRepository fileAttachmentRepository ;
+    private final MoodleUserRepository moodleUserRepository;
+    private final MoodleUtil moodleUtil;
+    private final SecurityUtil securityUtil;
 
-    public MoodleServiceImpl(RequestUtil requestUtil, MoodleCourseRepository moodleCourseRepository, ClassRepository classRepository, SectionRepository sectionRepository, FileAttachmentRepository fileAttachmentRepository) {
-        this.requestUtil = requestUtil;
+    public MoodleServiceImpl(MoodleCourseRepository moodleCourseRepository, ClassRepository classRepository, SectionRepository sectionRepository, FileAttachmentRepository fileAttachmentRepository, MoodleRoleRepository moodleRoleRepository, RoleRepository roleRepository, MoodleUserRepository moodleUserRepository, MoodleUtil moodleUtil, SecurityUtil securityUtil) {
         this.moodleCourseRepository = moodleCourseRepository;
         this.classRepository = classRepository;
         this.sectionRepository = sectionRepository;
         this.fileAttachmentRepository = fileAttachmentRepository;
+        this.moodleRoleRepository = moodleRoleRepository;
+        this.roleRepository = roleRepository;
+        this.moodleUserRepository = moodleUserRepository;
+        this.moodleUtil = moodleUtil;
+        this.securityUtil = securityUtil;
     }
 
     @Override
-    public List<CategoryResponse> getCategoryFromMoodle() throws JsonProcessingException {
+    public List<MoodleCategoryResponse> getCategoryFromMoodle() throws JsonProcessingException {
         GetCategoryRequest request = new GetCategoryRequest();
         List<GetCategoryRequest.MoodleCategoryBody> moodleCategoryBodyList = new ArrayList<>();
         GetCategoryRequest.MoodleCategoryBody moodleCategoryBody = new GetCategoryRequest.MoodleCategoryBody();
@@ -60,12 +70,11 @@ public class MoodleServiceImpl implements IMoodleService {
         moodleCategoryBody.setValue("");
         moodleCategoryBodyList.add(moodleCategoryBody);
         request.setCriteria(moodleCategoryBodyList);
-        List<CategoryResponse> category = moodleCourseRepository.getCategories(request);
-        return category;
+        return moodleCourseRepository.getCategories(request);
     }
 
     @Override
-    public Boolean crateCategoryToMoodle(CreateCategoryRequest.CreateCategoryBody createCategoryBody) throws JsonProcessingException {
+    public Boolean createCategoryToMoodle(CreateCategoryRequest.CreateCategoryBody createCategoryBody) throws JsonProcessingException {
         CreateCategoryRequest request = new CreateCategoryRequest();
 
         List<CreateCategoryRequest.CreateCategoryBody> createCategoryBodyList = new ArrayList<>();
@@ -75,7 +84,6 @@ public class MoodleServiceImpl implements IMoodleService {
         set.setIdnumber(createCategoryBody.getIdnumber());
         set.setDescription(createCategoryBody.getDescription());
         set.setDescriptionformat(createCategoryBody.getDescriptionformat());
-//        set.setTheme(moodleCreateCategoryBody.getTheme());
         createCategoryBodyList.add(set);
 
         request.setCategories(createCategoryBodyList);
@@ -85,26 +93,23 @@ public class MoodleServiceImpl implements IMoodleService {
     }
 
     @Override
-    public ApiPage<CourseResponse> synchronizedClass() throws JsonProcessingException {
+    public ApiPage<MoodleCourseResponse> synchronizedClassFromMoodle() throws JsonProcessingException {
         MoodleMasterDataRequest request = new MoodleMasterDataRequest();
-        List<CourseResponse> course = moodleCourseRepository.getCourses(request);
-        Page<CourseResponse> page = new PageImpl<>(course);
-        return PageUtil.convert(page.map(moodleClassResponse -> ObjectUtil.copyProperties(moodleClassResponse, new CourseResponse(), CourseResponse.class)));
+        List<MoodleCourseResponse> course = moodleCourseRepository.getCourses(request);
+        Page<MoodleCourseResponse> page = new PageImpl<>(course);
+        return PageUtil.convert(page.map(moodleClassResponse -> ObjectUtil.copyProperties(moodleClassResponse, new MoodleCourseResponse(), MoodleCourseResponse.class)));
     }
 
     @Override
-    public Boolean synchronizedClassDetail() throws JsonProcessingException {
+    public Boolean synchronizedClassDetailFromMoodle() throws JsonProcessingException {
         List<Class> classes = classRepository.findAll();
-
-
         for (Class clazz : classes) {
-            GetCourseRequest getCourseRequest = new GetCourseRequest();
-            getCourseRequest.setCourseid(clazz.getResourceMoodleId());
-            List<MoodleSectionResponse> detailCourse = moodleCourseRepository.getResourceCourse(getCourseRequest);
+            GetMoodleCourseRequest getMoodleCourseRequest = new GetMoodleCourseRequest();
+            getMoodleCourseRequest.setCourseid(clazz.getMoodleClassId());
+            List<MoodleSectionResponse> detailCourse = moodleCourseRepository.getResourceCourse(getMoodleCourseRequest);
             List<Section> sections = new ArrayList<>();
             for (MoodleSectionResponse moodleSectionResponse : detailCourse) {
                 Section section = createSection(clazz, moodleSectionResponse);
-
                 for (MoodleModuleResponse moodleModuleResponse : moodleSectionResponse.getModules()) {
                     Module module = createModule(section, moodleModuleResponse);
                     section.getModules().add(module);
@@ -112,13 +117,67 @@ public class MoodleServiceImpl implements IMoodleService {
                 }
                 sections.add(section);
             }
-
             clazz.getSections().clear();
             clazz.getSections().addAll(sections);
         }
         classRepository.saveAll(classes);
         return true;
     }
+
+    @Override
+    public String enrolUserToCourseMoodle(Class clazz) throws JsonProcessingException {
+        Account account = securityUtil.getCurrentUser();
+        Role role = account.getRole();
+
+        MoodleUserResponse moodleAccountOfUser = moodleUtil.getMoodleUserIfExist();
+
+        CreateEnrolCourseRequest request = new CreateEnrolCourseRequest();
+
+        CreateEnrolCourseRequest.Enrolment enrolment = new CreateEnrolCourseRequest.Enrolment();
+        enrolment.setUserid(moodleAccountOfUser.getId());
+        enrolment.setCourseid(new Integer(clazz.getMoodleClassId().toString()));
+        enrolment.setRoleid(new Integer(role.getMoodleRoleId().toString()));
+        request.getEnrolments().add(enrolment);
+        return moodleCourseRepository.enrolUser(request);
+    }
+
+    @Override
+    public String unenrolUserToCourseMoodle(Class clazz) throws JsonProcessingException {
+
+        Account account = securityUtil.getCurrentUser();
+        Role role = account.getRole();
+
+        MoodleUserResponse moodleAccountOfUser = moodleUtil.getMoodleUserIfExist();
+
+        CreateEnrolCourseRequest request = new CreateEnrolCourseRequest();
+
+        CreateEnrolCourseRequest.Enrolment enrolment = new CreateEnrolCourseRequest.Enrolment();
+        enrolment.setUserid(moodleAccountOfUser.getId());
+        enrolment.setCourseid(new Integer(clazz.getMoodleClassId().toString()));
+
+        request.getEnrolments().add(enrolment);
+        return moodleCourseRepository.unenrolUser(request);
+    }
+
+    @Override
+    public Boolean synchronizedRoleFromMoodle() throws JsonProcessingException {
+        List<MoodleRoleResponse> moodleRoles = moodleRoleRepository.getRoles();
+        Map<String, MoodleRoleResponse> moodleRolesMap = moodleRoles.stream()
+                .collect(Collectors.toMap(MoodleRoleResponse::getShortname, Function.identity()));
+
+        List<Role> roles = roleRepository.findAll();
+        for (Role role : roles) {
+            String roleName = role.getName() != null ? role.getName().toLowerCase().trim() : "";
+            if (!roleName.isEmpty()) {
+                MoodleRoleResponse moodleRoleResponse = moodleRolesMap.get(roleName);
+                if (moodleRoleResponse != null) {
+                    role.setMoodleRoleId((long) moodleRoleResponse.getId());
+                }
+            }
+        }
+        return true;
+    }
+
 
     @NotNull
     private Section createSection(Class clazz, MoodleSectionResponse moodleSectionResponse) {
@@ -148,8 +207,7 @@ public class MoodleServiceImpl implements IMoodleService {
             return EModuleType.QUIZ;
         } else if (modname.equals(EModuleType.LESSON.getLabel())) {
             return EModuleType.LESSON;
-        }
-        else if (modname.equals(EModuleType.ASSIGN.getLabel())) {
+        } else if (modname.equals(EModuleType.ASSIGN.getLabel())) {
             return EModuleType.ASSIGN;
         }
         return null;

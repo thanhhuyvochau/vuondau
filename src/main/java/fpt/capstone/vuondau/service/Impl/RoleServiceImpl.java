@@ -1,23 +1,25 @@
 package fpt.capstone.vuondau.service.Impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.Role;
 import fpt.capstone.vuondau.entity.common.ApiException;
-import fpt.capstone.vuondau.entity.common.EAccountRole;
-import fpt.capstone.vuondau.entity.dto.RoleDto;
 import fpt.capstone.vuondau.entity.request.RoleRequest;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.RoleResponse;
+import fpt.capstone.vuondau.moodle.repository.MoodleRoleRepository;
+import fpt.capstone.vuondau.moodle.response.MoodleRoleResponse;
 import fpt.capstone.vuondau.repository.AccountRepository;
 import fpt.capstone.vuondau.repository.RoleRepository;
 import fpt.capstone.vuondau.service.IRoleService;
-import fpt.capstone.vuondau.util.ConvertUtil;
 import fpt.capstone.vuondau.util.ObjectUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,10 +27,12 @@ import java.util.stream.Collectors;
 public class RoleServiceImpl implements IRoleService {
     private final RoleRepository roleRepository;
     private final AccountRepository accountRepository;
+    private final MoodleRoleRepository moodleRoleRepository;
 
-    public RoleServiceImpl(RoleRepository roleRepository, AccountRepository accountRepository) {
+    public RoleServiceImpl(RoleRepository roleRepository, AccountRepository accountRepository, MoodleRoleRepository moodleRoleRepository) {
         this.roleRepository = roleRepository;
         this.accountRepository = accountRepository;
+        this.moodleRoleRepository = moodleRoleRepository;
     }
 
     @Override
@@ -91,4 +95,6 @@ public class RoleServiceImpl implements IRoleService {
         roleResponse.setAccountResponseList(accountResponses);
         return roleResponse;
     }
+
+
 }

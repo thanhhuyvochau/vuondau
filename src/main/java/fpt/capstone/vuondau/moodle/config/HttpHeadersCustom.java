@@ -1,4 +1,4 @@
-package fpt.capstone.vuondau.MoodleRepository;
+package fpt.capstone.vuondau.moodle.config;
 
 import org.springframework.http.HttpHeaders;
 

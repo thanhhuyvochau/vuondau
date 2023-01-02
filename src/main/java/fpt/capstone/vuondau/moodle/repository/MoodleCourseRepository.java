@@ -1,0 +1,68 @@
+package fpt.capstone.vuondau.moodle.repository;
+
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import fpt.capstone.vuondau.moodle.config.Caller;
+import fpt.capstone.vuondau.moodle.request.*;
+import fpt.capstone.vuondau.moodle.response.MoodleCategoryResponse;
+import fpt.capstone.vuondau.moodle.response.MoodleCourseResponse;
+import fpt.capstone.vuondau.moodle.response.MoodleSectionResponse;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+@Component
+public class MoodleCourseRepository extends MoodleBaseRepository {
+
+
+    public MoodleCourseRepository(Caller caller) {
+        super(caller);
+    }
+
+    public List<MoodleCourseResponse> createCourse(S1CourseRequest request) throws JsonProcessingException {
+        TypeReference<List<MoodleCourseResponse>> typeReference = new TypeReference<List<MoodleCourseResponse>>() {
+        };
+        return caller.post(getCreateCourseUrl(), request, typeReference);
+    }
+
+
+    public List<MoodleCourseResponse> getCourses(MoodleMasterDataRequest request) throws JsonProcessingException {
+        TypeReference<List<MoodleCourseResponse>> typeReference = new TypeReference<List<MoodleCourseResponse>>() {
+        };
+        return caller.get(getGetCourseUrl(), request, typeReference);
+    }
+
+
+    public List<MoodleCategoryResponse> getCategories(GetCategoryRequest request) throws JsonProcessingException {
+        TypeReference<List<MoodleCategoryResponse>> typeReference = new TypeReference<List<MoodleCategoryResponse>>() {
+        };
+        return caller.get(getGetCategoryUrl(), request, typeReference);
+    }
+
+
+    public List<MoodleCourseResponse> createCategory(CreateCategoryRequest request) throws JsonProcessingException {
+        TypeReference<List<MoodleCourseResponse>> typeReference = new TypeReference<List<MoodleCourseResponse>>() {
+        };
+        return caller.post(getCreateCategoryUrl(), request, typeReference);
+    }
+
+
+    public List<MoodleSectionResponse> getResourceCourse(GetMoodleCourseRequest classId) throws JsonProcessingException {
+        TypeReference<List<MoodleSectionResponse>> typeReference = new TypeReference<List<MoodleSectionResponse>>() {
+        };
+        return caller.post(getGetResourceUrl(), classId, typeReference);
+    }
+
+    public String enrolUser(CreateEnrolCourseRequest request) throws JsonProcessingException {
+        TypeReference<String> typeReference = new TypeReference<String>() {
+        };
+        return caller.post(getEnrolUserUrl(), request, typeReference);
+    }
+    public String unenrolUser(CreateEnrolCourseRequest request) throws JsonProcessingException {
+        TypeReference<String> typeReference = new TypeReference<String>() {
+        };
+        return caller.post(getUnenrolUserUrl(), request, typeReference);
+    }
+
+}
