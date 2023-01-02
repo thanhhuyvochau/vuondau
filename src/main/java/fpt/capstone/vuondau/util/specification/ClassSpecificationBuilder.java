@@ -5,11 +5,13 @@ import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.EClassLevel;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
+import fpt.capstone.vuondau.entity.common.EClassType;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -24,7 +26,30 @@ public class ClassSpecificationBuilder {
 
     private final List<Specification<Class>> specifications = new ArrayList<>();
 
-    public ClassSpecificationBuilder queryByClassStatus(EClassStatus... statuses) {
+    public ClassSpecificationBuilder queryByClassType(EClassType  classTypes) {
+        if (classTypes == null) {
+            return this;
+        }
+        specifications.add((root, query, criteriaBuilder) -> root.get(Class_.CLASS_TYPE).in(classTypes));
+        return this;
+    }
+
+    public ClassSpecificationBuilder queryByCSubject(Long subjectId) {
+        if (subjectId == null) {
+            return this;
+        }
+        specifications.add((root, query, criteriaBuilder) ->
+        {
+            Path<Course> objectCourse = root.get(Class_.COURSE);
+            Path<Subject> subjectPath = objectCourse.get(Course_.subject);
+
+          return criteriaBuilder.or((subjectPath.get(Subject_.ID)).in(subjectId));
+        });
+        return this;
+    }
+
+
+    public ClassSpecificationBuilder queryByClassStatus(EClassStatus statuses) {
         if (statuses == null) {
             return this;
         }

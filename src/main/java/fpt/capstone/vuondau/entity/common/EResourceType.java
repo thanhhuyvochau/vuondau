@@ -9,7 +9,9 @@ public enum EResourceType {
 
     DEGREE ,
 
-    CCCD,
+    CCCD ,
+    CCCDONE,
+    CCCDTWO,
 
     CONTRACT ,
 

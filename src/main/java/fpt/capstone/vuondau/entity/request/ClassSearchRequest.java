@@ -11,7 +11,6 @@ import java.util.List;
 public class ClassSearchRequest implements Serializable {
     private String q;
 
-
     private EClassStatus status;
     private Instant startDate;
     private Instant endDate;
