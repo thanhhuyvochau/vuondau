@@ -31,6 +31,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -97,7 +98,7 @@ public class ClassServiceImpl implements IClassService {
 //                    .withMessage(messageUtil.getLocalMessage("Ngày"));
 //        }
 
-//        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
         clazz.setCode(createClassRequest.getCode());
 
         Instant now = DayUtil.convertDayInstant(Instant.now().toString());
@@ -121,6 +122,7 @@ public class ClassServiceImpl implements IClassService {
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
         clazz.setActive(false);
         clazz.setAccount(teacher);
+        clazz.setCourse(course);
         clazz.setStatus(EClassStatus.REQUESTING);
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setEachStudentPayPrice(createClassRequest.getEachStudentPayPrice());
@@ -133,7 +135,7 @@ public class ClassServiceImpl implements IClassService {
     public Long teacherRequestCreateClassSubjectCourse(Long id, CreateClassSubjectRequest createClassRequest) {
         Class aClass = new Class();
         aClass = classRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
-        if (!aClass.getStatus().equals(EClassStatus.REQUESTING)) {
+        if (!aClass.getStatus().equals(EClassStatus.REQUESTING) && !aClass.getStatus().equals(EClassStatus.RECRUITING)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Bạn không thể cập nhật topic cho khác này"));
         }
@@ -314,6 +316,9 @@ public class ClassServiceImpl implements IClassService {
         Page<Class> classes = classRepository.findAll(builder.build(), pageable);
         return PageUtil.convert(classes.map(aClass -> {
             ClassDto classDto = ObjectUtil.copyProperties(aClass, new ClassDto(), ClassDto.class);
+            Optional<ClassLevel> classLevel = classLevelRepository.findById(aClass.getClassLevel());
+            classLevel.ifPresent(level -> classDto.setClassLevel(level.getCode()));
+
             if (aClass.getAccount() != null) {
                 classDto.setTeacher(ConvertUtil.doConvertEntityToSimpleResponse(aClass.getAccount()));
             }
@@ -961,6 +966,7 @@ public class ClassServiceImpl implements IClassService {
     public ClassAttendanceResponse accountGetAttendanceOfClass(Long id) {
         Account account = securityUtil.getCurrentUser();
         Class aClass = findClassByRoleAccount(id);
+
         StudentClassKey studentClassKey = new StudentClassKey();
         studentClassKey.setStudentId(account.getId());
         studentClassKey.setClassId(aClass.getId());
@@ -1014,16 +1020,11 @@ public class ClassServiceImpl implements IClassService {
                         attendanceDto.setArchetypeName(archetype.getName());
                     }
                 }
-
-
             }
-
             attendanceDtoList.add(attendanceDto);
-
         });
         classAttendanceResponse.setAttendance(attendanceDtoList);
         return classAttendanceResponse;
-
     }
 
     @Override
@@ -1088,17 +1089,19 @@ public class ClassServiceImpl implements IClassService {
 
 
     @Override
-    public ApiPage<ClassDto> getAllClassForUser(Pageable pageable, EClassStatus classStatus) {
-        if (classStatus.name().equals(EClassStatus.NEW.name()) || classStatus.name().equals(EClassStatus.RECRUITING.name())) {
-            ClassSpecificationBuilder builder = new ClassSpecificationBuilder();
-            builder.queryByClassStatus(EClassStatus.NEW, EClassStatus.RECRUITING);
-            builder.isActive(true);
-            Specification<Class> classSpecification = builder.build();
-            Page<Class> classesPage = classRepository.findAll(classSpecification, pageable);
-            return PageUtil.convert(classesPage.map(ConvertUtil::doConvertEntityToResponse));
-        } else {
-            throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Class status invalid!");
-        }
+    public ApiPage<ClassDto> getAllClassForUser(Pageable pageable, GuestSearchClassRequest guestSearchClassRequest) {
+
+
+        ClassSpecificationBuilder builder = new ClassSpecificationBuilder();
+        builder.queryByClassStatus(guestSearchClassRequest.getStatus());
+        builder.queryByClassType(guestSearchClassRequest.getClassType());
+        builder.queryByCSubject(guestSearchClassRequest.getSubject()) ;
+
+//        builder.isActive(true);
+        Specification<Class> classSpecification = builder.build();
+        Page<Class> classesPage = classRepository.findAll(classSpecification, pageable);
+        return PageUtil.convert(classesPage.map(ConvertUtil::doConvertEntityToResponse));
+
     }
 
     private Forum createClassForum(Class clazz) {

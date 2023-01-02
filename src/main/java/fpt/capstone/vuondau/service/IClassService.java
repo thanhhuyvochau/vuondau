@@ -40,7 +40,7 @@ public interface IClassService {
     ClassDetailDto classDetail(Long id) throws JsonProcessingException;
 
     ApiPage<ClassDto> getAllClass(Pageable pageable);
-    ApiPage<ClassDto> getAllClassForUser(Pageable pageable, EClassStatus classStatus);
+    ApiPage<ClassDto> getAllClassForUser(Pageable pageable,  GuestSearchClassRequest guestSearchClassRequest);
     ApiPage<ClassDto> accountFilterClass(ClassSearchRequest query, Pageable pageable);
 
     ApiPage<ClassDto> classSuggestion(long infoFindTutorId, Pageable pageable);

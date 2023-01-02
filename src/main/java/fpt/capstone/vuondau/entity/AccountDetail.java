@@ -70,6 +70,7 @@ public class AccountDetail extends BaseEntity  {
     private Boolean isActive;
 
     @Column(name = "gender")
+    @Enumerated(EnumType.STRING)
     private EGenderType gender;
 
     @OneToOne(cascade = CascadeType.ALL)

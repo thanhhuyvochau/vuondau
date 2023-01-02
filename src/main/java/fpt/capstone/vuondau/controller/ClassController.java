@@ -63,10 +63,10 @@ public class ClassController {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getAllClass(pageable)));
     }
 
-    @Operation(summary = "lấy tất cả class có phân trang cho trang chủ (chỉ truyền status NEW hoặc RECRUITING)")
+    @Operation(summary = "lấy tất cả class có phân trang cho trang chủ ")
     @GetMapping("/for-user")
-    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getAllClassForUser(Pageable pageable, @RequestParam EClassStatus classStatus) {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.getAllClassForUser(pageable, classStatus)));
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getAllClassForUser(Pageable pageable, GuestSearchClassRequest guestSearchClassRequest) {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.getAllClassForUser(pageable, guestSearchClassRequest)));
     }
 
     @Operation(summary = "Admin phê duyệt request tao class của teacher ")
