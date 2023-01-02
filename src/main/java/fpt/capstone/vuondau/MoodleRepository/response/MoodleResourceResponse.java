@@ -3,7 +3,7 @@ package fpt.capstone.vuondau.MoodleRepository.response;
 
 
 
-public class ResourceMoodleResponse {
+public class MoodleResourceResponse {
     private Long id;
     private String  url;
     private String  name;

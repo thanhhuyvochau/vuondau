@@ -1,6 +1,6 @@
 package fpt.capstone.vuondau.MoodleRepository.response;
 
-public class CategoryResponse {
+public class MoodleCategoryResponse {
 
 
     private Long id;

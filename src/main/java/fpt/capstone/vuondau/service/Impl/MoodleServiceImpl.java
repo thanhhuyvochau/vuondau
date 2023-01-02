@@ -6,14 +6,14 @@ import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
 import fpt.capstone.vuondau.MoodleRepository.request.GetCategoryRequest;
 import fpt.capstone.vuondau.MoodleRepository.request.CreateCategoryRequest;
 import fpt.capstone.vuondau.MoodleRepository.request.MoodleMasterDataRequest;
-import fpt.capstone.vuondau.MoodleRepository.response.CategoryResponse;
-import fpt.capstone.vuondau.MoodleRepository.response.CourseResponse;
+import fpt.capstone.vuondau.MoodleRepository.response.MoodleCategoryResponse;
+import fpt.capstone.vuondau.MoodleRepository.response.MoodleCourseResponse;
 import fpt.capstone.vuondau.MoodleRepository.response.MoodleModuleResponse;
 import fpt.capstone.vuondau.MoodleRepository.response.MoodleSectionResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiPage;
-import fpt.capstone.vuondau.MoodleRepository.request.GetCourseRequest;
+import fpt.capstone.vuondau.MoodleRepository.request.GetMoodleCourseRequest;
 import fpt.capstone.vuondau.repository.ClassRepository;
 import fpt.capstone.vuondau.repository.FileAttachmentRepository;
 import fpt.capstone.vuondau.repository.SectionRepository;
@@ -52,7 +52,7 @@ public class MoodleServiceImpl implements IMoodleService {
     }
 
     @Override
-    public List<CategoryResponse> getCategoryFromMoodle() throws JsonProcessingException {
+    public List<MoodleCategoryResponse> getCategoryFromMoodle() throws JsonProcessingException {
         GetCategoryRequest request = new GetCategoryRequest();
         List<GetCategoryRequest.MoodleCategoryBody> moodleCategoryBodyList = new ArrayList<>();
         GetCategoryRequest.MoodleCategoryBody moodleCategoryBody = new GetCategoryRequest.MoodleCategoryBody();
@@ -60,7 +60,7 @@ public class MoodleServiceImpl implements IMoodleService {
         moodleCategoryBody.setValue("");
         moodleCategoryBodyList.add(moodleCategoryBody);
         request.setCriteria(moodleCategoryBodyList);
-        List<CategoryResponse> category = moodleCourseRepository.getCategories(request);
+        List<MoodleCategoryResponse> category = moodleCourseRepository.getCategories(request);
         return category;
     }
 
@@ -85,11 +85,11 @@ public class MoodleServiceImpl implements IMoodleService {
     }
 
     @Override
-    public ApiPage<CourseResponse> synchronizedClass() throws JsonProcessingException {
+    public ApiPage<MoodleCourseResponse> synchronizedClass() throws JsonProcessingException {
         MoodleMasterDataRequest request = new MoodleMasterDataRequest();
-        List<CourseResponse> course = moodleCourseRepository.getCourses(request);
-        Page<CourseResponse> page = new PageImpl<>(course);
-        return PageUtil.convert(page.map(moodleClassResponse -> ObjectUtil.copyProperties(moodleClassResponse, new CourseResponse(), CourseResponse.class)));
+        List<MoodleCourseResponse> course = moodleCourseRepository.getCourses(request);
+        Page<MoodleCourseResponse> page = new PageImpl<>(course);
+        return PageUtil.convert(page.map(moodleClassResponse -> ObjectUtil.copyProperties(moodleClassResponse, new MoodleCourseResponse(), MoodleCourseResponse.class)));
     }
 
     @Override
@@ -98,9 +98,9 @@ public class MoodleServiceImpl implements IMoodleService {
 
 
         for (Class clazz : classes) {
-            GetCourseRequest getCourseRequest = new GetCourseRequest();
-            getCourseRequest.setCourseid(clazz.getResourceMoodleId());
-            List<MoodleSectionResponse> detailCourse = moodleCourseRepository.getResourceCourse(getCourseRequest);
+            GetMoodleCourseRequest getMoodleCourseRequest = new GetMoodleCourseRequest();
+            getMoodleCourseRequest.setCourseid(clazz.getResourceMoodleId());
+            List<MoodleSectionResponse> detailCourse = moodleCourseRepository.getResourceCourse(getMoodleCourseRequest);
             List<Section> sections = new ArrayList<>();
             for (MoodleSectionResponse moodleSectionResponse : detailCourse) {
                 Section section = createSection(clazz, moodleSectionResponse);

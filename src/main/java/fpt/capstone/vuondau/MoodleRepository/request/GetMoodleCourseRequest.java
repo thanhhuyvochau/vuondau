@@ -2,7 +2,7 @@ package fpt.capstone.vuondau.MoodleRepository.request;
 
 
 
-public class GetCourseRequest {
+public class GetMoodleCourseRequest {
 
     private Long courseid ;
 
