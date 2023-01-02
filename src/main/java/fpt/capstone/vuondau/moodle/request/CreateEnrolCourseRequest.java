@@ -17,6 +17,7 @@ public class CreateEnrolCourseRequest {
     public static class Enrolment {
         private int userid;
         private int courseid;
+        private int roleid;
 
         public int getUserid() {
             return userid;
@@ -32,6 +33,14 @@ public class CreateEnrolCourseRequest {
 
         public void setCourseid(int courseid) {
             this.courseid = courseid;
+        }
+
+        public int getRoleid() {
+            return roleid;
+        }
+
+        public void setRoleid(int roleid) {
+            this.roleid = roleid;
         }
     }
 }

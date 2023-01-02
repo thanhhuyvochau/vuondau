@@ -59,6 +59,10 @@ public class MoodleCourseRepository extends MoodleBaseRepository {
         };
         return caller.post(getEnrolUserUrl(), request, typeReference);
     }
-
+    public String unenrolUser(CreateEnrolCourseRequest request) throws JsonProcessingException {
+        TypeReference<String> typeReference = new TypeReference<String>() {
+        };
+        return caller.post(getUnenrolUserUrl(), request, typeReference);
+    }
 
 }

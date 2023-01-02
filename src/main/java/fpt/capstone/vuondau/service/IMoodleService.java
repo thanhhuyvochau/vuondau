@@ -24,7 +24,7 @@ public interface IMoodleService {
 
     String enrolUserToCourseMoodle(Class clazz) throws JsonProcessingException;
 
-    String unenrolUserToCourseMoodle(Account account, Class clazz);
+    String unenrolUserToCourseMoodle(Class clazz) throws JsonProcessingException;
 
     Boolean synchronizedRoleFromMoodle() throws JsonProcessingException;
 }

@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.service.Impl;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.moodle.repository.MoodleCourseRepository;
 import fpt.capstone.vuondau.moodle.repository.MoodleRoleRepository;
 import fpt.capstone.vuondau.moodle.repository.MoodleUserRepository;
@@ -18,6 +19,7 @@ import fpt.capstone.vuondau.service.IMoodleService;
 import fpt.capstone.vuondau.util.MoodleUtil;
 import fpt.capstone.vuondau.util.ObjectUtil;
 import fpt.capstone.vuondau.util.PageUtil;
+import fpt.capstone.vuondau.util.SecurityUtil;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -45,8 +47,9 @@ public class MoodleServiceImpl implements IMoodleService {
 
     private final MoodleUserRepository moodleUserRepository;
     private final MoodleUtil moodleUtil;
+    private final SecurityUtil securityUtil;
 
-    public MoodleServiceImpl(MoodleCourseRepository moodleCourseRepository, ClassRepository classRepository, SectionRepository sectionRepository, FileAttachmentRepository fileAttachmentRepository, MoodleRoleRepository moodleRoleRepository, RoleRepository roleRepository, MoodleUserRepository moodleUserRepository, MoodleUtil moodleUtil) {
+    public MoodleServiceImpl(MoodleCourseRepository moodleCourseRepository, ClassRepository classRepository, SectionRepository sectionRepository, FileAttachmentRepository fileAttachmentRepository, MoodleRoleRepository moodleRoleRepository, RoleRepository roleRepository, MoodleUserRepository moodleUserRepository, MoodleUtil moodleUtil, SecurityUtil securityUtil) {
         this.moodleCourseRepository = moodleCourseRepository;
         this.classRepository = classRepository;
         this.sectionRepository = sectionRepository;
@@ -55,6 +58,7 @@ public class MoodleServiceImpl implements IMoodleService {
         this.roleRepository = roleRepository;
         this.moodleUserRepository = moodleUserRepository;
         this.moodleUtil = moodleUtil;
+        this.securityUtil = securityUtil;
     }
 
     @Override
@@ -122,6 +126,27 @@ public class MoodleServiceImpl implements IMoodleService {
 
     @Override
     public String enrolUserToCourseMoodle(Class clazz) throws JsonProcessingException {
+        Account account = securityUtil.getCurrentUser();
+        Role role = account.getRole();
+
+        MoodleUserResponse moodleAccountOfUser = moodleUtil.getMoodleUserIfExist();
+
+        CreateEnrolCourseRequest request = new CreateEnrolCourseRequest();
+
+        CreateEnrolCourseRequest.Enrolment enrolment = new CreateEnrolCourseRequest.Enrolment();
+        enrolment.setUserid(moodleAccountOfUser.getId());
+        enrolment.setCourseid(new Integer(clazz.getMoodleClassId().toString()));
+        enrolment.setRoleid(new Integer(role.getMoodleRoleId().toString()));
+        request.getEnrolments().add(enrolment);
+        return moodleCourseRepository.enrolUser(request);
+    }
+
+    @Override
+    public String unenrolUserToCourseMoodle(Class clazz) throws JsonProcessingException {
+
+        Account account = securityUtil.getCurrentUser();
+        Role role = account.getRole();
+
         MoodleUserResponse moodleAccountOfUser = moodleUtil.getMoodleUserIfExist();
 
         CreateEnrolCourseRequest request = new CreateEnrolCourseRequest();
@@ -131,12 +156,7 @@ public class MoodleServiceImpl implements IMoodleService {
         enrolment.setCourseid(new Integer(clazz.getMoodleClassId().toString()));
 
         request.getEnrolments().add(enrolment);
-        return moodleCourseRepository.enrolUser(request);
-    }
-
-    @Override
-    public String unenrolUserToCourseMoodle(Account account, Class clazz) {
-        return null;
+        return moodleCourseRepository.unenrolUser(request);
     }
 
     @Override
