@@ -1,10 +1,10 @@
 package fpt.capstone.vuondau.service.Impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
-import fpt.capstone.vuondau.MoodleRepository.request.GetCategoryRequest;
-import fpt.capstone.vuondau.MoodleRepository.request.CreateCategoryRequest;
-import fpt.capstone.vuondau.MoodleRepository.response.MoodleCategoryResponse;
+import fpt.capstone.vuondau.moodle.repository.MoodleCourseRepository;
+import fpt.capstone.vuondau.moodle.request.GetCategoryRequest;
+import fpt.capstone.vuondau.moodle.request.CreateCategoryRequest;
+import fpt.capstone.vuondau.moodle.response.MoodleCategoryResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;

@@ -1,5 +1,6 @@
 package fpt.capstone.vuondau.service.Impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.StudentClass;
@@ -10,6 +11,7 @@ import fpt.capstone.vuondau.entity.request.VpnPayRequest;
 import fpt.capstone.vuondau.entity.response.PaymentResponse;
 import fpt.capstone.vuondau.repository.ClassRepository;
 import fpt.capstone.vuondau.repository.TransactionRepository;
+import fpt.capstone.vuondau.service.IMoodleService;
 import fpt.capstone.vuondau.service.ITransactionService;
 import fpt.capstone.vuondau.util.SecurityUtil;
 import fpt.capstone.vuondau.util.TransactionUtil;
@@ -40,15 +42,17 @@ public class TransactionServiceImpl implements ITransactionService {
     private final ClassRepository classRepository;
     private final WebSocketUtil webSocketUtil;
     private final TransactionUtil transactionUtil;
+    private final IMoodleService moodleService;
     private final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
-    public TransactionServiceImpl(VnpConfig vnpConfig, SecurityUtil securityUtil, TransactionRepository transactionRepository, ClassRepository classRepository, WebSocketUtil webSocketUtil, TransactionUtil transactionUtil) {
+    public TransactionServiceImpl(VnpConfig vnpConfig, SecurityUtil securityUtil, TransactionRepository transactionRepository, ClassRepository classRepository, WebSocketUtil webSocketUtil, TransactionUtil transactionUtil, IMoodleService moodleService) {
         this.vnpConfig = vnpConfig;
         this.securityUtil = securityUtil;
         this.transactionRepository = transactionRepository;
         this.classRepository = classRepository;
         this.webSocketUtil = webSocketUtil;
         this.transactionUtil = transactionUtil;
+        this.moodleService = moodleService;
     }
 
     @Override
@@ -155,7 +159,7 @@ public class TransactionServiceImpl implements ITransactionService {
     }
 
     @Override
-    public Transaction executeAfterPayment(HttpServletRequest request) {
+    public Transaction executeAfterPayment(HttpServletRequest request) throws JsonProcessingException {
         Map<String, String[]> parameterMap = request.getParameterMap();
         String transactionNo = request.getParameter("vnp_TransactionNo");
         String responseCode = request.getParameter("vnp_ResponseCode");
@@ -184,6 +188,7 @@ public class TransactionServiceImpl implements ITransactionService {
                 paymentClass.getStudentClasses().add(studentClass);
                 paymentClass.setNumberStudent(paymentClass.getNumberStudent() + 1);
                 classRepository.save(paymentClass);
+                moodleService.enrolUserToCourseMoodle(transaction.getPaymentClass());
             } else {
                 throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage("Class got maximum number of student :(( !");
             }

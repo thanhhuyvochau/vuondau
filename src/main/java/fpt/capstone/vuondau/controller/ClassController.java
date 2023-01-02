@@ -2,7 +2,6 @@ package fpt.capstone.vuondau.controller;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fpt.capstone.vuondau.MoodleRepository.request.CreateCourseRequest;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.common.EClassStatus;

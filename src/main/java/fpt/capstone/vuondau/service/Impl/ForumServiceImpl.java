@@ -1,6 +1,6 @@
 package fpt.capstone.vuondau.service.Impl;
 
-import fpt.capstone.vuondau.MoodleRepository.response.MoodleSectionResponse;
+import fpt.capstone.vuondau.moodle.response.MoodleSectionResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiException;

@@ -1,12 +1,12 @@
 package fpt.capstone.vuondau;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
-import fpt.capstone.vuondau.MoodleRepository.request.GetCategoryRequest;
-import fpt.capstone.vuondau.MoodleRepository.request.CreateCategoryRequest;
-import fpt.capstone.vuondau.MoodleRepository.request.MoodleMasterDataRequest;
-import fpt.capstone.vuondau.MoodleRepository.response.MoodleCategoryResponse;
-import fpt.capstone.vuondau.MoodleRepository.response.MoodleCourseResponse;
+import fpt.capstone.vuondau.moodle.repository.MoodleCourseRepository;
+import fpt.capstone.vuondau.moodle.request.GetCategoryRequest;
+import fpt.capstone.vuondau.moodle.request.CreateCategoryRequest;
+import fpt.capstone.vuondau.moodle.request.MoodleMasterDataRequest;
+import fpt.capstone.vuondau.moodle.response.MoodleCategoryResponse;
+import fpt.capstone.vuondau.moodle.response.MoodleCourseResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.DayOfWeek;
@@ -324,7 +324,7 @@ public class HatdauApplication {
         courseMoodle.stream().map(moodleClassResponse -> {
             for (Class aClass : allClass) {
                 if (aClass.getCode().equals(moodleClassResponse.getShortname())) {
-                    aClass.setResourceMoodleId(moodleClassResponse.getId());
+                    aClass.setMoodleClassId(moodleClassResponse.getId());
                     classList.add(aClass);
                 }
             }
@@ -334,7 +334,7 @@ public class HatdauApplication {
         courseMoodle.forEach(moodleClassResponse -> {
             Class byCode = classRepository.findByCode(moodleClassResponse.getShortname());
             if (byCode != null) {
-                byCode.setResourceMoodleId(moodleClassResponse.getId());
+                byCode.setMoodleClassId(moodleClassResponse.getId());
 
                 classList.add(byCode);
             }

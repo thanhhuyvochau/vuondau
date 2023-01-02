@@ -1,4 +1,4 @@
-package fpt.capstone.vuondau.MoodleRepository.response;
+package fpt.capstone.vuondau.moodle.response;
 
 import java.io.Serializable;
 import java.time.Instant;

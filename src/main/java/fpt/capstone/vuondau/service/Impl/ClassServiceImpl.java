@@ -2,12 +2,12 @@ package fpt.capstone.vuondau.service.Impl;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
-import fpt.capstone.vuondau.MoodleRepository.request.GetMoodleCourseRequest;
-import fpt.capstone.vuondau.MoodleRepository.request.CreateCourseRequest;
-import fpt.capstone.vuondau.MoodleRepository.request.S1CourseRequest;
-import fpt.capstone.vuondau.MoodleRepository.response.*;
-import fpt.capstone.vuondau.MoodleRepository.response.MoodleCourseResponse;
+import fpt.capstone.vuondau.moodle.repository.MoodleCourseRepository;
+import fpt.capstone.vuondau.moodle.request.GetMoodleCourseRequest;
+import fpt.capstone.vuondau.moodle.request.CreateCourseRequest;
+import fpt.capstone.vuondau.moodle.request.S1CourseRequest;
+import fpt.capstone.vuondau.moodle.response.*;
+import fpt.capstone.vuondau.moodle.response.MoodleCourseResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.*;
@@ -40,7 +40,6 @@ import java.util.stream.Collectors;
 public class ClassServiceImpl implements IClassService {
 
 
-    final private RequestUtil requestUtil;
     private final AccountRepository accountRepository;
     private final SubjectRepository subjectRepository;
     private final ClassRepository classRepository;
@@ -62,8 +61,7 @@ public class ClassServiceImpl implements IClassService {
     private final InfoFindTutorRepository infoFindTutorRepository;
     protected final ClassTeacherCandicateRepository classTeacherCandicateRepository;
 
-    public ClassServiceImpl(RequestUtil requestUtil, AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, ClassLevelRepository classLevelRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil, SecurityUtil securityUtil, AttendanceRepository attendanceRepository, InfoFindTutorRepository infoFindTutorRepository, ClassTeacherCandicateRepository classTeacherCandicateRepository) {
-        this.requestUtil = requestUtil;
+    public ClassServiceImpl( AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, ClassLevelRepository classLevelRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil, SecurityUtil securityUtil, AttendanceRepository attendanceRepository, InfoFindTutorRepository infoFindTutorRepository, ClassTeacherCandicateRepository classTeacherCandicateRepository) {
         this.accountRepository = accountRepository;
         this.subjectRepository = subjectRepository;
         this.classRepository = classRepository;
@@ -198,7 +196,7 @@ public class ClassServiceImpl implements IClassService {
         createCourseBodyList.add(createCourseBody);
         s1CourseRequest.setCourses(createCourseBodyList);
 
-        List<MoodleCourseResponse> courseRespons = moodleCourseRepository.createCourse(s1CourseRequest);
+        List<MoodleCourseResponse> courseResponses = moodleCourseRepository.createCourse(s1CourseRequest);
 
 
         ClassDto classDto = ObjectUtil.copyProperties(save, new ClassDto(), ClassDto.class);
@@ -365,10 +363,10 @@ public class ClassServiceImpl implements IClassService {
 
         }
 
-        if (aClass.getResourceMoodleId() != null) {
+        if (aClass.getMoodleClassId() != null) {
             GetMoodleCourseRequest getMoodleCourseRequest = new GetMoodleCourseRequest();
 
-            getMoodleCourseRequest.setCourseid(aClass.getResourceMoodleId());
+            getMoodleCourseRequest.setCourseid(aClass.getMoodleClassId());
             try {
 
 
@@ -721,10 +719,10 @@ public class ClassServiceImpl implements IClassService {
             }
             classDetail.setCourse(courseDetailResponse);
         }
-        if (aClass.getResourceMoodleId() != null) {
+        if (aClass.getMoodleClassId() != null) {
             GetMoodleCourseRequest getMoodleCourseRequest = new GetMoodleCourseRequest();
 
-            getMoodleCourseRequest.setCourseid(aClass.getResourceMoodleId());
+            getMoodleCourseRequest.setCourseid(aClass.getMoodleClassId());
             try {
 
 
@@ -852,10 +850,10 @@ public class ClassServiceImpl implements IClassService {
 
         ClassResourcesResponse classResourcesResponse = new ClassResourcesResponse();
 
-        if (aClass.getResourceMoodleId() != null) {
+        if (aClass.getMoodleClassId() != null) {
             GetMoodleCourseRequest getMoodleCourseRequest = new GetMoodleCourseRequest();
 
-            getMoodleCourseRequest.setCourseid(aClass.getResourceMoodleId());
+            getMoodleCourseRequest.setCourseid(aClass.getMoodleClassId());
             try {
 
                 List<MoodleRecourseDtoResponse> resources = new ArrayList<>();
@@ -1170,4 +1168,5 @@ public class ClassServiceImpl implements IClassService {
         }
         return choosenClassList.stream().map(ConvertUtil::doConvertEntityToResponse).collect(Collectors.toList());
     }
+
 }
