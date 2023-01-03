@@ -1,66 +1,89 @@
 package fpt.capstone.vuondau.service.Impl;
 
+import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.Class;
-import fpt.capstone.vuondau.entity.EModuleType;
-import fpt.capstone.vuondau.entity.Module;
-import fpt.capstone.vuondau.entity.Section;
-import fpt.capstone.vuondau.entity.common.ApiPage;
-import fpt.capstone.vuondau.entity.common.EFileType;
-import fpt.capstone.vuondau.entity.dto.ClassExerciseDto;
-import fpt.capstone.vuondau.entity.dto.ExerciseDto;
-import fpt.capstone.vuondau.repository.*;
+import fpt.capstone.vuondau.entity.StudentClass;
+import fpt.capstone.vuondau.moodle.repository.MoodleCourseRepository;
+import fpt.capstone.vuondau.moodle.request.GetMoodleCourseRequest;
+import fpt.capstone.vuondau.moodle.response.MoodleModuleResponse;
+import fpt.capstone.vuondau.moodle.response.MoodleRecourseDtoResponse;
+import fpt.capstone.vuondau.moodle.response.MoodleResourceResponse;
+import fpt.capstone.vuondau.moodle.response.MoodleSectionResponse;
 import fpt.capstone.vuondau.service.IExerciseService;
-import fpt.capstone.vuondau.util.PageUtil;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import fpt.capstone.vuondau.util.MessageUtil;
+import fpt.capstone.vuondau.util.SecurityUtil;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class ExerciseServiceImpl implements IExerciseService {
 
-    private final  ModuleRepository moduleRepository ;
 
-    public ExerciseServiceImpl(ModuleRepository moduleRepository) {
-        this.moduleRepository = moduleRepository;
+    private final MessageUtil messageUtil;
+
+    private final SecurityUtil securityUtil;
+
+    private final MoodleCourseRepository moodleCourseRepository;
+
+    public ExerciseServiceImpl(MessageUtil messageUtil, SecurityUtil securityUtil, MoodleCourseRepository moodleCourseRepository) {
+        this.messageUtil = messageUtil;
+        this.securityUtil = securityUtil;
+        this.moodleCourseRepository = moodleCourseRepository;
     }
 
     @Override
-    public ApiPage<ClassExerciseDto> getExerciseOfLClass(Pageable pageable) {
-        List<Module> exercises  = moduleRepository.findAllByType(EModuleType.ASSIGN);
-        List<ClassExerciseDto>classExerciseList = new ArrayList<>();
-        ClassExerciseDto classExerciseDto = new ClassExerciseDto() ;
-        exercises.forEach(module -> {
-            List<ExerciseDto>exerciseList = new ArrayList<>() ;
-            Section section = module.getSection();
+    public List<MoodleRecourseDtoResponse> getExerciseInClass(Long classId) {
+        Account student = securityUtil.getCurrentUser();
+        List<Class> classes = student.getStudentClasses().stream().map(StudentClass::getaClass).collect(Collectors.toList());
 
+        List<MoodleRecourseDtoResponse> exercise = new ArrayList<>();
+        classes.forEach(aClass -> {
+            if (aClass.getId().equals(classId)) {
+                if (aClass.getMoodleClassId() != null) {
+                    GetMoodleCourseRequest getMoodleCourseRequest = new GetMoodleCourseRequest();
 
-            if (section.getClazz()!= null) {
-                Class clazz = section.getClazz();
-                classExerciseDto.setId( clazz.getId());
-                classExerciseDto.setName(clazz.getName());
-                classExerciseDto.setCode(clazz.getCode());
-                ExerciseDto exerciseDto = new ExerciseDto() ;
-                exerciseDto.setId(module.getId());
-                exerciseDto.setName(module.getName());
-                exerciseDto.setUrl(module.getName());
-                exerciseDto.setFileType(EFileType.CREATE);
-                exerciseList.add(exerciseDto) ;
+                    getMoodleCourseRequest.setCourseid(aClass.getMoodleClassId());
+                    try {
+                        List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(getMoodleCourseRequest);
+                        resourceCourse.stream().skip(1).forEach(moodleRecourseClassResponse -> {
+                            List<MoodleModuleResponse> modules = moodleRecourseClassResponse.getModules();
+                            List<Boolean> isAssignList = modules.stream().map(moodleModuleResponse -> moodleModuleResponse.getModname().equals("assign") ||
+                                    moodleModuleResponse.getModname().equals("quiz")).collect(Collectors.toList());
+                            isAssignList.forEach(isAssign -> {
+                                if (isAssign) {
+                                    MoodleRecourseDtoResponse recourseDtoResponse = new MoodleRecourseDtoResponse();
+                                    recourseDtoResponse.setId(moodleRecourseClassResponse.getId());
+                                    recourseDtoResponse.setName(moodleRecourseClassResponse.getName());
+                                    List<MoodleResourceResponse> moodleResourceResponseList = new ArrayList<>();
+                                    modules.forEach(moodleResponse -> {
+                                        if (moodleResponse.getModname().equals("assign")) {
+                                            MoodleResourceResponse moodleResourceResponse = new MoodleResourceResponse();
+                                            moodleResourceResponse.setId(moodleResponse.getId());
+                                            moodleResourceResponse.setUrl(moodleResponse.getUrl());
+                                            moodleResourceResponse.setName(moodleResponse.getName());
+                                            moodleResourceResponse.setType(moodleResponse.getModname());
+                                            moodleResourceResponseList.add(moodleResourceResponse);
+                                        }
+                                    });
+                                    recourseDtoResponse.setModules(moodleResourceResponseList);
+                                    exercise.add(recourseDtoResponse);
+                                }
+                            });
+
+                        });
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
             }
-
-            classExerciseDto.setExercises(exerciseList);
-            classExerciseList.add(classExerciseDto) ;
         });
-
-        Page<ClassExerciseDto> page = new PageImpl<>(classExerciseList, pageable, classExerciseList.size());
-        return PageUtil.convert(page);
+        return exercise;
     }
 }
