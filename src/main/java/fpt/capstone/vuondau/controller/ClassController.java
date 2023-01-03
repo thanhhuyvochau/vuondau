@@ -138,6 +138,7 @@ public class ClassController {
     }
 
     @Operation(summary = "Giáo viên ứng tuyển dạy")
+
     @PostMapping({"/apply"})
     public ResponseEntity<ApiResponse<Boolean>> applyToRecruitingClass(@RequestBody Long classId) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.applyToRecruitingClass(classId)));

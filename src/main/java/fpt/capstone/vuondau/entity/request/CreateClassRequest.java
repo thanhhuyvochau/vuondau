@@ -23,9 +23,17 @@ public class CreateClassRequest implements Serializable {
 
     private Long maxNumberStudent;
 
+    private Long courseId;
 
 
-    private BigDecimal eachStudentPayPrice ;
+
+
+
+
+
+
+
+    private BigDecimal eachStudentPayPrice;
 
 
     public EClassType getClassType() {
@@ -42,6 +50,14 @@ public class CreateClassRequest implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Long getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(Long courseId) {
+        this.courseId = courseId;
     }
 
     public String getCode() {
