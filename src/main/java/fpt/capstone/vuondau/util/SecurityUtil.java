@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
+import java.security.Principal;
 import java.util.Optional;
 
 @Component
@@ -37,5 +38,13 @@ public class SecurityUtil {
         Jwt principal = (Jwt) authentication.getPrincipal();
         String username = principal.getClaimAsString("preferred_username");
         return Optional.ofNullable(username);
+    }
+
+    public static Jwt getCurrentPrincipal() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw ApiException.create(HttpStatus.CONFLICT).withMessage("User principal is null!");
+        }
+        return (Jwt) authentication.getPrincipal();
     }
 }

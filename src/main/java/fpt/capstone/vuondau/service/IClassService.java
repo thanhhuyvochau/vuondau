@@ -2,7 +2,7 @@ package fpt.capstone.vuondau.service;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fpt.capstone.vuondau.MoodleRepository.request.CreateCourseRequest;
+import fpt.capstone.vuondau.moodle.request.CreateCourseRequest;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.dto.ClassDetailDto;
@@ -40,7 +40,7 @@ public interface IClassService {
     ClassDetailDto classDetail(Long id) throws JsonProcessingException;
 
     ApiPage<ClassDto> getAllClass(Pageable pageable);
-    ApiPage<ClassDto> getAllClassForUser(Pageable pageable, EClassStatus classStatus);
+    ApiPage<ClassDto> getAllClassForUser(Pageable pageable,  GuestSearchClassRequest guestSearchClassRequest);
     ApiPage<ClassDto> accountFilterClass(ClassSearchRequest query, Pageable pageable);
 
     ApiPage<ClassDto> classSuggestion(long infoFindTutorId, Pageable pageable);

@@ -2,12 +2,12 @@ package fpt.capstone.vuondau.service.Impl;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
-import fpt.capstone.vuondau.MoodleRepository.request.GetCourseRequest;
-import fpt.capstone.vuondau.MoodleRepository.request.CreateCourseRequest;
-import fpt.capstone.vuondau.MoodleRepository.request.S1CourseRequest;
-import fpt.capstone.vuondau.MoodleRepository.response.*;
-import fpt.capstone.vuondau.MoodleRepository.response.CourseResponse;
+import fpt.capstone.vuondau.moodle.repository.MoodleCourseRepository;
+import fpt.capstone.vuondau.moodle.request.GetMoodleCourseRequest;
+import fpt.capstone.vuondau.moodle.request.CreateCourseRequest;
+import fpt.capstone.vuondau.moodle.request.S1CourseRequest;
+import fpt.capstone.vuondau.moodle.response.*;
+import fpt.capstone.vuondau.moodle.response.MoodleCourseResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.*;
@@ -31,6 +31,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -39,7 +40,6 @@ import java.util.stream.Collectors;
 public class ClassServiceImpl implements IClassService {
 
 
-    final private RequestUtil requestUtil;
     private final AccountRepository accountRepository;
     private final SubjectRepository subjectRepository;
     private final ClassRepository classRepository;
@@ -61,8 +61,7 @@ public class ClassServiceImpl implements IClassService {
     private final InfoFindTutorRepository infoFindTutorRepository;
     protected final ClassTeacherCandicateRepository classTeacherCandicateRepository;
 
-    public ClassServiceImpl(RequestUtil requestUtil, AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, ClassLevelRepository classLevelRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil, SecurityUtil securityUtil, AttendanceRepository attendanceRepository, InfoFindTutorRepository infoFindTutorRepository, ClassTeacherCandicateRepository classTeacherCandicateRepository) {
-        this.requestUtil = requestUtil;
+    public ClassServiceImpl( AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, ClassLevelRepository classLevelRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil, SecurityUtil securityUtil, AttendanceRepository attendanceRepository, InfoFindTutorRepository infoFindTutorRepository, ClassTeacherCandicateRepository classTeacherCandicateRepository) {
         this.accountRepository = accountRepository;
         this.subjectRepository = subjectRepository;
         this.classRepository = classRepository;
@@ -97,7 +96,7 @@ public class ClassServiceImpl implements IClassService {
 //                    .withMessage(messageUtil.getLocalMessage("Ngày"));
 //        }
 
-//        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
         clazz.setCode(createClassRequest.getCode());
 
         Instant now = DayUtil.convertDayInstant(Instant.now().toString());
@@ -121,6 +120,7 @@ public class ClassServiceImpl implements IClassService {
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
         clazz.setActive(false);
         clazz.setAccount(teacher);
+        clazz.setCourse(course);
         clazz.setStatus(EClassStatus.REQUESTING);
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setEachStudentPayPrice(createClassRequest.getEachStudentPayPrice());
@@ -159,7 +159,7 @@ public class ClassServiceImpl implements IClassService {
 
         s1CourseRequest.setCourses(createCourseBodyList);
 
-        List<CourseResponse> courseRespons = moodleCourseRepository.createCourse(s1CourseRequest);
+        List<MoodleCourseResponse> courseRespons = moodleCourseRepository.createCourse(s1CourseRequest);
 
         return true;
     }
@@ -196,7 +196,7 @@ public class ClassServiceImpl implements IClassService {
         createCourseBodyList.add(createCourseBody);
         s1CourseRequest.setCourses(createCourseBodyList);
 
-        List<CourseResponse> courseRespons = moodleCourseRepository.createCourse(s1CourseRequest);
+        List<MoodleCourseResponse> courseResponses = moodleCourseRepository.createCourse(s1CourseRequest);
 
 
         ClassDto classDto = ObjectUtil.copyProperties(save, new ClassDto(), ClassDto.class);
@@ -314,6 +314,9 @@ public class ClassServiceImpl implements IClassService {
         Page<Class> classes = classRepository.findAll(builder.build(), pageable);
         return PageUtil.convert(classes.map(aClass -> {
             ClassDto classDto = ObjectUtil.copyProperties(aClass, new ClassDto(), ClassDto.class);
+            Optional<ClassLevel> classLevel = classLevelRepository.findById(aClass.getClassLevel());
+            classLevel.ifPresent(level -> classDto.setClassLevel(level.getCode()));
+
             if (aClass.getAccount() != null) {
                 classDto.setTeacher(ConvertUtil.doConvertEntityToSimpleResponse(aClass.getAccount()));
             }
@@ -360,16 +363,16 @@ public class ClassServiceImpl implements IClassService {
 
         }
 
-        if (aClass.getResourceMoodleId() != null) {
-            GetCourseRequest getCourseRequest = new GetCourseRequest();
+        if (aClass.getMoodleClassId() != null) {
+            GetMoodleCourseRequest getMoodleCourseRequest = new GetMoodleCourseRequest();
 
-            getCourseRequest.setCourseid(aClass.getResourceMoodleId());
+            getMoodleCourseRequest.setCourseid(aClass.getMoodleClassId());
             try {
 
 
                 List<MoodleRecourseDtoResponse> resources = new ArrayList<>();
 
-                List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(getCourseRequest);
+                List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(getMoodleCourseRequest);
 
 
                 resourceCourse.stream().skip(1).forEach(moodleRecourseClassResponse -> {
@@ -378,17 +381,17 @@ public class ClassServiceImpl implements IClassService {
                     recourseDtoResponse.setName(moodleRecourseClassResponse.getName());
                     List<MoodleModuleResponse> modules = moodleRecourseClassResponse.getModules();
 
-                    List<ResourceMoodleResponse> resourceMoodleResponseList = new ArrayList<>();
+                    List<MoodleResourceResponse> moodleResourceResponseList = new ArrayList<>();
 
                     modules.forEach(moodleResponse -> {
-                        ResourceMoodleResponse resourceMoodleResponse = new ResourceMoodleResponse();
-                        resourceMoodleResponse.setId(moodleResponse.getId());
-                        resourceMoodleResponse.setUrl(moodleResponse.getUrl());
-                        resourceMoodleResponse.setName(moodleResponse.getName());
-                        resourceMoodleResponse.setType(moodleResponse.getModname());
-                        resourceMoodleResponseList.add(resourceMoodleResponse);
+                        MoodleResourceResponse moodleResourceResponse = new MoodleResourceResponse();
+                        moodleResourceResponse.setId(moodleResponse.getId());
+                        moodleResourceResponse.setUrl(moodleResponse.getUrl());
+                        moodleResourceResponse.setName(moodleResponse.getName());
+                        moodleResourceResponse.setType(moodleResponse.getModname());
+                        moodleResourceResponseList.add(moodleResourceResponse);
                     });
-                    recourseDtoResponse.setModules(resourceMoodleResponseList);
+                    recourseDtoResponse.setModules(moodleResourceResponseList);
                     resources.add(recourseDtoResponse);
                 });
                 classDetail.setResources(resources);
@@ -716,16 +719,16 @@ public class ClassServiceImpl implements IClassService {
             }
             classDetail.setCourse(courseDetailResponse);
         }
-        if (aClass.getResourceMoodleId() != null) {
-            GetCourseRequest getCourseRequest = new GetCourseRequest();
+        if (aClass.getMoodleClassId() != null) {
+            GetMoodleCourseRequest getMoodleCourseRequest = new GetMoodleCourseRequest();
 
-            getCourseRequest.setCourseid(aClass.getResourceMoodleId());
+            getMoodleCourseRequest.setCourseid(aClass.getMoodleClassId());
             try {
 
 
                 List<MoodleRecourseDtoResponse> resources = new ArrayList<>();
 
-                List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(getCourseRequest);
+                List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(getMoodleCourseRequest);
 
 
                 resourceCourse.stream().skip(1).forEach(moodleRecourseClassResponse -> {
@@ -734,17 +737,17 @@ public class ClassServiceImpl implements IClassService {
                     recourseDtoResponse.setName(moodleRecourseClassResponse.getName());
                     List<MoodleModuleResponse> modules = moodleRecourseClassResponse.getModules();
 
-                    List<ResourceMoodleResponse> resourceMoodleResponseList = new ArrayList<>();
+                    List<MoodleResourceResponse> moodleResourceResponseList = new ArrayList<>();
 
                     modules.forEach(moodleResponse -> {
-                        ResourceMoodleResponse resourceMoodleResponse = new ResourceMoodleResponse();
-                        resourceMoodleResponse.setId(moodleResponse.getId());
-                        resourceMoodleResponse.setUrl(moodleResponse.getUrl());
-                        resourceMoodleResponse.setName(moodleResponse.getName());
-                        resourceMoodleResponse.setType(moodleResponse.getModname());
-                        resourceMoodleResponseList.add(resourceMoodleResponse);
+                        MoodleResourceResponse moodleResourceResponse = new MoodleResourceResponse();
+                        moodleResourceResponse.setId(moodleResponse.getId());
+                        moodleResourceResponse.setUrl(moodleResponse.getUrl());
+                        moodleResourceResponse.setName(moodleResponse.getName());
+                        moodleResourceResponse.setType(moodleResponse.getModname());
+                        moodleResourceResponseList.add(moodleResourceResponse);
                     });
-                    recourseDtoResponse.setModules(resourceMoodleResponseList);
+                    recourseDtoResponse.setModules(moodleResourceResponseList);
                     resources.add(recourseDtoResponse);
                 });
                 classDetail.setResources(resources);
@@ -847,15 +850,15 @@ public class ClassServiceImpl implements IClassService {
 
         ClassResourcesResponse classResourcesResponse = new ClassResourcesResponse();
 
-        if (aClass.getResourceMoodleId() != null) {
-            GetCourseRequest getCourseRequest = new GetCourseRequest();
+        if (aClass.getMoodleClassId() != null) {
+            GetMoodleCourseRequest getMoodleCourseRequest = new GetMoodleCourseRequest();
 
-            getCourseRequest.setCourseid(aClass.getResourceMoodleId());
+            getMoodleCourseRequest.setCourseid(aClass.getMoodleClassId());
             try {
 
                 List<MoodleRecourseDtoResponse> resources = new ArrayList<>();
 
-                List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(getCourseRequest);
+                List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(getMoodleCourseRequest);
 
 
                 resourceCourse.stream().skip(1).forEach(moodleRecourseClassResponse -> {
@@ -864,17 +867,17 @@ public class ClassServiceImpl implements IClassService {
                     recourseDtoResponse.setName(moodleRecourseClassResponse.getName());
                     List<MoodleModuleResponse> modules = moodleRecourseClassResponse.getModules();
 
-                    List<ResourceMoodleResponse> resourceMoodleResponseList = new ArrayList<>();
+                    List<MoodleResourceResponse> moodleResourceResponseList = new ArrayList<>();
 
                     modules.forEach(moodleResponse -> {
-                        ResourceMoodleResponse resourceMoodleResponse = new ResourceMoodleResponse();
-                        resourceMoodleResponse.setId(moodleResponse.getId());
-                        resourceMoodleResponse.setUrl(moodleResponse.getUrl());
-                        resourceMoodleResponse.setName(moodleResponse.getName());
-                        resourceMoodleResponse.setType(moodleResponse.getModname());
-                        resourceMoodleResponseList.add(resourceMoodleResponse);
+                        MoodleResourceResponse moodleResourceResponse = new MoodleResourceResponse();
+                        moodleResourceResponse.setId(moodleResponse.getId());
+                        moodleResourceResponse.setUrl(moodleResponse.getUrl());
+                        moodleResourceResponse.setName(moodleResponse.getName());
+                        moodleResourceResponse.setType(moodleResponse.getModname());
+                        moodleResourceResponseList.add(moodleResourceResponse);
                     });
-                    recourseDtoResponse.setModules(resourceMoodleResponseList);
+                    recourseDtoResponse.setModules(moodleResourceResponseList);
                     resources.add(recourseDtoResponse);
                 });
                 classResourcesResponse.setResources(resources);
@@ -961,6 +964,7 @@ public class ClassServiceImpl implements IClassService {
     public ClassAttendanceResponse accountGetAttendanceOfClass(Long id) {
         Account account = securityUtil.getCurrentUser();
         Class aClass = findClassByRoleAccount(id);
+
         StudentClassKey studentClassKey = new StudentClassKey();
         studentClassKey.setStudentId(account.getId());
         studentClassKey.setClassId(aClass.getId());
@@ -1014,16 +1018,11 @@ public class ClassServiceImpl implements IClassService {
                         attendanceDto.setArchetypeName(archetype.getName());
                     }
                 }
-
-
             }
-
             attendanceDtoList.add(attendanceDto);
-
         });
         classAttendanceResponse.setAttendance(attendanceDtoList);
         return classAttendanceResponse;
-
     }
 
     @Override
@@ -1088,17 +1087,19 @@ public class ClassServiceImpl implements IClassService {
 
 
     @Override
-    public ApiPage<ClassDto> getAllClassForUser(Pageable pageable, EClassStatus classStatus) {
-        if (classStatus.name().equals(EClassStatus.NEW.name()) || classStatus.name().equals(EClassStatus.RECRUITING.name())) {
-            ClassSpecificationBuilder builder = new ClassSpecificationBuilder();
-            builder.queryByClassStatus(EClassStatus.NEW, EClassStatus.RECRUITING);
-            builder.isActive(true);
-            Specification<Class> classSpecification = builder.build();
-            Page<Class> classesPage = classRepository.findAll(classSpecification, pageable);
-            return PageUtil.convert(classesPage.map(ConvertUtil::doConvertEntityToResponse));
-        } else {
-            throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Class status invalid!");
-        }
+    public ApiPage<ClassDto> getAllClassForUser(Pageable pageable, GuestSearchClassRequest guestSearchClassRequest) {
+
+
+        ClassSpecificationBuilder builder = new ClassSpecificationBuilder();
+        builder.queryByClassStatus(guestSearchClassRequest.getStatus());
+        builder.queryByClassType(guestSearchClassRequest.getClassType());
+        builder.queryByCSubject(guestSearchClassRequest.getSubject()) ;
+
+//        builder.isActive(true);
+        Specification<Class> classSpecification = builder.build();
+        Page<Class> classesPage = classRepository.findAll(classSpecification, pageable);
+        return PageUtil.convert(classesPage.map(ConvertUtil::doConvertEntityToResponse));
+
     }
 
     private Forum createClassForum(Class clazz) {
@@ -1167,4 +1168,5 @@ public class ClassServiceImpl implements IClassService {
         }
         return choosenClassList.stream().map(ConvertUtil::doConvertEntityToResponse).collect(Collectors.toList());
     }
+
 }

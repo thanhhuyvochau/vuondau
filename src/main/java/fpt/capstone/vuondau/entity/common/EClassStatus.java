@@ -4,6 +4,7 @@ public enum EClassStatus {
     NEW,
     REQUESTING,
     NOTSTART,
+
     STARTING,
     ENDED,
     RECRUITING ,

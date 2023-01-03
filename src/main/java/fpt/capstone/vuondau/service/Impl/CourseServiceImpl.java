@@ -1,11 +1,11 @@
 package fpt.capstone.vuondau.service.Impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
-import fpt.capstone.vuondau.MoodleRepository.request.GetCourseRequest;
-import fpt.capstone.vuondau.MoodleRepository.request.MoodleMasterDataRequest;
-import fpt.capstone.vuondau.MoodleRepository.response.MoodleModuleResponse;
-import fpt.capstone.vuondau.MoodleRepository.response.MoodleSectionResponse;
+import fpt.capstone.vuondau.moodle.repository.MoodleCourseRepository;
+import fpt.capstone.vuondau.moodle.request.GetMoodleCourseRequest;
+import fpt.capstone.vuondau.moodle.request.MoodleMasterDataRequest;
+import fpt.capstone.vuondau.moodle.response.MoodleModuleResponse;
+import fpt.capstone.vuondau.moodle.response.MoodleSectionResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.ApiException;
@@ -285,10 +285,10 @@ public class CourseServiceImpl implements ICourseService {
         courseDetailResponse.setTeacherCourse(teacherCourseDtoList);
 
 
-        GetCourseRequest getCourseRequest = new GetCourseRequest();
-        getCourseRequest.setCourseid(24L);
+        GetMoodleCourseRequest getMoodleCourseRequest = new GetMoodleCourseRequest();
+        getMoodleCourseRequest.setCourseid(24L);
         try {
-            List<MoodleSectionResponse> moodleSection = moodleCourseRepository.getResourceCourse(getCourseRequest);
+            List<MoodleSectionResponse> moodleSection = moodleCourseRepository.getResourceCourse(getMoodleCourseRequest);
 
             List<MoodleSectionResponse> moodleSectionResponses = new ArrayList<>();
             moodleSection.stream().peek(moodleRecourseClassResponse -> {
@@ -470,10 +470,10 @@ public class CourseServiceImpl implements ICourseService {
 
     @Override
     public List<MoodleSectionResponse> synchronizedResource(Long classId) throws JsonProcessingException {
-        GetCourseRequest getCourseRequest = new GetCourseRequest();
-        getCourseRequest.setCourseid(classId);
+        GetMoodleCourseRequest getMoodleCourseRequest = new GetMoodleCourseRequest();
+        getMoodleCourseRequest.setCourseid(classId);
         MoodleMasterDataRequest s1MasterDataRequest = new MoodleMasterDataRequest();
-        List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(getCourseRequest);
+        List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(getMoodleCourseRequest);
         System.out.println(resourceCourse);
         return resourceCourse;
     }

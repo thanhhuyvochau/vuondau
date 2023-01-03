@@ -24,12 +24,12 @@ public class Role {
     @Enumerated(EnumType.STRING)
     private EAccountRole code;
 
-
-
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Account> accounts ;
 
+    @Column(name = "moodle_role_id")
+    private Long moodleRoleId;
     public Long getId() {
         return id;
     }
@@ -60,5 +60,13 @@ public class Role {
 
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
+    }
+
+    public Long getMoodleRoleId() {
+        return moodleRoleId;
+    }
+
+    public void setMoodleRoleId(Long moodleRoleId) {
+        this.moodleRoleId = moodleRoleId;
     }
 }

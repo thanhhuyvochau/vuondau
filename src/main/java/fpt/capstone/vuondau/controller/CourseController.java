@@ -1,7 +1,7 @@
 package fpt.capstone.vuondau.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fpt.capstone.vuondau.MoodleRepository.response.MoodleSectionResponse;
+import fpt.capstone.vuondau.moodle.response.MoodleSectionResponse;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 

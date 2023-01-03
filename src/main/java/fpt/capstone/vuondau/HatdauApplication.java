@@ -1,12 +1,12 @@
 package fpt.capstone.vuondau;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
-import fpt.capstone.vuondau.MoodleRepository.request.GetCategoryRequest;
-import fpt.capstone.vuondau.MoodleRepository.request.CreateCategoryRequest;
-import fpt.capstone.vuondau.MoodleRepository.request.MoodleMasterDataRequest;
-import fpt.capstone.vuondau.MoodleRepository.response.CategoryResponse;
-import fpt.capstone.vuondau.MoodleRepository.response.CourseResponse;
+import fpt.capstone.vuondau.moodle.repository.MoodleCourseRepository;
+import fpt.capstone.vuondau.moodle.request.GetCategoryRequest;
+import fpt.capstone.vuondau.moodle.request.CreateCategoryRequest;
+import fpt.capstone.vuondau.moodle.request.MoodleMasterDataRequest;
+import fpt.capstone.vuondau.moodle.response.MoodleCategoryResponse;
+import fpt.capstone.vuondau.moodle.response.MoodleCourseResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.DayOfWeek;
@@ -246,9 +246,9 @@ public class HatdauApplication {
         moodleCategoryBody.setValue("");
         moodleCategoryBodyList.add(moodleCategoryBody);
         request.setCriteria(moodleCategoryBodyList);
-        List<CategoryResponse> category = moodleCourseRepository.getCategories(request);
+        List<MoodleCategoryResponse> category = moodleCourseRepository.getCategories(request);
 
-        List<String> allNameCategory = category.stream().map(CategoryResponse::getName).collect(Collectors.toList());
+        List<String> allNameCategory = category.stream().map(MoodleCategoryResponse::getName).collect(Collectors.toList());
 
 
         List<Subject> allSubject = subjectRepository.findAll();
@@ -286,9 +286,9 @@ public class HatdauApplication {
         moodleCategoryBody.setValue("");
         moodleCategoryBodyList.add(moodleCategoryBody);
         request.setCriteria(moodleCategoryBodyList);
-        List<CategoryResponse> category = moodleCourseRepository.getCategories(request);
+        List<MoodleCategoryResponse> category = moodleCourseRepository.getCategories(request);
 
-        List<String> allNameCategory = category.stream().map(CategoryResponse::getName).collect(Collectors.toList());
+        List<String> allNameCategory = category.stream().map(MoodleCategoryResponse::getName).collect(Collectors.toList());
 
 
         List<Subject> allSubject = subjectRepository.findAll();
@@ -300,9 +300,9 @@ public class HatdauApplication {
         for (String s : collect) {
             ESubjectCode eSubjectCode = ESubjectCode.valueOf(s);
             Subject byCode = subjectRepository.findByCode(eSubjectCode);
-            for (CategoryResponse categoryResponse : category) {
-                if (categoryResponse.getName().equals(byCode.getCode().name())) {
-                    byCode.setCategoryMoodleId(categoryResponse.getId());
+            for (MoodleCategoryResponse moodleCategoryResponse : category) {
+                if (moodleCategoryResponse.getName().equals(byCode.getCode().name())) {
+                    byCode.setCategoryMoodleId(moodleCategoryResponse.getId());
                     subjectList.add(byCode);
                 }
             }
@@ -317,14 +317,14 @@ public class HatdauApplication {
 
         MoodleMasterDataRequest request = new MoodleMasterDataRequest();
 
-        List<CourseResponse> courseMoodle = moodleCourseRepository.getCourses(request);
+        List<MoodleCourseResponse> courseMoodle = moodleCourseRepository.getCourses(request);
 
         List<Class> allClass = classRepository.findAll();
         List<Class> classList = new ArrayList<>();
         courseMoodle.stream().map(moodleClassResponse -> {
             for (Class aClass : allClass) {
                 if (aClass.getCode().equals(moodleClassResponse.getShortname())) {
-                    aClass.setResourceMoodleId(moodleClassResponse.getId());
+                    aClass.setMoodleClassId(moodleClassResponse.getId());
                     classList.add(aClass);
                 }
             }
@@ -334,7 +334,7 @@ public class HatdauApplication {
         courseMoodle.forEach(moodleClassResponse -> {
             Class byCode = classRepository.findByCode(moodleClassResponse.getShortname());
             if (byCode != null) {
-                byCode.setResourceMoodleId(moodleClassResponse.getId());
+                byCode.setMoodleClassId(moodleClassResponse.getId());
 
                 classList.add(byCode);
             }

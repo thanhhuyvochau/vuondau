@@ -1,8 +1,8 @@
-package fpt.capstone.vuondau.MoodleRepository.request;
+package fpt.capstone.vuondau.moodle.request;
 
 
 
-public class GetCourseRequest {
+public class GetMoodleCourseRequest {
 
     private Long courseid ;
 

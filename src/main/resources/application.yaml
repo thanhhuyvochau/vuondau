@@ -11,13 +11,26 @@ spring:
 
 
 moodle:
-  baseUri: http://moodle-vuondau.amazingtech.vn/webservice/restful/server.php/
-  courseUri: http://moodle-vuondau.amazingtech.vn/webservice/restful/server.php/core_course_get_courses
-  createCourseUri: http://moodle-vuondau.amazingtech.vn/webservice/restful/server.php/core_course_create_courses
-  resourceUri: http://moodle-vuondau.amazingtech.vn/webservice/restful/server.php/core_course_get_contents
-  categoryUri: http://moodle-vuondau.amazingtech.vn/webservice/restful/server.php/core_course_get_categories
-  createCategoryUri: http://moodle-vuondau.amazingtech.vn/webservice/restful/server.php/core_course_create_categories
-  courseContentUri: http://moodle-vuondau.amazingtech.vn/webservice/restful/server.php/core_course_get_contents
+  url:
+    base: http://moodle-vuondau.amazingtech.vn/webservice/restful/server.php/
+    course:
+      get: core_course_get_courses
+      create: core_course_create_courses
+      content:
+        get: core_course_get_contents
+      member:
+        enrol: enrol_manual_enrol_users
+        unenrol: enrol_manual_unenrol_users
+    resource:
+      get: core_course_get_contents
+    category:
+      get: core_course_get_categories
+      create: core_course_create_categories
+    role:
+      get: local_wsgetroles_get_roles
+    user:
+      get: core_user_get_users_by_field
+
   token: c60c932ed4585b4534362b56045e653d
 
 app:

@@ -1,4 +1,4 @@
-package fpt.capstone.vuondau.MoodleRepository.request;
+package fpt.capstone.vuondau.moodle.request;
 
 import java.io.Serializable;
 import java.util.List;

@@ -1,8 +1,8 @@
-package fpt.capstone.vuondau.MoodleRepository.response;
+package fpt.capstone.vuondau.moodle.response;
 
 import java.util.List;
 
-public class CourseResponse {
+public class MoodleCourseResponse {
 
 
     private Long id;

@@ -1,7 +1,7 @@
 package fpt.capstone.vuondau.entity.response;
 
 
-import fpt.capstone.vuondau.MoodleRepository.response.MoodleRecourseDtoResponse;
+import fpt.capstone.vuondau.moodle.response.MoodleRecourseDtoResponse;
 
 import java.util.List;
 

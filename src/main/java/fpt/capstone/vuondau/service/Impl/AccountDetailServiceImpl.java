@@ -394,7 +394,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
                 accountDetailSubjects.forEach(accountDetailSubject -> {
                     subjects.add(ObjectUtil.copyProperties(accountDetailSubject.getSubject(), new SubjectDto(), SubjectDto.class));
                 });
-
+                accountDetailResponse.setGender(EGenderType.FEMALE.getLabel());
                 accountDetailResponse.setSubjects(subjects);
                 List<ResourceDto> resourceDtoList = new ArrayList<>();
                 List<Resource> resources = accountDetail.getResources();

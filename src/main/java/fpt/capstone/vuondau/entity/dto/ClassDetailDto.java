@@ -1,7 +1,7 @@
 package fpt.capstone.vuondau.entity.dto;
 
 
-import fpt.capstone.vuondau.MoodleRepository.response.MoodleRecourseDtoResponse;
+import fpt.capstone.vuondau.moodle.response.MoodleRecourseDtoResponse;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.CourseDetailResponse;

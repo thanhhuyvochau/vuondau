@@ -1,10 +1,10 @@
 package fpt.capstone.vuondau.service.Impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fpt.capstone.vuondau.MoodleRepository.MoodleCourseRepository;
-import fpt.capstone.vuondau.MoodleRepository.request.GetCategoryRequest;
-import fpt.capstone.vuondau.MoodleRepository.request.CreateCategoryRequest;
-import fpt.capstone.vuondau.MoodleRepository.response.CategoryResponse;
+import fpt.capstone.vuondau.moodle.repository.MoodleCourseRepository;
+import fpt.capstone.vuondau.moodle.request.GetCategoryRequest;
+import fpt.capstone.vuondau.moodle.request.CreateCategoryRequest;
+import fpt.capstone.vuondau.moodle.response.MoodleCategoryResponse;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
@@ -71,14 +71,14 @@ public class SubjectServiceImpl implements ISubjectService {
 
 
         GetCategoryRequest getCategoryRequest = new GetCategoryRequest();
-        List<CategoryResponse> categoryList = moodleCourseRepository.getCategories(getCategoryRequest);
+        List<MoodleCategoryResponse> categoryList = moodleCourseRepository.getCategories(getCategoryRequest);
         List<CreateCategoryRequest.CreateCategoryBody> moodleCreateCategoryRequestList = new ArrayList<>();
 
 
         List<String> stringList = new ArrayList<>();
 
-        for (CategoryResponse categoryResponse : categoryList) {
-            if (categoryResponse.getName().equals(subjectRequest.getCode().name())) {
+        for (MoodleCategoryResponse moodleCategoryResponse : categoryList) {
+            if (moodleCategoryResponse.getName().equals(subjectRequest.getCode().name())) {
                 stringList.add(subjectRequest.getCode().name());
             }
         }

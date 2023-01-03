@@ -1,7 +1,6 @@
 package fpt.capstone.vuondau.service.Impl;
 
 import fpt.capstone.vuondau.entity.dto.EmailDto;
-import fpt.capstone.vuondau.service.IPaymentService;
 import fpt.capstone.vuondau.service.ISendMailService;
 import org.springframework.stereotype.Service;
 
