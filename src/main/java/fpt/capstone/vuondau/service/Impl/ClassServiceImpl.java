@@ -61,7 +61,7 @@ public class ClassServiceImpl implements IClassService {
     private final InfoFindTutorRepository infoFindTutorRepository;
     protected final ClassTeacherCandicateRepository classTeacherCandicateRepository;
 
-    public ClassServiceImpl( AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, ClassLevelRepository classLevelRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil, SecurityUtil securityUtil, AttendanceRepository attendanceRepository, InfoFindTutorRepository infoFindTutorRepository, ClassTeacherCandicateRepository classTeacherCandicateRepository) {
+    public ClassServiceImpl(AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, ClassLevelRepository classLevelRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil, SecurityUtil securityUtil, AttendanceRepository attendanceRepository, InfoFindTutorRepository infoFindTutorRepository, ClassTeacherCandicateRepository classTeacherCandicateRepository) {
         this.accountRepository = accountRepository;
         this.subjectRepository = subjectRepository;
         this.classRepository = classRepository;
@@ -516,7 +516,8 @@ public class ClassServiceImpl implements IClassService {
                     .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày kêt thúc lớp la 30 ngay"));
         }
 
-
+        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+        clazz.setCourse(course);
         clazz.setCode(createClassRequest.getCode());
         clazz.setStartDate(DayUtil.convertDayInstant(createClassRequest.getStartDate().toString()));
         clazz.setEndDate(DayUtil.convertDayInstant(createClassRequest.getEndDate().toString()));
@@ -1093,7 +1094,7 @@ public class ClassServiceImpl implements IClassService {
         ClassSpecificationBuilder builder = new ClassSpecificationBuilder();
         builder.queryByClassStatus(guestSearchClassRequest.getStatus());
         builder.queryByClassType(guestSearchClassRequest.getClassType());
-        builder.queryByCSubject(guestSearchClassRequest.getSubject()) ;
+        builder.queryByCSubject(guestSearchClassRequest.getSubject());
 
 //        builder.isActive(true);
         Specification<Class> classSpecification = builder.build();
