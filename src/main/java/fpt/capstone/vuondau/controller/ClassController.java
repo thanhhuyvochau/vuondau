@@ -41,12 +41,12 @@ public class ClassController {
 
     }
 
-    @Operation(summary = "Giáo viên yêu cầu tạo class (subject-course) chờ admin phê duyệt ")
-    @PostMapping({"/{id}/teacher-request-create-class-subject-course"})
-    @PreAuthorize("hasAnyAuthority('ADMIN','TEACHER')")
-    public ResponseEntity<ApiResponse<Long>> teacherRequestCreateClassSubjectCourse(@PathVariable Long id, @Nullable @RequestBody CreateClassSubjectRequest createClassRequest) throws JsonProcessingException, ParseException {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClassSubjectCourse(id, createClassRequest)));
-    }
+//    @Operation(summary = "Giáo viên yêu cầu tạo class (subject-course) chờ admin phê duyệt ")
+//    @PostMapping({"/{id}/teacher-request-create-class-subject-course"})
+//    @PreAuthorize("hasAnyAuthority('ADMIN','TEACHER')")
+//    public ResponseEntity<ApiResponse<Long>> teacherRequestCreateClassSubjectCourse(@PathVariable Long id, @Nullable @RequestBody CreateClassSubjectRequest createClassRequest) throws JsonProcessingException, ParseException {
+//        return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClassSubjectCourse(id, createClassRequest)));
+//    }
 
     @Operation(summary = "lấy tất cả class chờ duyệt")
     @GetMapping({"/class-request"})
@@ -138,6 +138,7 @@ public class ClassController {
     }
 
     @Operation(summary = "Giáo viên ứng tuyển dạy")
+
     @PostMapping({"/apply"})
     public ResponseEntity<ApiResponse<Boolean>> applyToRecruitingClass(@RequestBody Long classId) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.applyToRecruitingClass(classId)));
