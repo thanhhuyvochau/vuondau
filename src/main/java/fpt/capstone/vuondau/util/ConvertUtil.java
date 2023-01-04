@@ -16,7 +16,6 @@ import fpt.capstone.vuondau.moodle.response.MoodleSectionResponse;
 import fpt.capstone.vuondau.repository.ClassLevelRepository;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,21 +26,18 @@ import java.util.stream.Collectors;
 public class ConvertUtil {
 
 
-    private final ClassLevelRepository classLevelRepository;
-
     private static ClassLevelRepository staticClassLevelRepository;
 
     private static MoodleCourseRepository staticMoodleCourseRepository;
 
-    public ConvertUtil(ClassLevelRepository classLevelRepository, MoodleCourseRepository moodleCourseRepository) {
-        this.classLevelRepository = classLevelRepository;
+    public ConvertUtil( ClassLevelRepository classLevelRepository, MoodleCourseRepository moodleCourseRepository) {
+
+        staticClassLevelRepository = classLevelRepository;
         staticMoodleCourseRepository = moodleCourseRepository;
     }
 
 
-//    private void init() {
-//        staticClassLevelRepository = this.classLevelRepository;
-//    }
+
 
 
     public static QuestionDto doConvertEntityToResponse(Question question, Account account) {
