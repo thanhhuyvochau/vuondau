@@ -7,6 +7,12 @@ import fpt.capstone.vuondau.entity.common.EForumType;
 import fpt.capstone.vuondau.entity.common.EGenderType;
 import fpt.capstone.vuondau.entity.dto.*;
 import fpt.capstone.vuondau.entity.response.*;
+import fpt.capstone.vuondau.moodle.repository.MoodleCourseRepository;
+import fpt.capstone.vuondau.moodle.request.GetMoodleCourseRequest;
+import fpt.capstone.vuondau.moodle.response.MoodleModuleResponse;
+import fpt.capstone.vuondau.moodle.response.MoodleRecourseDtoResponse;
+import fpt.capstone.vuondau.moodle.response.MoodleResourceResponse;
+import fpt.capstone.vuondau.moodle.response.MoodleSectionResponse;
 import fpt.capstone.vuondau.repository.ClassLevelRepository;
 import org.springframework.stereotype.Component;
 
@@ -25,15 +31,17 @@ public class ConvertUtil {
 
     private static ClassLevelRepository staticClassLevelRepository;
 
-    public ConvertUtil(ClassLevelRepository classLevelRepository) {
+    private static MoodleCourseRepository staticMoodleCourseRepository;
+
+    public ConvertUtil(ClassLevelRepository classLevelRepository, MoodleCourseRepository moodleCourseRepository) {
         this.classLevelRepository = classLevelRepository;
+        staticMoodleCourseRepository = moodleCourseRepository;
     }
 
 
-    @PostConstruct
-    private void init() {
-        staticClassLevelRepository = this.classLevelRepository;
-    }
+//    private void init() {
+//        staticClassLevelRepository = this.classLevelRepository;
+//    }
 
 
     public static QuestionDto doConvertEntityToResponse(Question question, Account account) {
@@ -280,7 +288,7 @@ public class ConvertUtil {
         classDto.setNumberStudent(aclass.getNumberStudent());
         classDto.setMaxNumberStudent(aclass.getMaxNumberStudent());
         classDto.setEachStudentPayPrice(aclass.getEachStudentPayPrice());
-        if (aclass.getClassLevel()!= null) {
+        if (aclass.getClassLevel() != null) {
 
             Optional<ClassLevel> optionalClassLevel = staticClassLevelRepository.findById((aclass.getClassLevel()));
 
@@ -326,4 +334,52 @@ public class ConvertUtil {
         response.setStatus(classTeacherCandicate.getStatus());
         return response;
     }
+
+    public static List<MoodleRecourseDtoResponse> doConvertExercise(Class aClass) {
+        List<MoodleRecourseDtoResponse> exercise = new ArrayList<>();
+
+        if (aClass.getMoodleClassId() != null) {
+            GetMoodleCourseRequest getMoodleCourseRequest = new GetMoodleCourseRequest();
+
+            getMoodleCourseRequest.setCourseid(aClass.getMoodleClassId());
+            try {
+                List<MoodleSectionResponse> resourceCourse = staticMoodleCourseRepository.getResourceCourse(getMoodleCourseRequest);
+                resourceCourse.stream().skip(1).forEach(moodleRecourseClassResponse -> {
+
+                    List<MoodleModuleResponse> modules = moodleRecourseClassResponse.getModules();
+                    List<Boolean> isAssignList = modules.stream().map(moodleModuleResponse -> moodleModuleResponse.getModname().equals("quiz")
+                            || moodleModuleResponse.getModname().equals("assign")
+                    ).collect(Collectors.toList());
+                    isAssignList.forEach(isAssign -> {
+                        if (isAssign) {
+                            MoodleRecourseDtoResponse recourseDtoResponse = new MoodleRecourseDtoResponse();
+                            recourseDtoResponse.setId(moodleRecourseClassResponse.getId());
+                            recourseDtoResponse.setName(moodleRecourseClassResponse.getName());
+                            List<MoodleResourceResponse> moodleResourceResponseList = new ArrayList<>();
+                            modules.forEach(moodleResponse -> {
+
+                                if (moodleResponse.getModname().equals("quiz") || moodleResponse.getModname().equals("assign")) {
+                                    MoodleResourceResponse moodleResourceResponse = new MoodleResourceResponse();
+                                    moodleResourceResponse.setId(moodleResponse.getId());
+                                    moodleResourceResponse.setUrl(moodleResponse.getUrl());
+                                    moodleResourceResponse.setName(moodleResponse.getName());
+                                    moodleResourceResponse.setType(moodleResponse.getModname());
+                                    moodleResourceResponseList.add(moodleResourceResponse);
+                                }
+                            });
+                            recourseDtoResponse.setModules(moodleResourceResponseList);
+                            exercise.add(recourseDtoResponse);
+                        }
+                    });
+
+                });
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+        return exercise;
+    }
+
 }
