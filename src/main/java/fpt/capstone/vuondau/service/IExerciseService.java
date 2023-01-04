@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.service;
 
 import fpt.capstone.vuondau.entity.common.ApiPage;
+import fpt.capstone.vuondau.entity.common.EResourceMoodleType;
 import fpt.capstone.vuondau.entity.dto.FeedBackDto;
 import fpt.capstone.vuondau.entity.request.RequestSearchRequest;
 import fpt.capstone.vuondau.entity.response.RequestFormResponese;
@@ -13,4 +14,6 @@ public interface IExerciseService {
 
 
     List<MoodleRecourseDtoResponse> getExerciseInClass(Long classId);
+
+    List<MoodleRecourseDtoResponse> teacherGetExerciseInClass(Long classId);
 }
