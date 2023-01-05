@@ -374,11 +374,8 @@ public class ClassServiceImpl implements IClassService {
 
         if (aClass.getMoodleClassId() != null) {
             GetMoodleCourseRequest getMoodleCourseRequest = new GetMoodleCourseRequest();
-
             getMoodleCourseRequest.setCourseid(aClass.getMoodleClassId());
             try {
-
-
                 List<MoodleRecourseDtoResponse> resources = new ArrayList<>();
 
                 List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(getMoodleCourseRequest);
