@@ -6,6 +6,8 @@ public class ApiException extends RuntimeException {
     private HttpStatus status;
     private String message;
 
+    private String internalMessage;
+
     private ApiException() {
     }
 
@@ -17,8 +19,10 @@ public class ApiException extends RuntimeException {
 
     public ApiException withMessage(String message) {
         this.message = message;
+
         return this;
     }
+
 
     public HttpStatus getStatus() {
         return status;
@@ -36,4 +40,6 @@ public class ApiException extends RuntimeException {
     public void setMessage(String message) {
         this.message = message;
     }
+
+
 }

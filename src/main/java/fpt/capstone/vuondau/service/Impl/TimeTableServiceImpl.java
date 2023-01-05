@@ -78,12 +78,11 @@ public class TimeTableServiceImpl implements ITimeTableService {
         Account currentUser = SecurityUtil.getCurrentUser();
 
 
-        Class     aClass = new Class() ;
+        Class aClass = new Class();
         if (currentUser.getRole().getCode().equals(EAccountRole.ADMIN)) {
-        aClass   = classRepository.findById(classId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
+            aClass = classRepository.findById(classId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
             aClass.setStatus(EClassStatus.RECRUITING);
-         }
-        else {
+        } else {
             aClass = classRepository.findByIdAndAccount(classId, currentUser);
         }
 
@@ -421,9 +420,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
         List<TimeTable> timeTableList = new ArrayList<>();
 
-
         Instant startDate = aClass.getStartDate();
-
         Instant endDate = aClass.getEndDate();
 
         // kiem tra slot va thu trùng nhau
@@ -437,12 +434,27 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
         int slotNumber = 1;
 
-        List<Long> allDayOfWeek = slotDows.stream().map(SlotDowDto::getDayOfWeekId).collect(Collectors.toList());
-        Set<Long> itemDayOfWeek = new HashSet<>();
-        List<Long> checkDuplicateDayOfWeek = allDayOfWeek.stream().filter(n -> !itemDayOfWeek.add(n)).collect(Collectors.toList());
-        if (checkDuplicateDayOfWeek.size() > 0) {
+//        List<Long> allSlot = slotDows.stream().map(SlotDowDto::getSlotId).collect(Collectors.toList());
+//        Set<Long> itemSlot = new HashSet<>();
+//        List<Long> checkDuplicateSlot = allSlot.stream().filter(n -> !itemSlot.add(n)).collect(Collectors.toList());
+//
+//        List<Long> allDayOfWeek = slotDows.stream().map(SlotDowDto::getDayOfWeekId).collect(Collectors.toList());
+//        Set<Long> itemDayOfWeek = new HashSet<>();
+//        List<Long> checkDuplicateDayOfWeek = allDayOfWeek.stream().filter(n -> !itemDayOfWeek.add(n))
+//                .map(allSlot.g).collect(Collectors.toList());
+
+
+        List<String> checkDuplicate = new ArrayList<>();
+        slotDows.forEach(slotDowDto -> {
+            Long dayOfWeekId = slotDowDto.getDayOfWeekId();
+            Long slotId = slotDowDto.getSlotId();
+            checkDuplicate.add(dayOfWeekId + "" + slotId);
+        });
+        Set<String> setCheckDuplicate = new HashSet<>();
+        List<String> resultDuplicate = checkDuplicate.stream().filter(n -> !setCheckDuplicate.add(n)).collect(Collectors.toList());
+        if (resultDuplicate.size() > 0) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Thứ không thể trùng"));
+                    .withMessage(messageUtil.getLocalMessage("Thời gian dạy trong ngày nhau"));
         }
 
         List<TimeTable> timeTableList1 = setDateOfWeek(timeTableRequest.getSlotDow(), slotNumber, startDate, endDate, archetype, aClass, timeTableList);

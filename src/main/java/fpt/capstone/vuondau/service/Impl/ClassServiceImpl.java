@@ -848,7 +848,7 @@ public class ClassServiceImpl implements IClassService {
             }
         }
         if (aClass == null) {
-            throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Class không tìm thấy!!");
+            throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Lớp bạn đang tìm kiếm không tồn tại");
         }
         return aClass;
     }
