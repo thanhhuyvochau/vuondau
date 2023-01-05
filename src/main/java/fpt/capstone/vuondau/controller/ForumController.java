@@ -1,6 +1,5 @@
 package fpt.capstone.vuondau.controller;
 
-import fpt.capstone.vuondau.entity.Subject;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.common.EForumType;
@@ -12,8 +11,6 @@ import fpt.capstone.vuondau.service.IForumService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/forums")
@@ -45,9 +42,9 @@ public class ForumController {
 //        return ResponseEntity.ok(ApiResponse.success(true));
 //    }
 
-    /**Temporary API will delete in future*/
+    /**Temporary API will be deleted in future*/
     @GetMapping("/synchronize-lesson")
-    public ResponseEntity<ApiResponse<Boolean>> synchronizeLessionForum(@RequestParam Long classId) {
+    public ResponseEntity<ApiResponse<Boolean>> synchronizeLessonForum(@RequestParam Long classId) {
         return ResponseEntity.ok(ApiResponse.success(forumService.synchronizeLessonForum(classId)));
     }
 }

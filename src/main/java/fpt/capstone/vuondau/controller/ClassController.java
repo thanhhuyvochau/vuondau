@@ -10,6 +10,7 @@ import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.*;
 import fpt.capstone.vuondau.service.IClassService;
 import fpt.capstone.vuondau.service.IForumService;
+import fpt.capstone.vuondau.service.IMoodleService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +27,12 @@ public class ClassController {
 
     private final IClassService iClassService;
     private final IForumService forumService;
+    private final IMoodleService moodleService;
 
-    public ClassController(IClassService iClassService, IForumService forumService) {
+    public ClassController(IClassService iClassService, IForumService forumService, IMoodleService moodleService) {
         this.iClassService = iClassService;
         this.forumService = forumService;
+        this.moodleService = moodleService;
     }
 
 
@@ -41,12 +44,12 @@ public class ClassController {
 
     }
 
-    @Operation(summary = "Giáo viên yêu cầu tạo class (subject-course) chờ admin phê duyệt ")
-    @PostMapping({"/{id}/teacher-request-create-class-subject-course"})
-    @PreAuthorize("hasAnyAuthority('ADMIN','TEACHER')")
-    public ResponseEntity<ApiResponse<Long>> teacherRequestCreateClassSubjectCourse(@PathVariable Long id, @Nullable @RequestBody CreateClassSubjectRequest createClassRequest) throws JsonProcessingException, ParseException {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClassSubjectCourse(id, createClassRequest)));
-    }
+//    @Operation(summary = "Giáo viên yêu cầu tạo class (subject-course) chờ admin phê duyệt ")
+//    @PostMapping({"/{id}/teacher-request-create-class-subject-course"})
+//    @PreAuthorize("hasAnyAuthority('ADMIN','TEACHER')")
+//    public ResponseEntity<ApiResponse<Long>> teacherRequestCreateClassSubjectCourse(@PathVariable Long id, @Nullable @RequestBody CreateClassSubjectRequest createClassRequest) throws JsonProcessingException, ParseException {
+//        return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClassSubjectCourse(id, createClassRequest)));
+//    }
 
     @Operation(summary = "lấy tất cả class chờ duyệt")
     @GetMapping({"/class-request"})
@@ -138,6 +141,7 @@ public class ClassController {
     }
 
     @Operation(summary = "Giáo viên ứng tuyển dạy")
+
     @PostMapping({"/apply"})
     public ResponseEntity<ApiResponse<Boolean>> applyToRecruitingClass(@RequestBody Long classId) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.applyToRecruitingClass(classId)));
@@ -170,7 +174,7 @@ public class ClassController {
     @Operation(summary = "admin seach lơp")
     @GetMapping("/search-class/admin")
 //    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> adminGetClass( EClassStatus status, Pageable pageable) throws JsonProcessingException {
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> adminGetClass(EClassStatus status, Pageable pageable) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.adminGetClass(status, pageable)));
     }
 
@@ -217,9 +221,16 @@ public class ClassController {
     public ResponseEntity<ApiResponse<ForumDto>> getForumOfClass(@RequestParam Long classId) {
         return ResponseEntity.ok(ApiResponse.success(forumService.getForumByClass(classId)));
     }
+
     @Operation(summary = "(search) lấy tất cả class của giáo viên / học sinh không phân trang")
     @GetMapping("/search-class/account/list")
     public ResponseEntity<ApiResponse<List<ClassDto>>> getClassByAccount(EClassStatus status) {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getClassByAccountAsList(status)));
+    }
+
+    @PutMapping("/{id}/confirm-appreciation")
+    @Operation(summary = "Giáo viên xác nhận lớp đã sẵn sàng để admin duyệt!")
+    public ResponseEntity<ApiResponse<ClassDto>> confirmAppreciation(@PathVariable Long id) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.confirmAppreciation(id)));
     }
 }
