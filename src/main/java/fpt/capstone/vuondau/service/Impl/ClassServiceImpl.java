@@ -16,6 +16,7 @@ import fpt.capstone.vuondau.entity.request.*;
 import fpt.capstone.vuondau.entity.response.*;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IClassService;
+import fpt.capstone.vuondau.service.IMoodleService;
 import fpt.capstone.vuondau.util.*;
 import fpt.capstone.vuondau.util.specification.ClassSpecificationBuilder;
 import org.springframework.data.domain.Page;
@@ -59,9 +60,10 @@ public class ClassServiceImpl implements IClassService {
 
 
     private final InfoFindTutorRepository infoFindTutorRepository;
+    private final IMoodleService moodleService;
     protected final ClassTeacherCandicateRepository classTeacherCandicateRepository;
 
-    public ClassServiceImpl(AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, ClassLevelRepository classLevelRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil, SecurityUtil securityUtil, AttendanceRepository attendanceRepository, InfoFindTutorRepository infoFindTutorRepository, ClassTeacherCandicateRepository classTeacherCandicateRepository) {
+    public ClassServiceImpl(AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, ClassLevelRepository classLevelRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil, SecurityUtil securityUtil, AttendanceRepository attendanceRepository, InfoFindTutorRepository infoFindTutorRepository, IMoodleService moodleService, ClassTeacherCandicateRepository classTeacherCandicateRepository) {
         this.accountRepository = accountRepository;
         this.subjectRepository = subjectRepository;
         this.classRepository = classRepository;
@@ -74,6 +76,7 @@ public class ClassServiceImpl implements IClassService {
         this.securityUtil = securityUtil;
         this.attendanceRepository = attendanceRepository;
         this.infoFindTutorRepository = infoFindTutorRepository;
+        this.moodleService = moodleService;
         this.classTeacherCandicateRepository = classTeacherCandicateRepository;
     }
 
@@ -125,10 +128,12 @@ public class ClassServiceImpl implements IClassService {
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setEachStudentPayPrice(createClassRequest.getEachStudentPayPrice());
         Class save = classRepository.save(clazz);
+        createMoodleCourse(save, course);
+        moodleService.enrolUserToCourseMoodle(save);
         return save.getId();
     }
 
-    @Transactional
+
     @Override
     public Long teacherRequestCreateClassSubjectCourse(Long id, CreateClassSubjectRequest createClassRequest) {
         Class aClass = new Class();
@@ -143,32 +148,32 @@ public class ClassServiceImpl implements IClassService {
         return aClass.getId();
     }
 
-    @Override
-    public Boolean synchronizedClassToMoodle(CreateCourseRequest createCourseRequest) throws JsonProcessingException {
-
-
-        S1CourseRequest s1CourseRequest = new S1CourseRequest();
-        List<CreateCourseRequest.CreateCourseBody> createCourseBodyList = new ArrayList<>();
-        for (CreateCourseRequest.CreateCourseBody request : createCourseRequest.getCourses()) {
-            CreateCourseRequest.CreateCourseBody createCourseBody = new CreateCourseRequest.CreateCourseBody();
-            createCourseBody.setFullname(request.getFullname());
-            createCourseBody.setShortname(request.getShortname());
-            createCourseBody.setCategoryid(request.getCategoryid());
-            createCourseBodyList.add(createCourseBody);
-        }
-
-        s1CourseRequest.setCourses(createCourseBodyList);
-
-        List<MoodleCourseResponse> courseRespons = moodleCourseRepository.createCourse(s1CourseRequest);
-
-        return true;
-    }
+//    @Override
+//    public Boolean synchronizedClassToMoodle(CreateCourseRequest createCourseRequest) throws JsonProcessingException {
+//
+//
+//        S1CourseRequest s1CourseRequest = new S1CourseRequest();
+//        List<CreateCourseRequest.CreateCourseBody> createCourseBodyList = new ArrayList<>();
+//        for (CreateCourseRequest.CreateCourseBody request : createCourseRequest.getCourses()) {
+//            CreateCourseRequest.CreateCourseBody createCourseBody = new CreateCourseRequest.CreateCourseBody();
+//            createCourseBody.setFullname(request.getFullname());
+//            createCourseBody.setShortname(request.getShortname());
+//            createCourseBody.setCategoryid(request.getCategoryid());
+//            createCourseBodyList.add(createCourseBody);
+//        }
+//
+//        s1CourseRequest.setCourses(createCourseBodyList);
+//
+//        List<MoodleCourseResponse> courseRespons = moodleCourseRepository.createCourse(s1CourseRequest);
+//
+//        return true;
+//    }
 
     @Override
     public ClassDto adminApproveRequestCreateClass(Long id) throws JsonProcessingException {
         Class clazz = classRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
-        if (!clazz.getStatus().equals(EClassStatus.REQUESTING)) {
+        if (!clazz.getStatus().equals(EClassStatus.WAITING)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("class đã được active"));
         }
@@ -177,27 +182,7 @@ public class ClassServiceImpl implements IClassService {
         Forum classForum = createClassForum(clazz);
         clazz.setForum(classForum);
         Class save = classRepository.save(clazz);
-        S1CourseRequest s1CourseRequest = new S1CourseRequest();
-        List<CreateCourseRequest.CreateCourseBody> createCourseBodyList = new ArrayList<>();
-
-        CreateCourseRequest.CreateCourseBody createCourseBody = new CreateCourseRequest.CreateCourseBody();
-        createCourseBody.setFullname(save.getName());
-        createCourseBody.setShortname(save.getCode());
         Course course = save.getCourse();
-        if (course != null) {
-            createCourseBody.setCategoryid(course.getSubject().getCategoryMoodleId());
-        }
-        if (save.getStartDate() != null) {
-            createCourseBody.setStartdate(save.getStartDate().toEpochMilli());
-        }
-        if (save.getEndDate() != null) {
-            createCourseBody.setEnddate(save.getEndDate().toEpochMilli());
-        }
-        createCourseBodyList.add(createCourseBody);
-        s1CourseRequest.setCourses(createCourseBodyList);
-
-        List<MoodleCourseResponse> courseResponses = moodleCourseRepository.createCourse(s1CourseRequest);
-
 
         ClassDto classDto = ObjectUtil.copyProperties(save, new ClassDto(), ClassDto.class);
         if (save.getClassLevel() != null) {
@@ -215,6 +200,30 @@ public class ClassServiceImpl implements IClassService {
 
         }
         return classDto;
+    }
+
+    private void createMoodleCourse(Class save, Course course) throws JsonProcessingException {
+        S1CourseRequest s1CourseRequest = new S1CourseRequest();
+        List<CreateCourseRequest.CreateCourseBody> createCourseBodyList = new ArrayList<>();
+
+        CreateCourseRequest.CreateCourseBody createCourseBody = new CreateCourseRequest.CreateCourseBody();
+        createCourseBody.setFullname(save.getName());
+        createCourseBody.setShortname(save.getCode());
+        if (course != null) {
+            createCourseBody.setCategoryid(course.getSubject().getCategoryMoodleId());
+        }
+        if (save.getStartDate() != null) {
+            createCourseBody.setStartdate(save.getStartDate().toEpochMilli());
+        }
+        if (save.getEndDate() != null) {
+            createCourseBody.setEnddate(save.getEndDate().toEpochMilli());
+        }
+        createCourseBodyList.add(createCourseBody);
+        s1CourseRequest.setCourses(createCourseBodyList);
+
+        List<MoodleCourseResponse> courseResponses = moodleCourseRepository.createCourse(s1CourseRequest);
+        MoodleCourseResponse moodleCourseResponse = courseResponses.get(0);
+        save.setMoodleClassId(moodleCourseResponse.getId());
     }
 
     @Override
@@ -604,7 +613,7 @@ public class ClassServiceImpl implements IClassService {
         for (ClassTeacherCandicate classTeacherCandicate : candicates) {
             if (classTeacherCandicate.getTeacher().getId().equals(teacherId)) {
                 classTeacherCandicate.setStatus(ECandicateStatus.SELECTED);
-                clazz.setStatus(EClassStatus.NEW);
+                clazz.setStatus(EClassStatus.NOTSTART);
                 clazz.setAccount(teacher);
             } else {
                 classTeacherCandicate.setStatus(ECandicateStatus.CLOSED);
@@ -1127,6 +1136,21 @@ public class ClassServiceImpl implements IClassService {
         }
         forum.getForumLessons().addAll(forumLessons);
         return forum;
+    }
+
+    @Override
+    public ClassDto confirmAppreciation(Long id) throws JsonProcessingException {
+        Class clazz = classRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
+                .withMessage("Class not found by id:" + id));
+        Account teacher = securityUtil.getCurrentUser();
+        Account teacherClass = Optional.ofNullable(clazz.getAccount()).orElseThrow(() -> ApiException.create(HttpStatus.CONFLICT)
+                .withMessage("Class dont have teacher!"));
+        if (!teacherClass.getId().equals(teacher.getId())) {
+            throw ApiException.create(HttpStatus.CONFLICT).withMessage("You are not teacher of the class!!");
+        }
+        clazz.setStatus(EClassStatus.WAITING);
+        moodleService.synchronizedClassDetailFromMoodle(clazz);
+        return ConvertUtil.doConvertEntityToResponse(clazz);
     }
 
     @Override

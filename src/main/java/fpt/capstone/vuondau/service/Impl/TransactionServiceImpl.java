@@ -60,7 +60,7 @@ public class TransactionServiceImpl implements ITransactionService {
         Class clazz = classRepository.findById(request.getClassId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
                         .withMessage("Class not found with id:" + request.getClassId()));
-        if (!clazz.getStatus().equals(EClassStatus.NEW)) {
+        if (!clazz.getStatus().equals(EClassStatus.NOTSTART)) {
             throw ApiException.create(HttpStatus.METHOD_NOT_ALLOWED).withMessage("You cannot buy this class because status is invalid!");
         }
         logger.debug("PRINCIPAL:" + request.getSessionId());

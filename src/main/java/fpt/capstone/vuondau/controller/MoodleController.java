@@ -45,7 +45,7 @@ public class MoodleController {
     @Operation(summary = "Đồng bộ course content")
     @GetMapping("/sync-course-content")
     public ResponseEntity<ApiResponse<Boolean>> synchronizedCourseContent() throws JsonProcessingException {
-        return ResponseEntity.ok(ApiResponse.success(iMoodleService.synchronizedClassDetailFromMoodle()));
+        return ResponseEntity.ok(ApiResponse.success(iMoodleService.synchronizedAllClassDetailFromMoodle()));
     }
 
 }
