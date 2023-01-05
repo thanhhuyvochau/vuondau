@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.service;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.moodle.request.CreateCourseRequest;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
@@ -23,8 +24,6 @@ public interface IClassService {
 
     Long teacherRequestCreateClassSubjectCourse(Long id, CreateClassSubjectRequest createClassRequest);
 
-    Boolean synchronizedClassToMoodle(CreateCourseRequest createCourseRequest) throws JsonProcessingException;
-
     ClassDto adminApproveRequestCreateClass(Long id) throws JsonProcessingException;
 
 
@@ -34,13 +33,15 @@ public interface IClassService {
 
     List<ClassStudentDto> getStudentWaitingIntoClass(Long classId);
 
-    ApiPage<ClassDto> searchClass(ClassSearchRequest query,Pageable pageable);
+    ApiPage<ClassDto> searchClass(ClassSearchRequest query, Pageable pageable);
 
 
     ClassDetailDto classDetail(Long id) throws JsonProcessingException;
 
     ApiPage<ClassDto> getAllClass(Pageable pageable);
-    ApiPage<ClassDto> getAllClassForUser(Pageable pageable,  GuestSearchClassRequest guestSearchClassRequest);
+
+    ApiPage<ClassDto> getAllClassForUser(Pageable pageable, GuestSearchClassRequest guestSearchClassRequest);
+
     ApiPage<ClassDto> accountFilterClass(ClassSearchRequest query, Pageable pageable);
 
     ApiPage<ClassDto> classSuggestion(long infoFindTutorId, Pageable pageable);
@@ -55,7 +56,7 @@ public interface IClassService {
 
     ApiPage<ClassDto> getRecruitingClasses(Pageable pageable);
 
-    ApiPage<ClassDto> getClassByAccount( EClassStatus status  , Pageable pageable);
+    ApiPage<ClassDto> getClassByAccount(EClassStatus status, Pageable pageable);
 
     ClassDetailDto accountGetClassDetail(Long id);
 
@@ -71,5 +72,8 @@ public interface IClassService {
     ClassAttendanceResponse accountGetAttendanceOfClass(Long id);
 
     ApiPage<ClassDto> adminGetClass(EClassStatus status, Pageable pageable);
-     List<ClassDto> getClassByAccountAsList(EClassStatus status);
+
+    List<ClassDto> getClassByAccountAsList(EClassStatus status);
+
+    ClassDto confirmAppreciation(Long id) throws JsonProcessingException;
 }

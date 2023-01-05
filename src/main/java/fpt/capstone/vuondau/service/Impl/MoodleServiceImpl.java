@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.service.Impl;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.moodle.repository.MoodleCourseRepository;
 import fpt.capstone.vuondau.moodle.repository.MoodleRoleRepository;
@@ -23,6 +24,7 @@ import fpt.capstone.vuondau.util.SecurityUtil;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -101,7 +103,7 @@ public class MoodleServiceImpl implements IMoodleService {
     }
 
     @Override
-    public Boolean synchronizedClassDetailFromMoodle() throws JsonProcessingException {
+    public Boolean synchronizedAllClassDetailFromMoodle() throws JsonProcessingException {
         List<Class> classes = classRepository.findAll();
         for (Class clazz : classes) {
             GetMoodleCourseRequest getMoodleCourseRequest = new GetMoodleCourseRequest();
@@ -160,6 +162,32 @@ public class MoodleServiceImpl implements IMoodleService {
     }
 
     @Override
+    public Boolean synchronizedClassDetailFromMoodle(Class clazz) throws JsonProcessingException {
+        if (clazz.getMoodleClassId() == null) {
+            throw ApiException.create(HttpStatus.CONFLICT).withMessage("Class is not appear in moodle!");
+        }
+
+        GetMoodleCourseRequest getMoodleCourseRequest = new GetMoodleCourseRequest();
+        getMoodleCourseRequest.setCourseid(clazz.getMoodleClassId());
+        List<MoodleSectionResponse> detailCourse = moodleCourseRepository.getResourceCourse(getMoodleCourseRequest);
+        List<Section> sections = new ArrayList<>();
+        for (MoodleSectionResponse moodleSectionResponse : detailCourse) {
+            Section section = createSection(clazz, moodleSectionResponse);
+            for (MoodleModuleResponse moodleModuleResponse : moodleSectionResponse.getModules()) {
+                Module module = createModule(section, moodleModuleResponse);
+                section.getModules().add(module);
+
+            }
+            sections.add(section);
+        }
+        clazz.getSections().clear();
+        clazz.getSections().addAll(sections);
+
+        classRepository.save(clazz);
+        return true;
+    }
+
+    @Override
     public Boolean synchronizedRoleFromMoodle() throws JsonProcessingException {
         List<MoodleRoleResponse> moodleRoles = moodleRoleRepository.getRoles();
         Map<String, MoodleRoleResponse> moodleRolesMap = moodleRoles.stream()
@@ -212,4 +240,6 @@ public class MoodleServiceImpl implements IMoodleService {
         }
         return null;
     }
+
+
 }
