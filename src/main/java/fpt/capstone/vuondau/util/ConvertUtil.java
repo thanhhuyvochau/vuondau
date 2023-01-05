@@ -295,16 +295,8 @@ public class ConvertUtil {
 
         if (aclass.getAccount() != null) {
             Account teacher = aclass.getAccount();
-//            AccountResponse accountResponse = ObjectUtil.copyProperties(teacher, new AccountResponse(), AccountResponse.class);
             AccountSimpleResponse accountResponse1 = doConvertEntityToSimpleResponse(teacher);
             classDto.setTeacher(accountResponse1);
-//            accountResponse.setBirthday(teacher.getBirthday());
-//            accountResponse.setIntroduce(teacher.getIntroduce());
-//            accountResponse.setPhoneNumber(teacher.getPhoneNumber());
-//            EGenderType gender = teacher.getGender();
-//            accountResponse.setGenderResponse(teacher.getGender());
-//            classDto.setTeacher(ObjectUtil.copyProperties(aclass.getAccount(), new AccountResponse(), AccountResponse.class));
-
         }
 
 

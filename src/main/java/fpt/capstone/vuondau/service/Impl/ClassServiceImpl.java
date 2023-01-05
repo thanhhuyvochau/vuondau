@@ -664,7 +664,7 @@ public class ClassServiceImpl implements IClassService {
         }
 
 
-        return PageUtil.convert(classesPage != null ? classesPage.map(ConvertUtil::doConvertEntityToResponse) : null);
+        return PageUtil.convert(classesPage != null ? classesPage.map(ConvertUtil::doConvertEntityToResponse) : Page.empty());
     }
 
     @Override
