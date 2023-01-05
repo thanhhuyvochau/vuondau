@@ -108,10 +108,15 @@ public class CommentServiceImpl implements ICommentService {
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
                         .withMessage("Comment not found with id:" + request.getCommentId()));
         Vote vote = voteRepository.findByCommentAndAccount(comment, account).orElse(new Vote());
-        vote.setComment(comment);
-        vote.setAccount(account);
-        vote.setVote(request.getVote());
-        voteRepository.save(vote);
+        if (Objects.equals(request.getVote(), vote.getVote())) {
+            comment.getVotes().remove(vote);
+            voteRepository.delete(vote);
+        } else {
+            vote.setComment(comment);
+            vote.setAccount(account);
+            vote.setVote(request.getVote());
+            voteRepository.save(vote);
+        }
         return true;
     }
 }

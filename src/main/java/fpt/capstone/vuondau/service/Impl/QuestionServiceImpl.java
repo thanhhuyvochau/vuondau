@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -145,10 +146,15 @@ public class QuestionServiceImpl implements IQuestionService {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Question not found by id:" + questionId));
         Vote vote = voteRepository.findByQuestionAndAccount(question, account).orElse(new Vote());
-        vote.setQuestion(question);
-        vote.setVote(request.getVote());
-        vote.setAccount(account);
-        voteRepository.save(vote);
+        if (Objects.equals(request.getVote(), vote.getVote())) {
+            question.getVotes().remove(vote);
+            voteRepository.delete(vote);
+        } else {
+            vote.setQuestion(question);
+            vote.setAccount(account);
+            vote.setVote(request.getVote());
+            voteRepository.save(vote);
+        }
         return true;
     }
 
