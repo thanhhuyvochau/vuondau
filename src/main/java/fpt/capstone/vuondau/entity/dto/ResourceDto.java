@@ -1,13 +1,6 @@
 package fpt.capstone.vuondau.entity.dto;
 
-import fpt.capstone.vuondau.entity.Account;
-import fpt.capstone.vuondau.entity.AccountDetail;
-import fpt.capstone.vuondau.entity.Course;
-import fpt.capstone.vuondau.entity.PostResource;
 import fpt.capstone.vuondau.entity.common.EResourceType;
-
-import javax.persistence.*;
-import java.util.List;
 
 
 public class ResourceDto {
