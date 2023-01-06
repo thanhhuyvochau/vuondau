@@ -110,7 +110,7 @@ public class ClassController {
 
     @Operation(summary = "chi tiết class")
     @GetMapping("/{id}/class-detail")
-    public ResponseEntity<ApiResponse<ClassDetailDto>> classDetail(@PathVariable Long id) throws JsonProcessingException {
+    public ResponseEntity<ApiResponse<ClassDto>> classDetail(@PathVariable Long id) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.classDetail(id)));
     }
 
