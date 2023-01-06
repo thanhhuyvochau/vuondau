@@ -136,8 +136,16 @@ public class ClassController {
 
     @Operation(summary = "Admin tạo class để tuyển giáo viên ")
     @PostMapping({"/for-recruiting"})
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<ApiResponse<Long>> createClassForRecruiting(@Nullable @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException, ParseException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.createClassForRecruiting(createClassRequest)));
+    }
+
+    @Operation(summary = "Admin update lớp khi còn ở trạng thái recruiting ")
+    @PutMapping({"/{id}/for-recruiting"})
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ApiResponse<Long>> updateClassForRecruiting(@PathVariable Long id , @Nullable @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException, ParseException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.updateClassForRecruiting(id,createClassRequest)));
     }
 
     @Operation(summary = "Giáo viên ứng tuyển dạy")

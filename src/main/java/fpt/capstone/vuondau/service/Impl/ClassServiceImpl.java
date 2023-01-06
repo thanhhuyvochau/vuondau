@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static fpt.capstone.vuondau.util.common.Constants.ErrorMessage.*;
+
 
 @Service
 @Transactional
@@ -50,8 +52,7 @@ public class ClassServiceImpl implements IClassService {
     private final MoodleCourseRepository moodleCourseRepository;
 
     private final ClassLevelRepository classLevelRepository;
-    private final CourseServiceImpl courseServiceImpl;
-    private final StudentClassRepository studentClassRepository;
+
     private final MessageUtil messageUtil;
 
     private final SecurityUtil securityUtil;
@@ -63,15 +64,18 @@ public class ClassServiceImpl implements IClassService {
     private final IMoodleService moodleService;
     protected final ClassTeacherCandicateRepository classTeacherCandicateRepository;
 
-    public ClassServiceImpl(AccountRepository accountRepository, SubjectRepository subjectRepository, ClassRepository classRepository, CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, ClassLevelRepository classLevelRepository, CourseServiceImpl courseServiceImpl, StudentClassRepository studentClassRepository, MessageUtil messageUtil, SecurityUtil securityUtil, AttendanceRepository attendanceRepository, InfoFindTutorRepository infoFindTutorRepository, IMoodleService moodleService, ClassTeacherCandicateRepository classTeacherCandicateRepository) {
+    public ClassServiceImpl(AccountRepository accountRepository
+            , SubjectRepository subjectRepository, ClassRepository classRepository,
+                            CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, ClassLevelRepository classLevelRepository,
+                            MessageUtil messageUtil, SecurityUtil securityUtil, AttendanceRepository attendanceRepository,
+                            InfoFindTutorRepository infoFindTutorRepository, IMoodleService moodleService, ClassTeacherCandicateRepository classTeacherCandicateRepository) {
         this.accountRepository = accountRepository;
         this.subjectRepository = subjectRepository;
         this.classRepository = classRepository;
         this.courseRepository = courseRepository;
         this.moodleCourseRepository = moodleCourseRepository;
         this.classLevelRepository = classLevelRepository;
-        this.courseServiceImpl = courseServiceImpl;
-        this.studentClassRepository = studentClassRepository;
+
         this.messageUtil = messageUtil;
         this.securityUtil = securityUtil;
         this.attendanceRepository = attendanceRepository;
@@ -542,9 +546,54 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
+    public Long updateClassForRecruiting(Long id, CreateClassRequest createClassRequest) throws ParseException {
+        Class clazz = classRepository.findById(id)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage(CLASS_NOT_FOUND_BY_ID) + id));
+        if (!clazz.getStatus().equals(EClassStatus.RECRUITING)){
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage(CLASS_NOT_ALLOW_UPDATE));
+        }
+        clazz.setName(createClassRequest.getName());
+        if (classRepository.existsByCode(createClassRequest.getCode()) && !clazz.getCode().equals(createClassRequest.getCode())) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage(CODE_ALREADY_EXISTED));
+        }
+        Instant now = DayUtil.convertDayInstant(Instant.now().toString());
+        if (!DayUtil.checkTwoDateBigger(now.toString(), createClassRequest.getStartDate().toString(), 3)) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày hiện tại la 3 ngay"));
+        }
+
+        if (!DayUtil.checkTwoDateBigger(createClassRequest.getStartDate().toString(), createClassRequest.getEndDate().toString(), 30)) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày kêt thúc lớp la 30 ngay"));
+        }
+
+        Course course = courseRepository.findById(createClassRequest.getCourseId())
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(TOPIC_NOT_FOUND_BY_ID + createClassRequest.getCourseId()));
+        clazz.setCourse(course);
+        clazz.setCode(createClassRequest.getCode());
+        clazz.setStartDate(DayUtil.convertDayInstant(createClassRequest.getStartDate().toString()));
+        clazz.setEndDate(DayUtil.convertDayInstant(createClassRequest.getEndDate().toString()));
+        clazz.setMinNumberStudent(createClassRequest.getMinNumberStudent());
+        clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
+        clazz.setStatus(EClassStatus.RECRUITING);
+        clazz.setStartDate(createClassRequest.getStartDate());
+        clazz.setEndDate(createClassRequest.getEndDate());
+        ClassLevel classLevel = classLevelRepository.findByCode(createClassRequest.getClassLevel())
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("class level not found by id:" + createClassRequest.getClassLevel()));
+        clazz.setClassLevel(classLevel.getId());
+        clazz.setClassType(createClassRequest.getClassType());
+        clazz.setActive(false);
+        clazz.setEachStudentPayPrice(createClassRequest.getEachStudentPayPrice());
+        Class save = classRepository.save(clazz);
+        return save.getId();
+    }
+
+    @Override
     public ApiPage<ClassDto> classSuggestion(long infoFindTutorId, Pageable pageable) {
         InfoFindTutor infoFindTutor = infoFindTutorRepository.findById(infoFindTutorId)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay form đăng ký" + infoFindTutorId));
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(TOPIC_NOT_FOUND_BY_ID + infoFindTutorId));
 
         List<Long> idTeacher = infoFindTutor.getInfoFindTutorAccounts().stream().map(infoFindTutorAccount -> infoFindTutorAccount.getTeacher().getId()).collect(Collectors.toList());
         List<Account> teachers = accountRepository.findAllById(idTeacher);
@@ -1149,6 +1198,7 @@ public class ClassServiceImpl implements IClassService {
         moodleService.synchronizedClassDetailFromMoodle(clazz);
         return ConvertUtil.doConvertEntityToResponse(clazz);
     }
+
 
     @Override
     public List<ClassDto> getClassByAccountAsList(EClassStatus status) {

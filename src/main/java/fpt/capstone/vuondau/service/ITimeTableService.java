@@ -21,4 +21,6 @@ public interface ITimeTableService {
     List<ClassAttendanceResponse> accountGetAllTimeTable();
 
     Long adminCreateTimeTableClass(Long classId, Long numberSlot, TimeTableRequest timeTableRequest) throws ParseException;
+
+    Long adminUpdateTimeTableClass(Long classId, Long numberSlot, TimeTableRequest timeTableRequest);
 }

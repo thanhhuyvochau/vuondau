@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/request")
+@RequestMapping("api/requests")
 public class RequestFormController {
     private final IRequestFormService iRequestFormService;
 
@@ -22,19 +22,19 @@ public class RequestFormController {
 
 
     @Operation(summary = "Học sinh nộp gưi form request cho hệ thống ")
-    @PostMapping("/{studentId}/upload-request")
-    public ResponseEntity<ApiResponse<RequestFormResponse>> uploadRequestForm(@PathVariable Long studentId , @ModelAttribute RequestFormDto requestFormDto) {
-        return ResponseEntity.ok(ApiResponse.success(iRequestFormService.uploadRequestForm(studentId,requestFormDto)));
+    @PostMapping("/student")
+    public ResponseEntity<ApiResponse<RequestFormResponse>> uploadRequestForm( @ModelAttribute RequestFormDto requestFormDto) {
+        return ResponseEntity.ok(ApiResponse.success(iRequestFormService.uploadRequestForm(requestFormDto)));
     }
 
     @Operation(summary = "Admin xem tất cả request")
-    @GetMapping("/all-request-form")
+    @GetMapping
     public ResponseEntity<ApiResponse<ApiPage<RequestFormResponse>>> getAllRequestForm(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iRequestFormService.getAllRequestForm(pageable)));
     }
 
     @Operation(summary = "Admin xem chi tiết request của học sinh")
-    @GetMapping("/{id}/request-detail")
+    @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<RequestFormResponse>> getRequestDetail(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success(iRequestFormService.getRequestDetail(id)));
     }

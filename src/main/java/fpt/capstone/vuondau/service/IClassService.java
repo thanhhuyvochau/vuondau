@@ -76,4 +76,6 @@ public interface IClassService {
     List<ClassDto> getClassByAccountAsList(EClassStatus status);
 
     ClassDto confirmAppreciation(Long id) throws JsonProcessingException;
+
+    Long updateClassForRecruiting(Long id, CreateClassRequest createClassRequest) throws ParseException;
 }

@@ -60,5 +60,13 @@ public class TimeTableController {
         return ResponseEntity.ok(ApiResponse.success(iTimeTableService.adminCreateTimeTableClass(classId, numberSlot, timeTableRequest)));
     }
 
+    @Operation(summary = "Admin tao lich dạy")
+    @PutMapping({"/{classId}/admin"})
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ApiResponse<Long>> adminUpdateTimeTableClass(@PathVariable Long classId, Long numberSlot, @RequestBody TimeTableRequest timeTableRequest) throws ParseException {
+        return ResponseEntity.ok(ApiResponse.success(iTimeTableService.adminUpdateTimeTableClass(classId, numberSlot, timeTableRequest)));
+    }
+
+
 
 }
