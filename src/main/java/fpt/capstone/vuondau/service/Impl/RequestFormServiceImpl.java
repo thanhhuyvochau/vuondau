@@ -14,10 +14,7 @@ import fpt.capstone.vuondau.repository.AccountRepository;
 import fpt.capstone.vuondau.repository.RequestRepository;
 import fpt.capstone.vuondau.repository.RequestTypeRepository;
 import fpt.capstone.vuondau.service.IRequestFormService;
-import fpt.capstone.vuondau.util.MessageUtil;
-import fpt.capstone.vuondau.util.ObjectUtil;
-import fpt.capstone.vuondau.util.PageUtil;
-import fpt.capstone.vuondau.util.RequestUrlUtil;
+import fpt.capstone.vuondau.util.*;
 import fpt.capstone.vuondau.util.adapter.MinioAdapter;
 import io.minio.ObjectWriteResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,11 +32,11 @@ import java.time.Instant;
 public class RequestFormServiceImpl implements IRequestFormService {
     private final MessageUtil messageUtil;
 
-    private final AccountRepository accountRepository;
+
 
     private final MinioAdapter minioAdapter;
 
-
+    private final SecurityUtil securityUtil;
     private final RequestRepository requestRepository;
 
     private final RequestTypeRepository requestTypeRepository;
@@ -48,9 +45,12 @@ public class RequestFormServiceImpl implements IRequestFormService {
     @Value("${minio.url}")
     String minioUrl;
 
-    public RequestFormServiceImpl(MessageUtil messageUtil, AccountRepository accountRepository, MinioAdapter minioAdapter, RequestRepository requestRepository, RequestTypeRepository requestTypeRepository) {
+    public RequestFormServiceImpl(MessageUtil messageUtil,
+                                  MinioAdapter minioAdapter, SecurityUtil securityUtil, RequestRepository requestRepository,
+                                  RequestTypeRepository requestTypeRepository) {
         this.messageUtil = messageUtil;
-        this.accountRepository = accountRepository;
+        this.securityUtil = securityUtil;
+
         this.minioAdapter = minioAdapter;
         this.requestRepository = requestRepository;
         this.requestTypeRepository = requestTypeRepository;
@@ -58,13 +58,14 @@ public class RequestFormServiceImpl implements IRequestFormService {
 
 
     @Override
-    public RequestFormResponse uploadRequestForm(Long studentId, RequestFormDto requestFormDto) {
+    public RequestFormResponse uploadRequestForm( RequestFormDto requestFormDto) {
+        Account student = securityUtil.getCurrentUser();
         try {
             String name = requestFormDto.getFile().getOriginalFilename() + "-" + Instant.now().toString();
             ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, requestFormDto.getFile().getContentType(),
                     requestFormDto.getFile().getInputStream(), requestFormDto.getFile().getSize());
+
             Request request = new Request();
-            request.setName(name);
             request.setTitle(requestFormDto.getTitle());
             request.setReason(requestFormDto.getReason());
             RequestType requestType = requestTypeRepository.findById(requestFormDto.getRequestTypeId())
@@ -72,10 +73,8 @@ public class RequestFormServiceImpl implements IRequestFormService {
             request.setRequestType(requestType);
             request.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
             request.setStatus(ERequestStatus.WAITING);
-            Account student = accountRepository.findById(studentId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay student") + studentId));
             request.setAccount(student);
             Request save = requestRepository.save(request);
-
             RequestFormResponse requestFormResponse = ObjectUtil.copyProperties(save, new RequestFormResponse(), RequestFormResponse.class);
             requestFormResponse.setRequestType(ObjectUtil.copyProperties(requestType, new RequestTypeDto(), RequestTypeDto.class));
             requestFormResponse.setStudent(ObjectUtil.copyProperties(student, new StudentDto(), StudentDto.class));
@@ -102,7 +101,7 @@ public class RequestFormServiceImpl implements IRequestFormService {
         }
         response.setId(request.getId());
         response.setStudent(studentDto);
-        response.setName(request.getName());
+
         response.setReason(request.getReason());
         response.setUrl(request.getUrl());
         response.setTitle(request.getTitle());
