@@ -21,6 +21,7 @@ import fpt.capstone.vuondau.util.MoodleUtil;
 import fpt.capstone.vuondau.util.ObjectUtil;
 import fpt.capstone.vuondau.util.PageUtil;
 import fpt.capstone.vuondau.util.SecurityUtil;
+import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -131,7 +132,7 @@ public class MoodleServiceImpl implements IMoodleService {
         Account account = securityUtil.getCurrentUser();
         Role role = account.getRole();
 
-        MoodleUserResponse moodleAccountOfUser = moodleUtil.getMoodleUserIfExist();
+        MoodleUserResponse moodleAccountOfUser = moodleUtil.getMoodleUserIfExist(account);
 
         CreateEnrolCourseRequest request = new CreateEnrolCourseRequest();
 
@@ -149,7 +150,7 @@ public class MoodleServiceImpl implements IMoodleService {
         Account account = securityUtil.getCurrentUser();
         Role role = account.getRole();
 
-        MoodleUserResponse moodleAccountOfUser = moodleUtil.getMoodleUserIfExist();
+        MoodleUserResponse moodleAccountOfUser = moodleUtil.getMoodleUserIfExist(account);
 
         CreateEnrolCourseRequest request = new CreateEnrolCourseRequest();
 
