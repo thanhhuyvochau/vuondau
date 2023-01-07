@@ -27,7 +27,7 @@ public class ArchetypeController {
 
     @Operation(summary = "Lấy thời khóa biểu có sẵn của giáo viên ne")
     @GetMapping("/{teacherId}/archetype")
-    @PreAuthorize("hasAnyAuthority('ADMIN','TEACHER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER','TEACHER')")
     public ResponseEntity<ApiResponse<List<ArchetypeTeacherDto>>> getArchetypeOfTeacher(@PathVariable long teacherId) {
         return ResponseEntity.ok(ApiResponse.success(iArchetypeService.getArchetypeOfTeacher(teacherId)));
     }

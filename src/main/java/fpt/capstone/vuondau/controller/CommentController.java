@@ -22,33 +22,33 @@ public class CommentController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('STUDENT','ADMIN','TEACHER')")
+    @PreAuthorize("hasAnyAuthority('STUDENT','MANAGER','TEACHER')")
     public ResponseEntity<ApiResponse<List<CommentDto>>> getCommentsByQuestion(@RequestParam Long questionId) {
         List<CommentDto> comments = commentService.getCommentByQuestion(questionId);
         return ResponseEntity.ok(ApiResponse.success(comments));
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('STUDENT','ADMIN','TEACHER')")
+    @PreAuthorize("hasAnyAuthority('STUDENT','MANAGER','TEACHER')")
     public ResponseEntity<ApiResponse<CommentDto>> createComment(@RequestBody CreateCommentRequest createCommentRequest) {
         return ResponseEntity.ok(ApiResponse.success(commentService.createComment(createCommentRequest)));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('STUDENT','ADMIN','TEACHER')")
+    @PreAuthorize("hasAnyAuthority('STUDENT','MANAGER','TEACHER')")
     public ResponseEntity<ApiResponse<CommentDto>> putComment(@PathVariable Long id, @RequestBody CreateCommentRequest createCommentRequest) {
         return ResponseEntity.ok(ApiResponse.success(commentService.updateComment(id, createCommentRequest)));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<Boolean>> deleteComment(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success(commentService.deleteComment(id)));
     }
 
     @PostMapping("/vote")
     @Operation(description = "Bỏ phiếu cho bình luận")
-    @PreAuthorize("hasAnyAuthority('STUDENT','ADMIN','TEACHER')")
+    @PreAuthorize("hasAnyAuthority('STUDENT','MANAGER','TEACHER')")
     public ResponseEntity<ApiResponse<Boolean>> voteComment(@RequestBody VoteRequest request) {
         return ResponseEntity.ok(ApiResponse.success(commentService.voteComment(request)));
     }

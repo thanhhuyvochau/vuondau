@@ -53,14 +53,14 @@ public class ClassController {
 
     @Operation(summary = "lấy tất cả class chờ duyệt")
     @GetMapping({"/class-request"})
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getClassRequesting(@Nullable ClassSearchRequest query, Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getClassRequesting(query, pageable)));
     }
 
     @Operation(summary = "lấy tất cả class có phân trang")
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getAllClass(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getAllClass(pageable)));
     }
@@ -73,14 +73,14 @@ public class ClassController {
 
     @Operation(summary = "Admin phê duyệt request tao class của teacher ")
     @PostMapping({"/{id}/approve-class"})
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<ClassDto>> adminApproveRequestCreateClass(@PathVariable Long id) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.adminApproveRequestCreateClass(id)));
     }
 
 //    @Operation(summary = "Tạo class qua moodle")
 //    @PostMapping({"/create-class-to-moodle"})
-//    @PreAuthorize("hasAuthority('ADMIN')")
+//    @PreAuthorize("hasAuthority('MANAGER')")
 //    public ResponseEntity<ApiResponse<Boolean>> synchronizedClassToMoodle(@RequestBody CreateCourseRequest createCourseRequest) throws JsonProcessingException {
 //        return ResponseEntity.ok(ApiResponse.success(iClassService.synchronizedClassToMoodle(createCourseRequest)));
 //    }
@@ -136,14 +136,14 @@ public class ClassController {
 
     @Operation(summary = "Admin tạo class để tuyển giáo viên ")
     @PostMapping({"/for-recruiting"})
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<Long>> createClassForRecruiting(@Nullable @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException, ParseException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.createClassForRecruiting(createClassRequest)));
     }
 
     @Operation(summary = "Admin update lớp khi còn ở trạng thái recruiting ")
     @PutMapping({"/{id}/for-recruiting"})
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<Long>> updateClassForRecruiting(@PathVariable Long id , @Nullable @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException, ParseException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.updateClassForRecruiting(id,createClassRequest)));
     }

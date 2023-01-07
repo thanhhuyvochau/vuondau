@@ -32,14 +32,14 @@ public class AdminController {
 
     @Operation(summary = "xem hoc sinh feedback lớp ")
     @GetMapping("/{classId}/view-feadback")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<FeedBackDto>> viewStudentFeedbackClass(@PathVariable long classId) {
         return ResponseEntity.ok(ApiResponse.success(iAdminService.viewStudentFeedbackClass(classId)));
     }
 
     @Operation(summary = "Tìm Kiếm request form ")
     @GetMapping("/search-request-form")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<ApiPage<RequestFormResponese>>> searchRequestForm(@Nullable RequestSearchRequest query,
                                                                                         Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iAdminService.searchRequestForm(query, pageable)));

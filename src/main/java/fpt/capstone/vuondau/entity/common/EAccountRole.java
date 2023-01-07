@@ -1,5 +1,5 @@
 package fpt.capstone.vuondau.entity.common;
 
 public enum EAccountRole {
-    TEACHER, STUDENT, ADMIN
+    TEACHER, STUDENT, MANAGER
 }

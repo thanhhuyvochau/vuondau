@@ -81,7 +81,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
 
         Class aClass = new Class();
-        if (currentUser.getRole().getCode().equals(EAccountRole.ADMIN)) {
+        if (currentUser.getRole().getCode().equals(EAccountRole.MANAGER)) {
             aClass = classRepository.findById(classId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
             aClass.setStatus(EClassStatus.RECRUITING);
         } else {
