@@ -36,7 +36,7 @@ public interface IClassService {
     ApiPage<ClassDto> searchClass(ClassSearchRequest query, Pageable pageable);
 
 
-    ClassDetailDto classDetail(Long id) throws JsonProcessingException;
+    ClassDto classDetail(Long id) throws JsonProcessingException;
 
     ApiPage<ClassDto> getAllClass(Pageable pageable);
 

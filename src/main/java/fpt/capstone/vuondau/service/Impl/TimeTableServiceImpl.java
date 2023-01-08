@@ -81,7 +81,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
 
         Class aClass = new Class();
-        if (currentUser.getRole().getCode().equals(EAccountRole.ADMIN)) {
+        if (currentUser.getRole().getCode().equals(EAccountRole.MANAGER)) {
             aClass = classRepository.findById(classId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
             aClass.setStatus(EClassStatus.RECRUITING);
         } else {
@@ -291,10 +291,6 @@ public class TimeTableServiceImpl implements ITimeTableService {
             ArchetypeTimeDto archetypeTimeDto = new ArchetypeTimeDto();
             ArchetypeTime archetypeTime = timeTable.getArchetypeTime();
             if (archetypeTime != null) {
-                Archetype archetype = archetypeTime.getArchetype();
-                if (archetype != null) {
-                    archetypeTimeDto.setArchetype(ObjectUtil.copyProperties(archetype, new ArchetypeDto(), ArchetypeDto.class));
-                }
                 Slot slot = archetypeTime.getSlot();
                 if (slot != null) {
                     archetypeTimeDto.setSlot(ObjectUtil.copyProperties(slot, new SlotDto(), SlotDto.class));

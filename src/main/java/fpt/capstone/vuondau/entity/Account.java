@@ -73,6 +73,8 @@ public class Account extends BaseEntity {
 
     @OneToMany(mappedBy = "account")
     private List<Vote> votes = new ArrayList<>();
+    private String keycloakUserId;
+    private Integer moodleUserId;
 
 //    @Column(name = "first_name")
 //    private String firstName;
@@ -371,5 +373,21 @@ public class Account extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, username, password, isActive, role, transactions, studentClasses, teacherClass, requests, studentAnswers, questions, comments, accountDetail, infoFindTutorAccounts, fileAttachments, resource);
+    }
+
+    public String getKeycloakUserId() {
+        return keycloakUserId;
+    }
+
+    public void setKeycloakUserId(String keycloakUserId) {
+        this.keycloakUserId = keycloakUserId;
+    }
+
+    public Integer getMoodleUserId() {
+        return moodleUserId;
+    }
+
+    public void setMoodleUserId(Integer moodleUserId) {
+        this.moodleUserId = moodleUserId;
     }
 }

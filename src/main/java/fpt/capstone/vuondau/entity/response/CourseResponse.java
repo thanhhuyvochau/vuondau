@@ -23,7 +23,7 @@ public class CourseResponse {
 //    @Schema(description = "Giá tiền của course")
 //    private BigDecimal finalPriceCourse;
 
-    private SubjectResponse subject ;
+    private SubjectSimpleResponse subject ;
 
 
     private Long totalClass ;
@@ -80,11 +80,11 @@ public class CourseResponse {
 //    }
 
 
-    public SubjectResponse getSubject() {
+    public SubjectSimpleResponse getSubject() {
         return subject;
     }
 
-    public void setSubject(SubjectResponse subject) {
+    public void setSubject(SubjectSimpleResponse subject) {
         this.subject = subject;
     }
 

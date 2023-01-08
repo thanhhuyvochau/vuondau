@@ -34,28 +34,28 @@ public class AccountController {
 
     @GetMapping
     @Operation(summary = "Lấy tất cả tài khoản")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<ApiPage<AccountResponse>>> getAccounts(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(accountService.getAccounts(pageable)));
     }
 
     @GetMapping("/students")
     @Operation(summary = "Lấy tất cả tài khoản học sinh")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<ApiPage<AccountResponse>>> getStudentAccounts(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(accountService.getStudentAccounts(pageable)));
     }
 
     @GetMapping("/teachers")
     @Operation(summary = "Lấy tất cả tài khoản giáo viên")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<ApiPage<AccountResponse>>> getTeacherAccounts(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(accountService.getTeacherAccounts(pageable)));
     }
 
     @Operation(summary = "Cập nhật ảnh dại diện cho tài khoản")
     @PostMapping("/{id}/avatar")
-    @PreAuthorize("hasAnyAuthority('STUDENT','ADMIN','TEACHER')")
+    @PreAuthorize("hasAnyAuthority('STUDENT','MANAGER','TEACHER')")
     public ResponseEntity<Boolean> uploadAvatar(@PathVariable long id, @ModelAttribute UploadAvatarRequest uploadAvatarRequest) throws IOException {
         return ResponseEntity.ok(accountService.uploadAvatar(id, uploadAvatarRequest));
     }
@@ -70,14 +70,14 @@ public class AccountController {
 
     @Operation(summary = "Xem thông tin tài khoản")
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN','TEACHER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER','TEACHER')")
     public ResponseEntity<AccountResponse> getInfoAccount(@PathVariable long id) {
         return ResponseEntity.ok(accountService.getAccountById(id));
     }
 
     @Operation(summary = "Ban / Unban account")
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<Boolean>> banAndUbBanAccount(@PathVariable long id) {
         return ResponseEntity.ok(ApiResponse.success(accountService.banAndUbBanAccount(id)));
     }
@@ -90,7 +90,7 @@ public class AccountController {
 
     @Operation(summary = "cập nhật role-active cho account")
     @PutMapping("/{id}/role-active")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<AccountResponse>> updateAccountRole(@PathVariable long id,
                                                                           @Nullable @RequestBody AccountEditRequest accountEditRequest) {
         return ResponseEntity.ok(ApiResponse.success(accountService.updateRoleAndActiveAccount(id, accountEditRequest)));
@@ -98,7 +98,7 @@ public class AccountController {
 
     @Operation(summary = "Chê duyệt tài khoản giáo viên")
     @PutMapping("/{id}/active")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<AccountResponse>> ApproveAccountTeacher(@PathVariable long id) {
         return ResponseEntity.ok(ApiResponse.success(accountService.approveTeacherAccount(id)));
     }
@@ -113,9 +113,8 @@ public class AccountController {
 
     @GetMapping("/detail")
     @Operation(summary = "Lấy tất thông tin tài khoản")
-    @PreAuthorize("hasAnyAuthority('STUDENT','ADMIN','TEACHER')")
+    @PreAuthorize("hasAnyAuthority('STUDENT','MANAGER','TEACHER')")
     public ResponseEntity<ApiResponse<AccountResponse>> getSelfAccount() {
         return ResponseEntity.ok(ApiResponse.success(accountService.getSelfAccount()));
     }
-
 }
