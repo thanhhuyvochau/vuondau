@@ -44,6 +44,7 @@ public class ForumUtil {
     }
 
     public static Boolean isValidSubjectForStudent(Account student, Subject subject) {
+        if(student == null || subject == null) return false;
         List<Class> enrolledClass = student.getStudentClasses().stream().map(StudentClass::getaClass).collect(Collectors.toList());
         Class classMatchSubject = enrolledClass.stream()
                 .filter(aClass -> aClass.getCourse().getSubject() != null)
@@ -56,6 +57,7 @@ public class ForumUtil {
     }
 
     public static Boolean isValidClassForStudent(Account student, Class clazz) {
+        if (student == null || clazz == null) return false;
         long enrolled = clazz.getStudentClasses()
                 .stream()
                 .filter(studentClass -> studentClass.getAccount().getId().equals(student.getId())).count();
@@ -66,6 +68,7 @@ public class ForumUtil {
     }
 
     public static Boolean isValidSubjectForTeacher(Account account, Subject subject) {
+        if(account == null || subject == null) return false;
         AccountDetail teacherAccountDetail = account.getAccountDetail();
         if (teacherAccountDetail == null) {
             throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Cannot find the profile of this teacher, contact admin for help!");

@@ -88,7 +88,7 @@ public class ClassServiceImpl implements IClassService {
     @Override
     public Long teacherRequestCreateClass(TeacherCreateClassRequest createClassRequest) throws JsonProcessingException, ParseException {
 
-        Account teacher = securityUtil.getCurrentUser();
+        Account teacher = securityUtil.getCurrentUserThrowNotFoundException();
 
         // set class bên vườn đậu
         Class clazz = new Class();
@@ -346,8 +346,6 @@ public class ClassServiceImpl implements IClassService {
 
     @Override
     public ClassDto classDetail(Long id) throws JsonProcessingException {
-        Class aClass = classRepository.findById(id)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
 //        ClassDetailDto classDetail = ObjectUtil.copyProperties(aClass, new ClassDetailDto(), ClassDetailDto.class);
 //
 //        classDetail.setEachStudentPayPrice(aClass.getEachStudentPayPrice());
@@ -436,7 +434,12 @@ public class ClassServiceImpl implements IClassService {
 //            return timeTable;
 //        }).collect(Collectors.toList());
 //        classDetail.setTimeTable(timeTableDtoList);
-        return ConvertUtil.doConvertEntityToResponse(aClass);
+        Class aClass = classRepository.findById(id)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
+        Boolean validClassForStudent = ForumUtil.isValidClassForStudent(securityUtil.getCurrentUser(), aClass);
+        ClassDto classDto = ConvertUtil.doConvertEntityToResponse(aClass);
+        classDto.setEnrolled(validClassForStudent);
+        return classDto;
     }
 
 
@@ -448,7 +451,7 @@ public class ClassServiceImpl implements IClassService {
 
     @Override
     public ApiPage<ClassDto> accountFilterClass(ClassSearchRequest query, Pageable pageable) {
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
         List<Class> classAccount = null;
         List<Long> classId = new ArrayList<>();
         if (account.getRole().getCode().equals(EAccountRole.TEACHER)) {
@@ -596,7 +599,7 @@ public class ClassServiceImpl implements IClassService {
 
     @Override
     public Boolean applyToRecruitingClass(Long classId) {
-        Account teacher = securityUtil.getCurrentUser();
+        Account teacher = securityUtil.getCurrentUserThrowNotFoundException();
         Class clazz = classRepository.findById(classId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
         List<ClassTeacherCandicate> candicates = clazz.getCandicates();
@@ -652,7 +655,7 @@ public class ClassServiceImpl implements IClassService {
 
     @Override
     public ApiPage<ClassDto> getClassByAccount(EClassStatus status, Pageable pageable) {
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
 
         Page<Class> classesPage = null;
         Role role = account.getRole();
@@ -692,7 +695,7 @@ public class ClassServiceImpl implements IClassService {
 
     @Override
     public ClassDetailDto accountGetClassDetail(Long id) {
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
         Class aClass = null;
         Role role = account.getRole();
 
@@ -836,7 +839,7 @@ public class ClassServiceImpl implements IClassService {
     }
 
     public Class findClassByRoleAccount(Long id) {
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
         Class aClass = null;
         Role role = account.getRole();
         if (role != null) {
@@ -935,7 +938,7 @@ public class ClassServiceImpl implements IClassService {
     @Override
     public List<ClassTimeTableResponse> accountGetTimeTableOfClass(Long id) {
         Class aClass = findClassByRoleAccount(id);
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
 
 
         List<TimeTable> timeTables = aClass.getTimeTables();
@@ -978,7 +981,7 @@ public class ClassServiceImpl implements IClassService {
 
     @Override
     public ClassAttendanceResponse accountGetAttendanceOfClass(Long id) {
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
         Class aClass = findClassByRoleAccount(id);
 
         StudentClassKey studentClassKey = new StudentClassKey();
@@ -1146,7 +1149,7 @@ public class ClassServiceImpl implements IClassService {
     public ClassDto confirmAppreciation(Long id) throws JsonProcessingException {
         Class clazz = classRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
                 .withMessage("Class not found by id:" + id));
-        Account teacher = securityUtil.getCurrentUser();
+        Account teacher = securityUtil.getCurrentUserThrowNotFoundException();
         Account teacherClass = Optional.ofNullable(clazz.getAccount()).orElseThrow(() -> ApiException.create(HttpStatus.CONFLICT)
                 .withMessage("Class dont have teacher!"));
         if (!teacherClass.getId().equals(teacher.getId())) {
@@ -1160,7 +1163,7 @@ public class ClassServiceImpl implements IClassService {
 
     @Override
     public List<ClassDto> getClassByAccountAsList(EClassStatus status) {
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
 
         List<Class> choosenClassList = null;
         Role role = account.getRole();

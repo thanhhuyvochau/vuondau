@@ -200,7 +200,7 @@ public class SubjectServiceImpl implements ISubjectService {
     @Override
     public List<SubjectResponse> getSubjectOfTeacher() {
         List<SubjectResponse> subjectResponseList = new ArrayList<>();
-        Account teacher = securityUtil.getCurrentUser();
+        Account teacher = securityUtil.getCurrentUserThrowNotFoundException();
         AccountDetail accountDetail = teacher.getAccountDetail();
 
         List<Subject> subjectList = null;
