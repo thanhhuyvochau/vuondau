@@ -167,7 +167,9 @@ public class QuestionServiceImpl implements IQuestionService {
         Boolean isValidForumForMember = ForumUtil.isValidForumMember(forum, account);
         if (isValidForumForMember) {
             QuestionSpecificationBuilder questionSpecificationBuilder = new QuestionSpecificationBuilder();
-            questionSpecificationBuilder.queryByContent(q);
+            questionSpecificationBuilder
+                    .queryByTitle(q)
+                    .queryByContent(q);
             Page<Question> questionPage = questionRepository.findAll(questionSpecificationBuilder.build(), pageable);
             return PageUtil.convert(questionPage.map(ConvertUtil::doConvertEntityToSimpleResponse));
         } else {

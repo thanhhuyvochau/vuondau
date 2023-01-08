@@ -28,7 +28,6 @@ public class QuestionController {
     public ResponseEntity<ApiResponse<QuestionDto>> getQuestion(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success(iQuestionService.getQuestion(id)));
     }
-
     @PostMapping
     public ResponseEntity<ApiResponse<QuestionDto>> createQuestion(@RequestBody CreateQuestionRequest createQuestionRequest) {
         return ResponseEntity.ok(ApiResponse.success(iQuestionService.createQuestion(createQuestionRequest)));
@@ -55,8 +54,8 @@ public class QuestionController {
         return ResponseEntity.ok(ApiResponse.success(iQuestionService.voteQuestion(request)));
     }
 
-    @GetMapping("/{forumId}/search")
+    @GetMapping("/{forumId}/questions/search")
     public ResponseEntity<ApiResponse<ApiPage<QuestionSimpleDto>>> searchQuestion(@RequestParam String q, @PathVariable Long forumId, Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.success(iQuestionService.searchQuestion(forumId,q,pageable)));
+        return ResponseEntity.ok(ApiResponse.success(iQuestionService.searchQuestion(forumId, q, pageable)));
     }
 }

@@ -130,7 +130,7 @@ public class ForumServiceImpl implements IForumService {
     }
 
     @Override
-    public ForumDto getForumBySubject(Long subjectId) {
+    public ForumDto getForumBySubject(Long subjectId,String q) {
         Account account = securityUtil.getCurrentUserThrowNotFoundException();
         Subject subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Subject not found with id:" + subjectId));
