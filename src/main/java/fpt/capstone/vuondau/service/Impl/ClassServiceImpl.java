@@ -1105,13 +1105,11 @@ public class ClassServiceImpl implements IClassService {
     @Override
     public ApiPage<ClassDto> getAllClassForUser(Pageable pageable, GuestSearchClassRequest guestSearchClassRequest) {
 
-
         ClassSpecificationBuilder builder = new ClassSpecificationBuilder();
         builder.queryByClassStatus(guestSearchClassRequest.getStatus());
         builder.queryByClassType(guestSearchClassRequest.getClassType());
         builder.queryByCSubject(guestSearchClassRequest.getSubject());
 
-//        builder.isActive(true);
         Specification<Class> classSpecification = builder.build();
         Page<Class> classesPage = classRepository.findAll(classSpecification, pageable);
         return PageUtil.convert(classesPage.map(ConvertUtil::doConvertEntityToResponse));
