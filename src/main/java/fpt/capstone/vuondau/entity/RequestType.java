@@ -13,7 +13,7 @@ public class RequestType {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name ")
+    @Column(name = "name")
     private String name ;
 
     @OneToMany(mappedBy = "requestType")
