@@ -45,13 +45,13 @@ public class QuestionServiceImpl implements IQuestionService {
     public QuestionDto getQuestion(Long id) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Question not found by id:" + id));
-        return ConvertUtil.doConvertEntityToResponse(question, securityUtil.getCurrentUser());
+        return ConvertUtil.doConvertEntityToResponse(question, securityUtil.getCurrentUserThrowNotFoundException());
     }
 
     @Override
     public QuestionDto createQuestion(CreateQuestionRequest createQuestionRequest) {
         Question question = ObjectUtil.copyProperties(createQuestionRequest, new Question(), Question.class, true);
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
 
         Forum forum = forumRepository.findById(createQuestionRequest.getForumId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
@@ -83,7 +83,7 @@ public class QuestionServiceImpl implements IQuestionService {
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
                         .withMessage("Question not found with id:" + questionId));
         Question newQuestion = ObjectUtil.copyProperties(createQuestionRequest, question, Question.class, true);
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
         EAccountRole roleCode = account.getRole().getCode();
         boolean isValidToUpdate = false;
         if (account.getId().equals(question.getStudent().getId())) {
@@ -141,7 +141,7 @@ public class QuestionServiceImpl implements IQuestionService {
 
     @Override
     public Boolean voteQuestion(VoteRequest request) {
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
         Long questionId = request.getQuestionId();
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Question not found by id:" + questionId));
@@ -163,11 +163,13 @@ public class QuestionServiceImpl implements IQuestionService {
         Forum forum = forumRepository.findById(forumId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
                         .withMessage("Forum not found with id:" + forumId));
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
         Boolean isValidForumForMember = ForumUtil.isValidForumMember(forum, account);
         if (isValidForumForMember) {
             QuestionSpecificationBuilder questionSpecificationBuilder = new QuestionSpecificationBuilder();
-            questionSpecificationBuilder.queryByContent(q);
+            questionSpecificationBuilder
+                    .queryByTitle(q)
+                    .queryByContent(q);
             Page<Question> questionPage = questionRepository.findAll(questionSpecificationBuilder.build(), pageable);
             return PageUtil.convert(questionPage.map(ConvertUtil::doConvertEntityToSimpleResponse));
         } else {

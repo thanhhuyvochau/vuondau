@@ -44,6 +44,7 @@ public class ClassDto {
     private List<SectionDto> resources;
     private AccountSimpleResponse teacher  ;
     private ArchetypeDto archetype;
+    private boolean isEnrolled = false;
     public Long getId() {
         return id;
     }
@@ -181,5 +182,13 @@ public class ClassDto {
 
     public void setArchetype(ArchetypeDto archetype) {
         this.archetype = archetype;
+    }
+
+    public boolean getEnrolled() {
+        return isEnrolled;
+    }
+
+    public void setEnrolled(boolean enrolled) {
+        isEnrolled = enrolled;
     }
 }

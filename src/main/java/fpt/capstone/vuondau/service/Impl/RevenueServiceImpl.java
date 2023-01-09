@@ -132,7 +132,7 @@ public class RevenueServiceImpl implements IRevenueService {
 
     @Override
     public List<RevenueClassResponse> studentGetTuitionFee(RevenueSearchRequest query) {
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
         List<Long> ids = new ArrayList<>();
 
 
