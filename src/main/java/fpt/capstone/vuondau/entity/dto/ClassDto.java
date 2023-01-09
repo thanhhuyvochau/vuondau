@@ -184,7 +184,7 @@ public class ClassDto {
         this.archetype = archetype;
     }
 
-    public boolean isEnrolled() {
+    public boolean getEnrolled() {
         return isEnrolled;
     }
 
