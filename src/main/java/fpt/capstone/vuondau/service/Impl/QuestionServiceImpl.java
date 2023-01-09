@@ -88,7 +88,7 @@ public class QuestionServiceImpl implements IQuestionService {
         boolean isValidToUpdate = false;
         if (account.getId().equals(question.getStudent().getId())) {
             isValidToUpdate = true;
-        } else if (roleCode.equals(EAccountRole.ADMIN)) {
+        } else if (roleCode.equals(EAccountRole.MANAGER)) {
             isValidToUpdate = true;
         } else if (roleCode.equals(EAccountRole.TEACHER)) {
             isValidToUpdate = true;

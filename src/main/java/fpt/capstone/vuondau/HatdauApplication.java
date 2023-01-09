@@ -23,8 +23,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static fpt.capstone.vuondau.entity.common.EAccountRole.*;
-import static fpt.capstone.vuondau.entity.common.EResourceType.AVATAR;
-import static fpt.capstone.vuondau.entity.common.EResourceType.FILE;
 import static fpt.capstone.vuondau.entity.common.ESubjectCode.*;
 
 
@@ -84,7 +82,7 @@ public class HatdauApplication {
             if (role.getCode().equals(STUDENT)) {
                 existStudentRole = true;
             }
-            if (role.getCode().equals(ADMIN)) {
+            if (role.getCode().equals(MANAGER)) {
                 existAdminRole = true;
             }
         }
@@ -104,7 +102,7 @@ public class HatdauApplication {
         }
         if (!existAdminRole) {
             Role roleAdmin = new Role();
-            roleAdmin.setCode(ADMIN);
+            roleAdmin.setCode(MANAGER);
             roleAdmin.setName("admin");
             roleList.add(roleAdmin);
         }
