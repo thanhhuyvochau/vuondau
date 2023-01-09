@@ -7,7 +7,9 @@ public enum EDayOfWeekCode {
     WEDNESDAY,
     THURSDAY,
     FRIDAY,
-    SATURDAY
+    SATURDAY,
+    SUNDAY
+
 
 
 

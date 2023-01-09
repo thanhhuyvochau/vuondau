@@ -101,6 +101,7 @@ public class ClassController {
 
     @Operation(summary = "Tìm Kiếm class")
     @GetMapping("/search-class")
+    @PreAuthorize("hasAnyAuthority('STUDENT','TEACHER')")
     public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> searchClass(@Nullable ClassSearchRequest query, Pageable pageable
     ) {
         return ResponseEntity.ok(ApiResponse.success(iClassService.searchClass(query, pageable)));
