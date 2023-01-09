@@ -18,8 +18,6 @@ public class Request extends BaseEntity {
     @Column(name = "tile")
     private String title;
 
-
-
     @Column(name = "reason")
     private String reason  ;
 
