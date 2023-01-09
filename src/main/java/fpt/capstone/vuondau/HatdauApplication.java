@@ -303,11 +303,11 @@ public class HatdauApplication {
         List<Subject> subjectList = new ArrayList<>();
         for (String s : collect) {
             ESubjectCode eSubjectCode = ESubjectCode.valueOf(s);
-            Subject byCode = subjectRepository.findByCode(eSubjectCode);
+            Subject subject = subjectRepository.findByCode(eSubjectCode);
             for (MoodleCategoryResponse moodleCategoryResponse : category) {
-                if (moodleCategoryResponse.getName().equals(byCode.getCode().name())) {
-                    byCode.setCategoryMoodleId(moodleCategoryResponse.getId());
-                    subjectList.add(byCode);
+                if (moodleCategoryResponse.getName().equals(subject.getCode().name())) {
+                    subject.setCategoryMoodleId(moodleCategoryResponse.getId());
+                    subjectList.add(subject);
                 }
             }
 
