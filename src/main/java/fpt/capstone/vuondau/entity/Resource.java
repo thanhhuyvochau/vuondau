@@ -23,8 +23,6 @@ public class Resource extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private EResourceType resourceType;
 
-    @OneToMany(mappedBy = "resource")
-    List<PostResource> postResources;
 
     @OneToMany(mappedBy = "resource")
     List<Account> accounts;
@@ -63,14 +61,6 @@ public class Resource extends BaseEntity {
 
     public void setResourceType(EResourceType resourceType) {
         this.resourceType = resourceType;
-    }
-
-    public List<PostResource> getPostResources() {
-        return postResources;
-    }
-
-    public void setPostResources(List<PostResource> postResources) {
-        this.postResources = postResources;
     }
 
     public List<Account> getAccounts() {

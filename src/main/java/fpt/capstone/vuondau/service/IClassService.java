@@ -36,7 +36,7 @@ public interface IClassService {
     ApiPage<ClassDto> searchClass(ClassSearchRequest query, Pageable pageable);
 
 
-    ClassDetailDto classDetail(Long id) throws JsonProcessingException;
+    ClassDto classDetail(Long id) throws JsonProcessingException;
 
     ApiPage<ClassDto> getAllClass(Pageable pageable);
 
@@ -76,4 +76,6 @@ public interface IClassService {
     List<ClassDto> getClassByAccountAsList(EClassStatus status);
 
     ClassDto confirmAppreciation(Long id) throws JsonProcessingException;
+
+    Long updateClassForRecruiting(Long id, CreateClassRequest createClassRequest) throws ParseException;
 }

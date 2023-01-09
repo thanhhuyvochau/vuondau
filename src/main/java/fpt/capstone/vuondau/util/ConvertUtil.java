@@ -7,10 +7,15 @@ import fpt.capstone.vuondau.entity.common.EForumType;
 import fpt.capstone.vuondau.entity.common.EGenderType;
 import fpt.capstone.vuondau.entity.dto.*;
 import fpt.capstone.vuondau.entity.response.*;
+import fpt.capstone.vuondau.moodle.repository.MoodleCourseRepository;
+import fpt.capstone.vuondau.moodle.request.GetMoodleCourseRequest;
+import fpt.capstone.vuondau.moodle.response.MoodleModuleResponse;
+import fpt.capstone.vuondau.moodle.response.MoodleRecourseDtoResponse;
+import fpt.capstone.vuondau.moodle.response.MoodleResourceResponse;
+import fpt.capstone.vuondau.moodle.response.MoodleSectionResponse;
 import fpt.capstone.vuondau.repository.ClassLevelRepository;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,18 +26,14 @@ import java.util.stream.Collectors;
 public class ConvertUtil {
 
 
-    private final ClassLevelRepository classLevelRepository;
-
     private static ClassLevelRepository staticClassLevelRepository;
 
-    public ConvertUtil(ClassLevelRepository classLevelRepository) {
-        this.classLevelRepository = classLevelRepository;
-    }
+    private static MoodleCourseRepository staticMoodleCourseRepository;
 
+    public ConvertUtil(ClassLevelRepository classLevelRepository, MoodleCourseRepository moodleCourseRepository) {
 
-    @PostConstruct
-    private void init() {
-        staticClassLevelRepository = this.classLevelRepository;
+        staticClassLevelRepository = classLevelRepository;
+        staticMoodleCourseRepository = moodleCourseRepository;
     }
 
 
@@ -228,7 +229,7 @@ public class ConvertUtil {
             courseResponse.setImage(course.getResource().getUrl());
         }
         if (course.getSubject() != null) {
-            courseResponse.setSubject(ConvertUtil.doConvertEntityToResponse(course.getSubject()));
+            courseResponse.setSubject(ConvertUtil.doConvertEntityToSimpleResponse(course.getSubject()));
         }
         courseResponse.setCourseTitle(course.getTitle());
 
@@ -270,45 +271,32 @@ public class ConvertUtil {
         return forumDto;
     }
 
-    public static ClassDto doConvertEntityToResponse(Class aclass) {
-        ClassDto classDto = ObjectUtil.copyProperties(aclass, new ClassDto(), ClassDto.class, true);
-        Course course = aclass.getCourse();
-        CourseResponse courseResponse = ConvertUtil.doConvertCourseToCourseResponse(course);
-        classDto.setStatus(aclass.getStatus());
-        classDto.setStartDate(aclass.getStartDate());
-        classDto.setEndDate(aclass.getEndDate());
-        classDto.setNumberStudent(aclass.getNumberStudent());
-        classDto.setMaxNumberStudent(aclass.getMaxNumberStudent());
-        classDto.setEachStudentPayPrice(aclass.getEachStudentPayPrice());
-        if (aclass.getClassLevel()!= null) {
+    public static ClassDto doConvertEntityToResponse(Class clazz) {
+        ClassDto classDto = ObjectUtil.copyProperties(clazz, new ClassDto(), ClassDto.class, true);
 
-            Optional<ClassLevel> optionalClassLevel = staticClassLevelRepository.findById((aclass.getClassLevel()));
+        CourseResponse courseResponse = ConvertUtil.doConvertCourseToCourseResponse(clazz.getCourse());
+        classDto.setCourse(courseResponse);
 
-            if (optionalClassLevel.isPresent()) {
-                ClassLevel classLevel = optionalClassLevel.get();
-                classDto.setClassLevel(classLevel.getCode());
-
-            }
+        ClassLevel classLevel = clazz.getClassLevel();
+        if (classLevel != null) {
+            classDto.setClassLevel(classLevel.getCode());
         }
-        classDto.setTeacherReceivedPrice(aclass.getFinalPrice());
 
-
-        if (aclass.getAccount() != null) {
-            Account teacher = aclass.getAccount();
-//            AccountResponse accountResponse = ObjectUtil.copyProperties(teacher, new AccountResponse(), AccountResponse.class);
+        if (clazz.getAccount() != null) {
+            Account teacher = clazz.getAccount();
             AccountSimpleResponse accountResponse1 = doConvertEntityToSimpleResponse(teacher);
             classDto.setTeacher(accountResponse1);
-//            accountResponse.setBirthday(teacher.getBirthday());
-//            accountResponse.setIntroduce(teacher.getIntroduce());
-//            accountResponse.setPhoneNumber(teacher.getPhoneNumber());
-//            EGenderType gender = teacher.getGender();
-//            accountResponse.setGenderResponse(teacher.getGender());
-//            classDto.setTeacher(ObjectUtil.copyProperties(aclass.getAccount(), new AccountResponse(), AccountResponse.class));
+        }
+        List<SectionDto> resources = clazz.getSections().stream().map(ConvertUtil::doConvertEntityToResponse).collect(Collectors.toList());
+        classDto.setResources(resources);
 
+        TimeTable timeTable = clazz.getTimeTables().stream().findFirst().orElse(null);
+        if (timeTable != null) {
+            Archetype archetype = timeTable.getArchetypeTime().getArchetype();
+            ArchetypeDto archetypeDto = doConvertEntityToResponse(archetype);
+            classDto.setArchetype(archetypeDto);
         }
 
-
-        classDto.setCourse(courseResponse);
         return classDto;
     }
 
@@ -325,5 +313,85 @@ public class ConvertUtil {
         response.setTeacher(teacher);
         response.setStatus(classTeacherCandicate.getStatus());
         return response;
+    }
+
+    public static List<MoodleRecourseDtoResponse> doConvertExercise(Class aClass) {
+        List<MoodleRecourseDtoResponse> exercise = new ArrayList<>();
+
+        if (aClass.getMoodleClassId() != null) {
+            GetMoodleCourseRequest getMoodleCourseRequest = new GetMoodleCourseRequest();
+
+            getMoodleCourseRequest.setCourseid(aClass.getMoodleClassId());
+            try {
+                List<MoodleSectionResponse> resourceCourse = staticMoodleCourseRepository.getResourceCourse(getMoodleCourseRequest);
+                resourceCourse.stream().skip(1).forEach(moodleRecourseClassResponse -> {
+
+                    List<MoodleModuleResponse> modules = moodleRecourseClassResponse.getModules();
+                    List<Boolean> isAssignList = modules.stream().map(moodleModuleResponse -> moodleModuleResponse.getModname().equals("quiz")
+                            || moodleModuleResponse.getModname().equals("assign")
+                    ).collect(Collectors.toList());
+                    isAssignList.forEach(isAssign -> {
+                        if (isAssign) {
+                            MoodleRecourseDtoResponse recourseDtoResponse = new MoodleRecourseDtoResponse();
+                            recourseDtoResponse.setId(moodleRecourseClassResponse.getId());
+                            recourseDtoResponse.setName(moodleRecourseClassResponse.getName());
+                            List<MoodleResourceResponse> moodleResourceResponseList = new ArrayList<>();
+                            modules.forEach(moodleResponse -> {
+
+                                if (moodleResponse.getModname().equals("quiz") || moodleResponse.getModname().equals("assign")) {
+                                    MoodleResourceResponse moodleResourceResponse = new MoodleResourceResponse();
+                                    moodleResourceResponse.setId(moodleResponse.getId());
+                                    moodleResourceResponse.setUrl(moodleResponse.getUrl());
+                                    moodleResourceResponse.setName(moodleResponse.getName());
+                                    moodleResourceResponse.setType(moodleResponse.getModname());
+                                    moodleResourceResponseList.add(moodleResourceResponse);
+                                }
+                            });
+                            recourseDtoResponse.setModules(moodleResourceResponseList);
+                            exercise.add(recourseDtoResponse);
+                        }
+                    });
+
+                });
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+        return exercise;
+    }
+
+    public static ModuleDto doConvertEntityToResponse(Module module) {
+        return ObjectUtil.copyProperties(module, new ModuleDto(), ModuleDto.class, true);
+    }
+
+    public static SectionDto doConvertEntityToResponse(Section section) {
+        SectionDto sectionDto = ObjectUtil.copyProperties(section, new SectionDto(), SectionDto.class, true);
+        List<ModuleDto> moduleDtos = section.getModules().stream().map(ConvertUtil::doConvertEntityToResponse).collect(Collectors.toList());
+        sectionDto.setModules(moduleDtos);
+        return sectionDto;
+    }
+
+    public static ArchetypeDto doConvertEntityToResponse(Archetype archetype) {
+        ArchetypeDto archetypeDto = ObjectUtil.copyProperties(archetype, new ArchetypeDto(), ArchetypeDto.class, true);
+        List<ArchetypeTimeDto> archetypeTimeDtos = archetype.getArchetypeTimes().stream().map(ConvertUtil::doConvertEntityToResponse).collect(Collectors.toList());
+        archetypeDto.setArchetypeTimes(archetypeTimeDtos);
+        return archetypeDto;
+    }
+
+    public static ArchetypeTimeDto doConvertEntityToResponse(ArchetypeTime archetypeTime) {
+        ArchetypeTimeDto archetypeTimeDto = ObjectUtil.copyProperties(archetypeTime, new ArchetypeTimeDto(), ArchetypeTimeDto.class, true);
+        archetypeTimeDto.setDayOfWeek(doConvertEntityToResponse(archetypeTime.getDayOfWeek()));
+        archetypeTimeDto.setSlot(doConvertEntityToResponse(archetypeTime.getSlot()));
+        return archetypeTimeDto;
+    }
+
+    public static SlotDto doConvertEntityToResponse(Slot slot) {
+        return ObjectUtil.copyProperties(slot, new SlotDto(), SlotDto.class, true);
+    }
+
+    public static DayOfWeekDto doConvertEntityToResponse(DayOfWeek dayOfWeek) {
+        return ObjectUtil.copyProperties(dayOfWeek, new DayOfWeekDto(), DayOfWeekDto.class, true);
     }
 }

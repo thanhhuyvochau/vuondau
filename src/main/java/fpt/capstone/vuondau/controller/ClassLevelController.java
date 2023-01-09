@@ -27,19 +27,19 @@ public class ClassLevelController {
     }
     @Operation(description = "Tạo loại lớp")
     @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<ClassLevelResponse>> create(@RequestBody ClassLevelRequest classLevelRequest) {
         return ResponseEntity.ok(ApiResponse.success(IClassLevelService.create(classLevelRequest)));
     }
     @Operation(description = "Cập nhật lọai lớp")
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<ClassLevelResponse>> update(@RequestBody ClassLevelRequest classLevelRequest, @PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success(IClassLevelService.update(classLevelRequest, id)));
     }
     @Operation(description = "Xóa loại lớp")
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<Boolean>> delete(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success(IClassLevelService.delete(id)));
     }

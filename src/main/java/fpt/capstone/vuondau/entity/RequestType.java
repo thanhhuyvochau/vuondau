@@ -1,8 +1,6 @@
 package fpt.capstone.vuondau.entity;
 
 
-import fpt.capstone.vuondau.entity.common.EResourceType;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -15,18 +13,11 @@ public class RequestType {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name")
-    private String name;
-
-
-    @Column(name = "code")
-    @Enumerated(EnumType.STRING)
-    private EResourceType code;
-
+    @Column(name = "name ")
+    private String name ;
 
     @OneToMany(mappedBy = "requestType")
     private List<Request> requests;
-
 
     public Long getId() {
         return id;
@@ -36,20 +27,13 @@ public class RequestType {
         this.id = id;
     }
 
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public EResourceType getCode() {
-        return code;
-    }
-
-    public void setCode(EResourceType code) {
-        this.code = code;
     }
 
     public List<Request> getRequests() {

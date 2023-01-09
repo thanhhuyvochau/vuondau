@@ -18,15 +18,11 @@ public class Request extends BaseEntity {
     @Column(name = "tile")
     private String title;
 
-    @Column(name = "name")
-    private String name ;
-
     @Column(name = "reason")
     private String reason  ;
 
     @Column(name = "url")
     private String url;
-
 
     @ManyToOne
     @JoinColumn(name = "student_id")
@@ -73,13 +69,7 @@ public class Request extends BaseEntity {
     }
 
 
-    public String getName() {
-        return name;
-    }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getUrl() {
         return url;

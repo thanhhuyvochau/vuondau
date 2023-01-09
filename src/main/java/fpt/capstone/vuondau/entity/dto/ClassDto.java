@@ -10,6 +10,7 @@ import fpt.capstone.vuondau.entity.response.CourseResponse;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 
 public class ClassDto {
 
@@ -40,9 +41,9 @@ public class ClassDto {
 
     private BigDecimal teacherReceivedPrice ;
 
-
+    private List<SectionDto> resources;
     private AccountSimpleResponse teacher  ;
-
+    private ArchetypeDto archetype;
     public Long getId() {
         return id;
     }
@@ -164,5 +165,21 @@ public class ClassDto {
 
     public void setMinNumberStudent(Long minNumberStudent) {
         this.minNumberStudent = minNumberStudent;
+    }
+
+    public List<SectionDto> getResources() {
+        return resources;
+    }
+
+    public void setResources(List<SectionDto> resources) {
+        this.resources = resources;
+    }
+
+    public ArchetypeDto getArchetype() {
+        return archetype;
+    }
+
+    public void setArchetype(ArchetypeDto archetype) {
+        this.archetype = archetype;
     }
 }

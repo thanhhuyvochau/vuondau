@@ -29,6 +29,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static fpt.capstone.vuondau.util.DayUtil.getDatesBetweenUsingJava8;
+import static fpt.capstone.vuondau.util.common.Constants.ErrorMessage.CLASS_NOT_ALLOW_UPDATE;
+import static fpt.capstone.vuondau.util.common.Constants.ErrorMessage.CLASS_NOT_FOUND_BY_ID;
 
 @Service
 public class TimeTableServiceImpl implements ITimeTableService {
@@ -78,12 +80,11 @@ public class TimeTableServiceImpl implements ITimeTableService {
         Account currentUser = SecurityUtil.getCurrentUser();
 
 
-        Class     aClass = new Class() ;
-        if (currentUser.getRole().getCode().equals(EAccountRole.ADMIN)) {
-        aClass   = classRepository.findById(classId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
+        Class aClass = new Class();
+        if (currentUser.getRole().getCode().equals(EAccountRole.MANAGER)) {
+            aClass = classRepository.findById(classId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
             aClass.setStatus(EClassStatus.RECRUITING);
-         }
-        else {
+        } else {
             aClass = classRepository.findByIdAndAccount(classId, currentUser);
         }
 
@@ -290,10 +291,6 @@ public class TimeTableServiceImpl implements ITimeTableService {
             ArchetypeTimeDto archetypeTimeDto = new ArchetypeTimeDto();
             ArchetypeTime archetypeTime = timeTable.getArchetypeTime();
             if (archetypeTime != null) {
-                Archetype archetype = archetypeTime.getArchetype();
-                if (archetype != null) {
-                    archetypeTimeDto.setArchetype(ObjectUtil.copyProperties(archetype, new ArchetypeDto(), ArchetypeDto.class));
-                }
                 Slot slot = archetypeTime.getSlot();
                 if (slot != null) {
                     archetypeTimeDto.setSlot(ObjectUtil.copyProperties(slot, new SlotDto(), SlotDto.class));
@@ -378,11 +375,12 @@ public class TimeTableServiceImpl implements ITimeTableService {
     public Long adminCreateTimeTableClass(Long classId, Long numberSlot, TimeTableRequest timeTableRequest) throws ParseException {
         Account currentUser = SecurityUtil.getCurrentUser();
 
-        Class aClass = classRepository.findById(classId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
-        if (aClass == null) {
+        Class aClass = classRepository.findById(classId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(CLASS_NOT_FOUND_BY_ID + classId));
+        if (!aClass.getStatus().equals(EClassStatus.RECRUITING)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Class không tồn tai"));
+                    .withMessage(messageUtil.getLocalMessage(CLASS_NOT_ALLOW_UPDATE));
         }
+
         if (aClass.getTimeTables().size() > 0) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("class đã có thời khoá biểu"));
@@ -421,9 +419,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
         List<TimeTable> timeTableList = new ArrayList<>();
 
-
         Instant startDate = aClass.getStartDate();
-
         Instant endDate = aClass.getEndDate();
 
         // kiem tra slot va thu trùng nhau
@@ -437,12 +433,27 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
         int slotNumber = 1;
 
-        List<Long> allDayOfWeek = slotDows.stream().map(SlotDowDto::getDayOfWeekId).collect(Collectors.toList());
-        Set<Long> itemDayOfWeek = new HashSet<>();
-        List<Long> checkDuplicateDayOfWeek = allDayOfWeek.stream().filter(n -> !itemDayOfWeek.add(n)).collect(Collectors.toList());
-        if (checkDuplicateDayOfWeek.size() > 0) {
+//        List<Long> allSlot = slotDows.stream().map(SlotDowDto::getSlotId).collect(Collectors.toList());
+//        Set<Long> itemSlot = new HashSet<>();
+//        List<Long> checkDuplicateSlot = allSlot.stream().filter(n -> !itemSlot.add(n)).collect(Collectors.toList());
+//
+//        List<Long> allDayOfWeek = slotDows.stream().map(SlotDowDto::getDayOfWeekId).collect(Collectors.toList());
+//        Set<Long> itemDayOfWeek = new HashSet<>();
+//        List<Long> checkDuplicateDayOfWeek = allDayOfWeek.stream().filter(n -> !itemDayOfWeek.add(n))
+//                .map(allSlot.g).collect(Collectors.toList());
+
+
+        List<String> checkDuplicate = new ArrayList<>();
+        slotDows.forEach(slotDowDto -> {
+            Long dayOfWeekId = slotDowDto.getDayOfWeekId();
+            Long slotId = slotDowDto.getSlotId();
+            checkDuplicate.add(dayOfWeekId + "" + slotId);
+        });
+        Set<String> setCheckDuplicate = new HashSet<>();
+        List<String> resultDuplicate = checkDuplicate.stream().filter(n -> !setCheckDuplicate.add(n)).collect(Collectors.toList());
+        if (resultDuplicate.size() > 0) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Thứ không thể trùng"));
+                    .withMessage(messageUtil.getLocalMessage("Thời gian dạy trong ngày nhau"));
         }
 
         List<TimeTable> timeTableList1 = setDateOfWeek(timeTableRequest.getSlotDow(), slotNumber, startDate, endDate, archetype, aClass, timeTableList);
@@ -456,4 +467,11 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
         return aClass.getId();
     }
+
+    @Override
+    public Long adminUpdateTimeTableClass(Long classId, Long numberSlot, TimeTableRequest timeTableRequest) {
+        return null;
+    }
+
+
 }

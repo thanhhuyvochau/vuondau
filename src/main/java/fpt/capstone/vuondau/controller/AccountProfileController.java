@@ -60,14 +60,14 @@ public class AccountProfileController {
 
     @Operation(summary = "Admin phê duyệt request đăng ký giang dạy của giao vien")
     @PutMapping("/approve-request-register-profile")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<List<EmailDto>> approveRegisterAccount(@RequestBody List<Long> id) {
         return ResponseEntity.ok(iAccountDetailService.approveRegisterAccount(id));
     }
 
     @GetMapping
     @Operation(summary = "Lấy tất cả request tạo tk để đang ký giang dạy theo trạng thái (đã duyệt/chờ)")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<ApiPage<AccountDetailResponse>>> getRequestToActiveAccount(  Boolean isActive   , Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iAccountDetailService.getRequestToActiveAccount(isActive , pageable)));
     }
@@ -97,7 +97,7 @@ public class AccountProfileController {
 
     @GetMapping("/{accountId}/account-detail")
     @Operation(summary = "Lấy tất cả thông tin của giáo viên")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<AccountDetailResponse>> getAccountDetail(@PathVariable Long accountId) {
         return ResponseEntity.ok(ApiResponse.success(iAccountDetailService.getAccountDetail(accountId)));
     }
