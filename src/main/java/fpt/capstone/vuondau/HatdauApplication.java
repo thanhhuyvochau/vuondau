@@ -34,7 +34,7 @@ public class HatdauApplication {
 
     private final SubjectRepository subjectRepository;
 
-    private final RequestTypeRepository requestTypeRepository;
+
 
     private final MoodleCourseRepository moodleCourseRepository;
 
@@ -45,7 +45,11 @@ public class HatdauApplication {
     private final ClassRepository classRepository;
     private final ForumRepository forumRepository;
 
-    public HatdauApplication(RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository, MoodleCourseRepository moodleCourseRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ClassRepository classRepository, ForumRepository forumRepository) {
+    private final ClassLevelRepository classLevelRepository;
+
+    private final  RequestTypeRepository requestTypeRepository ;
+
+    public HatdauApplication(RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository, MoodleCourseRepository moodleCourseRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ClassRepository classRepository, ForumRepository forumRepository, ClassLevelRepository classLevelRepository) {
         this.roleRepository = roleRepository;
         this.subjectRepository = subjectRepository;
         this.requestTypeRepository = requestTypeRepository;
@@ -54,14 +58,13 @@ public class HatdauApplication {
         this.dayOfWeekRepository = dayOfWeekRepository;
         this.classRepository = classRepository;
         this.forumRepository = forumRepository;
+        this.classLevelRepository = classLevelRepository;
     }
 
 
     public static void main(String[] args) throws ParseException {
 
         SpringApplication.run(HatdauApplication.class, args);
-
-
 
 
     }
@@ -253,6 +256,9 @@ public class HatdauApplication {
         List<String> allNameSubject = allSubject.stream().map(subject -> subject.getCode().name()).collect(Collectors.toList());
 
         List<String> collect = allNameSubject.stream().filter(s -> !allNameCategory.contains(s)).filter(Objects::nonNull).collect(Collectors.toList());
+
+//        List<String> checkSubjectMoodleToVuonDau = allNameSubject.stream().filter(allNameCategory::contains).collect(Collectors.toList());
+
 
         CreateCategoryRequest createCategoryRequest = new CreateCategoryRequest();
 
@@ -497,6 +503,7 @@ public class HatdauApplication {
         Boolean existDay5 = false;
         Boolean existDay6 = false;
         Boolean existDay7 = false;
+        Boolean existDay8 = false;
         for (DayOfWeek dayOfWeek : allDayOfWeeks) {
             if (dayOfWeek.getCode().equals(EDayOfWeekCode.MONDAY)) {
                 existDay2 = true;
@@ -515,6 +522,9 @@ public class HatdauApplication {
             }
             if (dayOfWeek.getCode().equals(EDayOfWeekCode.SATURDAY)) {
                 existDay7 = true;
+            }
+            if (dayOfWeek.getCode().equals(EDayOfWeekCode.SUNDAY)) {
+                existDay8 = true;
             }
 
 
@@ -561,9 +571,14 @@ public class HatdauApplication {
             dayOfWeek.setName("Thứ Bảy");
             dayOfWeekList.add(dayOfWeek);
         }
+        if (!existDay8) {
+            DayOfWeek dayOfWeek = new DayOfWeek();
+            dayOfWeek.setCode(EDayOfWeekCode.SUNDAY);
+            dayOfWeek.setName("Chủ Nhật");
+            dayOfWeekList.add(dayOfWeek);
+        }
 
         dayOfWeekRepository.saveAll(dayOfWeekList);
-
 
     }
 
@@ -577,55 +592,111 @@ public class HatdauApplication {
     }
 
 
-//    @EventListener(ApplicationReadyEvent.class)
-//    public void intiDataClasType() {
-//
-//        List<ClassType> all = classTypeRepository.findAll();
-//        Boolean existClass10 = false;
-//        Boolean existClass11 = false;
-//        Boolean existClass12 = false;
-//
-//        for (ClassType classType : all) {
-//            if (classType.getCode().equals(EClassLevel.TEN)) {
-//                existClass10 = true;
-//            }
-//            if (classType.getCode().equals(EClassLevel.ELEVENT)) {
-//                existClass11 = true;
-//            }
-//            if (classType.getCode().equals(EClassLevel.TWELFTH)) {
-//                existClass12 = true;
-//            }
-//        }
-//
-//        List<ClassType> classTypeList = new ArrayList<>();
-//        if (!existClass10) {
-//            ClassType classType = new ClassType();
-//            classType.setCode(EClassLevel.TEN);
-//            classType.setName("Lớp 10");
-//
-//            classTypeList.add(classType);
-//        }
-//        if (!existClass11) {
-//
-//            ClassType classType = new ClassType();
-//            classType.setCode(EClassLevel.ELEVENT);
-//            classType.setName("Lớp 11");
-//
-//            classTypeList.add(classType);
-//
-//        }
-//
-//        if (!existClass12) {
-//            ClassType classType = new ClassType();
-//            classType.setCode(EClassLevel.TWELFTH);
-//            classType.setName("Lớp 12");
-//
-//            classTypeList.add(classType);
-//        }
-//
-//        classTypeRepository.saveAll(classTypeList);
-//
-//
-//    }
+    @EventListener(ApplicationReadyEvent.class)
+    public void intiDataClassLevel() {
 
-}
+        List<ClassLevel> all = classLevelRepository.findAll();
+        Boolean existClass10 = false;
+        Boolean existClass11 = false;
+        Boolean existClass12 = false;
+
+        for (ClassLevel classType : all) {
+            if (classType.getCode().equals(EClassLevel.TEN)) {
+                existClass10 = true;
+            }
+            if (classType.getCode().equals(EClassLevel.ELEVENT)) {
+                existClass11 = true;
+            }
+            if (classType.getCode().equals(EClassLevel.TWELFTH)) {
+                existClass12 = true;
+            }
+        }
+
+        List<ClassLevel> classTypeList = new ArrayList<>();
+        if (!existClass10) {
+            ClassLevel classLevel = new ClassLevel();
+            classLevel.setCode(EClassLevel.TEN);
+            classLevel.setName("Lớp 10");
+
+            classTypeList.add(classLevel);
+        }
+        if (!existClass11) {
+
+            ClassLevel classLevel = new ClassLevel();
+            classLevel.setCode(EClassLevel.ELEVENT);
+            classLevel.setName("Lớp 11");
+
+            classTypeList.add(classLevel);
+
+        }
+
+        if (!existClass12) {
+            ClassLevel classLevel = new ClassLevel();
+            classLevel.setCode(EClassLevel.TWELFTH);
+            classLevel.setName("Lớp 12");
+
+            classTypeList.add(classLevel);
+        }
+
+        classLevelRepository.saveAll(classTypeList);
+
+
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void intiDataRequestType() {
+
+        List<RequestType> all = requestTypeRepository.findAll() ;
+
+
+
+        Boolean application1 = false;
+        Boolean application2 = false;
+        Boolean application3 = false;
+        Boolean application4  = false;
+
+        for (RequestType requestType : all) {
+            if (requestType.getName().equals("Đơn đề nghỉ cấp bảng điêm quá trình")) {
+                application1 = true;
+            }
+            if (requestType.getName().equals("Đơn xin nhâp học lại")) {
+                application2 = true;
+            }
+            if (requestType.getName().equals("Đơn xin nhâp học lại")) {
+                application3 = true;
+            }
+            if (requestType.getName().equals("Các loại đơn khác")) {
+                application4 = true;
+            }
+        }
+
+        List<RequestType> requestTypeList = new ArrayList<>();
+        if (!application1) {
+            RequestType requestType = new RequestType() ;
+            requestType.setName("Đơn đề nghỉ cấp bảng điêm quá trình");
+            requestTypeList.add(requestType);
+        }
+        if (!application2) {
+
+            RequestType requestType = new RequestType() ;
+            requestType.setName("Đơn xin nhâp học lại");
+            requestTypeList.add(requestType);
+
+        }
+
+        if (!application3) {
+            RequestType requestType = new RequestType() ;
+            requestType.setName(" Đơn xin nhâp học lại");
+            requestTypeList.add(requestType);
+        }
+        if (!application4) {
+            RequestType requestType = new RequestType() ;
+            requestType.setName("Các loại đơn khác");
+            requestTypeList.add(requestType);
+
+        }
+        requestTypeRepository.saveAll(requestTypeList);
+    }
+
+
+    }
