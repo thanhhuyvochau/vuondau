@@ -192,8 +192,14 @@ public class ConvertUtil {
     }
 
     public static AccountDetailResponse doConvertEntityToResponse(AccountDetail accountDetail) {
-
-        AccountDetailResponse accountDetailResponse = ObjectUtil.copyProperties(accountDetail, new AccountDetailResponse(), AccountDetailResponse.class);
+        if (accountDetail == null) return null;
+        AccountDetailResponse accountDetailResponse = ObjectUtil.copyProperties(accountDetail, new AccountDetailResponse(), AccountDetailResponse.class,true);
+        Account account = accountDetail.getAccount();
+        if (account != null) {
+            accountDetailResponse.setAccountId(account.getId());
+            accountDetailResponse.setKeycloak(account.getKeycloak());
+            accountDetailResponse.setUserName(account.getUsername());
+        }
 
         List<AccountDetailSubject> accountDetailSubjects = accountDetail.getAccountDetailSubjects();
         List<SubjectDto> subjects = new ArrayList<>();
@@ -209,6 +215,8 @@ public class ConvertUtil {
 
         accountDetailResponse.setResources(resourceDtoList);
         accountDetailResponse.setActive(accountDetail.getActive());
+        accountDetailResponse.setGender(accountDetail.getGender().getLabel());
+
         return accountDetailResponse;
 
     }

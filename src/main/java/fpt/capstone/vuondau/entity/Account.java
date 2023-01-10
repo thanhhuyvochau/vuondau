@@ -1,11 +1,7 @@
 package fpt.capstone.vuondau.entity;
 
-import fpt.capstone.vuondau.entity.common.EDegreeType;
-import fpt.capstone.vuondau.entity.common.EGenderType;
-
 
 import javax.persistence.*;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -141,12 +137,12 @@ public class Account extends BaseEntity {
         this.password = password;
     }
 
-    public Boolean getActive() {
+    public Boolean getIsActive() {
         return isActive;
     }
 
-    public void setActive(Boolean active) {
-        isActive = active;
+    public void setIsActive(Boolean active) {
+        this.isActive = active;
     }
 
     public List<InfoFindTutorAccount> getInfoFindTutorAccounts() {

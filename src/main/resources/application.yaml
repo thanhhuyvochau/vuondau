@@ -16,6 +16,7 @@ moodle:
     course:
       get: core_course_get_courses
       create: core_course_create_courses
+      delete: core_course_delete_courses
       content:
         get: core_course_get_contents
       member:

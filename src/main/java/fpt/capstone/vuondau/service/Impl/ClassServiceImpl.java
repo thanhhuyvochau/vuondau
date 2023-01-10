@@ -428,6 +428,15 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
+    public ClassDto adminRejectRequestCreateClass(Long id) {
+        Class clazz = classRepository.findById(id)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage(CLASS_NOT_FOUND_BY_ID) + id));
+
+
+        return null;
+    }
+
+    @Override
     public Long updateClassForRecruiting(Long id, CreateClassRequest createClassRequest) throws ParseException {
         Class clazz = classRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage(CLASS_NOT_FOUND_BY_ID) + id));

@@ -140,7 +140,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         accountDetail.setIdCard(accountDetailRequest.getIdCard());
         accountDetail.setEmail(accountDetailRequest.getEmail());
         accountDetail.setPhone(accountDetailRequest.getPhone());
-        if (!PasswordUtil.validationPassword(accountDetailRequest.getPassword()) || accountDetailRequest.getPassword() == null){
+        if (!PasswordUtil.validationPassword(accountDetailRequest.getPassword()) || accountDetailRequest.getPassword() == null) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Mật khẩu phải có ít nhất một ký tự số, ký tự viết thường, ký tự viết hoa, ký hiệu đặc biệt trong số @#$% và độ dài phải từ 8 đến 20"));
         }
@@ -197,7 +197,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
         Account account = new Account();
         account.setUsername(accountDetailRequest.getEmail());
-        account.setActive(false);
+        account.setIsActive(false);
         account.setKeycloak(false);
         account.setPassword(accountDetail.getPassword());
         Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER)
@@ -342,7 +342,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
                 Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getCode().name(), account);
                 Account save = accountRepository.save(account);
 
-                account.setActive(true);
+                account.setIsActive(true);
                 account.setPassword(passwordEncoder.encode(account.getPassword()));
                 account.setKeycloak(true);
 
@@ -373,42 +373,11 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
 
-        Page<Account> accountByRoleAndIsActiveIsFalse = null;
-        if (!isActive) {
-            accountByRoleAndIsActiveIsFalse = accountRepository.findAccountByRoleAndIsActiveIsFalse(pageable, role);
-        }
-        if (isActive) {
-            accountByRoleAndIsActiveIsFalse = accountRepository.findAccountByRoleAndIsActiveIsTrue(pageable, role);
-        }
+        Page<Account> accounts = null;
 
-        return PageUtil.convert(accountByRoleAndIsActiveIsFalse.map(account -> {
-            if (account.getAccountDetail() != null) {
-                AccountDetail accountDetail = account.getAccountDetail();
-                AccountDetailResponse accountDetailResponse = ObjectUtil.copyProperties(accountDetail, new AccountDetailResponse(), AccountDetailResponse.class);
-                accountDetailResponse.setAccountId(accountDetail.getAccount().getId());
-                accountDetailResponse.setKeycloak(account.getKeycloak());
-                accountDetailResponse.setUserName(account.getUsername());
-                accountDetailResponse.setActive(account.getActive());
-                List<AccountDetailSubject> accountDetailSubjects = accountDetail.getAccountDetailSubjects();
-                List<SubjectDto> subjects = new ArrayList<>();
-                accountDetailSubjects.forEach(accountDetailSubject -> {
-                    subjects.add(ObjectUtil.copyProperties(accountDetailSubject.getSubject(), new SubjectDto(), SubjectDto.class));
-                });
-                accountDetailResponse.setGender(EGenderType.FEMALE.getLabel());
-                accountDetailResponse.setSubjects(subjects);
-                List<ResourceDto> resourceDtoList = new ArrayList<>();
-                List<Resource> resources = accountDetail.getResources();
-                resources.forEach(resource -> {
-                    resourceDtoList.add(ObjectUtil.copyProperties(resource, new ResourceDto(), ResourceDto.class));
-                });
+        accounts = accountRepository.findAccountByRoleAndIsActiveAndAccountDetailNotNull(role, isActive, pageable);
 
-                accountDetailResponse.setResources(resourceDtoList);
-                accountDetailResponse.setActive(accountDetail.getActive());
-                return accountDetailResponse;
-            }
-
-            return null;
-        }));
+        return PageUtil.convert(accounts.map(account -> ConvertUtil.doConvertEntityToResponse(account.getAccountDetail())));
 
     }
 

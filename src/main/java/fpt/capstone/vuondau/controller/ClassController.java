@@ -241,4 +241,12 @@ public class ClassController {
     public ResponseEntity<ApiResponse<ClassDto>> confirmAppreciation(@PathVariable Long id) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.confirmAppreciation(id)));
     }
+
+    @Operation(summary = "Admin từ chối yêu cầu mờ lớp của giáo viên ")
+    @PostMapping({"/{id}/reject"})
+    @PreAuthorize("hasAuthority('MANAGER')")
+    public ResponseEntity<ApiResponse<ClassDto>> adminRejectRequestCreateClass(@PathVariable Long id) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.adminRejectRequestCreateClass(id)));
+    }
+
 }

@@ -65,4 +65,9 @@ public class MoodleCourseRepository extends MoodleBaseRepository {
         return caller.post(getUnenrolUserUrl(), request, typeReference);
     }
 
+    public List<MoodleCourseResponse> deleteCourse(DeleteMoodleCourseRequest request) throws JsonProcessingException {
+        TypeReference<List<MoodleCourseResponse>> typeReference = new TypeReference<List<MoodleCourseResponse>>() {
+        };
+        return caller.post(getDeleteCourse(), request, typeReference);
+    }
 }
