@@ -101,7 +101,6 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
     @Override
     public Long registerTutor(AccountDetailRequest accountDetailRequest) {
 
-//        Account teacher = securityUtil.getCurrentUser();
 
         AccountDetail accountDetail = new AccountDetail();
 
@@ -140,7 +139,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         accountDetail.setIdCard(accountDetailRequest.getIdCard());
         accountDetail.setEmail(accountDetailRequest.getEmail());
         accountDetail.setPhone(accountDetailRequest.getPhone());
-        if (!PasswordUtil.validationPassword(accountDetailRequest.getPassword()) || accountDetailRequest.getPassword() == null){
+        if (!PasswordUtil.validationPassword(accountDetailRequest.getPassword()) || accountDetailRequest.getPassword() == null) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Mật khẩu phải có ít nhất một ký tự số, ký tự viết thường, ký tự viết hoa, ký hiệu đặc biệt trong số @#$% và độ dài phải từ 8 đến 20"));
         }
@@ -348,7 +347,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
                 accountDetail.setActive(true);
                 accountDetail.setStatus(EAccountDetailStatus.REQUESTED);
-                accountDetail.setPassword(passwordEncoder.encode(accountDetail.getPassword()));
+                accountDetail.setPassword(PasswordUtil.BCryptPasswordEncoder(accountDetail.getPassword()));
                 accountDetail.setActive(true);
                 accountDetailList.add(accountDetail);
                 emailDto.setMail(accountDetail.getEmail());
