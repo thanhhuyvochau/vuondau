@@ -105,7 +105,6 @@ public class ClassController {
     public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> searchClass(@Nullable ClassSearchRequest query, Pageable pageable
     ) {
         return ResponseEntity.ok(ApiResponse.success(iClassService.searchClass(query, pageable)));
-
     }
 
 

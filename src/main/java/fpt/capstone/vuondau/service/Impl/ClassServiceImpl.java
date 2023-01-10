@@ -314,7 +314,6 @@ public class ClassServiceImpl implements IClassService {
         List<Long> classIds = query.getSubjectIds();
         ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
                 .queryLikeByClassName(query.getQ())
-//                .queryLikeByTeacherName(query.getQ())
                 .queryByClassStatus(query.getStatus())
                 .queryByEndDate(query.getEndDate())
                 .queryByStartDate(query.getStartDate())
