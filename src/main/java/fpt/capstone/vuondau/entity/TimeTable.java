@@ -28,7 +28,6 @@ public class TimeTable extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "class_id" )
-
     private Class clazz = new Class();
 
 
@@ -36,9 +35,6 @@ public class TimeTable extends BaseEntity {
     @JoinColumn(name = "archetype_time_id")
     private ArchetypeTime archetypeTime;
 
-
-    @OneToMany(mappedBy = "slot", cascade = CascadeType.ALL , fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<ArchetypeTime> archetypeTimes;
 
     @OneToMany(mappedBy = "timeTable", cascade = CascadeType.ALL , fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Attendance> attendances;
@@ -81,14 +77,6 @@ public class TimeTable extends BaseEntity {
 
     public void setArchetypeTime(ArchetypeTime archetypeTime) {
         this.archetypeTime = archetypeTime;
-    }
-
-    public List<ArchetypeTime> getArchetypeTimes() {
-        return archetypeTimes;
-    }
-
-    public void setArchetypeTimes(List<ArchetypeTime> archetypeTimes) {
-        this.archetypeTimes = archetypeTimes;
     }
 
     public List<Attendance> getAttendances() {

@@ -20,7 +20,7 @@ public class PostController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<Long>> createContentIntroPage(@RequestBody PageContentRequest content) {
         return ResponseEntity.ok(ApiResponse.success(iPostService.createContentIntroPage(content)));
     }

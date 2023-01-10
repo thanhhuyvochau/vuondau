@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class AccountDetailClassLevel extends BaseEntity {
 
     @EmbeddedId
-    private AccountDetailClassLevelKey id;
+    private AccountDetailClassLevelKey id = new AccountDetailClassLevelKey();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("accountDetailId")
@@ -16,7 +16,7 @@ public class AccountDetailClassLevel extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("classLevelId")
-    @JoinColumn(name = "classlevel_id")
+    @JoinColumn(name = "class_level_id")
     private ClassLevel classLevel;
 
     public AccountDetailClassLevelKey getId() {

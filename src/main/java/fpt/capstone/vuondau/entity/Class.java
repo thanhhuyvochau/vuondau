@@ -64,8 +64,9 @@ public class Class extends BaseEntity {
     @Column(name = "is_avtive")
     private boolean isActive;
 
-    @Column(name = "class_level_id")
-    private Long classLevel;
+    @ManyToOne
+    @JoinColumn(name = "class_level_id")
+    private ClassLevel classLevel;
 
     @Column(name = "class_type")
     @Enumerated(EnumType.STRING)
@@ -208,12 +209,8 @@ public class Class extends BaseEntity {
         isActive = active;
     }
 
-    public Long getClassLevel() {
+    public ClassLevel getClassLevel() {
         return classLevel;
-    }
-
-    public void setClassLevel(Long classLevel) {
-        this.classLevel = classLevel;
     }
 
     public EClassType getClassType() {
@@ -286,5 +283,9 @@ public class Class extends BaseEntity {
 
     public void setTransactions(List<Transaction> transactions) {
         this.transactions = transactions;
+    }
+
+    public void setClassLevel(ClassLevel classLevel) {
+        this.classLevel = classLevel;
     }
 }

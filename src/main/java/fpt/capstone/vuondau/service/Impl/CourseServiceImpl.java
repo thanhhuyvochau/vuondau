@@ -212,7 +212,7 @@ public class CourseServiceImpl implements ICourseService {
         }
         Subject subject = course.getSubject();
         if (subject != null) {
-            courseResponse.setSubject(ObjectUtil.copyProperties(subject, new SubjectResponse(), SubjectResponse.class));
+            courseResponse.setSubject(ObjectUtil.copyProperties(subject, new SubjectSimpleResponse(), SubjectSimpleResponse.class));
         }
 
 

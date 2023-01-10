@@ -53,16 +53,16 @@ public class TimeTableController {
     }
 
 
-    @Operation(summary = "Admin tao lich dạy")
+    @Operation(summary = "manager tao lich dạy")
     @PostMapping({"/{classId}/admin"})
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<Long>> adminCreateTimeTableClass(@PathVariable Long classId, Long numberSlot, @RequestBody TimeTableRequest timeTableRequest) throws ParseException {
         return ResponseEntity.ok(ApiResponse.success(iTimeTableService.adminCreateTimeTableClass(classId, numberSlot, timeTableRequest)));
     }
 
     @Operation(summary = "Admin tao lich dạy")
     @PutMapping({"/{classId}/admin"})
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<Long>> adminUpdateTimeTableClass(@PathVariable Long classId, Long numberSlot, @RequestBody TimeTableRequest timeTableRequest) throws ParseException {
         return ResponseEntity.ok(ApiResponse.success(iTimeTableService.adminUpdateTimeTableClass(classId, numberSlot, timeTableRequest)));
     }

@@ -4,18 +4,10 @@ package fpt.capstone.vuondau.entity.dto;
 import fpt.capstone.vuondau.entity.DayOfWeek;
 
 public class ArchetypeTimeDto {
-
-    private ArchetypeDto archetype;
+    private Long id;
     private SlotDto slot ;
     private DayOfWeekDto dayOfWeek ;
 
-    public ArchetypeDto getArchetype() {
-        return archetype;
-    }
-
-    public void setArchetype(ArchetypeDto archetype) {
-        this.archetype = archetype;
-    }
 
     public SlotDto getSlot() {
         return slot;
@@ -31,5 +23,13 @@ public class ArchetypeTimeDto {
 
     public void setDayOfWeek(DayOfWeekDto dayOfWeek) {
         this.dayOfWeek = dayOfWeek;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

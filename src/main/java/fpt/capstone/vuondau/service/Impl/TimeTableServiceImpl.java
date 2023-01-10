@@ -291,10 +291,6 @@ public class TimeTableServiceImpl implements ITimeTableService {
             ArchetypeTimeDto archetypeTimeDto = new ArchetypeTimeDto();
             ArchetypeTime archetypeTime = timeTable.getArchetypeTime();
             if (archetypeTime != null) {
-                Archetype archetype = archetypeTime.getArchetype();
-                if (archetype != null) {
-                    archetypeTimeDto.setArchetype(ObjectUtil.copyProperties(archetype, new ArchetypeDto(), ArchetypeDto.class));
-                }
                 Slot slot = archetypeTime.getSlot();
                 if (slot != null) {
                     archetypeTimeDto.setSlot(ObjectUtil.copyProperties(slot, new SlotDto(), SlotDto.class));

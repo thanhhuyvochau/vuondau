@@ -54,7 +54,7 @@ public class CourseController {
     // MANGER COURSE
     @Operation(summary = "Tìm Kiếm course")
     @GetMapping("/search-cource")
-    @PreAuthorize("hasAnyAuthority('STUDENT','ADMIN','TEACHER')")
+    @PreAuthorize("hasAnyAuthority('STUDENT','MANAGER','TEACHER')")
     public ResponseEntity<ApiResponse<ApiPage<CourseResponse>>> searchCourse(@Nullable CourseSearchRequest query,
                                                                              Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(courseService.searchCourse(query, pageable)));
@@ -74,14 +74,14 @@ public class CourseController {
 
     @Operation(summary = "Get resource course từ moodle")
     @GetMapping("get-resource-from-moodle")
-    @PreAuthorize("hasAnyAuthority('ADMIN','TEACHER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER','TEACHER')")
     public ResponseEntity<ApiResponse<List<MoodleSectionResponse>>> synchronizedResource(@RequestParam Long classId) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(courseService.synchronizedResource(classId)));
     }
 
     @Operation(summary = "sửa course")
     @PutMapping("/{id}/update-course")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<CourseDetailResponse>> updateCourse(@PathVariable long id, @RequestBody CourseRequest subjectRequest) {
         return ResponseEntity.ok(ApiResponse.success(courseService.updateCourse(id, subjectRequest)));
     }

@@ -1,12 +1,15 @@
 package fpt.capstone.vuondau.entity.dto;
 
 
+import java.util.List;
+
 public class ArchetypeDto {
 
-    private Long id ;
-    private String code ;
-    private String name  ;
-    private Long createdByTeacherId ;
+    private Long id;
+    private String code;
+    private String name;
+    private Long createdByTeacherId;
+    private List<ArchetypeTimeDto> archetypeTimes;
 
     public Long getId() {
         return id;
@@ -38,5 +41,13 @@ public class ArchetypeDto {
 
     public void setCreatedByTeacherId(Long createdByTeacherId) {
         this.createdByTeacherId = createdByTeacherId;
+    }
+
+    public List<ArchetypeTimeDto> getArchetypeTimes() {
+        return archetypeTimes;
+    }
+
+    public void setArchetypeTimes(List<ArchetypeTimeDto> archetypeTimes) {
+        this.archetypeTimes = archetypeTimes;
     }
 }
