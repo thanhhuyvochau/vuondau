@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -24,9 +25,8 @@ public class SecurityUtil {
         this.moodleUtil = moodleUtil;
     }
 
-    public Account getCurrentUser() {
+    public Account getCurrentUserThrowNotFoundException() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         Jwt principal = (Jwt) authentication.getPrincipal();
         String username = principal.getClaimAsString("preferred_username");
         Account account = Optional.ofNullable(accountRepository.findByUsername(username))
@@ -65,5 +65,20 @@ public class SecurityUtil {
             throw ApiException.create(HttpStatus.CONFLICT).withMessage("User principal is null!");
         }
         return (Jwt) authentication.getPrincipal();
+    }
+
+    public Account getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (Objects.equals(authentication.getPrincipal(), "anonymousUser")) {
+            return null;
+        } else {
+            Jwt principal = (Jwt) authentication.getPrincipal();
+            String username = principal.getClaimAsString("preferred_username");
+            Account account = accountRepository.findByUsername(username);
+            if (account != null) {
+                synchronizedAccountInfo(principal, account);
+            }
+            return account;
+        }
     }
 }

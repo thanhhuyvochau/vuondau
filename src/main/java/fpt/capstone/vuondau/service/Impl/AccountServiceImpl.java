@@ -102,17 +102,10 @@ public class AccountServiceImpl implements IAccountService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("user name  đã tòn tạo"));
         }
-//        if (accountRepository.existsAccountByEmail(accountRequest.getEmail())) {
-//            throw ApiException.create(HttpStatus.BAD_REQUEST)
-//                    .withMessage(messageUtil.getLocalMessage("Email đã tòn tạo"));
-//        }
+
         account.setUsername(accountRequest.getUsername());
-//        account.setFirstName(accountRequest.getFirstName());
-//        account.setLastName(accountRequest.getLastName());
-//        account.setPhoneNumber(accountRequest.getPhone());
+
         account.setPassword(accountRequest.getPassword());
-        EGenderType gender = GenderUtil.getGenderByCode(accountRequest.getGenderCode());
-//        account.setGender(gender);
         Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
         account.setRole(role);
@@ -380,7 +373,7 @@ public class AccountServiceImpl implements IAccountService {
 
     @Override
     public AccountResponse getSelfAccount() {
-        Account currentUser = securityUtil.getCurrentUser();
+        Account currentUser = securityUtil.getCurrentUserThrowNotFoundException();
         return ConvertUtil.doConvertEntityToResponse(currentUser);
     }
 

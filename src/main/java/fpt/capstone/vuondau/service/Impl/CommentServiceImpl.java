@@ -40,12 +40,12 @@ public class CommentServiceImpl implements ICommentService {
     @Override
     public CommentDto getComment(Long id) {
         Comment comment = commentRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Comment not found by id:" + id));
-        return ConvertUtil.doConvertEntityToResponse(comment, securityUtil.getCurrentUser());
+        return ConvertUtil.doConvertEntityToResponse(comment, securityUtil.getCurrentUserThrowNotFoundException());
     }
 
     @Override
     public List<CommentDto> getCommentByQuestion(Long questionId) {
-        Account currentAccount = securityUtil.getCurrentUser();
+        Account currentAccount = securityUtil.getCurrentUserThrowNotFoundException();
         List<Comment> comments = commentRepository.findAllByQuestion_IdAndParentCommentIsNull(questionId);
         if (!comments.isEmpty()) {
             return comments.stream().map(comment -> ConvertUtil.doConvertEntityToResponse(comment, currentAccount))
@@ -56,7 +56,7 @@ public class CommentServiceImpl implements ICommentService {
 
     @Override
     public CommentDto createComment(CreateCommentRequest createCommentRequest) {
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
         Comment comment = ObjectUtil.copyProperties(createCommentRequest, new Comment(), Comment.class, true);
         Question question = questionRepository.findById(createCommentRequest.getQuestionId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
@@ -79,7 +79,7 @@ public class CommentServiceImpl implements ICommentService {
 
     @Override
     public CommentDto updateComment(Long commentId, CreateCommentRequest createCommentRequest) {
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
                         .withMessage("Comment not found with id:" + commentId));
@@ -103,7 +103,7 @@ public class CommentServiceImpl implements ICommentService {
 
     @Override
     public Boolean voteComment(VoteRequest request) {
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
         Comment comment = commentRepository.findById(request.getCommentId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
                         .withMessage("Comment not found with id:" + request.getCommentId()));

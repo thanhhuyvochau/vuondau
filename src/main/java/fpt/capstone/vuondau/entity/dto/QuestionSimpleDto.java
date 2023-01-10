@@ -3,6 +3,10 @@ package fpt.capstone.vuondau.entity.dto;
 import fpt.capstone.vuondau.entity.VoteNumberReponse;
 import fpt.capstone.vuondau.entity.response.AccountSimpleResponse;
 import fpt.capstone.vuondau.entity.response.SubjectSimpleResponse;
+import org.springframework.data.annotation.CreatedDate;
+
+import javax.persistence.Column;
+import java.time.Instant;
 
 public class QuestionSimpleDto {
     private Long id;
@@ -17,6 +21,8 @@ public class QuestionSimpleDto {
     private SubjectSimpleResponse subject;
 
     private VoteNumberReponse voteNumber;
+
+    private Instant created;
 
     public Long getId() {
         return id;
@@ -72,5 +78,13 @@ public class QuestionSimpleDto {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public Instant getCreated() {
+        return created;
+    }
+
+    public void setCreated(Instant created) {
+        this.created = created;
     }
 }

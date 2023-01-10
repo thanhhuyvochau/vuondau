@@ -90,7 +90,7 @@ public class SubjectController {
 
     @Operation(summary = "Lấy chi tiết diễn đàn của một môn học")
     @GetMapping("/forum")
-    public ResponseEntity<ApiResponse<ForumDto>> getForumOfSubject(@RequestParam Long subjectId) {
-        return ResponseEntity.ok(ApiResponse.success(forumService.getForumBySubject(subjectId)));
+    public ResponseEntity<ApiResponse<ForumDto>> getForumOfSubject(@RequestParam Long subjectId,String q) {
+        return ResponseEntity.ok(ApiResponse.success(forumService.getForumBySubject(subjectId,q)));
     }
 }

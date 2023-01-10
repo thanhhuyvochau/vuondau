@@ -103,7 +103,7 @@ public class ForumServiceImpl implements IForumService {
 
     @Override
     public ForumDto getForumByClass(Long classId) {
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
         Class clazz = classRepository.findById(classId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Class not found with id:" + classId));
         Forum forum = clazz.getForum();
@@ -130,8 +130,8 @@ public class ForumServiceImpl implements IForumService {
     }
 
     @Override
-    public ForumDto getForumBySubject(Long subjectId) {
-        Account account = securityUtil.getCurrentUser();
+    public ForumDto getForumBySubject(Long subjectId,String q) {
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
         Subject subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Subject not found with id:" + subjectId));
         Forum forum = subject.getForum();
@@ -170,7 +170,7 @@ public class ForumServiceImpl implements IForumService {
 
 
     private ApiPage<SimpleForumDto> getAllSubjectForums(Pageable pageable) {
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
         String roleCode = account.getRole().getCode().name();
         switch (roleCode) {
             case "STUDENT":
@@ -209,7 +209,7 @@ public class ForumServiceImpl implements IForumService {
     }
 
     private ApiPage<SimpleForumDto> getAllClassForums(Pageable pageable) {
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
         String roleCode = account.getRole().getCode().name();
         switch (roleCode) {
             case "STUDENT":

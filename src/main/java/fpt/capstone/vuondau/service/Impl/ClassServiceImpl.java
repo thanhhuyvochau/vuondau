@@ -88,7 +88,7 @@ public class ClassServiceImpl implements IClassService {
     @Override
     public Long teacherRequestCreateClass(TeacherCreateClassRequest createClassRequest) throws JsonProcessingException, ParseException {
 
-        Account teacher = securityUtil.getCurrentUser();
+        Account teacher = securityUtil.getCurrentUserThrowNotFoundException();
 
         // set class bên vườn đậu
         Class clazz = new Class();
@@ -314,7 +314,6 @@ public class ClassServiceImpl implements IClassService {
         List<Long> classIds = query.getSubjectIds();
         ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
                 .queryLikeByClassName(query.getQ())
-//                .queryLikeByTeacherName(query.getQ())
                 .queryByClassStatus(query.getStatus())
                 .queryByEndDate(query.getEndDate())
                 .queryByStartDate(query.getStartDate())
@@ -348,95 +347,10 @@ public class ClassServiceImpl implements IClassService {
     public ClassDto classDetail(Long id) throws JsonProcessingException {
         Class aClass = classRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
-//        ClassDetailDto classDetail = ObjectUtil.copyProperties(aClass, new ClassDetailDto(), ClassDetailDto.class);
-//
-//        classDetail.setEachStudentPayPrice(aClass.getEachStudentPayPrice());
-//
-//
-//        classDetail.setFinalPrice(aClass.getFinalPrice());
-//
-//        Course course = aClass.getCourse();
-//        if (course != null) {
-//            CourseDetailResponse courseDetailResponse = new CourseDetailResponse();
-//            courseDetailResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class, true);
-//            if (course.getResource() != null) {
-//                courseDetailResponse.setImage(course.getResource().getUrl());
-//            }
-//            courseDetailResponse.setActive(course.getIsActive());
-//            courseDetailResponse.setTitle(course.getTitle());
-//
-//            // set subject
-//            Subject subject = course.getSubject();
-//            if (subject != null) {
-//                SubjectDto subjectDto = new SubjectDto();
-//                subjectDto.setId(subject.getId());
-//                subjectDto.setName(subject.getName());
-//                subjectDto.setCode(subject.getCode());
-//                courseDetailResponse.setSubject(subjectDto);
-//            }
-//            classDetail.setCourse(courseDetailResponse);
-//
-//
-//        }
-//        Account account = aClass.getAccount();
-//        if (account != null) {
-//            AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class);
-//            accountResponse.setRole(ObjectUtil.copyProperties(account.getRole(), new RoleDto(), RoleDto.class));
-//            Resource resource = account.getResource();
-//            if (resource != null) {
-//                accountResponse.setAvatar(resource.getUrl());
-//            }
-//            classDetail.setTeacher(accountResponse);
-//        }
-//
-//
-//        List<Account> studentList = aClass.getStudentClasses().stream().map(StudentClass::getAccount).collect(Collectors.toList());
-//
-//        List<AccountResponse> accountResponses = new ArrayList<>();
-//        studentList.stream().map(studentMap -> {
-//            AccountResponse student = ObjectUtil.copyProperties(studentMap, new AccountResponse(), AccountResponse.class);
-//            student.setRole(ObjectUtil.copyProperties(studentMap.getRole(), new RoleDto(), RoleDto.class));
-//            if (studentMap.getResource() != null) {
-//                student.setAvatar(studentMap.getResource().getUrl());
-//            }
-//
-//            accountResponses.add(student);
-//            return studentMap;
-//        }).collect(Collectors.toList());
-//        classDetail.setStudents(accountResponses);
-//
-//        List<TimeTableDto> timeTableDtoList = new ArrayList<>();
-//
-//        List<TimeTable> timeTables = aClass.getTimeTables();
-//        timeTables.stream().map(timeTable -> {
-//            TimeTableDto timeTableDto = new TimeTableDto();
-//            timeTableDto.setId(timeTable.getId());
-//            timeTableDto.setDate(timeTable.getDate());
-//            timeTableDto.setSlotNumber(timeTable.getSlotNumber());
-//            ArchetypeTimeDto archetypeTimeDto = new ArchetypeTimeDto();
-//            ArchetypeTime archetypeTime = timeTable.getArchetypeTime();
-//            if (archetypeTime != null) {
-//                Archetype archetype = archetypeTime.getArchetype();
-//                if (archetype != null) {
-//                    archetypeTimeDto.setArchetype(ObjectUtil.copyProperties(archetype, new ArchetypeDto(), ArchetypeDto.class));
-//                }
-//                Slot slot = archetypeTime.getSlot();
-//                if (slot != null) {
-//                    archetypeTimeDto.setSlot(ObjectUtil.copyProperties(slot, new SlotDto(), SlotDto.class));
-//                }
-//                DayOfWeek dayOfWeek = archetypeTime.getDayOfWeek();
-//                if (dayOfWeek != null) {
-//                    archetypeTimeDto.setDayOfWeek(ObjectUtil.copyProperties(dayOfWeek, new DayOfWeekDto(), DayOfWeekDto.class));
-//                }
-//            }
-//
-//
-//            timeTableDto.setArchetypeTime(archetypeTimeDto);
-//            timeTableDtoList.add(timeTableDto);
-//            return timeTable;
-//        }).collect(Collectors.toList());
-//        classDetail.setTimeTable(timeTableDtoList);
-        return ConvertUtil.doConvertEntityToResponse(aClass);
+        Boolean validClassForStudent = ForumUtil.isValidClassForStudent(securityUtil.getCurrentUser(), aClass);
+        ClassDto classDto = ConvertUtil.doConvertEntityToResponse(aClass);
+        classDto.setEnrolled(validClassForStudent);
+        return classDto;
     }
 
 
@@ -448,7 +362,7 @@ public class ClassServiceImpl implements IClassService {
 
     @Override
     public ApiPage<ClassDto> accountFilterClass(ClassSearchRequest query, Pageable pageable) {
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
         List<Class> classAccount = null;
         List<Long> classId = new ArrayList<>();
         if (account.getRole().getCode().equals(EAccountRole.TEACHER)) {
@@ -596,7 +510,7 @@ public class ClassServiceImpl implements IClassService {
 
     @Override
     public Boolean applyToRecruitingClass(Long classId) {
-        Account teacher = securityUtil.getCurrentUser();
+        Account teacher = securityUtil.getCurrentUserThrowNotFoundException();
         Class clazz = classRepository.findById(classId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
         List<ClassTeacherCandicate> candicates = clazz.getCandicates();
@@ -652,7 +566,7 @@ public class ClassServiceImpl implements IClassService {
 
     @Override
     public ApiPage<ClassDto> getClassByAccount(EClassStatus status, Pageable pageable) {
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
 
         Page<Class> classesPage = null;
         Role role = account.getRole();
@@ -692,7 +606,7 @@ public class ClassServiceImpl implements IClassService {
 
     @Override
     public ClassDetailDto accountGetClassDetail(Long id) {
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
         Class aClass = null;
         Role role = account.getRole();
 
@@ -836,7 +750,7 @@ public class ClassServiceImpl implements IClassService {
     }
 
     public Class findClassByRoleAccount(Long id) {
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
         Class aClass = null;
         Role role = account.getRole();
         if (role != null) {
@@ -935,7 +849,7 @@ public class ClassServiceImpl implements IClassService {
     @Override
     public List<ClassTimeTableResponse> accountGetTimeTableOfClass(Long id) {
         Class aClass = findClassByRoleAccount(id);
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
 
 
         List<TimeTable> timeTables = aClass.getTimeTables();
@@ -978,7 +892,7 @@ public class ClassServiceImpl implements IClassService {
 
     @Override
     public ClassAttendanceResponse accountGetAttendanceOfClass(Long id) {
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
         Class aClass = findClassByRoleAccount(id);
 
         StudentClassKey studentClassKey = new StudentClassKey();
@@ -1146,7 +1060,7 @@ public class ClassServiceImpl implements IClassService {
     public ClassDto confirmAppreciation(Long id) throws JsonProcessingException {
         Class clazz = classRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND)
                 .withMessage("Class not found by id:" + id));
-        Account teacher = securityUtil.getCurrentUser();
+        Account teacher = securityUtil.getCurrentUserThrowNotFoundException();
         Account teacherClass = Optional.ofNullable(clazz.getAccount()).orElseThrow(() -> ApiException.create(HttpStatus.CONFLICT)
                 .withMessage("Class dont have teacher!"));
         if (!teacherClass.getId().equals(teacher.getId())) {
@@ -1160,7 +1074,7 @@ public class ClassServiceImpl implements IClassService {
 
     @Override
     public List<ClassDto> getClassByAccountAsList(EClassStatus status) {
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
 
         List<Class> choosenClassList = null;
         Role role = account.getRole();
