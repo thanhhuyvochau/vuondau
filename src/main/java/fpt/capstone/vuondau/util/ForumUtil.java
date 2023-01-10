@@ -8,6 +8,7 @@ import fpt.capstone.vuondau.entity.common.EForumType;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ForumUtil {
@@ -23,8 +24,7 @@ public class ForumUtil {
                 case STUDENT:
                     return isValidClassForStudent(account, clazz);
                 case TEACHER:
-                    Account teacher = clazz.getAccount();
-                    return teacher.getId().equals(account.getId());
+                    return isValidClassForTeacher(account, clazz);
                 default:
                     return true;
             }
@@ -44,6 +44,7 @@ public class ForumUtil {
     }
 
     public static Boolean isValidSubjectForStudent(Account student, Subject subject) {
+        if (student == null || subject == null) return false;
         List<Class> enrolledClass = student.getStudentClasses().stream().map(StudentClass::getaClass).collect(Collectors.toList());
         Class classMatchSubject = enrolledClass.stream()
                 .filter(aClass -> aClass.getCourse().getSubject() != null)
@@ -56,6 +57,7 @@ public class ForumUtil {
     }
 
     public static Boolean isValidClassForStudent(Account student, Class clazz) {
+        if (student == null || clazz == null) return false;
         long enrolled = clazz.getStudentClasses()
                 .stream()
                 .filter(studentClass -> studentClass.getAccount().getId().equals(student.getId())).count();
@@ -66,6 +68,7 @@ public class ForumUtil {
     }
 
     public static Boolean isValidSubjectForTeacher(Account account, Subject subject) {
+        if (account == null || subject == null) return false;
         AccountDetail teacherAccountDetail = account.getAccountDetail();
         if (teacherAccountDetail == null) {
             throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Cannot find the profile of this teacher, contact admin for help!");
@@ -79,5 +82,14 @@ public class ForumUtil {
             return false;
         }
         return true;
+    }
+
+    public static Boolean isValidClassForTeacher(Account account, Class clazz) {
+        if (account == null || clazz == null) return false;
+        AccountDetail teacherAccountDetail = account.getAccountDetail();
+        if (teacherAccountDetail == null) {
+            throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Cannot find the profile of this teacher, contact admin for help!");
+        }
+        return Objects.equals(clazz.getAccount(), account);
     }
 }

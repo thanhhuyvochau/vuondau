@@ -64,7 +64,7 @@ public class TransactionServiceImpl implements ITransactionService {
             throw ApiException.create(HttpStatus.METHOD_NOT_ALLOWED).withMessage("You cannot buy this class because status is invalid!");
         }
         logger.debug("PRINCIPAL:" + request.getSessionId());
-        Account student = securityUtil.getCurrentUser();
+        Account student = securityUtil.getCurrentUserThrowNotFoundException();
         boolean isInClass = clazz.getStudentClasses().stream().map(StudentClass::getAccount).collect(Collectors.toList()).contains(student);
         boolean isPaidClass = transactionUtil.isClassPaid(student, clazz);
         if (isPaidClass) {
@@ -92,7 +92,7 @@ public class TransactionServiceImpl implements ITransactionService {
         vnp_Params.put("vnp_CurrCode", "VND");
 
         Transaction transaction = new Transaction();
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
         transaction.setAccount(account);
         transaction.setAmount(BigDecimal.valueOf(amount));
         transaction.setVpnCommand(vnp_Command);

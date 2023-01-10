@@ -77,7 +77,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
     @Override
     public Long createTimeTableClass(Long classId, Long numberSlot, TimeTableRequest timeTableRequest) throws ParseException {
-        Account currentUser = SecurityUtil.getCurrentUser();
+        Account currentUser = SecurityUtil.getCurrentUserThrowNotFoundException();
 
 
         Class aClass = new Class();
@@ -253,7 +253,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
     @Override
     public ApiPage<TimeTableDto> getTimeTableInDay(TimeTableSearchRequest timeTableSearchRequest, Pageable pageable) {
-        Account currentUser = SecurityUtil.getCurrentUser();
+        Account currentUser = SecurityUtil.getCurrentUserThrowNotFoundException();
 
         Class aClass = classRepository.findById(timeTableSearchRequest.getClassId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + timeTableSearchRequest.getClassId()));
@@ -311,7 +311,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
     @Override
     public List<ClassAttendanceResponse> accountGetAllTimeTable() {
-        Account currentUser = SecurityUtil.getCurrentUser();
+        Account currentUser = SecurityUtil.getCurrentUserThrowNotFoundException();
         List<ClassAttendanceResponse> classAttendanceResponseList = new ArrayList<>();
         List<Class> classList = null;
         if (currentUser.getRole().getCode().equals(EAccountRole.TEACHER)) {
@@ -373,7 +373,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
     @Override
     public Long adminCreateTimeTableClass(Long classId, Long numberSlot, TimeTableRequest timeTableRequest) throws ParseException {
-        Account currentUser = SecurityUtil.getCurrentUser();
+        Account currentUser = SecurityUtil.getCurrentUserThrowNotFoundException();
 
         Class aClass = classRepository.findById(classId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(CLASS_NOT_FOUND_BY_ID + classId));
         if (!aClass.getStatus().equals(EClassStatus.RECRUITING)) {

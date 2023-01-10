@@ -10,7 +10,6 @@ import fpt.capstone.vuondau.entity.dto.RequestFormDto;
 import fpt.capstone.vuondau.entity.dto.RequestTypeDto;
 import fpt.capstone.vuondau.entity.dto.StudentDto;
 import fpt.capstone.vuondau.entity.response.RequestFormResponse;
-import fpt.capstone.vuondau.repository.AccountRepository;
 import fpt.capstone.vuondau.repository.RequestRepository;
 import fpt.capstone.vuondau.repository.RequestTypeRepository;
 import fpt.capstone.vuondau.service.IRequestFormService;
@@ -59,7 +58,7 @@ public class RequestFormServiceImpl implements IRequestFormService {
 
     @Override
     public RequestFormResponse uploadRequestForm( RequestFormDto requestFormDto) {
-        Account student = securityUtil.getCurrentUser();
+        Account student = securityUtil.getCurrentUserThrowNotFoundException();
         try {
             String name = requestFormDto.getFile().getOriginalFilename() + "-" + Instant.now().toString();
             ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, requestFormDto.getFile().getContentType(),

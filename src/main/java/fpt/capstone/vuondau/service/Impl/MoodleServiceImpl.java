@@ -3,7 +3,6 @@ package fpt.capstone.vuondau.service.Impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.entity.common.ApiException;
-import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.moodle.repository.MoodleCourseRepository;
 import fpt.capstone.vuondau.moodle.repository.MoodleRoleRepository;
 import fpt.capstone.vuondau.moodle.repository.MoodleUserRepository;
@@ -21,7 +20,6 @@ import fpt.capstone.vuondau.util.MoodleUtil;
 import fpt.capstone.vuondau.util.ObjectUtil;
 import fpt.capstone.vuondau.util.PageUtil;
 import fpt.capstone.vuondau.util.SecurityUtil;
-import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -129,7 +127,7 @@ public class MoodleServiceImpl implements IMoodleService {
 
     @Override
     public String enrolUserToCourseMoodle(Class clazz) throws JsonProcessingException {
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
         Role role = account.getRole();
 
         MoodleUserResponse moodleAccountOfUser = moodleUtil.getMoodleUserIfExist(account);
@@ -147,7 +145,7 @@ public class MoodleServiceImpl implements IMoodleService {
     @Override
     public String unenrolUserToCourseMoodle(Class clazz) throws JsonProcessingException {
 
-        Account account = securityUtil.getCurrentUser();
+        Account account = securityUtil.getCurrentUserThrowNotFoundException();
         Role role = account.getRole();
 
         MoodleUserResponse moodleAccountOfUser = moodleUtil.getMoodleUserIfExist(account);
