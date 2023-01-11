@@ -71,6 +71,8 @@ public class Account extends BaseEntity {
     private List<Vote> votes = new ArrayList<>();
     private String keycloakUserId;
     private Integer moodleUserId;
+    @OneToMany(mappedBy = "notifier",cascade = CascadeType.PERSIST)
+    private List<Notifier> notifiers = new ArrayList<>();
 
 //    @Column(name = "first_name")
 //    private String firstName;
@@ -385,5 +387,21 @@ public class Account extends BaseEntity {
 
     public void setMoodleUserId(Integer moodleUserId) {
         this.moodleUserId = moodleUserId;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
+    public List<Notifier> getNotifiers() {
+        return notifiers;
+    }
+
+    public void setNotifiers(List<Notifier> notifiers) {
+        this.notifiers = notifiers;
     }
 }
