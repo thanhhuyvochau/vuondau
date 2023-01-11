@@ -104,48 +104,22 @@ public class HatdauApplication {
             roleList.add(roleStudent);
         }
         if (!existAdminRole) {
+
+            Role roleAdmin = new Role();
+            roleAdmin.setCode(MANAGER);
+            roleAdmin.setName("admin");
+            roleList.add(roleAdmin);
+
             Role roleManager = new Role();
             roleManager.setCode(MANAGER);
             roleManager.setName("manager");
             roleList.add(roleManager);
+
         }
         roleRepository.saveAll(roleList);
 
     }
 
-//    @EventListener(ApplicationReadyEvent.class)
-//    public void intiRequestType() {
-//
-//        List<RequestType> allRequestType = requestTypeRepository.findAll();
-//
-//        Boolean existTypeAvatar = false;
-//        Boolean existTypeFile = false;
-//        for (RequestType requestType : allRequestType) {
-//            if (requestType.getCode().equals(AVATAR)) {
-//                existTypeAvatar = true;
-//            }
-//            if (requestType.getCode().equals(FILE)) {
-//                existTypeFile = true;
-//            }
-//        }
-//
-//        List<RequestType> requestTypeList = new ArrayList<>();
-//        if (!existTypeAvatar) {
-//            RequestType requestType = new RequestType();
-//            requestType.setCode(AVATAR);
-//            requestType.setName("avatar");
-//            requestTypeList.add(requestType);
-//        }
-//        if (!existTypeFile) {
-//            RequestType requestType = new RequestType();
-//            requestType.setCode(FILE);
-//            requestType.setName("file");
-//
-//            requestTypeList.add(requestType);
-//        }
-//        requestTypeRepository.saveAll(requestTypeList);
-//
-//    }
 
     @EventListener(ApplicationReadyEvent.class)
     public void intiDataSubject() {
