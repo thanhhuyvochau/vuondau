@@ -98,11 +98,6 @@ public class ClassServiceImpl implements IClassService {
                     .withMessage(messageUtil.getLocalMessage("Class code existed!"));
         }
 
-//        if(!DayUtil.checkBiggerDate(createClassRequest.getStartDate().toString(), createClassRequest.getEndDate().toString())){
-//            throw ApiException.create(HttpStatus.BAD_REQUEST)
-//                    .withMessage(messageUtil.getLocalMessage("Ngày"));
-//        }
-
         Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
         clazz.setCode(createClassRequest.getCode());
 
@@ -132,8 +127,8 @@ public class ClassServiceImpl implements IClassService {
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setEachStudentPayPrice(createClassRequest.getEachStudentPayPrice());
         Class save = classRepository.save(clazz);
-        createMoodleCourse(save, course);
-        moodleService.enrolUserToCourseMoodle(save);
+//        createMoodleCourse(save, course);
+//        moodleService.enrolUserToCourseMoodle(save);
         return save.getId();
     }
 
