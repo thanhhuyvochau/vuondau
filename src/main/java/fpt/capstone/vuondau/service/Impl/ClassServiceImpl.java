@@ -29,10 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static fpt.capstone.vuondau.util.common.Constants.ErrorMessage.*;
@@ -425,7 +422,10 @@ public class ClassServiceImpl implements IClassService {
     public ClassDto adminRejectRequestCreateClass(Long id) {
         Class clazz = classRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage(CLASS_NOT_FOUND_BY_ID) + id));
+        if(!Objects.equals(clazz.getStatus(),EClassStatus.WAITING)){
 
+
+        }
 
         return null;
     }
