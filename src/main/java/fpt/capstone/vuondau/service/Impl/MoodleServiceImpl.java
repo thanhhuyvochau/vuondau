@@ -127,7 +127,7 @@ public class MoodleServiceImpl implements IMoodleService {
 
     @Override
     public String enrolUserToCourseMoodle(Class clazz) throws JsonProcessingException {
-        Account account = securityUtil.getCurrentUserThrowNotFoundException();
+        Account account = clazz.getAccount();
         Role role = account.getRole();
 
         MoodleUserResponse moodleAccountOfUser = moodleUtil.getMoodleUserIfExist(account);
