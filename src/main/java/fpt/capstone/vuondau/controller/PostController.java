@@ -26,11 +26,13 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<PageContentResponse>> getContentIntroPage(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success(iPostService.getContentIntroPage(id)));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<PageContentResponse>> updateContentIntroPage(@PathVariable Long id, @RequestBody PageContentRequest content) {
         return ResponseEntity.ok(ApiResponse.success(iPostService.updateContentIntroPage(id, content)));
     }

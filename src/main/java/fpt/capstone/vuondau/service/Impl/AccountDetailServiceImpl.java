@@ -101,7 +101,6 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
     @Override
     public Long registerTutor(AccountDetailRequest accountDetailRequest) {
 
-//        Account teacher = securityUtil.getCurrentUser();
 
         AccountDetail accountDetail = new AccountDetail();
 
@@ -348,7 +347,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
                 accountDetail.setActive(true);
                 accountDetail.setStatus(EAccountDetailStatus.REQUESTED);
-                accountDetail.setPassword(passwordEncoder.encode(accountDetail.getPassword()));
+                accountDetail.setPassword(PasswordUtil.BCryptPasswordEncoder(accountDetail.getPassword()));
                 accountDetail.setActive(true);
                 accountDetailList.add(accountDetail);
                 emailDto.setMail(accountDetail.getEmail());
