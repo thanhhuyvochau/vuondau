@@ -477,6 +477,7 @@ public class ClassServiceImpl implements IClassService {
         List<Long> idSubject = infoFindTutor.getInfoFindTutorSubjects().stream().map(infoFindTutorAccount -> infoFindTutorAccount.getSubject().getId()).collect(Collectors.toList());
         List<Subject> subjects = subjectRepository.findAllById(idSubject);
 
+
         ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
                 .queryLevelClass(infoFindTutor.getClassLevel())
                 .queryTeacherClass(teachers)
@@ -560,43 +561,27 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
-    public ApiPage<ClassDto> getClassByAccount(EClassStatus status, Pageable pageable) {
+    public ApiPage<ClassDto> getClassByAccount(ClassSearchRequest request, Pageable pageable) {
         Account account = securityUtil.getCurrentUserThrowNotFoundException();
-
-        Page<Class> classesPage = null;
+        List<Account> accounts = new ArrayList<>();
+        accounts.add(account);
         Role role = account.getRole();
 
+        ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
+                .queryLikeByClassName(request.getQ())
+                .queryByClassStatus(request.getStatus());
         if (role != null) {
             if (role.getCode().equals(EAccountRole.STUDENT)) {
-                List<Class> classes = new ArrayList<>();
-                List<Class> classList = account.getStudentClasses().stream().map(StudentClass::getaClass)
-                        .filter(Class::isActive)
-                        .collect(Collectors.toList());
-                if (status.equals(EClassStatus.All)) {
-                    classesPage = new PageImpl<>(classList, pageable, classList.size());
-                } else {
-
-                    classList.forEach(aClass -> {
-                        if (aClass.getStatus().equals(status)) {
-                            classes.add(aClass);
-                        }
-                    });
-                    classesPage = new PageImpl<>(classes, pageable, classList.size());
-                }
-
-            } else if (role.getCode().equals(EAccountRole.TEACHER)) {
-
-                if (status == null || status.equals(EClassStatus.All)) {
-                    classesPage = classRepository.findAllByAccount(account, pageable);
-                } else {
-                    classesPage = classRepository.findAllByAccountAndStatus(account, status, pageable);
-                }
-
+                builder.queryByStudent(account.getId());
+            }
+            if (role.getCode().equals(EAccountRole.TEACHER)) {
+                builder.queryTeacherClass(accounts);
             }
         }
+        Page<Class> classPage = classRepository.findAll(builder.build(), pageable);
 
-
-        return PageUtil.convert(classesPage != null ? classesPage.map(ConvertUtil::doConvertEntityToResponse) : Page.empty());
+return PageUtil.convert(classPage.map(ConvertUtil::doConvertEntityToResponse)) ;
+//        return PageUtil.convert(classesPage != null ? classesPage.map(ConvertUtil::doConvertEntityToResponse) : Page.empty());
     }
 
     @Override
@@ -1065,7 +1050,6 @@ public class ClassServiceImpl implements IClassService {
         moodleService.synchronizedClassDetailFromMoodle(clazz);
         return ConvertUtil.doConvertEntityToResponse(clazz);
     }
-
 
     @Override
     public List<ClassDto> getClassByAccountAsList(EClassStatus status) {

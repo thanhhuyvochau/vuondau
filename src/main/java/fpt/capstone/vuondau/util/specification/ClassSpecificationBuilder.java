@@ -47,10 +47,26 @@ public class ClassSpecificationBuilder {
         });
         return this;
     }
+    public ClassSpecificationBuilder queryByStudent(Long studentId) {
+        if (studentId == null) {
+            return this;
+        }
+        specifications.add((root, query, criteriaBuilder) ->
+        {
+            Path<StudentClass> studentClassPath = root.get(Class_.STUDENT_CLASSES);
+            Path<Account> accountPath = studentClassPath.get(StudentClass_.ACCOUNT);
+
+            return criteriaBuilder.or((accountPath.get(Account_.ID)).in(studentId));
+        });
+        return this;
+    }
 
 
     public ClassSpecificationBuilder queryByClassStatus(EClassStatus statuses) {
         if (statuses == null) {
+            return this;
+        }
+        if (statuses.equals(EClassStatus.All)){
             return this;
         }
         specifications.add((root, query, criteriaBuilder) -> root.get(Class_.STATUS).in(statuses));
@@ -86,6 +102,9 @@ public class ClassSpecificationBuilder {
     }
 
     public ClassSpecificationBuilder queryLikeByClassName(String q) {
+        if (q == null) {
+            return this;
+        }
         specifications.add((root, query, criteriaBuilder) -> {
             Expression<String> classname = root.get(Class_.name);
             return criteriaBuilder.like(classname, '%' + q + '%');

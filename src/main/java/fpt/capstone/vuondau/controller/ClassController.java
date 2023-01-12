@@ -175,8 +175,8 @@ public class ClassController {
 
     @Operation(summary = "(search) lấy tất cả class của giáo viên / học sinh")
     @GetMapping("/search-class/account")
-    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getClassByAccount(EClassStatus status, Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.getClassByAccount(status, pageable)));
+    public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getClassByAccount( ClassSearchRequest request, Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.getClassByAccount(request, pageable)));
     }
 
     @Operation(summary = "admin seach lơp")
