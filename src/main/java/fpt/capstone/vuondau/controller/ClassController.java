@@ -199,7 +199,7 @@ public class ClassController {
 
     @Operation(summary = "giao vien xem  hoc sinh của lớp")
     @GetMapping("/{id}/students")
-    @PreAuthorize("hasAnyAuthority('STUDENT','MANAGER')")
+    @PreAuthorize("hasAnyAuthority('TEACHER','MANAGER')")
     public ResponseEntity<ApiResponse<ApiPage<AccountResponse>>> accountGetStudentOfClass(@PathVariable Long id, Pageable pageable) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.accountGetStudentOfClass(id, pageable)));
     }

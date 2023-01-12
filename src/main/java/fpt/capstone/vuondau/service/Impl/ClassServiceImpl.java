@@ -580,7 +580,7 @@ public class ClassServiceImpl implements IClassService {
         }
         Page<Class> classPage = classRepository.findAll(builder.build(), pageable);
 
-return PageUtil.convert(classPage.map(ConvertUtil::doConvertEntityToResponse)) ;
+        return PageUtil.convert(classPage.map(ConvertUtil::doConvertEntityToResponse));
 //        return PageUtil.convert(classesPage != null ? classesPage.map(ConvertUtil::doConvertEntityToResponse) : Page.empty());
     }
 
@@ -803,7 +803,7 @@ return PageUtil.convert(classPage.map(ConvertUtil::doConvertEntityToResponse)) ;
 
     @Override
     public ApiPage<AccountResponse> accountGetStudentOfClass(Long id, Pageable pageable) {
-        Class aClass = findClassByRoleAccount(id);
+        Class aClass = classRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
 
 
         ClassStudentResponse classStudentResponse = new ClassStudentResponse();
@@ -812,13 +812,14 @@ return PageUtil.convert(classPage.map(ConvertUtil::doConvertEntityToResponse)) ;
 
         List<AccountResponse> accountResponses = new ArrayList<>();
         studentList.forEach(studentMap -> {
-            AccountResponse student = ObjectUtil.copyProperties(studentMap, new AccountResponse(), AccountResponse.class);
-            student.setRole(ObjectUtil.copyProperties(studentMap.getRole(), new RoleDto(), RoleDto.class));
+            AccountResponse accountResponse = ConvertUtil.doConvertEntityToResponse(studentMap);
+//            AccountResponse student = ObjectUtil.copyProperties(studentMap, new AccountResponse(), AccountResponse.class);
+            accountResponse.setRole(ObjectUtil.copyProperties(studentMap.getRole(), new RoleDto(), RoleDto.class));
             if (studentMap.getResource() != null) {
-                student.setAvatar(studentMap.getResource().getUrl());
+                accountResponse.setAvatar(studentMap.getResource().getUrl());
             }
 
-            accountResponses.add(student);
+            accountResponses.add(accountResponse);
         });
         Page<AccountResponse> page = new PageImpl<>(accountResponses);
 
