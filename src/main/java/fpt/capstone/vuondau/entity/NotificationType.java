@@ -1,7 +1,5 @@
 package fpt.capstone.vuondau.entity;
 
-import fpt.capstone.vuondau.entity.common.ENotificationType;
-
 import javax.persistence.*;
 
 @Entity
@@ -10,15 +8,16 @@ public class NotificationType extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Enumerated(EnumType.STRING)
     @Column(name = "code")
-    private ENotificationType code;
+    private String code;
     @Column(name = "name")
     private String title;
     @Column(name = "template")
     private String template;
     @Column(name = "entity")
     private String entity;
+    @Column(name = "url")
+    private String url;
 
     public Long getId() {
         return id;
@@ -28,11 +27,11 @@ public class NotificationType extends BaseEntity {
         this.id = id;
     }
 
-    public ENotificationType getCode() {
+    public String getCode() {
         return code;
     }
 
-    public void setCode(ENotificationType code) {
+    public void setCode(String code) {
         this.code = code;
     }
 
@@ -58,5 +57,13 @@ public class NotificationType extends BaseEntity {
 
     public void setTemplate(String template) {
         this.template = template;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

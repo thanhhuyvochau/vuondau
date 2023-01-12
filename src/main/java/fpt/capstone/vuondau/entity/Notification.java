@@ -14,8 +14,7 @@ public class Notification extends BaseEntity {
     private String content;
     @Column(name = "is_view")
     private boolean isView;
-    @Column(name = "url")
-    private String url;
+
     @JoinColumn(name = "sender_id")
     @ManyToOne
     private Account sender;
@@ -50,14 +49,6 @@ public class Notification extends BaseEntity {
 
     public void setView(boolean view) {
         isView = view;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
     }
 
     public Account getSender() {
