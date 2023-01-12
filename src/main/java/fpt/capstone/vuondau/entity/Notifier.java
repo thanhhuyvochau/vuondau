@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.entity;
 
 import javax.persistence.*;
+import java.time.Instant;
 
 @Entity
 @Table(name = "notifier")
@@ -14,6 +15,9 @@ public class Notifier extends BaseEntity {
     @JoinColumn(name = "notification_id")
     @ManyToOne
     private Notification notification;
+
+    @Column(name = "view_at")
+    private Instant viewAt;
 
     public Long getId() {
         return id;
@@ -37,5 +41,13 @@ public class Notifier extends BaseEntity {
 
     public void setNotification(Notification notification) {
         this.notification = notification;
+    }
+
+    public Instant getViewAt() {
+        return viewAt;
+    }
+
+    public void setViewAt(Instant viewAt) {
+        this.viewAt = viewAt;
     }
 }

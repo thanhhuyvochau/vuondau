@@ -1,0 +1,8 @@
+config:
+  notify:
+    -
+      title: Thông báo thanh toán
+      content: Bạn đã thanh toán thành công cho lớp học
+      entity: TRANSACTION
+      code: TRANSACTION_PAY_SUCCESS
+

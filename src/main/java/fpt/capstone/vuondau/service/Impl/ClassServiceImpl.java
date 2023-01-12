@@ -422,12 +422,10 @@ public class ClassServiceImpl implements IClassService {
     public ClassDto adminRejectRequestCreateClass(Long id) {
         Class clazz = classRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage(CLASS_NOT_FOUND_BY_ID) + id));
-        if(!Objects.equals(clazz.getStatus(),EClassStatus.WAITING)){
-
-
+        if (!Objects.equals(clazz.getStatus(), EClassStatus.WAITING)) {
+            clazz.setStatus(EClassStatus.REJECTED);
         }
-
-        return null;
+        return ConvertUtil.doConvertEntityToResponse(clazz);
     }
 
     @Override

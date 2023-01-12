@@ -13,10 +13,12 @@ public class NotificationType extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "code")
     private ENotificationType code;
+    @Column(name = "name")
+    private String title;
     @Column(name = "template")
     private String template;
-    @Column(name = "name")
-    private String name;
+    @Column(name = "entity")
+    private String entity;
 
     public Long getId() {
         return id;
@@ -34,19 +36,27 @@ public class NotificationType extends BaseEntity {
         this.code = code;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String name) {
+        this.title = name;
+    }
+
+    public String getEntity() {
+        return entity;
+    }
+
+    public void setEntity(String entity) {
+        this.entity = entity;
+    }
+
     public String getTemplate() {
         return template;
     }
 
     public void setTemplate(String template) {
         this.template = template;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }

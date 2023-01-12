@@ -23,8 +23,10 @@ public class Notification extends BaseEntity {
     @ManyToOne
     private NotificationType type;
 
-    @OneToMany(mappedBy = "notification",cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "notification", cascade = CascadeType.PERSIST)
     private List<Notifier> notifiers = new ArrayList<>();
+    @Column(name = "entity_id")
+    private Long entityId;
 
     public Long getId() {
         return id;
@@ -80,5 +82,13 @@ public class Notification extends BaseEntity {
 
     public void setNotifiers(List<Notifier> notifiers) {
         this.notifiers = notifiers;
+    }
+
+    public Long getEntityId() {
+        return entityId;
+    }
+
+    public void setEntityId(Long entityId) {
+        this.entityId = entityId;
     }
 }

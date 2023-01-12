@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import fpt.capstone.vuondau.config.notify.NotificationProperties;
 import fpt.capstone.vuondau.moodle.repository.MoodleCourseRepository;
 import fpt.capstone.vuondau.moodle.request.GetCategoryRequest;
 import fpt.capstone.vuondau.moodle.request.CreateCategoryRequest;
@@ -15,7 +16,9 @@ import fpt.capstone.vuondau.repository.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.env.Environment;
 
 
 import java.text.ParseException;
@@ -29,11 +32,12 @@ import static fpt.capstone.vuondau.entity.common.ESubjectCode.*;
 @SpringBootApplication
 public class HatdauApplication {
 
+    private final Environment evn;
+
     private final RoleRepository roleRepository;
 
 
     private final SubjectRepository subjectRepository;
-
 
 
     private final MoodleCourseRepository moodleCourseRepository;
@@ -47,9 +51,12 @@ public class HatdauApplication {
 
     private final ClassLevelRepository classLevelRepository;
 
-    private final  RequestTypeRepository requestTypeRepository ;
+    private final RequestTypeRepository requestTypeRepository;
+    private final NotificationTypeRepository notificationTypeRepository;
+    private final NotificationProperties notify;
 
-    public HatdauApplication(RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository, MoodleCourseRepository moodleCourseRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ClassRepository classRepository, ForumRepository forumRepository, ClassLevelRepository classLevelRepository) {
+    public HatdauApplication(Environment evn, RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository, MoodleCourseRepository moodleCourseRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ClassRepository classRepository, ForumRepository forumRepository, ClassLevelRepository classLevelRepository, NotificationTypeRepository notificationTypeRepository, NotificationProperties notify) {
+        this.evn = evn;
         this.roleRepository = roleRepository;
         this.subjectRepository = subjectRepository;
         this.requestTypeRepository = requestTypeRepository;
@@ -59,6 +66,8 @@ public class HatdauApplication {
         this.classRepository = classRepository;
         this.forumRepository = forumRepository;
         this.classLevelRepository = classLevelRepository;
+        this.notificationTypeRepository = notificationTypeRepository;
+        this.notify = notify;
     }
 
 
@@ -620,14 +629,13 @@ public class HatdauApplication {
     @EventListener(ApplicationReadyEvent.class)
     public void intiDataRequestType() {
 
-        List<RequestType> all = requestTypeRepository.findAll() ;
-
+        List<RequestType> all = requestTypeRepository.findAll();
 
 
         Boolean application1 = false;
         Boolean application2 = false;
         Boolean application3 = false;
-        Boolean application4  = false;
+        Boolean application4 = false;
 
         for (RequestType requestType : all) {
             if (requestType.getName().equals("Đơn đề nghỉ cấp bảng điêm quá trình")) {
@@ -646,25 +654,25 @@ public class HatdauApplication {
 
         List<RequestType> requestTypeList = new ArrayList<>();
         if (!application1) {
-            RequestType requestType = new RequestType() ;
+            RequestType requestType = new RequestType();
             requestType.setName("Đơn đề nghỉ cấp bảng điêm quá trình");
             requestTypeList.add(requestType);
         }
         if (!application2) {
 
-            RequestType requestType = new RequestType() ;
+            RequestType requestType = new RequestType();
             requestType.setName("Đơn xin nhâp học lại");
             requestTypeList.add(requestType);
 
         }
 
         if (!application3) {
-            RequestType requestType = new RequestType() ;
+            RequestType requestType = new RequestType();
             requestType.setName(" Đơn xin nhâp học lại");
             requestTypeList.add(requestType);
         }
         if (!application4) {
-            RequestType requestType = new RequestType() ;
+            RequestType requestType = new RequestType();
             requestType.setName("Các loại đơn khác");
             requestTypeList.add(requestType);
 
@@ -672,5 +680,8 @@ public class HatdauApplication {
         requestTypeRepository.saveAll(requestTypeList);
     }
 
-
+    @EventListener(ApplicationReadyEvent.class)
+    public void initNotificationType() {
+        System.out.println(notify.getNotify());
     }
+}
