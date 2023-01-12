@@ -103,7 +103,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("class đã có thời khoá biểu"));
         }
-        if (timeTableRequest.getSlotDow().size() > 3 || timeTableRequest.getSlotDow().size() < 2) {
+        if (timeTableRequest.getSlotDow().size() > 7 || timeTableRequest.getSlotDow().size() < 2) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Vui lòng kiểm tra lại số buổi trong tuần "));
         }

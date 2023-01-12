@@ -54,9 +54,7 @@ public class DayUtil {
         Instant dayTwo = Instant.parse(two);
         String twoSubString = dayTwo.toString().substring(0, 10).replaceAll("-", " ");
 
-
         SimpleDateFormat myFormat = new SimpleDateFormat("yyyy MM dd");
-
 
         Date dateOne = myFormat.parse(oneSubString);
         Date dateTwo = myFormat.parse(twoSubString);
@@ -81,7 +79,7 @@ public class DayUtil {
                 .limit(numOfDaysBetween)
                 .mapToObj(startLocalDate::plusDays)
                 .collect(Collectors.toList());
-
+        LocalDate returnLocalDate = null;
         for (LocalDate ld : collectDay) {
             java.time.DayOfWeek dayf = ld.getDayOfWeek();
             System.out.println(dayf);
@@ -89,31 +87,13 @@ public class DayUtil {
             if (dow.equals(dayf)) {
                 System.out.println(dayf.getValue());
                 return ld;
+
             }
         }
-        return null;
+        return returnLocalDate;
 
     }
 
-//    public static Boolean checkBiggerDate(String one, String two) throws ParseException {
-//        Instant start = Instant.parse(one);
-//        String oneSubString = start.toString().substring(0, 10);
-//        java.time.LocalDate startLocalDate = java.time.LocalDate.parse(oneSubString);
-//
-//        java.time.LocalDate dayOneToCheck = startLocalDate.plusDays(30);
-//
-//        Instant end = Instant.parse(two);
-//        String TwoSubString = end.toString().substring(0, 10);
-//        java.time.LocalDate dayTwoToCheck = java.time.LocalDate.parse(TwoSubString);
-//
-//
-//        if (dayOneToCheck.isBefore(dayTwoToCheck) || dayOneToCheck.equals(dayTwoToCheck)){
-//            return true ;
-//        }
-//        else {
-//            return false  ;
-//        }
-//    }
 
 
 }
