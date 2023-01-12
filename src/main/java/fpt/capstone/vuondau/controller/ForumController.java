@@ -47,4 +47,13 @@ public class ForumController {
     public ResponseEntity<ApiResponse<Boolean>> synchronizeLessonForum(@RequestParam Long classId) {
         return ResponseEntity.ok(ApiResponse.success(forumService.synchronizeLessonForum(classId)));
     }
+
+//    @GetMapping("/synchronize-lesson")
+//    public ResponseEntity<ApiResponse<Boolean>> synchronizeLessonForum(@RequestParam Long classId) {
+//        return ResponseEntity.ok(ApiResponse.success(forumService.synchronizeLessonForum(classId)));
+//    }
+
+
+
+
 }
