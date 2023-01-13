@@ -4,6 +4,8 @@ import fpt.capstone.vuondau.entity.common.ERequestStatus;
 import fpt.capstone.vuondau.entity.dto.RequestTypeDto;
 import fpt.capstone.vuondau.entity.dto.StudentDto;
 
+import java.time.Instant;
+
 public class RequestFormResponse {
 
 
@@ -18,9 +20,13 @@ public class RequestFormResponse {
 
     private RequestTypeDto requestType;
 
-    private StudentDto student ;
+    private AccountResponse student ;
 
     private ERequestStatus status ;
+
+    private Instant created ;
+
+
 
 
     public Long getId() {
@@ -47,7 +53,13 @@ public class RequestFormResponse {
         this.url = url;
     }
 
+    public Instant getCreated() {
+        return created;
+    }
 
+    public void setCreated(Instant created) {
+        this.created = created;
+    }
 
     public String getTitle() {
         return title;
@@ -81,11 +93,11 @@ public class RequestFormResponse {
         this.requestType = requestType;
     }
 
-    public StudentDto getStudent() {
+    public AccountResponse getStudent() {
         return student;
     }
 
-    public void setStudent(StudentDto student) {
+    public void setStudent(AccountResponse student) {
         this.student = student;
     }
 }

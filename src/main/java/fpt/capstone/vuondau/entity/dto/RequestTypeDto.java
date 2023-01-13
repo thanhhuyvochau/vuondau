@@ -7,7 +7,8 @@ public class RequestTypeDto {
 
     private Long id;
     private String name;
-    private EResourceType code;
+
+
 
     public Long getId() {
         return id;
@@ -25,11 +26,5 @@ public class RequestTypeDto {
         this.name = name;
     }
 
-    public EResourceType getCode() {
-        return code;
-    }
 
-    public void setCode(EResourceType code) {
-        this.code = code;
-    }
 }
