@@ -110,6 +110,9 @@ public class ConvertUtil {
                     genderResponse.setName(gender.getLabel());
                     accountResponse.setGender(genderResponse);
                 }
+
+
+
                 accountResponse.setPhoneNumber(accountDetail.getPhone());
                 accountResponse.setBirthday(accountDetail.getBirthDay());
                 accountResponse.setLastName(accountDetail.getLastName());
