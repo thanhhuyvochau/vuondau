@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import fpt.capstone.vuondau.moodle.config.Caller;
 import fpt.capstone.vuondau.moodle.request.*;
+import fpt.capstone.vuondau.moodle.response.CourseGradeResponse;
 import fpt.capstone.vuondau.moodle.response.MoodleCategoryResponse;
 import fpt.capstone.vuondau.moodle.response.MoodleCourseResponse;
 import fpt.capstone.vuondau.moodle.response.MoodleSectionResponse;
@@ -59,6 +60,7 @@ public class MoodleCourseRepository extends MoodleBaseRepository {
         };
         return caller.post(getEnrolUserUrl(), request, typeReference);
     }
+
     public String unenrolUser(CreateEnrolCourseRequest request) throws JsonProcessingException {
         TypeReference<String> typeReference = new TypeReference<String>() {
         };
@@ -69,5 +71,11 @@ public class MoodleCourseRepository extends MoodleBaseRepository {
         TypeReference<List<MoodleCourseResponse>> typeReference = new TypeReference<List<MoodleCourseResponse>>() {
         };
         return caller.post(getDeleteCourse(), request, typeReference);
+    }
+
+    public void getCourseGrade(GetCourseGradeRequest request) throws JsonProcessingException {
+        TypeReference<CourseGradeResponse> typeReference = new TypeReference<CourseGradeResponse>() {
+        };
+        return caller.post(getGetCourseGrade(), request, typeReference);
     }
 }

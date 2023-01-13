@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.entity;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "notification_type")
@@ -65,5 +66,18 @@ public class NotificationType extends BaseEntity {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NotificationType that = (NotificationType) o;
+        return Objects.equals(code, that.code) && Objects.equals(title, that.title) && Objects.equals(template, that.template) && Objects.equals(entity, that.entity) && Objects.equals(url, that.url);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(code, title, template, entity, url);
     }
 }

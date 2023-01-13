@@ -33,7 +33,7 @@ public class NotificationProperties {
 
     public static class NotifyDetail {
         private String title;
-        private String content;
+        private String template;
         private String entity;
         private String code;
 
@@ -47,15 +47,15 @@ public class NotificationProperties {
             this.title = title;
         }
 
-        public String getContent() {
+        public String getTemplate() {
 
-            if (content == null)
+            if (template == null)
                 throw ApiException.create(HttpStatus.INTERNAL_SERVER_ERROR).withMessage("Notification config occurs null attribute (content).");
-            return content;
+            return template;
         }
 
-        public void setContent(String content) {
-            this.content = content;
+        public void setTemplate(String template) {
+            this.template = template;
         }
 
         public String getEntity() {

@@ -13,16 +13,17 @@ import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.DayOfWeek;
 import fpt.capstone.vuondau.entity.common.*;
 import fpt.capstone.vuondau.repository.*;
+import fpt.capstone.vuondau.util.ObjectUtil;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
 
 
 import java.text.ParseException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static fpt.capstone.vuondau.entity.common.EAccountRole.*;
@@ -33,6 +34,7 @@ import static fpt.capstone.vuondau.entity.common.ESubjectCode.*;
 public class HatdauApplication {
 
     private final Environment evn;
+    private final NotificationProperties notificationProperties;
 
     private final RoleRepository roleRepository;
 
@@ -53,10 +55,10 @@ public class HatdauApplication {
 
     private final RequestTypeRepository requestTypeRepository;
     private final NotificationTypeRepository notificationTypeRepository;
-    private final NotificationProperties notify;
 
-    public HatdauApplication(Environment evn, RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository, MoodleCourseRepository moodleCourseRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ClassRepository classRepository, ForumRepository forumRepository, ClassLevelRepository classLevelRepository, NotificationTypeRepository notificationTypeRepository, NotificationProperties notify) {
+    public HatdauApplication(Environment evn, NotificationProperties notificationProperties, RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository, MoodleCourseRepository moodleCourseRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ClassRepository classRepository, ForumRepository forumRepository, ClassLevelRepository classLevelRepository, NotificationTypeRepository notificationTypeRepository) {
         this.evn = evn;
+        this.notificationProperties = notificationProperties;
         this.roleRepository = roleRepository;
         this.subjectRepository = subjectRepository;
         this.requestTypeRepository = requestTypeRepository;
@@ -67,7 +69,6 @@ public class HatdauApplication {
         this.forumRepository = forumRepository;
         this.classLevelRepository = classLevelRepository;
         this.notificationTypeRepository = notificationTypeRepository;
-        this.notify = notify;
     }
 
 
@@ -682,6 +683,20 @@ public class HatdauApplication {
 
     @EventListener(ApplicationReadyEvent.class)
     public void initNotificationType() {
-        System.out.println(notify.getNotify());
+        List<NotificationProperties.NotifyDetail> configNotifies = notificationProperties.getNotify();
+        List<NotificationType> notificationTypes = notificationTypeRepository.findAll();
+        Map<String, NotificationType> notificationTypeMap = notificationTypes.stream().collect(Collectors.toMap(NotificationType::getCode, Function.identity()));
+        for (NotificationProperties.NotifyDetail configNotify : configNotifies) {
+            NotificationType newNotificationType = ObjectUtil.copyProperties(configNotify, new NotificationType(), NotificationType.class, true);
+            NotificationType existedNotifyType = notificationTypeMap.get(configNotify.getCode());
+            if (existedNotifyType == null) {
+                notificationTypes.add(newNotificationType);
+            } else if (!Objects.equals(newNotificationType, existedNotifyType)) {
+                existedNotifyType.setEntity(newNotificationType.getEntity());
+                existedNotifyType.setTemplate(newNotificationType.getTemplate());
+                existedNotifyType.setTitle(newNotificationType.getTitle());
+            }
+        }
+        notificationTypeRepository.saveAll(notificationTypes);
     }
 }

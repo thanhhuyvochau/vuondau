@@ -22,6 +22,8 @@ moodle:
       member:
         enrol: enrol_manual_enrol_users
         unenrol: enrol_manual_unenrol_users
+      grade:
+        get: gradereport_user_get_grade_items
     resource:
       get: core_course_get_contents
     category:

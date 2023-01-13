@@ -22,6 +22,8 @@ public class Section extends BaseEntity {
     private List<Module> modules = new ArrayList<>();
     @OneToOne(mappedBy = "section")
     private ForumLesson forumLesson;
+    @Column(name = "moodle_section_id")
+    private Long moodleId;
     public Long getId() {
         return id;
     }
@@ -70,6 +72,14 @@ public class Section extends BaseEntity {
         this.forumLesson = forumLesson;
     }
 
+    public Long getMoodleId() {
+        return moodleId;
+    }
+
+    public void setMoodleId(Long moodleId) {
+        this.moodleId = moodleId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -82,4 +92,5 @@ public class Section extends BaseEntity {
     public int hashCode() {
         return Objects.hash(id, clazz, name, isVisible, modules);
     }
+
 }

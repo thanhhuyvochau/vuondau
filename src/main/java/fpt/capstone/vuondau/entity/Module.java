@@ -1,16 +1,18 @@
 package fpt.capstone.vuondau.entity;
 
+import org.checkerframework.checker.units.qual.C;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
 @Table(name = "module")
-public class Module  extends BaseEntity{
+public class Module extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "moodle_section_id")
+    @JoinColumn(name = "section_id")
     private Section section;
     @Column(name = "name")
     private String name;
@@ -19,6 +21,8 @@ public class Module  extends BaseEntity{
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private EModuleType type;
+    @Column(name = "moodle_module_id")
+    private Long moodleId;
 
     public Long getId() {
         return id;
@@ -58,6 +62,14 @@ public class Module  extends BaseEntity{
 
     public void setType(EModuleType type) {
         this.type = type;
+    }
+
+    public Long getMoodleId() {
+        return moodleId;
+    }
+
+    public void setMoodleId(Long moodleId) {
+        this.moodleId = moodleId;
     }
 
     @Override

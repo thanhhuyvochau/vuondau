@@ -211,6 +211,7 @@ public class MoodleServiceImpl implements IMoodleService {
         Section section = new Section();
         section.setClazz(clazz);
         section.setName(moodleSectionResponse.getName());
+        section.setMoodleId(moodleSectionResponse.getId());
         if (Objects.equals(moodleSectionResponse.getName(), "General")) {
             section.setVisible(false);
         } else {
@@ -226,6 +227,7 @@ public class MoodleServiceImpl implements IMoodleService {
         module.setType(getModuleType(moodleModuleResponse.getModname()));
         module.setSection(section);
         module.setUrl(moodleModuleResponse.getUrl());
+        module.setMoodleId(moodleModuleResponse.getId());
         return module;
     }
 

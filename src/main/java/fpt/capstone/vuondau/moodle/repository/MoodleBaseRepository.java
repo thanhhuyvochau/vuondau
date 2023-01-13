@@ -36,6 +36,8 @@ public class MoodleBaseRepository {
 
     @Value("${moodle.url.course.delete}")
     private String deleteCourse;
+    @Value("${moodle.url.course.grade.get}")
+    private String getCourseGrade;
 
     protected final Caller caller;
 
@@ -141,5 +143,13 @@ public class MoodleBaseRepository {
 
     public void setDeleteCourse(String deleteCourse) {
         this.deleteCourse = deleteCourse;
+    }
+
+    public String getGetCourseGrade() {
+        return baseUrl + getCourseGrade;
+    }
+
+    public void setGetCourseGrade(String getCourseGrade) {
+        this.getCourseGrade = getCourseGrade;
     }
 }
