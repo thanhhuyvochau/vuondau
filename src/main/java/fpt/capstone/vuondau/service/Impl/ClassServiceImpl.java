@@ -290,7 +290,7 @@ public class ClassServiceImpl implements IClassService {
             Account account = studentClass.getAccount();
             if (account != null) {
                 studentDto = ObjectUtil.copyProperties(account, new StudentDto(), StudentDto.class);
-                studentDto.setRole(ObjectUtil.copyProperties(account.getRole(), new RoleDto(), RoleDto.class));
+//                studentDto.setRole(ObjectUtil.copyProperties(account.getRole(), new RoleDto(), RoleDto.class));
 //                studentDto.setPhoneNumber(account.getPhoneNumber());
 //                studentDto.setBirthday();
             }

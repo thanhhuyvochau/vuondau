@@ -66,13 +66,6 @@ public class AdminServiceImpl implements IAdminService {
     }
 
 
-    @Override
-    public ApiPage<RequestFormResponese> searchRequestForm(RequestSearchRequest query, Pageable pageable) {
-        RequestFormSpecificationBuilder builder = RequestFormSpecificationBuilder.specification()
-                .queryLike(query.getQ());
-        Page<Request> requestPage = requestRepository.findAll(builder.build(), pageable);
-        return PageUtil.convert(requestPage.map(ConvertUtil::doConvertEntityToResponse));
-    }
 
 
 }

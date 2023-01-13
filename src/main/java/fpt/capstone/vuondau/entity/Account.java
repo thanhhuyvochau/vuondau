@@ -48,6 +48,9 @@ public class Account extends BaseEntity {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Request> requests = new ArrayList<>();
 
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<RequestReply> requestReplies = new ArrayList<>();
+
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<StudentAnswer> studentAnswers = new ArrayList<>();
 
@@ -76,45 +79,6 @@ public class Account extends BaseEntity {
     private String keycloakUserId;
     private Integer moodleUserId;
 
-//    @Column(name = "first_name")
-//    private String firstName;
-//    @Column(name = "last_name")
-//    private String lastName;
-
-//    @Column(name = "email")
-//    private String email;
-//
-//    @Column(name = "cv_url")
-//    private String cvUrl;
-
-//    @Column(name = "birthday")
-//    private Instant birthday;
-//
-//    @Column(name = "introduce")
-//    private String introduce;
-//
-//    @Column(name = "degree")
-//    private EDegreeType degree;
-
-//    @Column(name = "phone_number")
-//    private String phoneNumber;
-//
-//    @Column(name = "gender")
-//    @Enumerated(EnumType.STRING)
-//    private EGenderType gender;
-
-
-//    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<TeacherCourse> teacherCourses;
-
-
-//    public EGenderType getGender() {
-//        return gender;
-//    }
-//
-//    public void setGender(EGenderType gender) {
-//        this.gender = gender;
-//    }
 
 
     public Long getId() {
@@ -157,94 +121,13 @@ public class Account extends BaseEntity {
         this.infoFindTutorAccounts = infoFindTutorAccounts;
     }
 
-//    public String getFirstName() {
-//        return firstName;
-//    }
-//
-//    public void setFirstName(String firstName) {
-//        this.firstName = firstName;
-//    }
-//
-//    public String getLastName() {
-//        return lastName;
-//    }
-//
-//    public void setLastName(String lastName) {
-//        this.lastName = lastName;
-//    }
-//
-//    public Instant getBirthday() {
-//        return birthday;
-//    }
-//
-//    public void setBirthday(Instant birthday) {
-//        this.birthday = birthday;
-//    }
-//
-//    public String getEmail() {
-//        return email;
-//    }
-//
-//    public void setEmail(String email) {
-//        this.email = email;
-//    }
-//
-//    public String getCvUrl() {
-//        return cvUrl;
-//    }
-//
-//    public void setCvUrl(String cvUrl) {
-//        this.cvUrl = cvUrl;
-//    }
-//
-//    public String getIntroduce() {
-//        return introduce;
-//    }
-//
-//    public void setIntroduce(String introduce) {
-//        this.introduce = introduce;
-//    }
-//
-//    public EDegreeType getDegree() {
-//        return degree;
-//    }
-//
-//    public void setDegree(EDegreeType degree) {
-//        this.degree = degree;
-//    }
-//
-//    public String getPhoneNumber() {
-//        return phoneNumber;
-//    }
-//
-//    public void setPhoneNumber(String phoneNumber) {
-//        this.phoneNumber = phoneNumber;
-//    }
+    public List<RequestReply> getRequestReplies() {
+        return requestReplies;
+    }
 
-
-//    public String getFirstName() {
-//        return firstName;
-//    }
-//
-//    public void setFirstName(String firstName) {
-//        this.firstName = firstName;
-//    }
-//
-//    public String getLastName() {
-//        return lastName;
-//    }
-//
-//    public void setLastName(String lastName) {
-//        this.lastName = lastName;
-//    }
-//
-//    public String getEmail() {
-//        return email;
-//    }
-//
-//    public void setEmail(String email) {
-//        this.email = email;
-//    }
+    public void setRequestReplies(List<RequestReply> requestReplies) {
+        this.requestReplies = requestReplies;
+    }
 
     public Role getRole() {
         return role;
@@ -254,13 +137,6 @@ public class Account extends BaseEntity {
         this.role = role;
     }
 
-//    public List<TeacherCourse> getTeacherCourses() {
-//        return teacherCourses;
-//    }
-//
-//    public void setTeacherCourses(List<TeacherCourse> teacherCourses) {
-//        this.teacherCourses = teacherCourses;
-//    }
 
     public List<StudentClass> getStudentClasses() {
         return studentClasses;

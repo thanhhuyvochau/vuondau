@@ -8,13 +8,15 @@ import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ERequestStatus;
 import fpt.capstone.vuondau.entity.dto.RequestFormDto;
 import fpt.capstone.vuondau.entity.dto.RequestTypeDto;
-import fpt.capstone.vuondau.entity.dto.StudentDto;
+import fpt.capstone.vuondau.entity.request.RequestFormSearchRequest;
+import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.RequestFormResponse;
 import fpt.capstone.vuondau.repository.RequestRepository;
 import fpt.capstone.vuondau.repository.RequestTypeRepository;
 import fpt.capstone.vuondau.service.IRequestFormService;
 import fpt.capstone.vuondau.util.*;
 import fpt.capstone.vuondau.util.adapter.MinioAdapter;
+import fpt.capstone.vuondau.util.specification.RequestFormSpecificationBuilder;
 import io.minio.ObjectWriteResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -25,12 +27,13 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional
 public class RequestFormServiceImpl implements IRequestFormService {
     private final MessageUtil messageUtil;
-
 
 
     private final MinioAdapter minioAdapter;
@@ -57,7 +60,7 @@ public class RequestFormServiceImpl implements IRequestFormService {
 
 
     @Override
-    public RequestFormResponse uploadRequestForm( RequestFormDto requestFormDto) {
+    public RequestFormResponse uploadRequestForm(RequestFormDto requestFormDto) {
         Account student = securityUtil.getCurrentUserThrowNotFoundException();
         try {
             String name = requestFormDto.getFile().getOriginalFilename() + "-" + Instant.now().toString();
@@ -76,7 +79,8 @@ public class RequestFormServiceImpl implements IRequestFormService {
             Request save = requestRepository.save(request);
             RequestFormResponse requestFormResponse = ObjectUtil.copyProperties(save, new RequestFormResponse(), RequestFormResponse.class);
             requestFormResponse.setRequestType(ObjectUtil.copyProperties(requestType, new RequestTypeDto(), RequestTypeDto.class));
-            requestFormResponse.setStudent(ObjectUtil.copyProperties(student, new StudentDto(), StudentDto.class));
+            AccountResponse accountResponse = ConvertUtil.doConvertEntityToResponse(student);
+            requestFormResponse.setStudent(accountResponse);
 
             return requestFormResponse;
         } catch (IOException e) {
@@ -87,32 +91,39 @@ public class RequestFormServiceImpl implements IRequestFormService {
     @Override
     public ApiPage<RequestFormResponse> getAllRequestForm(Pageable pageable) {
         Page<Request> requestPage = requestRepository.findAll(pageable);
-        return PageUtil.convert(requestPage.map(this::convertRequestToRequestResponse));
+        return PageUtil.convert(requestPage.map(ConvertUtil::convertRequestToRequestResponse)) ;
     }
 
 
-
-    private RequestFormResponse convertRequestToRequestResponse(Request request) {
-        RequestFormResponse response = new RequestFormResponse();
-        StudentDto studentDto = null;
-        if (request.getAccount()!= null) {
-             studentDto = ObjectUtil.copyProperties(request.getAccount(), new StudentDto(), StudentDto.class);
-        }
-        response.setId(request.getId());
-        response.setStudent(studentDto);
-
-        response.setReason(request.getReason());
-        response.setUrl(request.getUrl());
-        response.setTitle(request.getTitle());
-        response.setStatus(request.getStatus());
-
-        response.setRequestType( ObjectUtil.copyProperties(request.getRequestType(), new RequestTypeDto(), RequestTypeDto.class));
-        return  response ;
-    }
 
     @Override
     public RequestFormResponse getRequestDetail(Long id) {
         Request request = requestRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay request") + id));
-        return convertRequestToRequestResponse(request);
+        return ConvertUtil.convertRequestToRequestResponse(request);
+    }
+
+    @Override
+    public List<RequestTypeDto> getRequestType() {
+        List<RequestType> allRequestType = requestTypeRepository.findAll();
+        List<RequestTypeDto> requestTypeDtoList = new ArrayList<>();
+        allRequestType.forEach(requestType -> {
+            RequestTypeDto requestTypeDto = new RequestTypeDto();
+            requestTypeDto.setId(requestType.getId());
+            requestTypeDto.setName(requestType.getName());
+            requestTypeDtoList.add(requestTypeDto);
+        });
+        return requestTypeDtoList;
+    }
+
+    @Override
+    public ApiPage<RequestFormResponse> searchRequestForm(RequestFormSearchRequest searchRequestForm, Pageable pageable) {
+        RequestFormSpecificationBuilder builder = RequestFormSpecificationBuilder.specification()
+                .queryByStatus(searchRequestForm.getStatus())
+                .queryByDate(searchRequestForm.getDateFrom(), searchRequestForm.getDateTo())
+                .queryByStudent(searchRequestForm.getStudentId())
+                .queryLike(searchRequestForm.getQ())
+                ;
+        Page<Request> allRequest = requestRepository.findAll(builder.build(), pageable);
+        return PageUtil.convert(allRequest.map(ConvertUtil::convertRequestToRequestResponse)) ;
     }
 }
