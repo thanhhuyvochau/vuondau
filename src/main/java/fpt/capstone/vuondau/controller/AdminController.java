@@ -3,11 +3,8 @@ package fpt.capstone.vuondau.controller;
 import fpt.capstone.vuondau.entity.dto.FeedBackDto;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
-import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.request.*;
-import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.RequestFormResponese;
-import fpt.capstone.vuondau.entity.response.SubjectResponse;
 import fpt.capstone.vuondau.service.IAdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Pageable;
@@ -35,14 +32,6 @@ public class AdminController {
     @PreAuthorize("hasAuthority('MANAGER')")
     public ResponseEntity<ApiResponse<FeedBackDto>> viewStudentFeedbackClass(@PathVariable long classId) {
         return ResponseEntity.ok(ApiResponse.success(iAdminService.viewStudentFeedbackClass(classId)));
-    }
-
-    @Operation(summary = "Tìm Kiếm request form ")
-    @GetMapping("/search-request-form")
-    @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<ApiResponse<ApiPage<RequestFormResponese>>> searchRequestForm(@Nullable RequestSearchRequest query,
-                                                                                        Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.success(iAdminService.searchRequestForm(query, pageable)));
     }
 
 

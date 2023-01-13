@@ -1,10 +1,10 @@
 package fpt.capstone.vuondau.entity;
 
 
-
 import fpt.capstone.vuondau.entity.common.ERequestStatus;
 
 import javax.persistence.*;
+import java.util.List;
 
 
 @Entity
@@ -15,11 +15,11 @@ public class Request extends BaseEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "tile")
+    @Column(name = "title")
     private String title;
 
     @Column(name = "reason")
-    private String reason  ;
+    private String reason;
 
     @Column(name = "url")
     private String url;
@@ -31,6 +31,9 @@ public class Request extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "request_type_id")
     private RequestType requestType;
+
+    @OneToMany(mappedBy = "request")
+    private List<RequestReply> requestReplies;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
@@ -69,8 +72,6 @@ public class Request extends BaseEntity {
     }
 
 
-
-
     public String getUrl() {
         return url;
     }
@@ -93,5 +94,13 @@ public class Request extends BaseEntity {
 
     public void setStatus(ERequestStatus status) {
         this.status = status;
+    }
+
+    public List<RequestReply> getRequestReplies() {
+        return requestReplies;
+    }
+
+    public void setRequestReplies(List<RequestReply> requestReplies) {
+        this.requestReplies = requestReplies;
     }
 }

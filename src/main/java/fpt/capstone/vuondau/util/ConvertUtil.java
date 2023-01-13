@@ -397,4 +397,21 @@ public class ConvertUtil {
     public static DayOfWeekDto doConvertEntityToResponse(DayOfWeek dayOfWeek) {
         return ObjectUtil.copyProperties(dayOfWeek, new DayOfWeekDto(), DayOfWeekDto.class, true);
     }
+
+    public static RequestFormResponse convertRequestToRequestResponse(Request request) {
+        RequestFormResponse response = new RequestFormResponse();
+        if (request.getAccount() != null) {
+            AccountResponse accountResponse = ConvertUtil.doConvertEntityToResponse(request.getAccount());
+            response.setStudent(accountResponse);
+        }
+        response.setId(request.getId());
+        response.setReason(request.getReason());
+        response.setUrl(request.getUrl());
+        response.setTitle(request.getTitle());
+        response.setStatus(request.getStatus());
+        response.setCreated(request.getLastModified());
+
+        response.setRequestType(ObjectUtil.copyProperties(request.getRequestType(), new RequestTypeDto(), RequestTypeDto.class));
+        return response;
+    }
 }
