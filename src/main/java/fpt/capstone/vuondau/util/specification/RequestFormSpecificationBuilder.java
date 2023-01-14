@@ -56,9 +56,7 @@ public class RequestFormSpecificationBuilder {
 
         specifications.add((root, query, criteriaBuilder) -> {
             Expression<String> title = root.get(Request_.title);
-            Expression<String> reason = root.get(Request_.reason);
-
-            Expression<String> stringExpression = SpecificationUtil.concat(criteriaBuilder, " ", title, reason);
+            Expression<String> stringExpression = SpecificationUtil.concat(criteriaBuilder, " ", title);
             String search = q.replaceAll("\\s\\s+", " ").trim();
             return criteriaBuilder.like(stringExpression, '%' + search + '%');
         });

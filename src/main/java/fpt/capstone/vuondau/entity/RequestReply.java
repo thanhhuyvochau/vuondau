@@ -18,6 +18,8 @@ public class RequestReply extends BaseEntity {
     @Column(name = "content")
     private String content;
 
+    @Column(name = "url")
+    private String url;
 
     @ManyToOne
     @JoinColumn(name = "request_id")
@@ -57,5 +59,13 @@ public class RequestReply extends BaseEntity {
 
     public void setAccount(Account account) {
         this.account = account;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

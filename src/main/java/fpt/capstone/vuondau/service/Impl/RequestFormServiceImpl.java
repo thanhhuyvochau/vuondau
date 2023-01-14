@@ -2,15 +2,19 @@ package fpt.capstone.vuondau.service.Impl;
 
 import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.Request;
+import fpt.capstone.vuondau.entity.RequestReply;
 import fpt.capstone.vuondau.entity.RequestType;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ERequestStatus;
 import fpt.capstone.vuondau.entity.dto.RequestFormDto;
+import fpt.capstone.vuondau.entity.dto.RequestFormReplyDto;
 import fpt.capstone.vuondau.entity.dto.RequestTypeDto;
 import fpt.capstone.vuondau.entity.request.RequestFormSearchRequest;
 import fpt.capstone.vuondau.entity.response.AccountResponse;
+import fpt.capstone.vuondau.entity.response.RequestFormReplyResponse;
 import fpt.capstone.vuondau.entity.response.RequestFormResponse;
+import fpt.capstone.vuondau.repository.RequestReplyRepository;
 import fpt.capstone.vuondau.repository.RequestRepository;
 import fpt.capstone.vuondau.repository.RequestTypeRepository;
 import fpt.capstone.vuondau.service.IRequestFormService;
@@ -43,19 +47,22 @@ public class RequestFormServiceImpl implements IRequestFormService {
 
     private final RequestTypeRepository requestTypeRepository;
 
+    private final RequestReplyRepository requestReplyRepository;
+
 
     @Value("${minio.url}")
     String minioUrl;
 
     public RequestFormServiceImpl(MessageUtil messageUtil,
                                   MinioAdapter minioAdapter, SecurityUtil securityUtil, RequestRepository requestRepository,
-                                  RequestTypeRepository requestTypeRepository) {
+                                  RequestTypeRepository requestTypeRepository, RequestReplyRepository requestReplyRepository) {
         this.messageUtil = messageUtil;
         this.securityUtil = securityUtil;
 
         this.minioAdapter = minioAdapter;
         this.requestRepository = requestRepository;
         this.requestTypeRepository = requestTypeRepository;
+        this.requestReplyRepository = requestReplyRepository;
     }
 
 
@@ -91,9 +98,8 @@ public class RequestFormServiceImpl implements IRequestFormService {
     @Override
     public ApiPage<RequestFormResponse> getAllRequestForm(Pageable pageable) {
         Page<Request> requestPage = requestRepository.findAll(pageable);
-        return PageUtil.convert(requestPage.map(ConvertUtil::convertRequestToRequestResponse)) ;
+        return PageUtil.convert(requestPage.map(ConvertUtil::convertRequestToRequestResponse));
     }
-
 
 
     @Override
@@ -121,9 +127,40 @@ public class RequestFormServiceImpl implements IRequestFormService {
                 .queryByStatus(searchRequestForm.getStatus())
                 .queryByDate(searchRequestForm.getDateFrom(), searchRequestForm.getDateTo())
                 .queryByStudent(searchRequestForm.getStudentId())
-                .queryLike(searchRequestForm.getQ())
-                ;
+                .queryLike(searchRequestForm.getQ());
         Page<Request> allRequest = requestRepository.findAll(builder.build(), pageable);
-        return PageUtil.convert(allRequest.map(ConvertUtil::convertRequestToRequestResponse)) ;
+        return PageUtil.convert(allRequest.map(ConvertUtil::convertRequestToRequestResponse));
+    }
+
+    @Override
+    public RequestFormReplyResponse replyRequest(Long id, RequestFormReplyDto requestFormReplyDto) {
+        Account admin = securityUtil.getCurrentUserThrowNotFoundException();
+        Request request = requestRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay request") + id));
+        RequestReply requestReply = new RequestReply();
+        requestReply.setRequest(request);
+        requestReply.setAccount(admin);
+        requestReply.setContent(requestFormReplyDto.getContent());
+
+        if (requestFormReplyDto.getFile() != null) {
+            try {
+                String name = requestFormReplyDto.getFile().getOriginalFilename() + "-" + Instant.now().toString();
+                ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, requestFormReplyDto.getFile().getContentType(),
+                        requestFormReplyDto.getFile().getInputStream(), requestFormReplyDto.getFile().getSize());
+
+                requestReply.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        RequestReply save = requestReplyRepository.save(requestReply);
+        RequestFormReplyResponse response = new RequestFormReplyResponse();
+        response.setId(save.getId());
+        response.setReplierId(admin.getId());
+        response.setRequestId(request.getId());
+        response.setContent(requestFormReplyDto.getContent());
+        response.setUrl(save.getUrl());
+        return response;
     }
 }
