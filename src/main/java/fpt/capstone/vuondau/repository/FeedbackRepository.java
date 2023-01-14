@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 public interface FeedbackRepository extends JpaRepository<FeedBack, Long> {
 
-    List<FeedBack> countAllByClazz (Class clazz) ;
+//    List<FeedBack> countAllByClazz (Class clazz) ;
 
 
 }

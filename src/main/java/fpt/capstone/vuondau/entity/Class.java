@@ -50,8 +50,8 @@ public class Class extends BaseEntity {
     private List<StudentClass> studentClasses;
 
 
-    @OneToMany(mappedBy = "clazz", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<FeedBack> feedBacks;
+//    @OneToMany(mappedBy = "clazz", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private List<FeedBack> feedBacks;
 
     @Column(name = "number_student")
     private Long numberStudent = 0L;
@@ -165,17 +165,17 @@ public class Class extends BaseEntity {
         return studentClasses;
     }
 
-    public void setStudentClasses(List<StudentClass> studentClasses) {
-        this.studentClasses = studentClasses;
-    }
+//    public void setStudentClasses(List<StudentClass> studentClasses) {
+//        this.studentClasses = studentClasses;
+//    }
 
-    public List<FeedBack> getFeedBacks() {
-        return feedBacks;
-    }
-
-    public void setFeedBacks(List<FeedBack> feedBacks) {
-        this.feedBacks = feedBacks;
-    }
+//    public List<FeedBack> getFeedBacks() {
+//        return feedBacks;
+//    }
+//
+//    public void setFeedBacks(List<FeedBack> feedBacks) {
+//        this.feedBacks = feedBacks;
+//    }
 
     public Long getNumberStudent() {
         return numberStudent;

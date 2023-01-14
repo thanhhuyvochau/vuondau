@@ -54,6 +54,8 @@ public class Account extends BaseEntity {
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<StudentAnswer> studentAnswers = new ArrayList<>();
 
+
+
     @Column(name = "is_keycloak")
     private Boolean isKeycloak;
 
@@ -61,6 +63,8 @@ public class Account extends BaseEntity {
     private List<Question> questions = new ArrayList<>();
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
+
+
 
 
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
@@ -266,4 +270,6 @@ public class Account extends BaseEntity {
     public void setMoodleUserId(Integer moodleUserId) {
         this.moodleUserId = moodleUserId;
     }
+
+
 }
