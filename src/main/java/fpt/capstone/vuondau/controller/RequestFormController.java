@@ -4,8 +4,10 @@ package fpt.capstone.vuondau.controller;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.dto.RequestFormDto;
+import fpt.capstone.vuondau.entity.dto.RequestFormReplyDto;
 import fpt.capstone.vuondau.entity.dto.RequestTypeDto;
 import fpt.capstone.vuondau.entity.request.RequestFormSearchRequest;
+import fpt.capstone.vuondau.entity.response.RequestFormReplyResponse;
 import fpt.capstone.vuondau.entity.response.RequestFormResponse;
 import fpt.capstone.vuondau.service.IRequestFormService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,6 +59,14 @@ public class RequestFormController {
     @GetMapping("/request-type")
     public ResponseEntity<ApiResponse<List<RequestTypeDto>>> getRequestType() {
         return ResponseEntity.ok(ApiResponse.success(iRequestFormService.getRequestType()));
+    }
+
+
+    @Operation(summary = "Admin trả lời request của hs ")
+    @PostMapping("/{id}")
+    @PreAuthorize("hasAuthority('MANAGER')")
+    public ResponseEntity<ApiResponse<RequestFormReplyResponse>> replyRequest(@PathVariable Long id , @ModelAttribute RequestFormReplyDto requestFormReplyDto ) {
+        return ResponseEntity.ok(ApiResponse.success(iRequestFormService.replyRequest(id, requestFormReplyDto)));
     }
 
 
