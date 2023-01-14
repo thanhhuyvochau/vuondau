@@ -14,18 +14,18 @@ public class FeedBack  extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long  id;
 
-    @ManyToOne
-    @MapsId("studentId")
-    @JoinColumn(name = "student_id")
-    private Account student;
 
-    @ManyToOne
-    @JoinColumn(name="class_id")
-    private Class clazz  ;
 
+    private StudentClassKey studentClassKeyId = new StudentClassKey();
+
+    @Column(name = "teacher_id")
+    private Long teacherId;
+
+    @Column(name = "content")
     private String content ;
 
-    private EEvaluateType eEvaluateType ;
+    @Column(name = "point")
+    private int  pointEvaluation ;
 
 
     public Long getId() {
@@ -36,15 +36,21 @@ public class FeedBack  extends BaseEntity{
         this.id = id;
     }
 
-    public Account getStudent() {
-        return student;
+    public StudentClassKey getStudentClassKeyId() {
+        return studentClassKeyId;
     }
 
-    public void setStudent(Account student) {
-        this.student = student;
+    public void setStudentClassKeyId(StudentClassKey studentClassKeyId) {
+        this.studentClassKeyId = studentClassKeyId;
     }
 
+    public Long getTeacherId() {
+        return teacherId;
+    }
 
+    public void setTeacherId(Long teacherId) {
+        this.teacherId = teacherId;
+    }
 
     public String getContent() {
         return content;
@@ -54,19 +60,11 @@ public class FeedBack  extends BaseEntity{
         this.content = content;
     }
 
-    public EEvaluateType geteEvaluateType() {
-        return eEvaluateType;
+    public int getPointEvaluation() {
+        return pointEvaluation;
     }
 
-    public void seteEvaluateType(EEvaluateType eEvaluateType) {
-        this.eEvaluateType = eEvaluateType;
-    }
-
-    public Class getClazz() {
-        return clazz;
-    }
-
-    public void setClazz(Class clazz) {
-        this.clazz = clazz;
+    public void setPointEvaluation(int pointEvaluation) {
+        this.pointEvaluation = pointEvaluation;
     }
 }
