@@ -37,4 +37,10 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.success(iPostService.updateContentIntroPage(id, content)));
     }
 
+    @GetMapping
+
+    public ResponseEntity<ApiResponse<PageContentResponse>> renderIntroPage() {
+        return ResponseEntity.ok(ApiResponse.success(iPostService.renderIntroPage()));
+    }
+
 }

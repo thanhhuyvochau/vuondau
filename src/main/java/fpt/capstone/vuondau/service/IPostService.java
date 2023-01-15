@@ -12,4 +12,6 @@ public interface IPostService {
     PageContentResponse getContentIntroPage(Long id);
 
     PageContentResponse updateContentIntroPage(Long id, PageContentRequest content);
+
+    PageContentResponse renderIntroPage();
 }

@@ -11,6 +11,8 @@ public class PageContentRequest {
 
     private String content;
 
+    private Boolean isVisible  ;
+
     public Long getId() {
         return id;
     }
@@ -33,5 +35,13 @@ public class PageContentRequest {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Boolean getVisible() {
+        return isVisible;
+    }
+
+    public void setVisible(Boolean visible) {
+        isVisible = visible;
     }
 }
