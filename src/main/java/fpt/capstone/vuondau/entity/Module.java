@@ -3,6 +3,7 @@ package fpt.capstone.vuondau.entity;
 import org.checkerframework.checker.units.qual.C;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -23,7 +24,6 @@ public class Module extends BaseEntity {
     private EModuleType type;
     @Column(name = "moodle_module_id")
     private Long moodleId;
-
     public Long getId() {
         return id;
     }

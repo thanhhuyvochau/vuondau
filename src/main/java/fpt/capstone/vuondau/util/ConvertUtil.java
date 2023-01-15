@@ -193,7 +193,7 @@ public class ConvertUtil {
 
     public static AccountDetailResponse doConvertEntityToResponse(AccountDetail accountDetail) {
         if (accountDetail == null) return null;
-        AccountDetailResponse accountDetailResponse = ObjectUtil.copyProperties(accountDetail, new AccountDetailResponse(), AccountDetailResponse.class,true);
+        AccountDetailResponse accountDetailResponse = ObjectUtil.copyProperties(accountDetail, new AccountDetailResponse(), AccountDetailResponse.class, true);
         Account account = accountDetail.getAccount();
         if (account != null) {
             accountDetailResponse.setAccountId(account.getId());
@@ -401,5 +401,16 @@ public class ConvertUtil {
 
     public static DayOfWeekDto doConvertEntityToResponse(DayOfWeek dayOfWeek) {
         return ObjectUtil.copyProperties(dayOfWeek, new DayOfWeekDto(), DayOfWeekDto.class, true);
+    }
+
+    public static MarkDto doConvertEntityToResponse(Mark mark) {
+        MarkDto markDto = ObjectUtil.copyProperties(mark, new MarkDto(), MarkDto.class, true);
+        AccountSimpleResponse student = doConvertEntityToSimpleResponse(mark.getStudent());
+        markDto.setStudent(student);
+        return markDto;
+    }
+
+    public static List<MarkResponse> doConvertEntityToListResponse(List<Mark> marks) {
+        return null;
     }
 }

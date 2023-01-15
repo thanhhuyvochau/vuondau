@@ -66,6 +66,4 @@ public class RevenueController {
     public ResponseEntity<ApiResponse<List<RevenueClassResponse>>> studentGetTuitionFee(@Nullable RevenueSearchRequest query) {
         return ResponseEntity.ok(ApiResponse.success(iRevenueService.studentGetTuitionFee(query)));
     }
-
-
 }

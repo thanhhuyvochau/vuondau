@@ -73,7 +73,7 @@ public class MoodleCourseRepository extends MoodleBaseRepository {
         return caller.post(getDeleteCourse(), request, typeReference);
     }
 
-    public void getCourseGrade(GetCourseGradeRequest request) throws JsonProcessingException {
+    public CourseGradeResponse getCourseGrade(GetCourseGradeRequest request) throws JsonProcessingException {
         TypeReference<CourseGradeResponse> typeReference = new TypeReference<CourseGradeResponse>() {
         };
         return caller.post(getGetCourseGrade(), request, typeReference);
