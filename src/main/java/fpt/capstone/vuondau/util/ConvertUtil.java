@@ -413,7 +413,16 @@ public class ConvertUtil {
     }
 
     public static List<MarkResponse> doConvertEntityToListResponse(List<Mark> marks) {
-        return null;
+        List<MarkResponse> responses = new ArrayList<>();
+        for (Mark mark : marks) {
+            MarkDto markDto = doConvertEntityToResponse(mark);
+            ModuleDto moduleDto = doConvertEntityToResponse(mark.getModule());
+            MarkResponse markResponse = new MarkResponse();
+            markResponse.setMarkDto(markDto);
+            markResponse.setModule(moduleDto);
+            responses.add(markResponse);
+        }
+        return responses;
     }
 
     public static RequestFormResponse convertRequestToRequestResponse(Request request) {

@@ -574,9 +574,9 @@ public class ClassServiceImpl implements IClassService {
         accounts.add(account);
         Role role = account.getRole();
 
-        ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification();
-//                .queryLikeByClassName(request.getQ())
-//                .queryByClassStatus(request.getStatus());
+        ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
+                .queryLikeByClassName(request.getQ())
+                .queryByClassStatus(request.getStatus());
         if (role != null) {
             if (role.getCode().equals(EAccountRole.STUDENT)) {
                 builder.queryByStudent(account);

@@ -12,11 +12,14 @@ import fpt.capstone.vuondau.repository.ClassRepository;
 import fpt.capstone.vuondau.repository.MarkRepository;
 import fpt.capstone.vuondau.service.IMarkService;
 import fpt.capstone.vuondau.util.ClassUtil;
+import fpt.capstone.vuondau.util.ConvertUtil;
 import fpt.capstone.vuondau.util.MessageUtil;
 import fpt.capstone.vuondau.util.SecurityUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -60,9 +63,9 @@ public class MarkServiceImpl implements IMarkService {
         }
         if (isValidToGetMark) {
             List<Mark> studentMarks = markRepository.findAllByStudentAndModule_Section_Clazz(student, clazz);
-
+            return ConvertUtil.doConvertEntityToListResponse(studentMarks);
         }
-        return null;
+        return Collections.EMPTY_LIST;
     }
 
     @Override
