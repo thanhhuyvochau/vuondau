@@ -127,7 +127,7 @@ public class MoodleServiceImpl implements IMoodleService {
 
     @Override
     public String enrolUserToCourseMoodle(Class clazz) throws JsonProcessingException {
-        Account account = securityUtil.getCurrentUserThrowNotFoundException();
+        Account account = clazz.getAccount();
         Role role = account.getRole();
 
         MoodleUserResponse moodleAccountOfUser = moodleUtil.getMoodleUserIfExist(account);
@@ -211,6 +211,7 @@ public class MoodleServiceImpl implements IMoodleService {
         Section section = new Section();
         section.setClazz(clazz);
         section.setName(moodleSectionResponse.getName());
+        section.setMoodleId(moodleSectionResponse.getId());
         if (Objects.equals(moodleSectionResponse.getName(), "General")) {
             section.setVisible(false);
         } else {
@@ -226,6 +227,7 @@ public class MoodleServiceImpl implements IMoodleService {
         module.setType(getModuleType(moodleModuleResponse.getModname()));
         module.setSection(section);
         module.setUrl(moodleModuleResponse.getUrl());
+        module.setMoodleId(moodleModuleResponse.getId());
         return module;
     }
 

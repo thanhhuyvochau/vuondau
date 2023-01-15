@@ -16,11 +16,14 @@ moodle:
     course:
       get: core_course_get_courses
       create: core_course_create_courses
+      delete: core_course_delete_courses
       content:
         get: core_course_get_contents
       member:
         enrol: enrol_manual_enrol_users
         unenrol: enrol_manual_unenrol_users
+      grade:
+        get: gradereport_user_get_grade_items
     resource:
       get: core_course_get_contents
     category:
@@ -38,5 +41,7 @@ app:
 
 # Return URL after payment
 payment-redirect: http://localhost:10000/processing
+
+
 
 

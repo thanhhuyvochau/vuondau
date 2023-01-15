@@ -8,10 +8,7 @@ import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.common.EClassType;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -26,7 +23,7 @@ public class ClassSpecificationBuilder {
 
     private final List<Specification<Class>> specifications = new ArrayList<>();
 
-    public ClassSpecificationBuilder queryByClassType(EClassType  classTypes) {
+    public ClassSpecificationBuilder queryByClassType(EClassType classTypes) {
         if (classTypes == null) {
             return this;
         }
@@ -43,20 +40,19 @@ public class ClassSpecificationBuilder {
             Path<Course> objectCourse = root.get(Class_.COURSE);
             Path<Subject> subjectPath = objectCourse.get(Course_.subject);
 
-          return criteriaBuilder.or((subjectPath.get(Subject_.ID)).in(subjectId));
+            return criteriaBuilder.or((subjectPath.get(Subject_.ID)).in(subjectId));
         });
         return this;
     }
-    public ClassSpecificationBuilder queryByStudent(Long studentId) {
-        if (studentId == null) {
+
+    public ClassSpecificationBuilder queryByStudent(Account student) {
+        if (student == null) {
             return this;
         }
         specifications.add((root, query, criteriaBuilder) ->
         {
-            Path<StudentClass> studentClassPath = root.get(Class_.STUDENT_CLASSES);
-            Path<Account> accountPath = studentClassPath.get(StudentClass_.ACCOUNT);
-
-            return criteriaBuilder.or((accountPath.get(Account_.ID)).in(studentId));
+            Join<Class, StudentClass> studentClassJoin = root.join(Class_.STUDENT_CLASSES);
+            return criteriaBuilder.or((studentClassJoin.get(StudentClass_.ACCOUNT)).in(student));
         });
         return this;
     }
@@ -66,7 +62,7 @@ public class ClassSpecificationBuilder {
         if (statuses == null) {
             return this;
         }
-        if (statuses.equals(EClassStatus.All)){
+        if (statuses.equals(EClassStatus.All)) {
             return this;
         }
         specifications.add((root, query, criteriaBuilder) -> root.get(Class_.STATUS).in(statuses));

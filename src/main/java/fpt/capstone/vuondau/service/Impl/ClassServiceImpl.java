@@ -29,10 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static fpt.capstone.vuondau.util.common.Constants.ErrorMessage.*;
@@ -127,8 +124,8 @@ public class ClassServiceImpl implements IClassService {
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setEachStudentPayPrice(createClassRequest.getEachStudentPayPrice());
         Class save = classRepository.save(clazz);
-//        createMoodleCourse(save, course);
-//        moodleService.enrolUserToCourseMoodle(save);
+        createMoodleCourse(save, course);
+        moodleService.enrolUserToCourseMoodle(save);
         return save.getId();
     }
 
@@ -422,6 +419,16 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
+    public ClassDto adminRejectRequestCreateClass(Long id) {
+        Class clazz = classRepository.findById(id)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage(CLASS_NOT_FOUND_BY_ID) + id));
+        if (!Objects.equals(clazz.getStatus(), EClassStatus.WAITING)) {
+            clazz.setStatus(EClassStatus.REJECTED);
+        }
+        return ConvertUtil.doConvertEntityToResponse(clazz);
+    }
+
+    @Override
     public Long updateClassForRecruiting(Long id, CreateClassRequest createClassRequest) throws ParseException {
         Class clazz = classRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage(CLASS_NOT_FOUND_BY_ID) + id));
@@ -567,12 +574,12 @@ public class ClassServiceImpl implements IClassService {
         accounts.add(account);
         Role role = account.getRole();
 
-        ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
-                .queryLikeByClassName(request.getQ())
-                .queryByClassStatus(request.getStatus());
+        ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification();
+//                .queryLikeByClassName(request.getQ())
+//                .queryByClassStatus(request.getStatus());
         if (role != null) {
             if (role.getCode().equals(EAccountRole.STUDENT)) {
-                builder.queryByStudent(account.getId());
+                builder.queryByStudent(account);
             }
             if (role.getCode().equals(EAccountRole.TEACHER)) {
                 builder.queryTeacherClass(accounts);

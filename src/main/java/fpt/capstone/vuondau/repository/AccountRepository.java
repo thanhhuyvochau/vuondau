@@ -23,9 +23,9 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     Page<Account> findAccountByRoleAndIsActiveIsFalse(Pageable pageable, Role role);
 
-    Page<Account> findAccountByRoleAndIsActiveIsTrue(Pageable pageable, Role role);
+    Page<Account> findAccountByRoleAndIsActiveAndAccountDetailNotNull(Role role, Boolean active, Pageable pageable);
 
-    List<Account> findAllByIdInAndIsActiveIsFalse(List<Long> ids ) ;
+    List<Account> findAllByIdInAndIsActiveIsFalse(List<Long> ids);
 
     Page<Account> findAll(Specification<Account> spec, Pageable pageable);
 

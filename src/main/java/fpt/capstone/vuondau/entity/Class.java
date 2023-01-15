@@ -47,7 +47,7 @@ public class Class extends BaseEntity {
 
 
     @OneToMany(mappedBy = "aClass", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<StudentClass> studentClasses;
+    private List<StudentClass> studentClasses = new ArrayList<>();
 
 
 //    @OneToMany(mappedBy = "clazz", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

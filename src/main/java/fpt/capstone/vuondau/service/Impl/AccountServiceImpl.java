@@ -157,7 +157,7 @@ public class AccountServiceImpl implements IAccountService {
         }
         account.setPassword(studentRequest.getPassword());
         account.setKeycloak(true);
-        account.setActive(true);
+        account.setIsActive(true);
         Role role = roleRepository.findRoleByCode(EAccountRole.STUDENT)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
         account.setRole(role);
@@ -331,10 +331,10 @@ public class AccountServiceImpl implements IAccountService {
     public Boolean banAndUbBanAccount(long id) {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
-        if (account.getActive()) {
-            account.setActive(false);
+        if (account.getIsActive()) {
+            account.setIsActive(false);
         } else {
-            account.setActive(true);
+            account.setIsActive(true);
         }
         accountRepository.save(account);
         return true;
@@ -357,7 +357,7 @@ public class AccountServiceImpl implements IAccountService {
         Role role = roleRepository.findRoleByCode(accountEditRequest.getRole())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay role"));
         account.setRole(role);
-        account.setActive(accountEditRequest.isActive());
+        account.setIsActive(accountEditRequest.isActive());
         Account save = accountRepository.save(account);
         return ConvertUtil.doConvertEntityToResponse(save);
     }
@@ -366,7 +366,7 @@ public class AccountServiceImpl implements IAccountService {
     public AccountResponse approveTeacherAccount(long id) {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(("Khong tim thay account") + id));
-        account.setActive(true);
+        account.setIsActive(true);
         Account save = accountRepository.save(account);
         return ConvertUtil.doConvertEntityToResponse(save);
     }
