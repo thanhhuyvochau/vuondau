@@ -32,7 +32,7 @@ public class PostServiceImpl implements IPostService {
         post.setContent(pageContentRequest.getContent());
         post.setType(pageContentRequest.getType());
         List<Post> existPostByType = postRepository.findPostByTypeAndIsVisibleIsTrue(pageContentRequest.getType());
-        if (existPostByType.size()>0) {
+        if (existPostByType.size() > 0) {
             throw ApiException.create(HttpStatus.CONFLICT)
                     .withMessage("Bạn không thể thiết lập hiển thị cho trang này. Hiện tại đang có trang hiển thị rồi.");
         }
@@ -53,7 +53,7 @@ public class PostServiceImpl implements IPostService {
         Post post = postRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay content page" + id));
         post.setType(pageContentRequest.getType());
         List<Post> existPostByType = postRepository.findPostByTypeAndIsVisibleIsTrue(pageContentRequest.getType());
-        if (existPostByType.size()>0 && !post.getVisible()) {
+        if (existPostByType.size() > 0 && !post.getVisible()) {
             throw ApiException.create(HttpStatus.CONFLICT)
                     .withMessage("Bạn không thể thiết lập hiển thị cho trang này. Hiện tại đang có trang hiển thị rồi.");
         }
@@ -65,12 +65,12 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
-    public PageContentResponse renderIntroPage() {
-        Optional<Post> postByType = postRepository.findPostByTypeAndIsVisibleIsTrue(EPageContent.ABOUT).stream().findFirst();
+    public PageContentResponse renderIntroPage(EPageContent type) {
+        Optional<Post> postByType = postRepository.findPostByTypeAndIsVisibleIsTrue(type).stream().findFirst();
         PageContentResponse pageContentResponse = null;
-        if (postByType.isPresent()){
+        if (postByType.isPresent()) {
             Post post = postByType.get();
-            pageContentResponse=   ObjectUtil.copyProperties(post, new PageContentResponse(), PageContentResponse.class);
+            pageContentResponse = ObjectUtil.copyProperties(post, new PageContentResponse(), PageContentResponse.class);
         }
         return pageContentResponse;
     }

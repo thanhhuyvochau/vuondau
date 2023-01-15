@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.controller;
 
 
 import fpt.capstone.vuondau.entity.common.ApiResponse;
+import fpt.capstone.vuondau.entity.common.EPageContent;
 import fpt.capstone.vuondau.entity.request.PageContentRequest;
 import fpt.capstone.vuondau.entity.response.PageContentResponse;
 import fpt.capstone.vuondau.service.IPostService;
@@ -39,8 +40,8 @@ public class PostController {
 
     @GetMapping
 
-    public ResponseEntity<ApiResponse<PageContentResponse>> renderIntroPage() {
-        return ResponseEntity.ok(ApiResponse.success(iPostService.renderIntroPage()));
+    public ResponseEntity<ApiResponse<PageContentResponse>> renderIntroPage(EPageContent type ) {
+        return ResponseEntity.ok(ApiResponse.success(iPostService.renderIntroPage(type)));
     }
 
 }
