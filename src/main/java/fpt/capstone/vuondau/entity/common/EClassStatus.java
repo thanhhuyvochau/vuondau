@@ -10,6 +10,7 @@ public enum EClassStatus {
     STARTING, // Lớp ngưng tuyển sinh và đang bắt đầu dạy
 
     ENDED, // Lớp đã kết thúc
-    All
+    All ,
+
 
 }

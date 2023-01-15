@@ -110,6 +110,8 @@ public class ConvertUtil {
                     genderResponse.setName(gender.getLabel());
                     accountResponse.setGender(genderResponse);
                 }
+
+
                 accountResponse.setPhoneNumber(accountDetail.getPhone());
                 accountResponse.setBirthday(accountDetail.getBirthDay());
                 accountResponse.setLastName(accountDetail.getLastName());
@@ -412,5 +414,22 @@ public class ConvertUtil {
 
     public static List<MarkResponse> doConvertEntityToListResponse(List<Mark> marks) {
         return null;
+    }
+
+    public static RequestFormResponse convertRequestToRequestResponse(Request request) {
+        RequestFormResponse response = new RequestFormResponse();
+        if (request.getAccount() != null) {
+            AccountResponse accountResponse = ConvertUtil.doConvertEntityToResponse(request.getAccount());
+            response.setStudent(accountResponse);
+        }
+        response.setId(request.getId());
+        response.setReason(request.getReason());
+        response.setUrl(request.getUrl());
+        response.setTitle(request.getTitle());
+        response.setStatus(request.getStatus());
+        response.setCreated(request.getLastModified());
+
+        response.setRequestType(ObjectUtil.copyProperties(request.getRequestType(), new RequestTypeDto(), RequestTypeDto.class));
+        return response;
     }
 }

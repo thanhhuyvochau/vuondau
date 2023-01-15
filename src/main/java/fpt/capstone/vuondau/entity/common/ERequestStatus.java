@@ -4,6 +4,7 @@ public enum ERequestStatus {
 
     APPROVED,
     WAITING,
-    REJECTED
+    REJECTED ,
+    ALL
 
 }

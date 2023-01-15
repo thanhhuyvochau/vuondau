@@ -54,25 +54,19 @@ public class AdminServiceImpl implements IAdminService {
         ClassDto classDto = ObjectUtil.copyProperties(fbclass, new ClassDto(), ClassDto.class);
         feedBackDto.setClassInfo(classDto);
 
-        List<FeedBack> feedBacks = feedbackRepository.countAllByClazz(fbclass);
+//        List<FeedBack> feedBacks = feedbackRepository.countAllByClazz(fbclass);
         List<FeedBacClassDto> feedBacClassDtoList = new ArrayList<>();
-        List<FeedBacClassDto> collect = feedBacks.stream().map(feedBack -> {
-            FeedBacClassDto feedBacClassDto = ObjectUtil.copyProperties(feedBack, new FeedBacClassDto(), FeedBacClassDto.class);
-            feedBacClassDtoList.add(feedBacClassDto);
-            return feedBacClassDto;
-        }).collect(Collectors.toList());
-        feedBackDto.setFeedBacClass(feedBacClassDtoList);
-        return feedBackDto;
+//        List<FeedBacClassDto> collect = feedBacks.stream().map(feedBack -> {
+//            FeedBacClassDto feedBacClassDto = ObjectUtil.copyProperties(feedBack, new FeedBacClassDto(), FeedBacClassDto.class);
+//            feedBacClassDtoList.add(feedBacClassDto);
+//            return feedBacClassDto;
+//        }).collect(Collectors.toList());
+//        feedBackDto.setFeedBacClass(feedBacClassDtoList);
+//        return feedBackDto;
+        return null ;
     }
 
 
-    @Override
-    public ApiPage<RequestFormResponese> searchRequestForm(RequestSearchRequest query, Pageable pageable) {
-        RequestFormSpecificationBuilder builder = RequestFormSpecificationBuilder.specification()
-                .queryLike(query.getQ());
-        Page<Request> requestPage = requestRepository.findAll(builder.build(), pageable);
-        return PageUtil.convert(requestPage.map(ConvertUtil::doConvertEntityToResponse));
-    }
 
 
 }

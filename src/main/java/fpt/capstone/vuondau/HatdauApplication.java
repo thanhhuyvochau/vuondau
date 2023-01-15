@@ -669,7 +669,8 @@ public class HatdauApplication {
 
         if (!application3) {
             RequestType requestType = new RequestType();
-            requestType.setName(" Đơn xin nhâp học lại");
+            requestType.setName("Đơn đánh giá giáo viên");
+
             requestTypeList.add(requestType);
         }
         if (!application4) {
