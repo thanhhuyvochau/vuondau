@@ -51,7 +51,7 @@ public class ClassSpecificationBuilder {
         }
         specifications.add((root, query, criteriaBuilder) ->
         {
-            Join<Class, StudentClass> studentClassJoin = root.join(Class_.STUDENT_CLASSES);
+            Join<StudentClass, Class> studentClassJoin = root.join(Class_.STUDENT_CLASSES);
             return criteriaBuilder.or((studentClassJoin.get(StudentClass_.ACCOUNT)).in(student));
         });
         return this;
