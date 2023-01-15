@@ -30,7 +30,8 @@ moodle:
       get: local_wsgetroles_get_roles
     user:
       get: core_user_get_users_by_field
-
+    assignments:
+      get: mod_assign_get_submissions
   token: c60c932ed4585b4534362b56045e653d
 
 app:

@@ -1,7 +1,7 @@
 package fpt.capstone.vuondau.moodle.response;
 
 
-
+import java.util.List;
 
 public class MoodleResourceResponse {
     private Long id;
@@ -9,6 +9,9 @@ public class MoodleResourceResponse {
     private String  name;
 
     private String type ;
+
+    private List<MoodleAssignmentsResponse.assignments.submissions> submissions;
+
 
 
     public Long getId() {
@@ -41,5 +44,13 @@ public class MoodleResourceResponse {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public List<MoodleAssignmentsResponse.assignments.submissions> getSubmissions() {
+        return submissions;
+    }
+
+    public void setSubmissions(List<MoodleAssignmentsResponse.assignments.submissions> submissions) {
+        this.submissions = submissions;
     }
 }
