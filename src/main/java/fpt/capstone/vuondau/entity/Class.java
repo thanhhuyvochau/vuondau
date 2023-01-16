@@ -73,10 +73,7 @@ public class Class extends BaseEntity {
     private EClassType classType;
 
     @Column(name = "each_student_pay_price")
-    private BigDecimal eachStudentPayPrice;
-
-    @Column(name = "final_price")
-    private BigDecimal finalPrice;
+    private BigDecimal unitPrice;
 
 
     @OneToMany(mappedBy = "clazz", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
@@ -221,20 +218,12 @@ public class Class extends BaseEntity {
         this.classType = classType;
     }
 
-    public BigDecimal getEachStudentPayPrice() {
-        return eachStudentPayPrice;
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
     }
 
-    public void setEachStudentPayPrice(BigDecimal eachStudentPayPrice) {
-        this.eachStudentPayPrice = eachStudentPayPrice;
-    }
-
-    public BigDecimal getFinalPrice() {
-        return finalPrice;
-    }
-
-    public void setFinalPrice(BigDecimal finalPrice) {
-        this.finalPrice = finalPrice;
+    public void setUnitPrice(BigDecimal eachStudentPayPrice) {
+        this.unitPrice = eachStudentPayPrice;
     }
 
     public List<TimeTable> getTimeTables() {
