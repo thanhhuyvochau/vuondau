@@ -23,17 +23,19 @@ public interface ClassRepository extends JpaRepository<Class, Long>, JpaSpecific
 
     Class findByCourseAndAccount(Course course, Account account);
 
-    Class findByIdAndAccount(Long id , Account account);
+    Class findByIdAndAccount(Long id, Account account);
 
     List<Class> findByAccountAndStatus(Account account, EClassStatus status);
 
-    Page<Class> findAllByAccount(Account account , Pageable pageable);
+    Page<Class> findAllByAccount(Account account, Pageable pageable);
+
     List<Class> findAllByAccount(Account account);
 
 
-    Page<Class> findAllByAccountAndStatus(Account account,EClassStatus status,  Pageable pageable);
+    Page<Class> findAllByAccountAndStatus(Account account, EClassStatus status, Pageable pageable);
 
-    List<Class> findAllByAccountAndStatus(Account account,EClassStatus status);
+    List<Class> findAllByAccountAndStatus(Account account, EClassStatus status);
+
     Page<Class> findAllByAccountAndActiveIsTrue(Account account, Pageable pageable);
 
 
@@ -52,4 +54,7 @@ public interface ClassRepository extends JpaRepository<Class, Long>, JpaSpecific
 
     Page<Class> findAllByStatus(EClassStatus eClassStatus, Pageable pageable);
 
+    List<Class> findAllByStatus(EClassStatus eClassStatus);
+
+    Class findByMoodleClassId(Long id);
 }

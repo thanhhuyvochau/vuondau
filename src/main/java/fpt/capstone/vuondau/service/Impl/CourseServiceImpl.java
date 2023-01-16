@@ -431,10 +431,10 @@ public class CourseServiceImpl implements ICourseService {
 
             classCourseResponse = new ClassCourseResponse();
             StudentClass studentClass = new StudentClass();
-            StudentClassKey studentClassKey = new StudentClassKey();
-            studentClassKey.setClassId(aClass.getId());
-            studentClassKey.setStudentId(account.getId());
-            studentClass.setId(studentClassKey);
+//            StudentClassKey studentClassKey = new StudentClassKey();
+//            studentClassKey.setClassId(aClass.getId());
+//            studentClassKey.setStudentId(account.getId());
+//            studentClass.setId(studentClassKey);
             studentClass.setAccount(account);
             studentClass.setAClass(aClass);
             studentClass.setEnrollDate(Instant.now());
