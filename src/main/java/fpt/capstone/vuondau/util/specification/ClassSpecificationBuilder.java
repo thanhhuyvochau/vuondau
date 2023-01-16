@@ -85,7 +85,7 @@ public class ClassSpecificationBuilder {
             return this;
         }
 
-        specifications.add((root, query, criteriaBuilder) -> criteriaBuilder.between(root.get(Class_.EACH_STUDENT_PAY_PRICE), minPrice, maxPrice));
+        specifications.add((root, query, criteriaBuilder) -> criteriaBuilder.between(root.get(Class_.UNIT_PRICE), minPrice, maxPrice));
         return this;
     }
 
