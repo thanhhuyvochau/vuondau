@@ -23,7 +23,8 @@ public class Module extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private EModuleType type;
     @Column(name = "moodle_module_id")
-    private Long moodleId;
+    private Integer moodleId;
+
     public Long getId() {
         return id;
     }
@@ -64,11 +65,11 @@ public class Module extends BaseEntity {
         this.type = type;
     }
 
-    public Long getMoodleId() {
+    public Integer getMoodleId() {
         return moodleId;
     }
 
-    public void setMoodleId(Long moodleId) {
+    public void setMoodleId(Integer moodleId) {
         this.moodleId = moodleId;
     }
 

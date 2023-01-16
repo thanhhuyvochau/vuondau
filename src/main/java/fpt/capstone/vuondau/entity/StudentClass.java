@@ -2,20 +2,21 @@ package fpt.capstone.vuondau.entity;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "student_class")
 public class StudentClass {
-    @EmbeddedId
-    private StudentClassKey id = new StudentClassKey();
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne
-    @MapsId("studentId")
     @JoinColumn(name = "student_id")
     private Account account;
 
     @ManyToOne
-    @MapsId("classId")
     @JoinColumn(name = "class_id")
     private Class aClass;
 
@@ -24,15 +25,21 @@ public class StudentClass {
     private Instant enrollDate;
 
     @Column(name = "is_enrolled")
-    private boolean is_enrolled;
+    private boolean is_enrolled = false;
 
+    @OneToMany(mappedBy = "student",cascade = CascadeType.ALL)
+    private List<Mark> marks = new ArrayList<>();
 
-    public StudentClassKey getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(StudentClassKey id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public void setaClass(Class aClass) {
+        this.aClass = aClass;
     }
 
     public Account getAccount() {
@@ -67,5 +74,11 @@ public class StudentClass {
         this.is_enrolled = is_enrolled;
     }
 
+    public List<Mark> getMarks() {
+        return marks;
+    }
 
+    public void setMarks(List<Mark> marks) {
+        this.marks = marks;
+    }
 }

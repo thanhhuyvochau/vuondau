@@ -12,5 +12,5 @@ import java.util.List;
 
 @Repository
 public interface MarkRepository extends JpaRepository<Mark, Long> {
-    List<Mark> findAllByStudentAndModule_Section_Clazz(Account student, Class clazz);
+    List<Mark> findAllByStudent_AccountAndModule_Section_Clazz(Account student, Class clazz);
 }

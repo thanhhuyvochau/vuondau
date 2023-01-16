@@ -13,7 +13,7 @@ public class GradeItemResponse {
     private Object scaleid;
     private boolean locked;
     private int cmid;
-    private int graderaw;
+    private Integer graderaw;
     private int gradedatesubmitted;
     private int gradedategraded;
     private boolean gradehiddenbydate;
@@ -128,11 +128,11 @@ public class GradeItemResponse {
         this.cmid = cmid;
     }
 
-    public int getGraderaw() {
+    public Integer getGraderaw() {
         return graderaw;
     }
 
-    public void setGraderaw(int graderaw) {
+    public void setGraderaw(Integer graderaw) {
         this.graderaw = graderaw;
     }
 

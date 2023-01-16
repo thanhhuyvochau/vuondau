@@ -1,14 +1,18 @@
 package fpt.capstone.vuondau.moodle.response;
 
 
+
 import java.util.List;
 
 public class MoodleResourceResponse {
     private Long id;
+
+
     private String url;
     private String name;
 
     private String type;
+
 
     private Long instance;
 
@@ -46,7 +50,6 @@ public class MoodleResourceResponse {
     public void setType(String type) {
         this.type = type;
     }
-
 
     public Long getInstance() {
         return instance;

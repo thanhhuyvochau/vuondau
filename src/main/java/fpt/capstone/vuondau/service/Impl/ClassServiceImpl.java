@@ -254,11 +254,11 @@ public class ClassServiceImpl implements IClassService {
 
 
         StudentClass studentClass = new StudentClass();
-        StudentClassKey key = new StudentClassKey();
-        key.setClassId(aClass.getId());
-        key.setStudentId(studentId);
-
-        studentClass.setId(key);
+//        StudentClassKey key = new StudentClassKey();
+//        key.setClassId(aClass.getId());
+//        key.setStudentId(studentId);
+//
+//        studentClass.setId(key);
         studentClass.setAClass(aClass);
         studentClass.setAccount(student);
         studentClass.setIs_enrolled(false);

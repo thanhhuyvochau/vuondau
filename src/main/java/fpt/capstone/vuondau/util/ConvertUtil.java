@@ -411,7 +411,7 @@ public class ConvertUtil {
 
     public static MarkDto doConvertEntityToResponse(Mark mark) {
         MarkDto markDto = ObjectUtil.copyProperties(mark, new MarkDto(), MarkDto.class, true);
-        AccountSimpleResponse student = doConvertEntityToSimpleResponse(mark.getStudent());
+        AccountSimpleResponse student = doConvertEntityToSimpleResponse(mark.getStudent().getAccount());
         markDto.setStudent(student);
         return markDto;
     }

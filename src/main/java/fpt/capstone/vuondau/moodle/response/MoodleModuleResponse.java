@@ -3,7 +3,7 @@ package fpt.capstone.vuondau.moodle.response;
 import java.util.ArrayList;
 
 public class MoodleModuleResponse {
-    private long id;
+    private Long id;
     private String url;
     private String name;
     private Long instance;
@@ -23,11 +23,11 @@ public class MoodleModuleResponse {
     private int completion;
     private ArrayList<MoodleDate> dates;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

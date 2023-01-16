@@ -2,7 +2,7 @@ package fpt.capstone.vuondau.moodle.request;
 
 public class GetCourseGradeRequest {
     private Long courseid;
-    private Long userid;
+    private Integer userid;
 
     public Long getCourseid() {
         return courseid;
@@ -12,11 +12,11 @@ public class GetCourseGradeRequest {
         this.courseid = courseid;
     }
 
-    public Long getUserid() {
+    public Integer getUserid() {
         return userid;
     }
 
-    public void setUserid(Long userid) {
+    public void setUserid(Integer userid) {
         this.userid = userid;
     }
 }

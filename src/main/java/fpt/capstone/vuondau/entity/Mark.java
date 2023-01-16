@@ -9,8 +9,8 @@ public class Mark extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "student_id")
-    private Account student;
+    @JoinColumn(name = "student_class_id")
+    private StudentClass student;
     @Column(name = "mark")
     private Float mark;
     @Column(name = "max_mark")
@@ -30,11 +30,11 @@ public class Mark extends BaseEntity {
         this.id = id;
     }
 
-    public Account getStudent() {
+    public StudentClass getStudent() {
         return student;
     }
 
-    public void setStudent(Account student) {
+    public void setStudent(StudentClass student) {
         this.student = student;
     }
 
