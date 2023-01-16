@@ -1,21 +1,18 @@
 package fpt.capstone.vuondau.moodle.response;
 
 
-
-
 public class MoodleResourceResponse {
-    private Long id;
-    private String  url;
-    private String  name;
+    private int id;
+    private String url;
+    private String name;
 
-    private String type ;
+    private String type;
 
-
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
