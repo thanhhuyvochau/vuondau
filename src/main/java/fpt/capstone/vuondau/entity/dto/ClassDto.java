@@ -4,7 +4,6 @@ package fpt.capstone.vuondau.entity.dto;
 import fpt.capstone.vuondau.entity.common.EClassLevel;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.common.EClassType;
-import fpt.capstone.vuondau.entity.response.AccountResponse;
 import fpt.capstone.vuondau.entity.response.AccountSimpleResponse;
 import fpt.capstone.vuondau.entity.response.CourseResponse;
 
@@ -37,7 +36,7 @@ public class ClassDto {
 
     private CourseResponse course ;
 
-    private BigDecimal eachStudentPayPrice ;
+    private BigDecimal unitPrice;
 
     private BigDecimal teacherReceivedPrice ;
 
@@ -77,12 +76,12 @@ public class ClassDto {
         this.code = code;
     }
 
-    public BigDecimal getEachStudentPayPrice() {
-        return eachStudentPayPrice;
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
     }
 
-    public void setEachStudentPayPrice(BigDecimal eachStudentPayPrice) {
-        this.eachStudentPayPrice = eachStudentPayPrice;
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
 
     }
 

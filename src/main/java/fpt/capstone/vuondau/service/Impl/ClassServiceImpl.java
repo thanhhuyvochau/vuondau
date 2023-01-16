@@ -122,7 +122,7 @@ public class ClassServiceImpl implements IClassService {
         clazz.setCourse(course);
         clazz.setStatus(EClassStatus.REQUESTING);
         clazz.setClassType(createClassRequest.getClassType());
-        clazz.setEachStudentPayPrice(createClassRequest.getEachStudentPayPrice());
+        clazz.setUnitPrice(createClassRequest.getEachStudentPayPrice());
         Class save = classRepository.save(clazz);
         createMoodleCourse(save, course);
         moodleService.enrolUserToCourseMoodle(save);
@@ -413,7 +413,7 @@ public class ClassServiceImpl implements IClassService {
         clazz.setClassLevel(classLevel);
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setActive(false);
-        clazz.setEachStudentPayPrice(createClassRequest.getEachStudentPayPrice());
+        clazz.setUnitPrice(createClassRequest.getEachStudentPayPrice());
         Class save = classRepository.save(clazz);
         return save.getId();
     }
@@ -468,7 +468,7 @@ public class ClassServiceImpl implements IClassService {
         clazz.setClassLevel(classLevel);
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setActive(false);
-        clazz.setEachStudentPayPrice(createClassRequest.getEachStudentPayPrice());
+        clazz.setUnitPrice(createClassRequest.getEachStudentPayPrice());
         Class save = classRepository.save(clazz);
         return save.getId();
     }
@@ -618,7 +618,7 @@ public class ClassServiceImpl implements IClassService {
 
         ClassDetailDto classDetail = ObjectUtil.copyProperties(aClass, new ClassDetailDto(), ClassDetailDto.class);
 
-        classDetail.setEachStudentPayPrice(aClass.getEachStudentPayPrice());
+        classDetail.setEachStudentPayPrice(aClass.getUnitPrice());
 
 
         Course course = aClass.getCourse();
@@ -1105,10 +1105,10 @@ public class ClassServiceImpl implements IClassService {
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
         ClassDetailDto classDetail = ObjectUtil.copyProperties(aClass, new ClassDetailDto(), ClassDetailDto.class);
 
-        classDetail.setEachStudentPayPrice(aClass.getEachStudentPayPrice());
+        classDetail.setEachStudentPayPrice(aClass.getUnitPrice());
 
 
-        classDetail.setFinalPrice(aClass.getFinalPrice());
+        classDetail.setFinalPrice(aClass.getUnitPrice());
 
         Course course = aClass.getCourse();
         if (course != null) {
