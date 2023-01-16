@@ -83,7 +83,7 @@ public class TransactionServiceImpl implements ITransactionService {
         String vnp_IpAddr = vnpConfig.getIpAddress(req);
         String vnp_TmnCode = vnpConfig.getVnp_TmnCode();
 
-        int amount = clazz.getFinalPrice().intValue() * 100;
+        int amount = clazz.getUnitPrice().intValue() * 100;
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
