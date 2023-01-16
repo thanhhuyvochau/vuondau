@@ -69,30 +69,33 @@ public class RequestFormServiceImpl implements IRequestFormService {
     @Override
     public RequestFormResponse uploadRequestForm(RequestFormDto requestFormDto) {
         Account student = securityUtil.getCurrentUserThrowNotFoundException();
-        try {
-            String name = requestFormDto.getFile().getOriginalFilename() + "-" + Instant.now().toString();
-            ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, requestFormDto.getFile().getContentType(),
-                    requestFormDto.getFile().getInputStream(), requestFormDto.getFile().getSize());
+        Request request = new Request();
+        request.setTitle(requestFormDto.getTitle());
+        request.setReason(requestFormDto.getReason());
+        RequestType requestType = requestTypeRepository.findById(requestFormDto.getRequestTypeId())
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay request Type") + requestFormDto.getRequestTypeId()));
+        request.setRequestType(requestType);
+        if (requestFormDto.getFile() != null) {
+            try {
+                String name = requestFormDto.getFile().getOriginalFilename() + "-" + Instant.now().toString();
+                ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, requestFormDto.getFile().getContentType(),
+                        requestFormDto.getFile().getInputStream(), requestFormDto.getFile().getSize());
+                request.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
 
-            Request request = new Request();
-            request.setTitle(requestFormDto.getTitle());
-            request.setReason(requestFormDto.getReason());
-            RequestType requestType = requestTypeRepository.findById(requestFormDto.getRequestTypeId())
-                    .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay request Type") + requestFormDto.getRequestTypeId()));
-            request.setRequestType(requestType);
-            request.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
-            request.setStatus(ERequestStatus.WAITING);
-            request.setAccount(student);
-            Request save = requestRepository.save(request);
-            RequestFormResponse requestFormResponse = ObjectUtil.copyProperties(save, new RequestFormResponse(), RequestFormResponse.class);
-            requestFormResponse.setRequestType(ObjectUtil.copyProperties(requestType, new RequestTypeDto(), RequestTypeDto.class));
-            AccountResponse accountResponse = ConvertUtil.doConvertEntityToResponse(student);
-            requestFormResponse.setStudent(accountResponse);
-
-            return requestFormResponse;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
+        request.setStatus(ERequestStatus.WAITING);
+        request.setAccount(student);
+        Request save = requestRepository.save(request);
+        RequestFormResponse requestFormResponse = ObjectUtil.copyProperties(save, new RequestFormResponse(), RequestFormResponse.class);
+        requestFormResponse.setRequestType(ObjectUtil.copyProperties(requestType, new RequestTypeDto(), RequestTypeDto.class));
+        AccountResponse accountResponse = ConvertUtil.doConvertEntityToResponse(student);
+        requestFormResponse.setStudent(accountResponse);
+
+        return requestFormResponse;
+
     }
 
     @Override
@@ -107,7 +110,6 @@ public class RequestFormServiceImpl implements IRequestFormService {
         Request request = requestRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay request") + id));
         return ConvertUtil.convertRequestToRequestResponse(request);
     }
-
 
 
     @Override
@@ -138,6 +140,7 @@ public class RequestFormServiceImpl implements IRequestFormService {
     public RequestFormReplyResponse replyRequest(Long id, RequestFormReplyDto requestFormReplyDto) {
         Account admin = securityUtil.getCurrentUserThrowNotFoundException();
         Request request = requestRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay request") + id));
+        request.setStatus(ERequestStatus.APPROVED);
         RequestReply requestReply = new RequestReply();
         requestReply.setRequest(request);
         requestReply.setAccount(admin);
@@ -155,6 +158,7 @@ public class RequestFormServiceImpl implements IRequestFormService {
                 throw new RuntimeException(e);
             }
         }
+
 
         RequestReply save = requestReplyRepository.save(requestReply);
         RequestFormReplyResponse response = new RequestFormReplyResponse();

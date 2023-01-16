@@ -5,6 +5,7 @@ import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.common.EResourceMoodleType;
 import fpt.capstone.vuondau.entity.response.ClassResourcesResponse;
+import fpt.capstone.vuondau.moodle.response.MoodleAllClassRecourseDtoResponse;
 import fpt.capstone.vuondau.moodle.response.MoodleRecourseClassesDtoResponse;
 import fpt.capstone.vuondau.moodle.response.MoodleRecourseDtoResponse;
 import fpt.capstone.vuondau.service.IExerciseService;
@@ -45,14 +46,19 @@ private final IExerciseService iExerciseService ;
     }
 
     @Operation(summary = "hoc sinh xem tất cả bài tập ở tất cả lớp")
-    @GetMapping("/classes")
+    @GetMapping("student/classes")
     @PreAuthorize("hasAuthority('STUDENT')")
     public ResponseEntity<ApiResponse<ApiPage<MoodleRecourseClassesDtoResponse>>> studentGetAllExerciseAllClass(Pageable pageable) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iExerciseService.studentGetAllExerciseAllClass(pageable)));
     }
 
 
-
+    @Operation(summary = "giao viên xem tất cả bài tập ở tất cả lớp")
+    @GetMapping("teacher/classes")
+    @PreAuthorize("hasAuthority('TEACHER')")
+    public ResponseEntity<ApiResponse<ApiPage<MoodleAllClassRecourseDtoResponse>>> teacherGetAllExerciseAllClass(Pageable pageable) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iExerciseService.teacherGetAllExerciseAllClass(pageable)));
+    }
     
 
 }

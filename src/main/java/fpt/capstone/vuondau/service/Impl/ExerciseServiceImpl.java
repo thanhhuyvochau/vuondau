@@ -20,7 +20,6 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -90,6 +89,28 @@ public class ExerciseServiceImpl implements IExerciseService {
 
     }
 
+    @Override
+    public ApiPage<MoodleAllClassRecourseDtoResponse> teacherGetAllExerciseAllClass(Pageable pageable) {
+        Account student = securityUtil.getCurrentUserThrowNotFoundException();
+        List<Class> teacherClass = student.getTeacherClass();
+        List<MoodleAllClassRecourseDtoResponse> responseList = new ArrayList<>();
+        List<MoodleRecourseDtoResponse> exercise = new ArrayList<>();
+        for (Class aClass : teacherClass) {
+            MoodleAllClassRecourseDtoResponse response = new MoodleAllClassRecourseDtoResponse();
+            response.setClassId(aClass.getId());
+            response.setClassName(aClass.getName());
+            response.setCodeName(aClass.getCode());
+            if (aClass.getMoodleClassId() != null) {
+                exercise = ConvertUtil.doConvertExercise(aClass);
+                response.setResources(exercise);
+            }
+            responseList.add(response);
+        }
+        Page<MoodleAllClassRecourseDtoResponse> page = new PageImpl<>(responseList, pageable, responseList.size());
+        return PageUtil.convert(page);
+
+    }
+
     private MoodleRecourseClassesDtoResponse setDataFormMoodleRecourseClasses(Class aClass, Account student) {
 
         MoodleRecourseClassesDtoResponse response = new MoodleRecourseClassesDtoResponse();
@@ -109,7 +130,7 @@ public class ExerciseServiceImpl implements IExerciseService {
                             || moodleModuleResponse.getModname().equals("assign")
                     ).collect(Collectors.toList());
                     GetMoodleAssignmentIdsCourseRequest request = new GetMoodleAssignmentIdsCourseRequest();
-                    List<Integer> idsInstance = new ArrayList<>();
+                    List<Long> idsInstance = new ArrayList<>();
 
                     isAssignList.forEach(isAssign -> {
                         if (isAssign) {
@@ -130,7 +151,8 @@ public class ExerciseServiceImpl implements IExerciseService {
                                     idsInstance.add(moodleResponse.getInstance());
                                     request.setAssignmentids(idsInstance);
                                     try {
-                                        moodleResourceResponse.setSubmissions(setDateAssignmentsResourceCourse(request, student));;
+                                        moodleResourceResponse.setSubmissions(setDateAssignmentsResourceCourse(request, student));
+                                        ;
 
                                     } catch (Exception e) {
                                         e.printStackTrace();
@@ -167,7 +189,7 @@ public class ExerciseServiceImpl implements IExerciseService {
                     int userid = submission.getUserid().intValue();
                     if (student.getMoodleUserId() == userid) {
                         MoodleAssignmentsResponse.assignments.submissions submissions3 = ObjectUtil.copyProperties(submission, new MoodleAssignmentsResponse.assignments.submissions(), MoodleAssignmentsResponse.assignments.submissions.class);
-                        submissions.add(submissions3) ;
+                        submissions.add(submissions3);
                     }
 
 

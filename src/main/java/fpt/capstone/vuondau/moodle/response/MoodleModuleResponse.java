@@ -6,7 +6,7 @@ public class MoodleModuleResponse {
     private long id;
     private String url;
     private String name;
-    private int instance;
+    private Long instance;
     private int contextid;
     private int visible;
     private boolean uservisible;
@@ -47,11 +47,11 @@ public class MoodleModuleResponse {
         this.name = name;
     }
 
-    public int getInstance() {
+    public Long getInstance() {
         return instance;
     }
 
-    public void setInstance(int instance) {
+    public void setInstance(Long instance) {
         this.instance = instance;
     }
 
