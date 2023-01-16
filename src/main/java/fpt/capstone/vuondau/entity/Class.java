@@ -50,8 +50,6 @@ public class Class extends BaseEntity {
     private List<StudentClass> studentClasses = new ArrayList<>();
 
 
-//    @OneToMany(mappedBy = "clazz", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private List<FeedBack> feedBacks;
 
     @Column(name = "number_student")
     private Long numberStudent = 0L;
