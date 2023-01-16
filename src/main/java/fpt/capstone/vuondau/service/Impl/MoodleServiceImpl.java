@@ -109,20 +109,36 @@ public class MoodleServiceImpl implements IMoodleService {
 //        classes.add(classRepository.findByMoodleClassId(26L));
 
         for (Class clazz : classes) {
+            Map<Long, Section> existedSectionMap = clazz.getSections().stream().collect(Collectors.toMap(Section::getMoodleId, Function.identity()));
             GetMoodleCourseRequest getMoodleCourseRequest = new GetMoodleCourseRequest();
             getMoodleCourseRequest.setCourseid(clazz.getMoodleClassId());
             List<MoodleSectionResponse> detailCourse = moodleCourseRepository.getResourceCourse(getMoodleCourseRequest);
             List<Section> sections = new ArrayList<>();
             for (MoodleSectionResponse moodleSectionResponse : detailCourse) {
+                Section existedSection = existedSectionMap.get(moodleSectionResponse.getId());
                 Section section = createSection(clazz, moodleSectionResponse);
-                for (MoodleModuleResponse moodleModuleResponse : moodleSectionResponse.getModules()) {
-                    Module module = createModule(section, moodleModuleResponse);
-                    section.getModules().add(module);
-
+                if (existedSection != null) {
+                    existedSection.setName(section.getName());
+                    existedSection.setVisible(section.getVisible());
+                    section = existedSection;
+                } else {
+                    sections.add(section);
                 }
-                sections.add(section);
+
+                Map<Integer, Module> existedModuleMap = section.getModules().stream().collect(Collectors.toMap(Module::getMoodleId, Function.identity()));
+                for (MoodleModuleResponse moodleModuleResponse : moodleSectionResponse.getModules()) {
+                    Module existedModule = existedModuleMap.get(moodleModuleResponse.getId());
+                    Module module = createModule(section, moodleModuleResponse);
+                    if (existedModule != null) {
+                        existedModule.setName(module.getName());
+                        existedModule.setType(module.getType());
+                        existedModule.setUrl(module.getUrl());
+                    } else {
+                        section.getModules().add(module);
+                    }
+                }
+
             }
-            clazz.getSections().clear();
             clazz.getSections().addAll(sections);
         }
         classRepository.saveAll(classes);
