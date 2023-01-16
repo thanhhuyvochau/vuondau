@@ -22,7 +22,8 @@ public class Post extends BaseEntity {
     @Column(name = "content", columnDefinition = "LONGBLOB")
     private String content;
 
-
+    @Column(name = "is_visible")
+    private Boolean isVisible;
 
     public Long getId() {
         return id;
@@ -49,5 +50,11 @@ public class Post extends BaseEntity {
         this.type = type;
     }
 
+    public Boolean getVisible() {
+        return isVisible;
+    }
 
+    public void setVisible(Boolean visible) {
+        isVisible = visible;
+    }
 }

@@ -3,10 +3,10 @@ package fpt.capstone.vuondau.moodle.response;
 import java.util.ArrayList;
 
 public class MoodleModuleResponse {
-    private int id;
+    private Long id;
     private String url;
     private String name;
-    private int instance;
+    private Long instance;
     private int contextid;
     private int visible;
     private boolean uservisible;
@@ -23,11 +23,11 @@ public class MoodleModuleResponse {
     private int completion;
     private ArrayList<MoodleDate> dates;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -47,11 +47,11 @@ public class MoodleModuleResponse {
         this.name = name;
     }
 
-    public int getInstance() {
+    public Long getInstance() {
         return instance;
     }
 
-    public void setInstance(int instance) {
+    public void setInstance(Long instance) {
         this.instance = instance;
     }
 

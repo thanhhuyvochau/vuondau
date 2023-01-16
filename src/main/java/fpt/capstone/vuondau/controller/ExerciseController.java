@@ -1,12 +1,16 @@
 package fpt.capstone.vuondau.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.common.EResourceMoodleType;
 import fpt.capstone.vuondau.entity.response.ClassResourcesResponse;
+import fpt.capstone.vuondau.moodle.response.MoodleAllClassRecourseDtoResponse;
+import fpt.capstone.vuondau.moodle.response.MoodleRecourseClassesDtoResponse;
 import fpt.capstone.vuondau.moodle.response.MoodleRecourseDtoResponse;
 import fpt.capstone.vuondau.service.IExerciseService;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +30,7 @@ private final IExerciseService iExerciseService ;
         this.iExerciseService = iExerciseService;
     }
 
+
     @Operation(summary = "hoc sinh xem chi tiết resource (bai tập) của lớp")
     @GetMapping("/{classId}/student")
     @PreAuthorize("hasAuthority('STUDENT')")
@@ -40,6 +45,27 @@ private final IExerciseService iExerciseService ;
         return ResponseEntity.ok(ApiResponse.success(iExerciseService.teacherGetExerciseInClass(classId)));
     }
 
-    
+    @Operation(summary = "hoc sinh xem tất cả bài tập ở tất cả lớp")
+    @GetMapping("student/classes")
+    @PreAuthorize("hasAuthority('STUDENT')")
+    public ResponseEntity<ApiResponse<ApiPage<MoodleRecourseClassesDtoResponse>>> studentGetAllExerciseAllClass(Pageable pageable) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iExerciseService.studentGetAllExerciseAllClass(pageable)));
+    }
+
+
+    @Operation(summary = "giao viên xem tất cả bài tập ở tất cả lớp")
+    @GetMapping("teacher/classes")
+    @PreAuthorize("hasAuthority('TEACHER')")
+    public ResponseEntity<ApiResponse<ApiPage<MoodleAllClassRecourseDtoResponse>>> teacherGetAllExerciseAllClass(Pageable pageable) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iExerciseService.teacherGetAllExerciseAllClass(pageable)));
+    }
+
+    @Operation(summary = "giao viên lấy tất cả học sinh và bài tập đã nộp trong lớp")
+    @GetMapping("submit/{instanceId}/students")
+    @PreAuthorize("hasAuthority('TEACHER')")
+    public ResponseEntity<ApiResponse<List<Long>>> teacherGetAllSubmitStudent(@PathVariable Long instanceId , Long classId ) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iExerciseService.teacherGetAllSubmitStudent(instanceId, classId)));
+    }
+
 
 }

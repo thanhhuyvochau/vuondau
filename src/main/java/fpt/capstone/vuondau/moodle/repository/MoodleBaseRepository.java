@@ -39,6 +39,9 @@ public class MoodleBaseRepository {
     @Value("${moodle.url.course.grade.get}")
     private String getCourseGrade;
 
+    @Value("${moodle.url.assignments.get}")
+    private String getAssignments;
+
     protected final Caller caller;
 
     public MoodleBaseRepository(Caller caller) {
@@ -151,5 +154,13 @@ public class MoodleBaseRepository {
 
     public void setGetCourseGrade(String getCourseGrade) {
         this.getCourseGrade = getCourseGrade;
+    }
+
+    public String getGetAssignments() {
+        return baseUrl+getAssignments;
+    }
+
+    public void setGetAssignments(String getAssignments) {
+        this.getAssignments = getAssignments;
     }
 }

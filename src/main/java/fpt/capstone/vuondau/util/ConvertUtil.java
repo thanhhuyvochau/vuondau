@@ -325,6 +325,9 @@ public class ConvertUtil {
         return response;
     }
 
+
+
+
     public static List<MoodleRecourseDtoResponse> doConvertExercise(Class aClass) {
         List<MoodleRecourseDtoResponse> exercise = new ArrayList<>();
 
@@ -352,6 +355,7 @@ public class ConvertUtil {
                                     MoodleResourceResponse moodleResourceResponse = new MoodleResourceResponse();
                                     moodleResourceResponse.setId(moodleResponse.getId());
                                     moodleResourceResponse.setUrl(moodleResponse.getUrl());
+                                    moodleResourceResponse.setInstance(moodleResponse.getInstance());
                                     moodleResourceResponse.setName(moodleResponse.getName());
                                     moodleResourceResponse.setType(moodleResponse.getModname());
                                     moodleResourceResponseList.add(moodleResourceResponse);

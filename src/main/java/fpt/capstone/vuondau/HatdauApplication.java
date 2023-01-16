@@ -480,15 +480,18 @@ public class HatdauApplication {
     public void intiDataDateOfWeek() {
 
         List<DayOfWeek> allDayOfWeeks = dayOfWeekRepository.findAll();
-
+        Boolean existDay1 = false;
         Boolean existDay2 = false;
         Boolean existDay3 = false;
         Boolean existDay4 = false;
         Boolean existDay5 = false;
         Boolean existDay6 = false;
         Boolean existDay7 = false;
-        Boolean existDay8 = false;
+
         for (DayOfWeek dayOfWeek : allDayOfWeeks) {
+            if (dayOfWeek.getCode().equals(EDayOfWeekCode.SUNDAY)) {
+                existDay1 = true;
+            }
             if (dayOfWeek.getCode().equals(EDayOfWeekCode.MONDAY)) {
                 existDay2 = true;
             }
@@ -507,14 +510,18 @@ public class HatdauApplication {
             if (dayOfWeek.getCode().equals(EDayOfWeekCode.SATURDAY)) {
                 existDay7 = true;
             }
-            if (dayOfWeek.getCode().equals(EDayOfWeekCode.SUNDAY)) {
-                existDay8 = true;
-            }
+
 
 
         }
 
         List<DayOfWeek> dayOfWeekList = new ArrayList<>();
+        if (!existDay1) {
+            DayOfWeek dayOfWeek = new DayOfWeek();
+            dayOfWeek.setCode(EDayOfWeekCode.SUNDAY);
+            dayOfWeek.setName("Chủ Nhật");
+            dayOfWeekList.add(dayOfWeek);
+        }
         if (!existDay2) {
             DayOfWeek dayOfWeek = new DayOfWeek();
             dayOfWeek.setCode(EDayOfWeekCode.MONDAY);
@@ -555,12 +562,7 @@ public class HatdauApplication {
             dayOfWeek.setName("Thứ Bảy");
             dayOfWeekList.add(dayOfWeek);
         }
-        if (!existDay8) {
-            DayOfWeek dayOfWeek = new DayOfWeek();
-            dayOfWeek.setCode(EDayOfWeekCode.SUNDAY);
-            dayOfWeek.setName("Chủ Nhật");
-            dayOfWeekList.add(dayOfWeek);
-        }
+
 
         dayOfWeekRepository.saveAll(dayOfWeekList);
 
@@ -645,7 +647,7 @@ public class HatdauApplication {
             if (requestType.getName().equals("Đơn xin nhâp học lại")) {
                 application2 = true;
             }
-            if (requestType.getName().equals("Đơn xin nhâp học lại")) {
+            if (requestType.getName().equals("Đơn đánh giá giáo viên")) {
                 application3 = true;
             }
             if (requestType.getName().equals("Các loại đơn khác")) {

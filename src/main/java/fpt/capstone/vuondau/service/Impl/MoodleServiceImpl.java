@@ -247,7 +247,7 @@ public class MoodleServiceImpl implements IMoodleService {
         module.setType(getModuleType(moodleModuleResponse.getModname()));
         module.setSection(section);
         module.setUrl(moodleModuleResponse.getUrl());
-        module.setMoodleId((int) moodleModuleResponse.getId());
+        module.setMoodleId( moodleModuleResponse.getId().intValue());
         return module;
     }
 
