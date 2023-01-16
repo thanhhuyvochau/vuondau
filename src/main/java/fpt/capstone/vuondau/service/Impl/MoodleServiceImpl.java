@@ -104,6 +104,10 @@ public class MoodleServiceImpl implements IMoodleService {
     @Override
     public Boolean synchronizedAllClassDetailFromMoodle() throws JsonProcessingException {
         List<Class> classes = classRepository.findAll();
+        /** Dữ liệu để test, do dữ liệu hiện tại bị lỗi*/
+//        List<Class> classes = new ArrayList<>();
+//        classes.add(classRepository.findByMoodleClassId(26L));
+
         for (Class clazz : classes) {
             GetMoodleCourseRequest getMoodleCourseRequest = new GetMoodleCourseRequest();
             getMoodleCourseRequest.setCourseid(clazz.getMoodleClassId());
@@ -227,7 +231,7 @@ public class MoodleServiceImpl implements IMoodleService {
         module.setType(getModuleType(moodleModuleResponse.getModname()));
         module.setSection(section);
         module.setUrl(moodleModuleResponse.getUrl());
-        module.setMoodleId(moodleModuleResponse.getId());
+        module.setMoodleId((int) moodleModuleResponse.getId());
         return module;
     }
 

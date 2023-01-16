@@ -5,7 +5,7 @@ import fpt.capstone.vuondau.entity.dto.MarkDto;
 import fpt.capstone.vuondau.entity.dto.ModuleDto;
 
 
-public class MarkResponse extends BaseEntity {
+public class MarkResponse{
     private ModuleDto module;
     private MarkDto markDto;
 

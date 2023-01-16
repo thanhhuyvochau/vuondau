@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.controller;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.dto.ClassDto;
@@ -33,6 +34,10 @@ public class MarkController {
     public ResponseEntity<ApiResponse<List<MarkResponse>>> getClassRequesting(@RequestParam Long classId, @PathVariable Long studentId) {
         return ResponseEntity.ok(ApiResponse.success(markService.getStudentMark(classId, studentId)));
     }
-
+    @Operation(summary = "Đồng bộ điểm của học sinh")
+    @GetMapping({"/synchronize"})
+    public ResponseEntity<ApiResponse<Boolean>> synchronizeMarks() throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(markService.synchronizeMark()));
+    }
 
 }
