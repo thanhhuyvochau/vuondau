@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import fpt.capstone.vuondau.config.notify.NotificationProperties;
 import fpt.capstone.vuondau.moodle.repository.MoodleCourseRepository;
 import fpt.capstone.vuondau.moodle.request.GetCategoryRequest;
 import fpt.capstone.vuondau.moodle.request.CreateCategoryRequest;
@@ -12,14 +13,17 @@ import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.DayOfWeek;
 import fpt.capstone.vuondau.entity.common.*;
 import fpt.capstone.vuondau.repository.*;
+import fpt.capstone.vuondau.util.ObjectUtil;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.env.Environment;
 
 
 import java.text.ParseException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static fpt.capstone.vuondau.entity.common.EAccountRole.*;
@@ -29,11 +33,13 @@ import static fpt.capstone.vuondau.entity.common.ESubjectCode.*;
 @SpringBootApplication
 public class HatdauApplication {
 
+    private final Environment evn;
+    private final NotificationProperties notificationProperties;
+
     private final RoleRepository roleRepository;
 
 
     private final SubjectRepository subjectRepository;
-
 
 
     private final MoodleCourseRepository moodleCourseRepository;
@@ -47,9 +53,12 @@ public class HatdauApplication {
 
     private final ClassLevelRepository classLevelRepository;
 
-    private final  RequestTypeRepository requestTypeRepository ;
+    private final RequestTypeRepository requestTypeRepository;
+    private final NotificationTypeRepository notificationTypeRepository;
 
-    public HatdauApplication(RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository, MoodleCourseRepository moodleCourseRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ClassRepository classRepository, ForumRepository forumRepository, ClassLevelRepository classLevelRepository) {
+    public HatdauApplication(Environment evn, NotificationProperties notificationProperties, RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository, MoodleCourseRepository moodleCourseRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ClassRepository classRepository, ForumRepository forumRepository, ClassLevelRepository classLevelRepository, NotificationTypeRepository notificationTypeRepository) {
+        this.evn = evn;
+        this.notificationProperties = notificationProperties;
         this.roleRepository = roleRepository;
         this.subjectRepository = subjectRepository;
         this.requestTypeRepository = requestTypeRepository;
@@ -59,6 +68,7 @@ public class HatdauApplication {
         this.classRepository = classRepository;
         this.forumRepository = forumRepository;
         this.classLevelRepository = classLevelRepository;
+        this.notificationTypeRepository = notificationTypeRepository;
     }
 
 
@@ -622,14 +632,13 @@ public class HatdauApplication {
     @EventListener(ApplicationReadyEvent.class)
     public void intiDataRequestType() {
 
-        List<RequestType> all = requestTypeRepository.findAll() ;
-
+        List<RequestType> all = requestTypeRepository.findAll();
 
 
         Boolean application1 = false;
         Boolean application2 = false;
         Boolean application3 = false;
-        Boolean application4  = false;
+        Boolean application4 = false;
 
         for (RequestType requestType : all) {
             if (requestType.getName().equals("Đơn đề nghỉ cấp bảng điêm quá trình")) {
@@ -638,7 +647,7 @@ public class HatdauApplication {
             if (requestType.getName().equals("Đơn xin nhâp học lại")) {
                 application2 = true;
             }
-            if (requestType.getName().equals("Đơn xin đánh giá giáo viên")) {
+            if (requestType.getName().equals("Đơn đánh giá giáo viên")) {
                 application3 = true;
             }
             if (requestType.getName().equals("Các loại đơn khác")) {
@@ -648,25 +657,26 @@ public class HatdauApplication {
 
         List<RequestType> requestTypeList = new ArrayList<>();
         if (!application1) {
-            RequestType requestType = new RequestType() ;
+            RequestType requestType = new RequestType();
             requestType.setName("Đơn đề nghỉ cấp bảng điêm quá trình");
             requestTypeList.add(requestType);
         }
         if (!application2) {
 
-            RequestType requestType = new RequestType() ;
+            RequestType requestType = new RequestType();
             requestType.setName("Đơn xin nhâp học lại");
             requestTypeList.add(requestType);
 
         }
 
         if (!application3) {
-            RequestType requestType = new RequestType() ;
+            RequestType requestType = new RequestType();
             requestType.setName("Đơn đánh giá giáo viên");
+
             requestTypeList.add(requestType);
         }
         if (!application4) {
-            RequestType requestType = new RequestType() ;
+            RequestType requestType = new RequestType();
             requestType.setName("Các loại đơn khác");
             requestTypeList.add(requestType);
 
@@ -674,5 +684,22 @@ public class HatdauApplication {
         requestTypeRepository.saveAll(requestTypeList);
     }
 
-
+    @EventListener(ApplicationReadyEvent.class)
+    public void initNotificationType() {
+        List<NotificationProperties.NotifyDetail> configNotifies = notificationProperties.getNotify();
+        List<NotificationType> notificationTypes = notificationTypeRepository.findAll();
+        Map<String, NotificationType> notificationTypeMap = notificationTypes.stream().collect(Collectors.toMap(NotificationType::getCode, Function.identity()));
+        for (NotificationProperties.NotifyDetail configNotify : configNotifies) {
+            NotificationType newNotificationType = ObjectUtil.copyProperties(configNotify, new NotificationType(), NotificationType.class, true);
+            NotificationType existedNotifyType = notificationTypeMap.get(configNotify.getCode());
+            if (existedNotifyType == null) {
+                notificationTypes.add(newNotificationType);
+            } else if (!Objects.equals(newNotificationType, existedNotifyType)) {
+                existedNotifyType.setEntity(newNotificationType.getEntity());
+                existedNotifyType.setTemplate(newNotificationType.getTemplate());
+                existedNotifyType.setTitle(newNotificationType.getTitle());
+            }
+        }
+        notificationTypeRepository.saveAll(notificationTypes);
     }
+}

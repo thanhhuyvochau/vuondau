@@ -1,5 +1,6 @@
 package fpt.capstone.vuondau.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.moodle.response.MoodleAllClassRecourseDtoResponse;
 import fpt.capstone.vuondau.moodle.response.MoodleRecourseClassesDtoResponse;
@@ -18,4 +19,6 @@ public interface IExerciseService {
     ApiPage<MoodleRecourseClassesDtoResponse> studentGetAllExerciseAllClass(Pageable pageable);
 
     ApiPage<MoodleAllClassRecourseDtoResponse> teacherGetAllExerciseAllClass(Pageable pageable);
+
+    List<Long> teacherGetAllSubmitStudent( Long instanceId ,Long classId  ) throws JsonProcessingException;
 }

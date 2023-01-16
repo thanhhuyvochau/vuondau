@@ -1,11 +1,7 @@
 package fpt.capstone.vuondau.entity;
 
-import fpt.capstone.vuondau.entity.common.EDegreeType;
-import fpt.capstone.vuondau.entity.common.EGenderType;
-
 
 import javax.persistence.*;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -82,6 +78,8 @@ public class Account extends BaseEntity {
     private List<Vote> votes = new ArrayList<>();
     private String keycloakUserId;
     private Integer moodleUserId;
+    @OneToMany(mappedBy = "notifier",cascade = CascadeType.PERSIST)
+    private List<Notifier> notifiers = new ArrayList<>();
 
 
 
@@ -109,12 +107,12 @@ public class Account extends BaseEntity {
         this.password = password;
     }
 
-    public Boolean getActive() {
+    public Boolean getIsActive() {
         return isActive;
     }
 
-    public void setActive(Boolean active) {
-        isActive = active;
+    public void setIsActive(Boolean active) {
+        this.isActive = active;
     }
 
     public List<InfoFindTutorAccount> getInfoFindTutorAccounts() {
@@ -271,5 +269,20 @@ public class Account extends BaseEntity {
         this.moodleUserId = moodleUserId;
     }
 
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
+    public List<Notifier> getNotifiers() {
+        return notifiers;
+    }
+
+    public void setNotifiers(List<Notifier> notifiers) {
+        this.notifiers = notifiers;
+    }
 
 }

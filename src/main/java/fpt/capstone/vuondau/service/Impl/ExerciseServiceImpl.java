@@ -9,6 +9,7 @@ import fpt.capstone.vuondau.moodle.repository.MoodleCourseRepository;
 import fpt.capstone.vuondau.moodle.request.GetMoodleAssignmentIdsCourseRequest;
 import fpt.capstone.vuondau.moodle.request.GetMoodleCourseRequest;
 import fpt.capstone.vuondau.moodle.response.*;
+import fpt.capstone.vuondau.repository.AccountRepository;
 import fpt.capstone.vuondau.service.IExerciseService;
 import fpt.capstone.vuondau.util.*;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,14 +29,15 @@ public class ExerciseServiceImpl implements IExerciseService {
 
 
     private final MessageUtil messageUtil;
-
+    private final AccountRepository  accountRepository;
     private final SecurityUtil securityUtil;
 
     private final MoodleCourseRepository moodleCourseRepository;
 
 
-    public ExerciseServiceImpl(MessageUtil messageUtil, SecurityUtil securityUtil, MoodleCourseRepository moodleCourseRepository) {
+    public ExerciseServiceImpl(MessageUtil messageUtil, AccountRepository accountRepository, SecurityUtil securityUtil, MoodleCourseRepository moodleCourseRepository) {
         this.messageUtil = messageUtil;
+        this.accountRepository = accountRepository;
         this.securityUtil = securityUtil;
         this.moodleCourseRepository = moodleCourseRepository;
     }
@@ -111,6 +114,36 @@ public class ExerciseServiceImpl implements IExerciseService {
 
     }
 
+    @Override
+    public List<Long> teacherGetAllSubmitStudent( Long instanceId ,  Long classId  ) throws JsonProcessingException {
+        List<Long> accountReturn = new ArrayList<>( );
+        List<MoodleAssignmentsResponse.assignments.submissions> submissions = setDateAssignmentsResourceCourse(instanceId);
+        Account student = securityUtil.getCurrentUserThrowNotFoundException();
+        List<Class> teacherClass = student.getTeacherClass();
+
+
+        Class aClass1 = teacherClass.stream().filter(aClass -> aClass.getId().equals(classId)).findFirst().get();
+        List<StudentClass> studentClasses = aClass1.getStudentClasses();
+        List<Account> studentIClassList = studentClasses.stream().map(StudentClass::getAccount).collect(Collectors.toList());
+
+        List<Integer> userId = submissions.stream().map(submissions1 -> submissions1.getUserid().intValue()).collect(Collectors.toList());
+
+        List<Account> allByMoodleUserId = accountRepository.findAllByMoodleUserIdIn(userId);
+
+        studentIClassList.stream().map(account -> {
+            allByMoodleUserId.stream().map(account1 -> {
+                if (account1.getId().equals(account.getId())){
+                    accountReturn.add(account1.getId()) ;
+                }
+               return account1 ;
+            }).collect(Collectors.toList()) ;
+            return account ;
+        }).collect(Collectors.toList()) ;
+
+
+        return accountReturn ;
+    }
+
     private MoodleRecourseClassesDtoResponse setDataFormMoodleRecourseClasses(Class aClass, Account student) {
 
         MoodleRecourseClassesDtoResponse response = new MoodleRecourseClassesDtoResponse();
@@ -119,7 +152,8 @@ public class ExerciseServiceImpl implements IExerciseService {
             GetMoodleCourseRequest getMoodleCourseRequest = new GetMoodleCourseRequest();
 
             response.setClassId(aClass.getId());
-
+            response.setClassName(aClass.getName());
+            response.setClassCode(aClass.getCode());
             getMoodleCourseRequest.setCourseid(aClass.getMoodleClassId());
             try {
                 List<MoodleSectionResponse> resourceCourse = moodleCourseRepository.getResourceCourse(getMoodleCourseRequest);
@@ -191,6 +225,32 @@ public class ExerciseServiceImpl implements IExerciseService {
                         MoodleAssignmentsResponse.assignments.submissions submissions3 = ObjectUtil.copyProperties(submission, new MoodleAssignmentsResponse.assignments.submissions(), MoodleAssignmentsResponse.assignments.submissions.class);
                         submissions.add(submissions3);
                     }
+
+
+                }
+            }
+
+        }
+        return submissions;
+    }
+
+    private List<MoodleAssignmentsResponse.assignments.submissions> setDateAssignmentsResourceCourse(Long instantId) throws JsonProcessingException {
+        List<MoodleAssignmentsResponse.assignments.submissions> submissions = new ArrayList<>();
+        GetMoodleAssignmentIdsCourseRequest request = new GetMoodleAssignmentIdsCourseRequest() ;
+        List<Long> ids = new ArrayList<>( );
+        ids.add(instantId) ;
+        request.setAssignmentids(ids);
+        List<MoodleAssignmentsResponse> assignments = moodleCourseRepository.getAssignmentsResourceCourse(request);
+
+        for (MoodleAssignmentsResponse moodleAssignmentsResponse : assignments) {
+            List<MoodleAssignmentsResponse.assignments> assignments2 = moodleAssignmentsResponse.getAssignments();
+            for (MoodleAssignmentsResponse.assignments assignments1 : assignments2) {
+                List<MoodleAssignmentsResponse.assignments.submissions> submissions1 = assignments1.getSubmissions();
+                for (MoodleAssignmentsResponse.assignments.submissions submission : submissions1) {
+                    int userid = submission.getUserid().intValue();
+                        MoodleAssignmentsResponse.assignments.submissions submissions3 = ObjectUtil.copyProperties(submission, new MoodleAssignmentsResponse.assignments.submissions(), MoodleAssignmentsResponse.assignments.submissions.class);
+                        submissions.add(submissions3);
+            
 
 
                 }

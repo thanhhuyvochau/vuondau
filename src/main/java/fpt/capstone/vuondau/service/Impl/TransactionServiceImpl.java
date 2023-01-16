@@ -199,7 +199,7 @@ public class TransactionServiceImpl implements ITransactionService {
         if (sessionId != null) {
             String message = "";
             message = transaction.getSuccess() ? "Thanh toán thành công" : "Thanh toán thất bại";
-            webSocketUtil.sendPrivateMessage(message, sessionId);
+            webSocketUtil.sendPrivateNotification(message, sessionId);
         }
         return transaction;
     }

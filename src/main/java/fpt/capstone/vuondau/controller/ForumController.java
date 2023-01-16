@@ -1,5 +1,6 @@
 package fpt.capstone.vuondau.controller;
 
+import fpt.capstone.vuondau.entity.Subject;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
 import fpt.capstone.vuondau.entity.common.EForumType;
@@ -11,6 +12,8 @@ import fpt.capstone.vuondau.service.IForumService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/forums")
@@ -32,7 +35,7 @@ public class ForumController {
     public ResponseEntity<ApiResponse<ForumDto>> updateForum(@PathVariable Long id, @RequestBody UpdateForumRequest request) {
         return ResponseEntity.ok(ApiResponse.success(forumService.updateForum(id, request)));
     }
-
+    /**Temporary API will be deleted in future*/
 //    @GetMapping("/auto")
 //    public ResponseEntity<ApiResponse<Boolean>> createauto() {
 //        List<Subject> all = subjectRepository.findAll();

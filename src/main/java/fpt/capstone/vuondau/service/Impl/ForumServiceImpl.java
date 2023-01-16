@@ -190,6 +190,7 @@ public class ForumServiceImpl implements IForumService {
                 .map(StudentClass::getaClass)
                 .map(Class::getCourse)
                 .map(Course::getSubject)
+                .distinct()
                 .collect(Collectors.toList());
         Page<Forum> forums = forumRepository.findAllBySubjectIn(enrolledSubjects, pageable);
         return PageUtil.convert(forums.map(ConvertUtil::doConvertEntityToSimpleResponse));

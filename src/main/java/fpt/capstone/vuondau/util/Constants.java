@@ -18,4 +18,9 @@ public class Constants {
         public static final String MANAGER_ROLE_MANAGER = "MANAGER";
         public static final String TEACHER_ROLE_CODE = "TEACHER";
     }
+
+    public static class Notification {
+        public static final String TRANSACTION_PAY_SUCCESS = "transaction_pay_success";
+    }
+
 }

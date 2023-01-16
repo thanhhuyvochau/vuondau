@@ -59,6 +59,13 @@ private final IExerciseService iExerciseService ;
     public ResponseEntity<ApiResponse<ApiPage<MoodleAllClassRecourseDtoResponse>>> teacherGetAllExerciseAllClass(Pageable pageable) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iExerciseService.teacherGetAllExerciseAllClass(pageable)));
     }
-    
+
+    @Operation(summary = "giao viên lấy tất cả học sinh và bài tập đã nộp trong lớp")
+    @GetMapping("submit/{instanceId}/students")
+    @PreAuthorize("hasAuthority('TEACHER')")
+    public ResponseEntity<ApiResponse<List<Long>>> teacherGetAllSubmitStudent(@PathVariable Long instanceId , Long classId ) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iExerciseService.teacherGetAllSubmitStudent(instanceId, classId)));
+    }
+
 
 }

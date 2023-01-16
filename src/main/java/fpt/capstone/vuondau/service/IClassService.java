@@ -78,4 +78,5 @@ public interface IClassService {
     ClassDto confirmAppreciation(Long id) throws JsonProcessingException;
 
     Long updateClassForRecruiting(Long id, CreateClassRequest createClassRequest) throws ParseException;
+    ClassDto adminRejectRequestCreateClass(Long id) throws JsonProcessingException;
 }

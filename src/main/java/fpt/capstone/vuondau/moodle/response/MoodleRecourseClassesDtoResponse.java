@@ -5,6 +5,9 @@ import java.util.List;
 public class MoodleRecourseClassesDtoResponse {
 
     private Long classId ;
+    private String className;
+
+    private String classCode;
 
     private List<MoodleRecourseDtoResponse> modules ;
 
@@ -14,6 +17,22 @@ public class MoodleRecourseClassesDtoResponse {
 
     public void setClassId(Long classId) {
         this.classId = classId;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public String getClassCode() {
+        return classCode;
+    }
+
+    public void setClassCode(String classCode) {
+        this.classCode = classCode;
     }
 
     public List<MoodleRecourseDtoResponse> getModules() {

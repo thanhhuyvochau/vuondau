@@ -34,6 +34,11 @@ public class MoodleBaseRepository {
     @Value("${moodle.url.user.get}")
     private String getUserUrl;
 
+    @Value("${moodle.url.course.delete}")
+    private String deleteCourse;
+    @Value("${moodle.url.course.grade.get}")
+    private String getCourseGrade;
+
     @Value("${moodle.url.assignments.get}")
     private String getAssignments;
 
@@ -135,8 +140,24 @@ public class MoodleBaseRepository {
         this.getUserUrl = getUserUrl;
     }
 
+    public String getDeleteCourse() {
+        return baseUrl + deleteCourse;
+    }
+
+    public void setDeleteCourse(String deleteCourse) {
+        this.deleteCourse = deleteCourse;
+    }
+
+    public String getGetCourseGrade() {
+        return baseUrl + getCourseGrade;
+    }
+
+    public void setGetCourseGrade(String getCourseGrade) {
+        this.getCourseGrade = getCourseGrade;
+    }
+
     public String getGetAssignments() {
-        return baseUrl + getAssignments;
+        return baseUrl+getAssignments;
     }
 
     public void setGetAssignments(String getAssignments) {

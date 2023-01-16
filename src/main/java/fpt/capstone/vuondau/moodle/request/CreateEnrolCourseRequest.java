@@ -1,10 +1,11 @@
 package fpt.capstone.vuondau.moodle.request;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CreateEnrolCourseRequest {
 
-    private List<Enrolment> enrolments;
+    private List<Enrolment> enrolments = new ArrayList<>();
 
     public List<Enrolment> getEnrolments() {
         return enrolments;

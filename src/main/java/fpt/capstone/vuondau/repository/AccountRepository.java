@@ -23,9 +23,9 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     Page<Account> findAccountByRoleAndIsActiveIsFalse(Pageable pageable, Role role);
 
-    Page<Account> findAccountByRoleAndIsActiveIsTrue(Pageable pageable, Role role);
+    Page<Account> findAccountByRoleAndIsActiveAndAccountDetailNotNull(Role role, Boolean active, Pageable pageable);
 
-    List<Account> findAllByIdInAndIsActiveIsFalse(List<Long> ids ) ;
+    List<Account> findAllByIdInAndIsActiveIsFalse(List<Long> ids);
 
     Page<Account> findAll(Specification<Account> spec, Pageable pageable);
 
@@ -35,6 +35,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 //    Boolean existsAccountByEmail(String email);
 
     Account findByUsername(String username);
+    List<Account> findAllByMoodleUserIdIn(List<Integer> ids);
+
 
 
 }
