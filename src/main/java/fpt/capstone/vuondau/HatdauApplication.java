@@ -115,11 +115,6 @@ public class HatdauApplication {
         }
         if (!existAdminRole) {
 
-            Role roleAdmin = new Role();
-            roleAdmin.setCode(MANAGER);
-            roleAdmin.setName("admin");
-            roleList.add(roleAdmin);
-
             Role roleManager = new Role();
             roleManager.setCode(MANAGER);
             roleManager.setName("manager");
