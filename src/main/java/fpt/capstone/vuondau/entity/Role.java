@@ -8,6 +8,7 @@ import fpt.capstone.vuondau.entity.common.EAccountRole;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Entity
@@ -68,5 +69,18 @@ public class Role {
 
     public void setMoodleRoleId(Long moodleRoleId) {
         this.moodleRoleId = moodleRoleId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Role role = (Role) o;
+        return Objects.equals(name, role.name) && code == role.code;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, code);
     }
 }

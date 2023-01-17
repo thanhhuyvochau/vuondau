@@ -13,6 +13,7 @@ import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.DayOfWeek;
 import fpt.capstone.vuondau.entity.common.*;
 import fpt.capstone.vuondau.repository.*;
+import fpt.capstone.vuondau.service.IMoodleService;
 import fpt.capstone.vuondau.util.ObjectUtil;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,7 +27,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static fpt.capstone.vuondau.entity.common.EAccountRole.*;
 import static fpt.capstone.vuondau.entity.common.ESubjectCode.*;
 
 
@@ -55,8 +55,9 @@ public class HatdauApplication {
 
     private final RequestTypeRepository requestTypeRepository;
     private final NotificationTypeRepository notificationTypeRepository;
+    private final IMoodleService moodleService;
 
-    public HatdauApplication(Environment evn, NotificationProperties notificationProperties, RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository, MoodleCourseRepository moodleCourseRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ClassRepository classRepository, ForumRepository forumRepository, ClassLevelRepository classLevelRepository, NotificationTypeRepository notificationTypeRepository) {
+    public HatdauApplication(Environment evn, NotificationProperties notificationProperties, RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository, MoodleCourseRepository moodleCourseRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ClassRepository classRepository, ForumRepository forumRepository, ClassLevelRepository classLevelRepository, NotificationTypeRepository notificationTypeRepository, IMoodleService moodleService) {
         this.evn = evn;
         this.notificationProperties = notificationProperties;
         this.roleRepository = roleRepository;
@@ -69,6 +70,8 @@ public class HatdauApplication {
         this.forumRepository = forumRepository;
         this.classLevelRepository = classLevelRepository;
         this.notificationTypeRepository = notificationTypeRepository;
+
+        this.moodleService = moodleService;
     }
 
 
@@ -81,48 +84,25 @@ public class HatdauApplication {
 
 
     @EventListener(ApplicationReadyEvent.class)
-    public void intiDataRole() {
+    public void intiDataRole() throws JsonProcessingException {
 
+        List<Role> roles = roleRepository.findAll();
+        Map<EAccountRole, Role> roleMap = roles.stream().collect(Collectors.toMap(Role::getCode, Function.identity()));
+        for (EAccountRole value : EAccountRole.values()) {
+            Role role = roleMap.get(value);
+            Role newRole = new Role();
+            newRole.setCode(value);
+            newRole.setName(value.getLabel());
 
-        List<Role> allRole = roleRepository.findAll();
-        Boolean existTeacherRole = false;
-        Boolean existStudentRole = false;
-        Boolean existAdminRole = false;
-        for (Role role : allRole) {
-            if (role.getCode().equals(TEACHER)) {
-                existTeacherRole = true;
+            if (role == null) {
+                roles.add(newRole);
+            } else if (!Objects.equals(newRole, role)) {
+                role.setCode(value);
+                role.setName(value.getLabel());
             }
-            if (role.getCode().equals(STUDENT)) {
-                existStudentRole = true;
-            }
-            if (role.getCode().equals(MANAGER)) {
-                existAdminRole = true;
-            }
         }
-
-        List<Role> roleList = new ArrayList<>();
-        if (!existTeacherRole) {
-            Role teacherRole = new Role();
-            teacherRole.setCode(EAccountRole.TEACHER);
-            teacherRole.setName("teacher");
-            roleList.add(teacherRole);
-        }
-        if (!existStudentRole) {
-            Role roleStudent = new Role();
-            roleStudent.setCode(EAccountRole.STUDENT);
-            roleStudent.setName("student");
-            roleList.add(roleStudent);
-        }
-        if (!existAdminRole) {
-
-            Role roleManager = new Role();
-            roleManager.setCode(MANAGER);
-            roleManager.setName("manager");
-            roleList.add(roleManager);
-
-        }
-        roleRepository.saveAll(roleList);
-
+        roleRepository.saveAll(roles);
+        moodleService.synchronizedRoleFromMoodle();
     }
 
 
@@ -505,7 +485,6 @@ public class HatdauApplication {
             if (dayOfWeek.getCode().equals(EDayOfWeekCode.SATURDAY)) {
                 existDay7 = true;
             }
-
 
 
         }
