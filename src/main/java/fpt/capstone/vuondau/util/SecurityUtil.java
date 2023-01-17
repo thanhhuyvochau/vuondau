@@ -2,7 +2,9 @@ package fpt.capstone.vuondau.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.entity.Account;
+import fpt.capstone.vuondau.entity.Role;
 import fpt.capstone.vuondau.entity.common.ApiException;
+import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.moodle.response.MoodleUserResponse;
 import fpt.capstone.vuondau.repository.AccountRepository;
 import org.springframework.http.HttpStatus;
@@ -31,7 +33,10 @@ public class SecurityUtil {
         String username = principal.getClaimAsString("preferred_username");
         Account account = Optional.ofNullable(accountRepository.findByUsername(username))
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Student not found by username"));
-        synchronizedAccountInfo(principal, account);
+        Role role = account.getRole();
+        if (!Objects.equals(role.getCode(), EAccountRole.ACCOUNTANT)) {
+            synchronizedAccountInfo(principal, account);
+        }
         return account;
     }
 
