@@ -30,7 +30,7 @@ public class Resource extends BaseEntity {
     @OneToMany(mappedBy = "resource", cascade = CascadeType.ALL)
     private List<Course> course ;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
     @JoinColumn(name = "account_detail_id")
     private AccountDetail accountDetail ;
 

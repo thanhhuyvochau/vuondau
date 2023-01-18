@@ -120,12 +120,12 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
         accountDetail.setLastName(accountDetailRequest.getLastName());
         accountDetail.setFirstName(accountDetailRequest.getFirstName());
-        if (accountDetailRequest.getBirthDay() != null) {
-            if (checkBirthday(accountDetailRequest.getBirthDay().toString())) {
-                accountDetail.setBirthDay(accountDetailRequest.getBirthDay());
-            }
-        }
-
+//        if (accountDetailRequest.getBirthDay() != null) {
+//            if (checkBirthday(accountDetailRequest.getBirthDay().toString())) {
+//                accountDetail.setBirthDay(accountDetailRequest.getBirthDay());
+//            }
+//        }
+        accountDetail.setBirthDay(accountDetailRequest.getBirthDay());
 
         //Nguyên quán
         accountDetail.setDomicile(accountDetailRequest.getDomicile());
@@ -191,13 +191,50 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
         accountDetail.setAccountDetailClassLevels(accountDetailClassLevelList);
         accountDetail.setVoice(accountDetailRequest.getVoice());
-        accountDetail.setStatus(EAccountDetailStatus.REQUESTED);
-        accountDetail.setActive(false);
+        accountDetail.setStatus(EAccountDetailStatus.REQUESTING);
+        accountDetail.setActive(true);
+
+
+        List<Resource> resourceList = new ArrayList<>();
+        for (UploadAvatarRequest uploadImageRequest : accountDetailRequest.getFiles()) {
+            try {
+                String name = uploadImageRequest.getFile().getOriginalFilename() + "-" + Instant.now().toString();
+                ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, uploadImageRequest.getFile().getContentType(),
+                        uploadImageRequest.getFile().getInputStream(), uploadImageRequest.getFile().getSize());
+
+                Resource resource = new Resource();
+                resource.setName(name);
+                resource.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
+                resource.setAccountDetail(accountDetail);
+                if (uploadImageRequest.getResourceType().equals(EResourceType.CARTPHOTO)) {
+                    resource.setResourceType(EResourceType.CARTPHOTO);
+                } else if (uploadImageRequest.getResourceType().equals(EResourceType.DEGREE)) {
+                    resource.setResourceType(EResourceType.CARTPHOTO);
+                } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCDONE)) {
+                    resource.setResourceType(EResourceType.CCCD);
+
+                } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCDTWO)) {
+                    resource.setResourceType(EResourceType.CCCD);
+                }
+                resourceList.add(resource);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (resourceList.size() < 4) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Hệ thống cần bạn upload đầy đủ hình ảnh."));
+        }
+
+
+//        resourceRepository.saveAll(resourceList);
+        accountDetail.setResources(resourceList);
+//        accountDetail.getResources().addAll(resourceList) ;
 
         Account account = new Account();
         account.setUsername(accountDetailRequest.getEmail());
-        account.setIsActive(false);
-        account.setKeycloak(false);
+        account.setIsActive(true);
+        account.setKeycloak(true);
         account.setPassword(accountDetail.getPassword());
         Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
@@ -209,66 +246,6 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
         return save.getId();
     }
-//        List<Resource> resourceList = new ArrayList<>();
-
-//        for (UploadAvatarRequest uploadImageRequest : accountDetailRequest.getUploadFiles()) {
-//        UploadAvatarRequest uploadFiles = accountDetailRequest.getUploadFiles();
-//        try {
-//                String name = accountDetailRequest.getFile().getOriginalFilename() + "-" + Instant.now().toString();
-//                ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, accountDetailRequest.getFile().getContentType(),
-//                        accountDetailRequest.getFile().getInputStream(), accountDetailRequest.getFile().getSize());
-//
-//                Resource resource = new Resource();
-//                resource.setName(name);
-//                resource.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
-//                resource.setAccountDetail(accountDetail);
-//                if (uploadImageRequest.getResourceType().equals(EResourceType.CARTPHOTO)) {
-//                    resource.setResourceType(EResourceType.CARTPHOTO);
-//                } else if (uploadImageRequest.getResourceType().equals(EResourceType.DEGREE)) {
-//                    resource.setResourceType(EResourceType.DEGREE);
-//                } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCD)) {
-//                    resource.setResourceType(EResourceType.CCCD);
-//                }
-
-//                resourceList.add(resource);
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
-//        accountDetail.setResources(resourceList);
-//        resourceRepository.saveAll(resourceList);
-
-//
-//        List<Resource> resourceList = new ArrayList<>();
-//        for (UploadAvatarRequest uploadImageRequest : accountDetailRequest.getUploadFiles()) {
-//            try {
-//                String name = uploadImageRequest.getFile().getOriginalFilename() + "-" + Instant.now().toString();
-//                ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, uploadImageRequest.getFile().getContentType(),
-//                        uploadImageRequest.getFile().getInputStream(), uploadImageRequest.getFile().getSize());
-//
-//                Resource resource = new Resource();
-//                resource.setName(name);
-//                resource.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
-//                resource.setAccountDetail(accountDetail);
-//                if (uploadImageRequest.getResourceType().equals(EResourceType.CARTPHOTO)) {
-//                    resource.setResourceType(EResourceType.CARTPHOTO);
-//                } else if (uploadImageRequest.getResourceType().equals(EResourceType.DEGREE)) {
-//                    resource.setResourceType(EResourceType.CARTPHOTO);
-//                } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCD)) {
-//                    resource.setResourceType(EResourceType.CCCD);
-//                }
-//
-//                resourceList.add(resource);
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
-//        if (resourceList.size() <3 ){
-//            throw ApiException.create(HttpStatus.BAD_REQUEST)
-//                    .withMessage(messageUtil.getLocalMessage("Hệ thống cần bạn upload đầy đủ hình ảnh."));
-//        }
-
-//        resourceRepository.saveAll(resourceList);
 
 
     @Override
@@ -367,14 +344,16 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
     }
 
     @Override
-    public ApiPage<AccountDetailResponse> getRequestToActiveAccount(Boolean isActive, Pageable pageable) {
+    public ApiPage<AccountDetailResponse> getRequestToActiveAccount(EAccountDetailStatus status, Pageable pageable) {
 
         Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
 
         Page<Account> accounts = null;
 
-        accounts = accountRepository.findAccountByRoleAndIsActiveAndAccountDetailNotNull(role, isActive, pageable);
+        status = EAccountDetailStatus.REQUESTING;
+
+        accounts = accountRepository.findAccountByRoleAndAccountDetailStatus(role, status, pageable);
 
         return PageUtil.convert(accounts.map(account -> ConvertUtil.doConvertEntityToResponse(account.getAccountDetail())));
 
