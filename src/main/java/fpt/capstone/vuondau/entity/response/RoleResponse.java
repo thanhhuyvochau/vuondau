@@ -1,13 +1,14 @@
 package fpt.capstone.vuondau.entity.response;
 
+import fpt.capstone.vuondau.entity.common.EAccountRole;
+
 import java.util.List;
 
 public class RoleResponse {
     // NOTE về sau trả thêm cả user trong role.
     private Long id;
     private String name;
-    private String code;
-    private List<AccountResponse> accountResponseList;
+    private EAccountRole code;
 
     public Long getId() {
         return id;
@@ -25,19 +26,12 @@ public class RoleResponse {
         this.name = name;
     }
 
-    public List<AccountResponse> getAccountResponseList() {
-        return accountResponseList;
-    }
 
-    public void setAccountResponseList(List<AccountResponse> accountResponseList) {
-        this.accountResponseList = accountResponseList;
-    }
-
-    public String getCode() {
+    public EAccountRole getCode() {
         return code;
     }
 
-    public void setCode(String code) {
+    public void setCode(EAccountRole code) {
         this.code = code;
     }
 }
