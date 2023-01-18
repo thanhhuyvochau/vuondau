@@ -7,6 +7,7 @@ import org.springframework.core.io.support.EncodedResource;
 import org.springframework.core.io.support.PropertySourceFactory;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Properties;
 
 public class YamlPropertySourceFactory implements PropertySourceFactory {
@@ -17,6 +18,7 @@ public class YamlPropertySourceFactory implements PropertySourceFactory {
 
         Properties properties = factory.getObject();
 
-        return new PropertiesPropertySource(resource.getResource().getFilename(), properties);
+        assert properties != null;
+        return new PropertiesPropertySource(Objects.requireNonNull(resource.getResource().getFilename()), properties);
     }
 }

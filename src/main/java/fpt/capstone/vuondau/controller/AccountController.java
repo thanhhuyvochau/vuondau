@@ -34,21 +34,21 @@ public class AccountController {
 
     @GetMapping
     @Operation(summary = "Lấy tất cả tài khoản")
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
     public ResponseEntity<ApiResponse<ApiPage<AccountResponse>>> getAccounts(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(accountService.getAccounts(pageable)));
     }
 
     @GetMapping("/students")
     @Operation(summary = "Lấy tất cả tài khoản học sinh")
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
     public ResponseEntity<ApiResponse<ApiPage<AccountResponse>>> getStudentAccounts(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(accountService.getStudentAccounts(pageable)));
     }
 
     @GetMapping("/teachers")
     @Operation(summary = "Lấy tất cả tài khoản giáo viên")
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
     public ResponseEntity<ApiResponse<ApiPage<AccountResponse>>> getTeacherAccounts(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(accountService.getTeacherAccounts(pageable)));
     }
@@ -77,7 +77,7 @@ public class AccountController {
 
     @Operation(summary = "Ban / Unban account")
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
     public ResponseEntity<ApiResponse<Boolean>> banAndUbBanAccount(@PathVariable long id) {
         return ResponseEntity.ok(ApiResponse.success(accountService.banAndUbBanAccount(id)));
     }
@@ -90,7 +90,7 @@ public class AccountController {
 
     @Operation(summary = "cập nhật role-active cho account")
     @PutMapping("/{id}/role-active")
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
     public ResponseEntity<ApiResponse<AccountResponse>> updateAccountRole(@PathVariable long id,
                                                                           @Nullable @RequestBody AccountEditRequest accountEditRequest) {
         return ResponseEntity.ok(ApiResponse.success(accountService.updateRoleAndActiveAccount(id, accountEditRequest)));
@@ -98,7 +98,7 @@ public class AccountController {
 
     @Operation(summary = "Chê duyệt tài khoản giáo viên")
     @PutMapping("/{id}/active")
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
     public ResponseEntity<ApiResponse<AccountResponse>> ApproveAccountTeacher(@PathVariable long id) {
         return ResponseEntity.ok(ApiResponse.success(accountService.approveTeacherAccount(id)));
     }

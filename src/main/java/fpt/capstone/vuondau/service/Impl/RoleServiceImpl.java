@@ -40,8 +40,7 @@ public class RoleServiceImpl implements IRoleService {
         List<Role> roles = roleRepository.findAll();
 
         return roles.stream().map(role -> {
-            RoleResponse roleResponse = convertRoleToRoleResponse(role);
-            return roleResponse;
+            return convertRoleToRoleResponse(role);
         }).collect(Collectors.toList());
     }
 
@@ -87,13 +86,7 @@ public class RoleServiceImpl implements IRoleService {
     }
 
     private RoleResponse convertRoleToRoleResponse(Role role) {
-        RoleResponse roleResponse = ObjectUtil.copyProperties(role, new RoleResponse(), RoleResponse.class, true);
-        List<AccountResponse> accountResponses = role.getAccounts().stream().map(account -> {
-            AccountResponse accountResponse = ObjectUtil.copyProperties(account, new AccountResponse(), AccountResponse.class, true);
-            return accountResponse;
-        }).collect(Collectors.toList());
-        roleResponse.setAccountResponseList(accountResponses);
-        return roleResponse;
+        return ObjectUtil.copyProperties(role, new RoleResponse(), RoleResponse.class, true);
     }
 
 

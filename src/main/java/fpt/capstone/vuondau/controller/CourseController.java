@@ -81,7 +81,7 @@ public class CourseController {
 
     @Operation(summary = "sửa course")
     @PutMapping("/{id}/update-course")
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
     public ResponseEntity<ApiResponse<CourseDetailResponse>> updateCourse(@PathVariable long id, @RequestBody CourseRequest subjectRequest) {
         return ResponseEntity.ok(ApiResponse.success(courseService.updateCourse(id, subjectRequest)));
     }

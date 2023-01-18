@@ -37,7 +37,7 @@ public class RequestFormController {
 
     @Operation(summary = "Admin search request")
     @GetMapping("/search")
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
     public ResponseEntity<ApiResponse<ApiPage<RequestFormResponse>>> searchRequestForm(RequestFormSearchRequest searchRequestForm, Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(iRequestFormService.searchRequestForm(searchRequestForm ,pageable)));
     }
@@ -64,7 +64,7 @@ public class RequestFormController {
 
     @Operation(summary = "Admin trả lời request của hs ")
     @PostMapping("/{id}")
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
     public ResponseEntity<ApiResponse<RequestFormReplyResponse>> replyRequest(@PathVariable Long id , @ModelAttribute RequestFormReplyDto requestFormReplyDto ) {
         return ResponseEntity.ok(ApiResponse.success(iRequestFormService.replyRequest(id, requestFormReplyDto)));
     }

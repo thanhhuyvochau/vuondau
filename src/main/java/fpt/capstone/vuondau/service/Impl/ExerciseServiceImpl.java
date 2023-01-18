@@ -29,7 +29,7 @@ public class ExerciseServiceImpl implements IExerciseService {
 
 
     private final MessageUtil messageUtil;
-    private final AccountRepository  accountRepository;
+    private final AccountRepository accountRepository;
     private final SecurityUtil securityUtil;
 
     private final MoodleCourseRepository moodleCourseRepository;
@@ -115,8 +115,8 @@ public class ExerciseServiceImpl implements IExerciseService {
     }
 
     @Override
-    public List<Long> teacherGetAllSubmitStudent( Long instanceId ,  Long classId  ) throws JsonProcessingException {
-        List<Long> accountReturn = new ArrayList<>( );
+    public List<Long> teacherGetAllSubmitStudent(Long instanceId, Long classId) throws JsonProcessingException {
+        List<Long> accountReturn = new ArrayList<>();
         List<MoodleAssignmentsResponse.assignments.submissions> submissions = setDateAssignmentsResourceCourse(instanceId);
         Account student = securityUtil.getCurrentUserThrowNotFoundException();
         List<Class> teacherClass = student.getTeacherClass();
@@ -132,16 +132,16 @@ public class ExerciseServiceImpl implements IExerciseService {
 
         studentIClassList.stream().map(account -> {
             allByMoodleUserId.stream().map(account1 -> {
-                if (account1.getId().equals(account.getId())){
-                    accountReturn.add(account1.getId()) ;
+                if (account1.getId().equals(account.getId())) {
+                    accountReturn.add(account1.getId());
                 }
-               return account1 ;
-            }).collect(Collectors.toList()) ;
-            return account ;
-        }).collect(Collectors.toList()) ;
+                return account1;
+            }).collect(Collectors.toList());
+            return account;
+        }).collect(Collectors.toList());
 
 
-        return accountReturn ;
+        return accountReturn;
     }
 
     private MoodleRecourseClassesDtoResponse setDataFormMoodleRecourseClasses(Class aClass, Account student) {
@@ -236,9 +236,9 @@ public class ExerciseServiceImpl implements IExerciseService {
 
     private List<MoodleAssignmentsResponse.assignments.submissions> setDateAssignmentsResourceCourse(Long instantId) throws JsonProcessingException {
         List<MoodleAssignmentsResponse.assignments.submissions> submissions = new ArrayList<>();
-        GetMoodleAssignmentIdsCourseRequest request = new GetMoodleAssignmentIdsCourseRequest() ;
-        List<Long> ids = new ArrayList<>( );
-        ids.add(instantId) ;
+        GetMoodleAssignmentIdsCourseRequest request = new GetMoodleAssignmentIdsCourseRequest();
+        List<Long> ids = new ArrayList<>();
+        ids.add(instantId);
         request.setAssignmentids(ids);
         List<MoodleAssignmentsResponse> assignments = moodleCourseRepository.getAssignmentsResourceCourse(request);
 
@@ -248,9 +248,8 @@ public class ExerciseServiceImpl implements IExerciseService {
                 List<MoodleAssignmentsResponse.assignments.submissions> submissions1 = assignments1.getSubmissions();
                 for (MoodleAssignmentsResponse.assignments.submissions submission : submissions1) {
                     int userid = submission.getUserid().intValue();
-                        MoodleAssignmentsResponse.assignments.submissions submissions3 = ObjectUtil.copyProperties(submission, new MoodleAssignmentsResponse.assignments.submissions(), MoodleAssignmentsResponse.assignments.submissions.class);
-                        submissions.add(submissions3);
-            
+                    MoodleAssignmentsResponse.assignments.submissions submissions3 = ObjectUtil.copyProperties(submission, new MoodleAssignmentsResponse.assignments.submissions(), MoodleAssignmentsResponse.assignments.submissions.class);
+                    submissions.add(submissions3);
 
 
                 }
