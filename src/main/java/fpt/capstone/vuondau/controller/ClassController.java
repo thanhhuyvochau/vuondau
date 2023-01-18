@@ -137,15 +137,15 @@ public class ClassController {
     @Operation(summary = "Admin tạo class để tuyển giáo viên ")
     @PostMapping({"/for-recruiting"})
     @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
-    public ResponseEntity<ApiResponse<Long>> createClassForRecruiting(@Nullable @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException, ParseException {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.createClassForRecruiting(createClassRequest)));
+    public ResponseEntity<ApiResponse<Long>> createClassForRecruiting(@Nullable @RequestBody CreateRecruitingClassRequest createRecruitingClassRequest) throws JsonProcessingException, ParseException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.createClassForRecruiting(createRecruitingClassRequest)));
     }
 
     @Operation(summary = "Admin update lớp khi còn ở trạng thái recruiting ")
     @PutMapping({"/{id}/for-recruiting"})
     @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
-    public ResponseEntity<ApiResponse<Long>> updateClassForRecruiting(@PathVariable Long id, @Nullable @RequestBody CreateClassRequest createClassRequest) throws JsonProcessingException, ParseException {
-        return ResponseEntity.ok(ApiResponse.success(iClassService.updateClassForRecruiting(id, createClassRequest)));
+    public ResponseEntity<ApiResponse<Long>> updateClassForRecruiting(@PathVariable Long id, @Nullable @RequestBody CreateRecruitingClassRequest createRecruitingClassRequest) throws JsonProcessingException, ParseException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.updateClassForRecruiting(id, createRecruitingClassRequest)));
     }
 
     @Operation(summary = "Giáo viên ứng tuyển dạy")

@@ -9,7 +9,6 @@ import java.util.List;
 
 public class AccountDetailRequest implements Serializable {
 
-
     private String firstName;
     private String lastName;
     private Instant birthDay;
@@ -17,15 +16,10 @@ public class AccountDetailRequest implements Serializable {
     private String email;
 
     private String password;
-
     private String phone;
-
-
     private EGenderType gender;
-
     private String domicile;
     private String voice;
-
     private String teachingProvince;
     private String currentAddress;
 
