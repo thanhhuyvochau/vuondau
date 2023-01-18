@@ -117,4 +117,11 @@ public class AccountController {
     public ResponseEntity<ApiResponse<AccountResponse>> getSelfAccount() {
         return ResponseEntity.ok(ApiResponse.success(accountService.getSelfAccount()));
     }
+
+    @Operation(summary = "Admin tạo tài khoản cho quản lý hoặc kế toán")
+    @PostMapping("/staff")
+    @PreAuthorize("hasAuthority('ROOT')")
+    public ResponseEntity<ApiResponse<AccountResponse>> createManagerOrAccountant(@RequestBody CreateAccountRequest request) throws IOException {
+        return ResponseEntity.ok(ApiResponse.success(accountService.createManagerOrAccountant(request)));
+    }
 }

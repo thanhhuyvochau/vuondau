@@ -1,7 +1,11 @@
 package fpt.capstone.vuondau.entity.common;
 
 public enum EAccountRole {
-    TEACHER("Giáo viên", "teacher"), STUDENT("Học sinh", "student"), MANAGER("Quản lý", "manager"), ACCOUNTANT("Kế toán", ""), ROOT("Root User", "");
+    TEACHER("Giáo viên", "teacher"),
+    STUDENT("Học sinh", "student"),
+    MANAGER("Quản lý", "manager"),
+    ACCOUNTANT("Kế toán", ""),
+    ROOT("Root User", "");
 
     EAccountRole(String label, String moodleName) {
         this.label = label;

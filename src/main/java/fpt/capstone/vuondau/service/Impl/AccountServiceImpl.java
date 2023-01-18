@@ -151,7 +151,7 @@ public class AccountServiceImpl implements IAccountService {
             throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage("Email không đúng định dạng. ");
         }
         account.setUsername(studentRequest.getEmail());
-        if (!PasswordUtil.validationPassword(studentRequest.getPassword()) || studentRequest.getPassword() == null){
+        if (!PasswordUtil.validationPassword(studentRequest.getPassword()) || studentRequest.getPassword() == null) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Mật khẩu phải có ít nhất một ký tự số, ký tự viết thường, ký tự viết hoa, ký hiệu đặc biệt trong số @#$% và độ dài phải từ 8 đến 20"));
         }
@@ -181,7 +181,7 @@ public class AccountServiceImpl implements IAccountService {
         accountDetail.setPassword(passwordEncoder.encode(studentRequest.getPassword()));
         accountDetail.setTrainingSchoolName(studentRequest.getSchoolName());
 
-        if (!PasswordUtil.validationPassword(studentRequest.getPassword()) || studentRequest.getPassword() == null){
+        if (!PasswordUtil.validationPassword(studentRequest.getPassword()) || studentRequest.getPassword() == null) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Mật khẩu phải có ít nhất một ký tự số, ký tự viết thường, ký tự viết hoa, ký hiệu đặc biệt trong số @#$% và độ dài phải từ 8 đến 20"));
         }
@@ -233,7 +233,6 @@ public class AccountServiceImpl implements IAccountService {
         }
         return studentResponse;
     }
-
 
 
     @Override
@@ -396,4 +395,35 @@ public class AccountServiceImpl implements IAccountService {
         return PageUtil.convert(all.map(ConvertUtil::doConvertEntityToResponse));
     }
 
+    @Override
+    public AccountResponse createManagerOrAccountant(CreateAccountRequest request) {
+
+
+        EAccountRole roleCode = request.getRole();
+        if (roleCode == null || !(roleCode.equals(EAccountRole.ACCOUNTANT) || roleCode.equals(EAccountRole.MANAGER))) {
+            throw ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Chỉ có thể tạo tài khoản cho Quản lý và Kế toán!"));
+        }
+        Account account = new Account();
+        if (accountRepository.existsAccountByUsername(request.getEmail())) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Username đã tồn tại"));
+        }
+
+        account.setUsername(request.getEmail());
+        account.setPassword(request.getPassword());
+
+        Role role = roleRepository.findRoleByCode(roleCode)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Không tìm thấy role!")));
+        account.setRole(role);
+
+        Account save = accountRepository.save(account);
+
+        Boolean saveAccountSuccess = keycloakUserUtil.create(account);
+        Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getCode().name(), account);
+        if (saveAccountSuccess && assignRoleSuccess) {
+            return ConvertUtil.doConvertEntityToResponse(save);
+        } else {
+            throw ApiException.create(HttpStatus.CONFLICT).withMessage("Tạo tài khoản thất bại, vui lòng thử lại!");
+        }
+    }
 }
