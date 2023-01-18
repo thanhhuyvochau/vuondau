@@ -34,8 +34,6 @@ public class KeycloakUserUtil {
     }
 
     public Boolean create(Account account) {
-
-
         CredentialRepresentation credentialRepresentation = preparePasswordRepresentation(account.getPassword());
         UserRepresentation userRepresentation = prepareUserRepresentation(account, credentialRepresentation);
         RealmResource realmResource = keycloak.realm(realm);

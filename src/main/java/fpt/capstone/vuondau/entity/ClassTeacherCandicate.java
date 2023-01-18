@@ -3,6 +3,8 @@ package fpt.capstone.vuondau.entity;
 import fpt.capstone.vuondau.entity.common.ECandicateStatus;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "class_teacher_candicate")
@@ -20,6 +22,8 @@ public class ClassTeacherCandicate extends BaseEntity {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private ECandicateStatus status;
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
+    private List<TeachingConfirmation> teachingConfirmations = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -51,5 +55,13 @@ public class ClassTeacherCandicate extends BaseEntity {
 
     public void setStatus(ECandicateStatus status) {
         this.status = status;
+    }
+
+    public List<TeachingConfirmation> getTeachingConfirmations() {
+        return teachingConfirmations;
+    }
+
+    public void setTeachingConfirmations(List<TeachingConfirmation> teachingConfirmations) {
+        this.teachingConfirmations = teachingConfirmations;
     }
 }

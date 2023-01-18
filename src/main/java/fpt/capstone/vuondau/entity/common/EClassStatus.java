@@ -13,6 +13,8 @@ public enum EClassStatus {
     ENDED, // Lớp đã kết thúc
 
     CANCEL, // Lớp bị hủy
+
+    RESPONSING, // Lớp tuyển giáo viên đang đợi phản hồi từ giáo viên
     All,
 
 
