@@ -29,7 +29,7 @@ public class AdminController {
 
     @Operation(summary = "xem hoc sinh feedback lớp ")
     @GetMapping("/{classId}/view-feadback")
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
     public ResponseEntity<ApiResponse<FeedBackDto>> viewStudentFeedbackClass(@PathVariable long classId) {
         return ResponseEntity.ok(ApiResponse.success(iAdminService.viewStudentFeedbackClass(classId)));
     }

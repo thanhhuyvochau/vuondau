@@ -126,7 +126,7 @@ public class ClassServiceImpl implements IClassService {
         clazz.setUnitPrice(createClassRequest.getEachStudentPayPrice());
         Class save = classRepository.save(clazz);
         createMoodleCourse(save, course);
-        moodleService.enrolUserToCourseMoodle(save);
+        moodleService.enrolUserToCourseMoodle(save, save.getAccount());
         return save.getId();
     }
 
@@ -255,19 +255,11 @@ public class ClassServiceImpl implements IClassService {
 
 
         StudentClass studentClass = new StudentClass();
-//        StudentClassKey key = new StudentClassKey();
-//        key.setClassId(aClass.getId());
-//        key.setStudentId(studentId);
-//
-//        studentClass.setId(key);
         studentClass.setAClass(aClass);
         studentClass.setAccount(student);
         studentClass.setIs_enrolled(false);
-//        Long numberStudent = aClass.getNumberStudent();
-//        aClass.setNumberStudent(numberStudent  + 1);
         student.getStudentClasses().add(studentClass);
         accountRepository.save(student);
-
 
         return true;
     }
@@ -417,6 +409,34 @@ public class ClassServiceImpl implements IClassService {
         clazz.setUnitPrice(createClassRequest.getEachStudentPayPrice());
         Class save = classRepository.save(clazz);
         return save.getId();
+    }
+
+    @Override
+    public Boolean adminEnrolStudentIntoClass(Long studentId, Long classId) throws JsonProcessingException {
+        Account student = accountRepository.findById(studentId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Không tìm thấy học sinh: " + studentId));
+
+        Class clazz = classRepository.findById(classId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Không tìm thấy lớp: " + classId));
+
+
+        List<StudentClass> studentClasses = student.getStudentClasses();
+        studentClasses.forEach(studentClass -> {
+            if (studentClass.getaClass().equals(clazz)) {
+                throw ApiException.create(HttpStatus.BAD_REQUEST)
+                        .withMessage(messageUtil.getLocalMessage("Học sinh đã đăng ký học lớp này !"));
+            }
+        });
+
+
+        StudentClass studentClass = new StudentClass();
+        studentClass.setAClass(clazz);
+        studentClass.setAccount(student);
+        studentClass.setIs_enrolled(true);
+        student.getStudentClasses().add(studentClass);
+        accountRepository.save(student);
+        moodleService.enrolUserToCourseMoodle(clazz, student);
+        return true;
     }
 
     @Override

@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.service;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.moodle.request.CreateCategoryRequest;
 import fpt.capstone.vuondau.moodle.response.MoodleCategoryResponse;
@@ -21,7 +22,7 @@ public interface IMoodleService {
 
     Boolean synchronizedAllClassDetailFromMoodle() throws JsonProcessingException;
 
-    String enrolUserToCourseMoodle(Class clazz) throws JsonProcessingException;
+    String enrolUserToCourseMoodle(Class clazz, Account account) throws JsonProcessingException;
 
     String unenrolUserToCourseMoodle(Class clazz) throws JsonProcessingException;
 
