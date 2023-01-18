@@ -40,8 +40,7 @@ public class RoleServiceImpl implements IRoleService {
         List<Role> roles = roleRepository.findAll();
 
         return roles.stream().map(role -> {
-            RoleResponse roleResponse = convertRoleToRoleResponse(role);
-            return roleResponse;
+            return convertRoleToRoleResponse(role);
         }).collect(Collectors.toList());
     }
 

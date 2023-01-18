@@ -10,6 +10,7 @@ public class RoleResponse {
     private String name;
     private EAccountRole code;
 
+
     public Long getId() {
         return id;
     }
@@ -25,7 +26,6 @@ public class RoleResponse {
     public void setName(String name) {
         this.name = name;
     }
-
 
     public EAccountRole getCode() {
         return code;
