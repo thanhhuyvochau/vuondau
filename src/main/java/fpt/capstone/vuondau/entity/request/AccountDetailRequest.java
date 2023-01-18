@@ -1,11 +1,8 @@
 package fpt.capstone.vuondau.entity.request;
 
 
-import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.common.EGenderType;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.Column;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
@@ -42,6 +39,8 @@ public class AccountDetailRequest implements Serializable {
 
     private List<Long> subjects ;
     private List<Long> classLevels ;
+
+    private List<UploadAvatarRequest>  files ;
 
     public String getFirstName() {
         return firstName;
@@ -177,5 +176,13 @@ public class AccountDetailRequest implements Serializable {
 
     public void setClassLevels(List<Long> classLevels) {
         this.classLevels = classLevels;
+    }
+
+    public List<UploadAvatarRequest> getFiles() {
+        return files;
+    }
+
+    public void setFiles(List<UploadAvatarRequest> files) {
+        this.files = files;
     }
 }

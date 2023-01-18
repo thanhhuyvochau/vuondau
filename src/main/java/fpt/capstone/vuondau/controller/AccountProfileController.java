@@ -4,6 +4,7 @@ package fpt.capstone.vuondau.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.ApiResponse;
+import fpt.capstone.vuondau.entity.common.EAccountDetailStatus;
 import fpt.capstone.vuondau.entity.dto.EmailDto;
 import fpt.capstone.vuondau.entity.dto.ProvincesDto;
 import fpt.capstone.vuondau.entity.dto.ResourceDto;
@@ -48,7 +49,7 @@ public class AccountProfileController {
 
     @Operation(summary = "Đăng ký làm gia sư cho vườn đậu")
     @PostMapping("/register-tutor")
-    public ResponseEntity<ApiResponse<Long>> registerTutor(@RequestBody AccountDetailRequest accountDetailRequest) {
+    public ResponseEntity<ApiResponse<Long>> registerTutor(@ModelAttribute AccountDetailRequest accountDetailRequest) {
         return ResponseEntity.ok(ApiResponse.success(iAccountDetailService.registerTutor(accountDetailRequest)));
     }
 
@@ -68,8 +69,8 @@ public class AccountProfileController {
     @GetMapping
     @Operation(summary = "Lấy tất cả request tạo tk để đang ký giang dạy theo trạng thái (đã duyệt/chờ)")
     @PreAuthorize("hasAuthority('MANAGER')")
-    public ResponseEntity<ApiResponse<ApiPage<AccountDetailResponse>>> getRequestToActiveAccount(  Boolean isActive   , Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.success(iAccountDetailService.getRequestToActiveAccount(isActive , pageable)));
+    public ResponseEntity<ApiResponse<ApiPage<AccountDetailResponse>>> getRequestToActiveAccount(EAccountDetailStatus status    , Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(iAccountDetailService.getRequestToActiveAccount(status , pageable)));
     }
 
     @GetMapping("/genders")

@@ -83,7 +83,8 @@ public class AccountDetail extends BaseEntity  {
     @OneToMany(mappedBy = "accountDetail", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AccountDetailClassLevel> accountDetailClassLevels = new ArrayList<>();
 
-    @OneToMany(mappedBy = "accountDetail")
+
+    @OneToMany(mappedBy = "accountDetail" , cascade = CascadeType.ALL)
     private List<Resource> resources;
 
 
