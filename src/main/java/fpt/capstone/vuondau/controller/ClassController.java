@@ -249,4 +249,10 @@ public class ClassController {
         return ResponseEntity.ok(ApiResponse.success(iClassService.adminRejectRequestCreateClass(id)));
     }
 
+    @Operation(summary = "Quản lý enrol một học sinh vào lớp bất kì ! ")
+    @PostMapping({"/{id}/enrol"})
+    @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
+    public ResponseEntity<ApiResponse<Boolean>> adminEnrolStudentIntoClass(@PathVariable Long id, @RequestParam Long studentId) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.adminEnrolStudentIntoClass(studentId, id)));
+    }
 }

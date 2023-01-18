@@ -13,6 +13,7 @@ import fpt.capstone.vuondau.repository.ClassRepository;
 import fpt.capstone.vuondau.repository.TransactionRepository;
 import fpt.capstone.vuondau.service.IMoodleService;
 import fpt.capstone.vuondau.service.ITransactionService;
+import fpt.capstone.vuondau.util.AccountUtil;
 import fpt.capstone.vuondau.util.SecurityUtil;
 import fpt.capstone.vuondau.util.TransactionUtil;
 import fpt.capstone.vuondau.util.WebSocketUtil;
@@ -43,9 +44,10 @@ public class TransactionServiceImpl implements ITransactionService {
     private final WebSocketUtil webSocketUtil;
     private final TransactionUtil transactionUtil;
     private final IMoodleService moodleService;
+    private final AccountUtil accountUtil;
     private final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
-    public TransactionServiceImpl(VnpConfig vnpConfig, SecurityUtil securityUtil, TransactionRepository transactionRepository, ClassRepository classRepository, WebSocketUtil webSocketUtil, TransactionUtil transactionUtil, IMoodleService moodleService) {
+    public TransactionServiceImpl(VnpConfig vnpConfig, SecurityUtil securityUtil, TransactionRepository transactionRepository, ClassRepository classRepository, WebSocketUtil webSocketUtil, TransactionUtil transactionUtil, IMoodleService moodleService, AccountUtil accountUtil) {
         this.vnpConfig = vnpConfig;
         this.securityUtil = securityUtil;
         this.transactionRepository = transactionRepository;
@@ -53,6 +55,7 @@ public class TransactionServiceImpl implements ITransactionService {
         this.webSocketUtil = webSocketUtil;
         this.transactionUtil = transactionUtil;
         this.moodleService = moodleService;
+        this.accountUtil = accountUtil;
     }
 
     @Override
@@ -64,7 +67,10 @@ public class TransactionServiceImpl implements ITransactionService {
             throw ApiException.create(HttpStatus.METHOD_NOT_ALLOWED).withMessage("You cannot buy this class because status is invalid!");
         }
         logger.debug("PRINCIPAL:" + request.getSessionId());
+
         Account student = securityUtil.getCurrentUserThrowNotFoundException();
+        accountUtil.synchronizedCurrentAccountInfo();
+
         boolean isInClass = clazz.getStudentClasses().stream().map(StudentClass::getAccount).collect(Collectors.toList()).contains(student);
         boolean isPaidClass = transactionUtil.isClassPaid(student, clazz);
         if (isPaidClass) {
@@ -188,7 +194,7 @@ public class TransactionServiceImpl implements ITransactionService {
                 paymentClass.getStudentClasses().add(studentClass);
                 paymentClass.setNumberStudent(paymentClass.getNumberStudent() + 1);
                 classRepository.save(paymentClass);
-                moodleService.enrolUserToCourseMoodle(transaction.getPaymentClass());
+                moodleService.enrolUserToCourseMoodle(transaction.getPaymentClass(), transaction.getAccount());
             } else {
                 throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage("Class got maximum number of student :(( !");
             }

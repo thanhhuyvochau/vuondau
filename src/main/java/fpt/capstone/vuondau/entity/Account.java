@@ -50,8 +50,6 @@ public class Account extends BaseEntity {
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<StudentAnswer> studentAnswers = new ArrayList<>();
 
-
-
     @Column(name = "is_keycloak")
     private Boolean isKeycloak;
 

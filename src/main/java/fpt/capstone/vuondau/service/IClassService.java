@@ -79,4 +79,6 @@ public interface IClassService {
 
     Long updateClassForRecruiting(Long id, CreateClassRequest createClassRequest) throws ParseException;
     ClassDto adminRejectRequestCreateClass(Long id) throws JsonProcessingException;
+
+    Boolean adminEnrolStudentIntoClass(Long studentId, Long classId) throws JsonProcessingException;
 }
