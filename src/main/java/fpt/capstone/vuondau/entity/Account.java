@@ -29,7 +29,7 @@ public class Account extends BaseEntity {
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @OneToOne(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private AccountDetail accountDetail;
 
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
@@ -59,8 +59,6 @@ public class Account extends BaseEntity {
     private List<Comment> comments = new ArrayList<>();
 
 
-
-
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
     private List<InfoFindTutorAccount> infoFindTutorAccounts = new ArrayList<>();
 
@@ -76,10 +74,10 @@ public class Account extends BaseEntity {
     private List<Vote> votes = new ArrayList<>();
     private String keycloakUserId;
     private Integer moodleUserId;
-    @OneToMany(mappedBy = "notifier",cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "notifier", cascade = CascadeType.PERSIST)
     private List<Notifier> notifiers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     private List<FeedbackAccountLog> feedbackAccountLogs = new ArrayList<>();
 
 

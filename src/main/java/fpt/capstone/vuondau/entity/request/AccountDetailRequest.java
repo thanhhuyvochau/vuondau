@@ -17,15 +17,10 @@ public class AccountDetailRequest implements Serializable {
     private String email;
 
     private String password;
-
     private String phone;
-
-
     private EGenderType gender;
-
     private String domicile;
     private String voice;
-
     private String teachingProvince;
     private String currentAddress;
 
@@ -193,4 +188,5 @@ public class AccountDetailRequest implements Serializable {
     public void setFiles(List<UploadAvatarRequest> files) {
         this.files = files;
     }
+
 }

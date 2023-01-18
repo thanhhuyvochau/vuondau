@@ -36,6 +36,9 @@ public class Class extends BaseEntity {
     @Column(name = "end_date")
     private Instant endDate;
 
+    @Column(name = "closing_date")
+    private Instant closingDate;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id")
@@ -276,5 +279,17 @@ public class Class extends BaseEntity {
 
     public void setClassLevel(ClassLevel classLevel) {
         this.classLevel = classLevel;
+    }
+
+    public Instant getClosingDate() {
+        return closingDate;
+    }
+
+    public void setClosingDate(Instant closingDate) {
+        this.closingDate = closingDate;
+    }
+
+    public void setStudentClasses(List<StudentClass> studentClasses) {
+        this.studentClasses = studentClasses;
     }
 }
