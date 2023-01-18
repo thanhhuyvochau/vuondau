@@ -22,6 +22,9 @@ public class TeachingConfirmation extends BaseEntity {
     private String code;
     @Column(name = "is_accept")
     private Boolean isAccept;
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private EConfirmStatus status;
 
     public Long getId() {
         return id;
@@ -63,4 +66,11 @@ public class TeachingConfirmation extends BaseEntity {
         isAccept = accept;
     }
 
+    public EConfirmStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(EConfirmStatus status) {
+        this.status = status;
+    }
 }

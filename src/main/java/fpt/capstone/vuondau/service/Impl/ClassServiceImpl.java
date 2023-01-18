@@ -630,6 +630,7 @@ public class ClassServiceImpl implements IClassService {
         teachingConfirmation.setExpireDate(Instant.now().plus(3, ChronoUnit.DAYS)); // 3 ngày là thời hạn để trả lời
         teachingConfirmation.setCandidate(classTeacherCandicate);
         teachingConfirmation.setCode(UUID.randomUUID().toString());
+        teachingConfirmation.setStatus(EConfirmStatus.WAITING);
         return teachingConfirmation;
     }
 
@@ -1333,8 +1334,30 @@ public class ClassServiceImpl implements IClassService {
         /**TODO
          * Gửi email từ chối cho tất cả các ứng viên khác
          * */
+        return true;
+    }
 
+    public Boolean detectExpireConfirmation() {
+        List<Class> modifyClasses = new ArrayList<>();
+        List<TeachingConfirmation> teachingConfirmations = teachingConfirmationRepository.findByStatus(EConfirmStatus.WAITING);
+        List<TeachingConfirmation> expireConfirmations = teachingConfirmations.stream().filter(teachingConfirmation -> {
+            Instant now = Instant.now().truncatedTo(ChronoUnit.DAYS);
+            Instant expire = teachingConfirmation.getExpireDate().truncatedTo(ChronoUnit.DAYS);
+            return now.isAfter(expire);
+        }).collect(Collectors.toList());
 
+        for (TeachingConfirmation expirteConfirmation : expireConfirmations) {
+            expirteConfirmation.setStatus(EConfirmStatus.REFUSED);
+            Class clazz = expirteConfirmation.getCandidate().getClazz();
+            clazz.setStatus(EClassStatus.RECRUITING);
+            modifyClasses.add(clazz);
+        }
+
+        if (!modifyClasses.isEmpty()) {
+            classRepository.saveAll(modifyClasses);
+            detectExpireRecruitingClass();
+        }
+        teachingConfirmationRepository.saveAll(expireConfirmations);
         return true;
     }
 }

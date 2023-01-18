@@ -18,4 +18,9 @@ public class ScheduleJobConfig {
     public void detectExpireRecruitedClass() {
         classService.detectExpireRecruitingClass();
     }
+
+    @Scheduled(cron = "0 0 0 * * *") // Sẽ chạy vào lúc 0 giờ mỗi ngày
+    public void detectExpireConfirmationClass() {
+        classService.detectExpireConfirmation();
+    }
 }

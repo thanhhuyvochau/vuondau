@@ -4,6 +4,7 @@ import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.Role;
 import fpt.capstone.vuondau.entity.TeachingConfirmation;
 import fpt.capstone.vuondau.entity.common.EAccountDetailStatus;
+import fpt.capstone.vuondau.entity.common.EConfirmStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -19,6 +20,5 @@ import java.util.List;
 public interface TeachingConfirmationRepository extends JpaRepository<TeachingConfirmation, Long> {
     TeachingConfirmation findByCode(String code);
 
-    @Query(nativeQuery = true, value = "SELECT * from ")
-    List<TeachingConfirmation> findByDate(Instant date);
+    List<TeachingConfirmation> findByStatus(EConfirmStatus status);
 }

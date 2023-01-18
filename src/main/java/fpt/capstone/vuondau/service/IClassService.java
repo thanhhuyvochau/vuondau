@@ -86,4 +86,6 @@ public interface IClassService {
     Boolean detectExpireRecruitingClass();
 
     Boolean confirmTeaching(String confirmCode) throws JsonProcessingException;
+
+    Boolean detectExpireConfirmation();
 }
