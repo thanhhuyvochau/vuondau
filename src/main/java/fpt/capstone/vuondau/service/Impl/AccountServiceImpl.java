@@ -65,8 +65,10 @@ public class AccountServiceImpl implements IAccountService {
 
     private final ClassLevelRepository classLevelRepository;
 
+    private final AccountUtil accountUtil;
 
-    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository, MessageUtil messageUtil, RoleRepository roleRepository1, Keycloak keycloak, PasswordEncoder passwordEncoder, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, AccountDetailRepository accountDetailRepository, SecurityUtil securityUtil, SubjectRepository subjectRepository, ClassLevelRepository classLevelRepository) {
+
+    public AccountServiceImpl(AccountRepository accountRepository, RoleRepository roleRepository, MessageUtil messageUtil, RoleRepository roleRepository1, Keycloak keycloak, PasswordEncoder passwordEncoder, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, AccountDetailRepository accountDetailRepository, SecurityUtil securityUtil, SubjectRepository subjectRepository, ClassLevelRepository classLevelRepository, AccountUtil accountUtil) {
         this.accountRepository = accountRepository;
         this.messageUtil = messageUtil;
         this.roleRepository = roleRepository1;
@@ -80,6 +82,7 @@ public class AccountServiceImpl implements IAccountService {
         this.securityUtil = securityUtil;
         this.subjectRepository = subjectRepository;
         this.classLevelRepository = classLevelRepository;
+        this.accountUtil = accountUtil;
     }
 
     @Override
@@ -373,6 +376,7 @@ public class AccountServiceImpl implements IAccountService {
     @Override
     public AccountResponse getSelfAccount() {
         Account currentUser = securityUtil.getCurrentUserThrowNotFoundException();
+        accountUtil.synchronizedCurrentAccountInfo();
         return ConvertUtil.doConvertEntityToResponse(currentUser);
     }
 
