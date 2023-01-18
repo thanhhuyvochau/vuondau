@@ -376,9 +376,10 @@ public class AccountServiceImpl implements IAccountService {
 
     @Override
     public AccountResponse getSelfAccount() {
-        Account currentUser = securityUtil.getCurrentUserThrowNotFoundException();
-        accountUtil.synchronizedCurrentAccountInfo();
-        return ConvertUtil.doConvertEntityToResponse(currentUser);
+//        Account currentUser = securityUtil.getCurrentUserThrowNotFoundException();
+//        accountUtil.synchronizedCurrentAccountInfo();
+//        return ConvertUtil.doConvertEntityToResponse(currentUser);
+        return null ;
     }
 
     public AccountResponse getAccountById(long id) {
