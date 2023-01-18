@@ -82,4 +82,10 @@ public interface IClassService {
     Boolean adminEnrolStudentIntoClass(Long studentId, Long classId) throws JsonProcessingException;
 
     ClassDto cancelPendingClass(Long classId);
+
+    Boolean detectExpireRecruitingClass();
+
+    Boolean confirmTeaching(String confirmCode) throws JsonProcessingException;
+
+    Boolean detectExpireConfirmation();
 }
