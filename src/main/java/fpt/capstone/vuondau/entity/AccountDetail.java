@@ -87,6 +87,8 @@ public class AccountDetail extends BaseEntity  {
     @OneToMany(mappedBy = "accountDetail" , cascade = CascadeType.ALL)
     private List<Resource> resources;
 
+    @OneToMany(mappedBy = "accountDetail",cascade = CascadeType.ALL)
+    private List<FeedbackAccountLog> feedbackAccountLogs = new ArrayList<>();
 
 
     public Long getId() {
@@ -263,5 +265,13 @@ public class AccountDetail extends BaseEntity  {
 
     public void setGender(EGenderType gender) {
         this.gender = gender;
+    }
+
+    public List<FeedbackAccountLog> getFeedbackAccountLogs() {
+        return feedbackAccountLogs;
+    }
+
+    public void setFeedbackAccountLogs(List<FeedbackAccountLog> feedbackAccountLogs) {
+        this.feedbackAccountLogs = feedbackAccountLogs;
     }
 }

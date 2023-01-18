@@ -22,12 +22,14 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     Page<Account> findAccountByRole(Pageable pageable, Role role);
 
+
+    Page<Account> findAccountByRoleIn(Pageable pageable, List<Role> role);
     Page<Account> findAccountByRoleAndIsActiveIsFalse(Pageable pageable, Role role);
 
     Page<Account> findAccountByRoleAndAccountDetailStatus(Role role, EAccountDetailStatus detailStatus ,Pageable pageable);
 
     List<Account> findAllByIdInAndIsActiveIsFalse(List<Long> ids);
-
+    List<Account> findAllByIdIn(List<Long> ids);
     Page<Account> findAll(Specification<Account> spec, Pageable pageable);
 
     Boolean existsAccountByUsername(String username);

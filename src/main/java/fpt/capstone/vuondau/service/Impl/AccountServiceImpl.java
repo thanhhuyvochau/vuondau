@@ -430,4 +430,15 @@ public class AccountServiceImpl implements IAccountService {
             throw ApiException.create(HttpStatus.CONFLICT).withMessage("Tạo tài khoản thất bại, vui lòng thử lại!");
         }
     }
+
+    @Override
+    public ApiPage<AccountResponse> getStaffAccounts(Pageable pageable) {
+        List<EAccountRole> eAccountRoles = new ArrayList<>( );
+        eAccountRoles.add(EAccountRole.ACCOUNTANT) ;
+        eAccountRoles.add(EAccountRole.MANAGER );
+        List<Role> roleByCodeIn = roleRepository.findRoleByCodeIn(eAccountRoles);
+
+        Page<Account> accounts = accountRepository.findAccountByRoleIn(pageable, roleByCodeIn);
+        return PageUtil.convert(accounts.map(ConvertUtil::doConvertEntityToResponse));
+    }
 }

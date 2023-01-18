@@ -50,4 +50,6 @@ public interface IAccountService {
 
     ApiPage<AccountDetailResponse> getAllInfoTeacher(Pageable pageable);
     AccountResponse createManagerOrAccountant(CreateAccountRequest request);
+
+    ApiPage<AccountResponse> getStaffAccounts(Pageable pageable);
 }
