@@ -18,6 +18,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.ws.rs.POST;
 import java.text.ParseException;
 import java.util.List;
 
@@ -254,5 +255,11 @@ public class ClassController {
     @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
     public ResponseEntity<ApiResponse<Boolean>> adminEnrolStudentIntoClass(@PathVariable Long id, @RequestParam Long studentId) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.adminEnrolStudentIntoClass(studentId, id)));
+    }
+
+    @Operation(summary = "Xác nhận nhận lớp dạy của giáo viên")
+    @PostMapping({"/confirm"})
+    public ResponseEntity<ApiResponse<Boolean>> confirmTeaching(@RequestParam String code) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.confirmTeaching(code)));
     }
 }

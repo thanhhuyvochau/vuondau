@@ -20,6 +20,7 @@ import fpt.capstone.vuondau.service.IClassService;
 import fpt.capstone.vuondau.service.IMoodleService;
 import fpt.capstone.vuondau.util.*;
 import fpt.capstone.vuondau.util.specification.ClassSpecificationBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -61,12 +63,15 @@ public class ClassServiceImpl implements IClassService {
     private final InfoFindTutorRepository infoFindTutorRepository;
     private final IMoodleService moodleService;
     protected final ClassTeacherCandicateRepository classTeacherCandicateRepository;
+    private final TeachingConfirmationRepository teachingConfirmationRepository;
+    @Value("${teaching-confirmation-url}")
+    private String confirmLink;
 
     public ClassServiceImpl(AccountRepository accountRepository
             , SubjectRepository subjectRepository, ClassRepository classRepository,
                             CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, ClassLevelRepository classLevelRepository,
                             MessageUtil messageUtil, SecurityUtil securityUtil, AttendanceRepository attendanceRepository,
-                            InfoFindTutorRepository infoFindTutorRepository, IMoodleService moodleService, ClassTeacherCandicateRepository classTeacherCandicateRepository) {
+                            InfoFindTutorRepository infoFindTutorRepository, IMoodleService moodleService, ClassTeacherCandicateRepository classTeacherCandicateRepository, TeachingConfirmationRepository teachingConfirmationRepository) {
         this.accountRepository = accountRepository;
         this.subjectRepository = subjectRepository;
         this.classRepository = classRepository;
@@ -80,6 +85,7 @@ public class ClassServiceImpl implements IClassService {
         this.infoFindTutorRepository = infoFindTutorRepository;
         this.moodleService = moodleService;
         this.classTeacherCandicateRepository = classTeacherCandicateRepository;
+        this.teachingConfirmationRepository = teachingConfirmationRepository;
     }
 
 
@@ -443,6 +449,25 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
+    public Boolean detectExpireRecruitingClass() {
+        List<Class> allRecruitingClass = classRepository.findAllByStatus(EClassStatus.RECRUITING);
+
+        for (Class recruitingClass : allRecruitingClass) {
+            Instant now = Instant.now().truncatedTo(ChronoUnit.DAYS);
+            Instant closingDate = recruitingClass.getClosingDate().truncatedTo(ChronoUnit.DAYS).plus(1, ChronoUnit.DAYS);
+            try {
+                if (now.equals(closingDate)) {
+                    recruitingClass.setStatus(EClassStatus.PENDING);
+                }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+        }
+        classRepository.saveAll(allRecruitingClass);
+        return true;
+    }
+
+    @Override
     public ClassDto cancelPendingClass(Long classId) {
         Class clazz = classRepository.findById(classId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Không tìm thấy lớp: " + classId));
@@ -577,18 +602,35 @@ public class ClassServiceImpl implements IClassService {
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
         Account teacher = accountRepository.findById(teacherId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay teacher" + teacherId));
-        List<ClassTeacherCandicate> candicates = clazz.getCandicates();
-        for (ClassTeacherCandicate classTeacherCandicate : candicates) {
+        List<ClassTeacherCandicate> candidates = clazz.getCandicates();
+        for (ClassTeacherCandicate classTeacherCandicate : candidates) {
             if (classTeacherCandicate.getTeacher().getId().equals(teacherId)) {
                 classTeacherCandicate.setStatus(ECandicateStatus.SELECTED);
-                clazz.setStatus(EClassStatus.NOTSTART);
+                clazz.setStatus(EClassStatus.RESPONSING);
                 clazz.setAccount(teacher);
+                TeachingConfirmation teachingConfirmation = createTeachingConfirmation(classTeacherCandicate);
+                classTeacherCandicate.getTeachingConfirmations().add(teachingConfirmation);
             } else {
                 classTeacherCandicate.setStatus(ECandicateStatus.CLOSED);
             }
         }
+
+        /**TODO
+         * Gửi mail cho giáo viên xác nhận giáo viên nhận lớp
+         *
+         * */
+
+
         classRepository.save(clazz);
         return ConvertUtil.doConvertEntityToResponse(teacher);
+    }
+
+    private TeachingConfirmation createTeachingConfirmation(ClassTeacherCandicate classTeacherCandicate) {
+        TeachingConfirmation teachingConfirmation = new TeachingConfirmation();
+        teachingConfirmation.setExpireDate(Instant.now().plus(3, ChronoUnit.DAYS)); // 3 ngày là thời hạn để trả lời
+        teachingConfirmation.setCandidate(classTeacherCandicate);
+        teachingConfirmation.setCode(UUID.randomUUID().toString());
+        return teachingConfirmation;
     }
 
     @Override
@@ -1262,5 +1304,37 @@ public class ClassServiceImpl implements IClassService {
         }).collect(Collectors.toList());
         classDetail.setTimeTable(timeTableDtoList);
         return classDetail;
+    }
+
+    public Boolean confirmTeaching(String confirmCode) throws JsonProcessingException {
+        TeachingConfirmation confirmation = teachingConfirmationRepository.findByCode(confirmCode);
+        Account teacher = confirmation.getCandidate().getTeacher();
+        Account currentAccount = securityUtil.getCurrentUserThrowNotFoundException();
+        if (!Objects.equals(teacher.getId(), currentAccount.getId())) {
+            throw ApiException.create(HttpStatus.METHOD_NOT_ALLOWED).withMessage("Xác nhận không hợp lệ!");
+        }
+        Instant now = Instant.now().truncatedTo(ChronoUnit.DAYS);
+        Instant expire = confirmation.getExpireDate().truncatedTo(ChronoUnit.DAYS);
+        if (now.isAfter(expire)) {
+            throw ApiException.create(HttpStatus.METHOD_NOT_ALLOWED).withMessage("Xác nhận đã hết hạn!");
+        }
+        confirmation.setIsAccept(true);
+        Class clazz = confirmation.getCandidate().getClazz();
+        clazz.setStatus(EClassStatus.NOTSTART);
+        classRepository.save(clazz);
+        teachingConfirmationRepository.save(confirmation);
+        moodleService.enrolUserToCourseMoodle(clazz, teacher);
+        // Link để điều hướng màn hình xác nhận qua front end
+        // Để get link này gửi email dùng phương thức .toString()
+        StringBuilder fullConfirmLink = new StringBuilder(confirmLink);
+        fullConfirmLink.append("?code=");
+        fullConfirmLink.append(confirmCode);
+
+        /**TODO
+         * Gửi email từ chối cho tất cả các ứng viên khác
+         * */
+
+
+        return true;
     }
 }
