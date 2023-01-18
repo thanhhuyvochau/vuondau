@@ -231,7 +231,13 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         accountDetail.setResources(resourceList);
 
 
+
         Account account = new Account();
+        if (  accountRepository.existsAccountByUsername(accountDetailRequest.getUserName())){
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Tên đăng nhập đã tồn tại"));
+        }
+
         account.setUsername(accountDetailRequest.getUserName());
         account.setIsActive(true);
         account.setKeycloak(true);
