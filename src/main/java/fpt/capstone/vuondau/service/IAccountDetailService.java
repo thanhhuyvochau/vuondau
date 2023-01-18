@@ -37,5 +37,5 @@ public interface IAccountDetailService {
 
     ResponseAccountDetailResponse refuseRegisterAccount(RequestEditAccountDetailRequest editAccountDetailRequest);
 
-    Long teacherUpdateProfileForAdmin(Long id, AccountDetailRequest editAccountDetailRequest);
+    Long teacherUpdateProfileForAdmin(Long id,AccountDetailEditRequest editAccountDetailRequest);
 }
