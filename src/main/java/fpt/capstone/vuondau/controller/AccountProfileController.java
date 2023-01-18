@@ -77,10 +77,10 @@ public class AccountProfileController {
     }
 
     @Operation(summary = "Giáo viên cập nhật hồ sơ khi bị admin từ chối hoặc yêu cầu thay đổi thông tin . ")
-    @PutMapping("/{id}/profile")
+    @PutMapping
     @PreAuthorize("hasAnyAuthority('TEACHER')")
-    public ResponseEntity<Long> teacherUpdateProfileForAdmin(@PathVariable Long id , @RequestBody AccountDetailEditRequest editAccountDetailRequest) {
-        return ResponseEntity.ok(iAccountDetailService.teacherUpdateProfileForAdmin(id,editAccountDetailRequest));
+    public ResponseEntity<Long> teacherUpdateProfileForAdmin(@ModelAttribute  AccountDetailEditRequest editAccountDetailRequest) {
+        return ResponseEntity.ok(iAccountDetailService.teacherUpdateProfileForAdmin(editAccountDetailRequest));
     }
     @Operation(summary = "Admin yêu đầu thay đổi thông tin  request đăng ký giang dạy của giao vien")
     @PutMapping("/request-edit-register-profile")
