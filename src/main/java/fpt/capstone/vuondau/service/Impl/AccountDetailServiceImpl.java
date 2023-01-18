@@ -5,6 +5,7 @@ import fpt.capstone.vuondau.entity.common.*;
 import fpt.capstone.vuondau.entity.dto.EmailDto;
 import fpt.capstone.vuondau.entity.dto.ResourceDto;
 import fpt.capstone.vuondau.entity.dto.SubjectDto;
+import fpt.capstone.vuondau.entity.request.AccountDetailEditRequest;
 import fpt.capstone.vuondau.entity.request.AccountDetailRequest;
 import fpt.capstone.vuondau.entity.request.RequestEditAccountDetailRequest;
 import fpt.capstone.vuondau.entity.request.UploadAvatarRequest;
@@ -114,12 +115,12 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
                 || accountDetailRequest.getEmail() == null
                 || accountDetailRepository.existsAccountByEmail(accountDetailRequest.getEmail())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Email đã có tài khoản trong hệ thống"));
+                    .withMessage(messageUtil.getLocalMessage("Địa chỉ mail đã đã được đăng ký trong hệ thống"));
         }
 
         if (accountDetailRepository.existsAccountDetailByPhone(accountDetailRequest.getPhone()) || accountDetailRequest.getPhone() == null) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Phone đã có tà khoản trong hệ thống"));
+                    .withMessage(messageUtil.getLocalMessage("Số điên thoại đã được đăng ký trong hệ thống"));
         }
 
         accountDetail.setTeachingProvince(accountDetailRequest.getTeachingProvince());
@@ -178,6 +179,11 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         List<Long> classLevels = accountDetailRequest.getClassLevels();
         if (classLevels != null) {
             List<ClassLevel> allClassLevel = classLevelRepository.findAllById(classLevels);
+            if (allClassLevel.isEmpty()) {
+                throw ApiException.create(HttpStatus.BAD_REQUEST)
+                        .withMessage(messageUtil.getLocalMessage("Bạn chưa chọn lớp dạy !"));
+            }
+
             allClassLevel.forEach(classLevel -> {
                 AccountDetailClassLevel accountDetailClassLevel = new AccountDetailClassLevel();
                 AccountDetailClassLevelKey accountDetailClassLevelKey = new AccountDetailClassLevelKey();
@@ -231,13 +237,11 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         accountDetail.setResources(resourceList);
 
 
-
         Account account = new Account();
-        if (  accountRepository.existsAccountByUsername(accountDetailRequest.getUserName())){
+        if (accountRepository.existsAccountByUsername(accountDetailRequest.getUserName())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Tên đăng nhập đã tồn tại"));
         }
-
         account.setUsername(accountDetailRequest.getUserName());
         account.setIsActive(true);
         account.setKeycloak(true);
@@ -473,13 +477,13 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
     }
 
     @Override
-    public Long teacherUpdateProfileForAdmin(Long id, AccountDetailRequest editAccountDetailRequest) {
+    public Long teacherUpdateProfileForAdmin(Long id, AccountDetailEditRequest editAccountDetailRequest) {
         Account teacher = securityUtil.getCurrentUserThrowNotFoundException();
         AccountDetail accountDetail = accountDetailRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay tài khoản")));
-        if (accountDetail.getAccount()== null) {
+        if (accountDetail.getAccount() == null) {
             throw ApiException.create(HttpStatus.CONFLICT).withMessage("Thông tin tài khoản này chưa được đăng ký");
         }
-        if (accountDetail.getAccount().getId().equals(id)){
+        if (accountDetail.getAccount().getId().equals(id)) {
             accountDetail.setTeachingProvince(editAccountDetailRequest.getTeachingProvince());
 
             accountDetail.setLastName(editAccountDetailRequest.getLastName());
@@ -492,9 +496,16 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
             accountDetail.setGender(editAccountDetailRequest.getGender());
             accountDetail.setCurrentAddress(editAccountDetailRequest.getCurrentAddress());
 
+            if (!accountDetailRepository.existsAccountDetailByIdCard(editAccountDetailRequest.getIdCard()) &&
+                    !editAccountDetailRequest.getIdCard().equals(accountDetail.getIdCard())) {
+                throw ApiException.create(HttpStatus.CONFLICT).withMessage("Số chứng minh / căn cước công dân đã có trong hệ thống");
+            }
 
             accountDetail.setIdCard(editAccountDetailRequest.getIdCard());
-
+            if (!accountDetailRepository.existsAccountDetailByPhone(editAccountDetailRequest.getIdCard()) &&
+                    !editAccountDetailRequest.getPhone().equals(accountDetail.getPhone())) {
+                throw ApiException.create(HttpStatus.CONFLICT).withMessage("Số điện thoại này  đã dùng đăng ký trong hệ thống");
+            }
 
             accountDetail.setPhone(editAccountDetailRequest.getPhone());
             if (!PasswordUtil.validationPassword(editAccountDetailRequest.getPassword()) || editAccountDetailRequest.getPassword() == null) {
@@ -507,7 +518,29 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
             // ngành học
             accountDetail.setMajors(editAccountDetailRequest.getMajors());
             // trinh độ : h , cao đẳng
-            accountDetail.setLevel(editAccountDetailRequest.getLevel());
+            List<AccountDetailClassLevel> accountDetailClassLevelList = new ArrayList<>();
+            List<Long> classLevels = editAccountDetailRequest.getClassLevels();
+            if (classLevels != null) {
+                List<ClassLevel> allClassLevel = classLevelRepository.findAllById(classLevels);
+                if (allClassLevel.isEmpty()) {
+                    throw ApiException.create(HttpStatus.BAD_REQUEST)
+                            .withMessage(messageUtil.getLocalMessage("Bạn chưa chọn lớp dạy !"));
+                }
+
+                allClassLevel.forEach(classLevel -> {
+                    AccountDetailClassLevel accountDetailClassLevel = new AccountDetailClassLevel();
+                    AccountDetailClassLevelKey accountDetailClassLevelKey = new AccountDetailClassLevelKey();
+                    accountDetailClassLevelKey.setClassLevelId(classLevel.getId());
+                    accountDetailClassLevelKey.setAccountDetailId(accountDetail.getId());
+                    accountDetailClassLevel.setId(accountDetailClassLevelKey);
+                    accountDetailClassLevel.setAccountDetail(accountDetail);
+                    accountDetailClassLevel.setClassLevel(classLevel);
+                    accountDetailClassLevelList.add(accountDetailClassLevel);
+                });
+            }
+            accountDetail.getAccountDetailClassLevels().clear();
+            accountDetail.getAccountDetailClassLevels().addAll(accountDetailClassLevelList);
+
             List<Long> subjects = editAccountDetailRequest.getSubjects();
             List<AccountDetailSubject> accountDetailSubjectList = new ArrayList<>();
             if (subjects != null) {
@@ -526,28 +559,11 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
                 });
             }
 
-
-            accountDetail.setAccountDetailSubjects(accountDetailSubjectList);
-
-
-            List<AccountDetailClassLevel> accountDetailClassLevelList = new ArrayList<>();
-            List<Long> classLevels = editAccountDetailRequest.getClassLevels();
-            if (classLevels != null) {
-                List<ClassLevel> allClassLevel = classLevelRepository.findAllById(classLevels);
-                allClassLevel.forEach(classLevel -> {
-                    AccountDetailClassLevel accountDetailClassLevel = new AccountDetailClassLevel();
-                    AccountDetailClassLevelKey accountDetailClassLevelKey = new AccountDetailClassLevelKey();
-                    accountDetailClassLevelKey.setClassLevelId(classLevel.getId());
-                    accountDetailClassLevelKey.setAccountDetailId(accountDetail.getId());
-                    accountDetailClassLevel.setId(accountDetailClassLevelKey);
-                    accountDetailClassLevel.setAccountDetail(accountDetail);
-                    accountDetailClassLevel.setClassLevel(classLevel);
-                    accountDetailClassLevelList.add(accountDetailClassLevel);
-                });
-            }
+            accountDetail.getAccountDetailSubjects().clear();
+            accountDetail.getAccountDetailSubjects().addAll(accountDetailSubjectList);
+//            accountDetail.setAccountDetailSubjects(accountDetailSubjectList);
 
 
-            accountDetail.setAccountDetailClassLevels(accountDetailClassLevelList);
             accountDetail.setVoice(editAccountDetailRequest.getVoice());
             accountDetail.setStatus(EAccountDetailStatus.REQUESTING);
             accountDetail.setActive(true);
@@ -585,7 +601,6 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
             }
             accountDetail.getResources().clear();
             accountDetail.getResources().addAll(resourceList);
-
 
 
         }

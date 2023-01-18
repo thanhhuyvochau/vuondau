@@ -8,6 +8,7 @@ import fpt.capstone.vuondau.entity.common.EAccountDetailStatus;
 import fpt.capstone.vuondau.entity.dto.EmailDto;
 import fpt.capstone.vuondau.entity.dto.ProvincesDto;
 import fpt.capstone.vuondau.entity.dto.ResourceDto;
+import fpt.capstone.vuondau.entity.request.AccountDetailEditRequest;
 import fpt.capstone.vuondau.entity.request.AccountDetailRequest;
 import fpt.capstone.vuondau.entity.request.RequestEditAccountDetailRequest;
 import fpt.capstone.vuondau.entity.request.UploadAvatarRequest;
@@ -78,7 +79,7 @@ public class AccountProfileController {
     @Operation(summary = "Giáo viên cập nhật hồ sơ khi bị admin từ chối hoặc yêu cầu thay đổi thông tin . ")
     @PutMapping("/{id}/profile")
     @PreAuthorize("hasAnyAuthority('TEACHER')")
-    public ResponseEntity<Long> teacherUpdateProfileForAdmin(@PathVariable Long id , @RequestBody AccountDetailRequest editAccountDetailRequest) {
+    public ResponseEntity<Long> teacherUpdateProfileForAdmin(@PathVariable Long id , @RequestBody AccountDetailEditRequest editAccountDetailRequest) {
         return ResponseEntity.ok(iAccountDetailService.teacherUpdateProfileForAdmin(id,editAccountDetailRequest));
     }
     @Operation(summary = "Admin yêu đầu thay đổi thông tin  request đăng ký giang dạy của giao vien")
