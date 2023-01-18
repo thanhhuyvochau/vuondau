@@ -337,7 +337,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
             feedbackAccountLogs.add(log);
             accountDetail.setFeedbackAccountLogs(feedbackAccountLogs);
             accountDetailList.add(accountDetail);
-            accountDetail.setStatus(EAccountDetailStatus.REQUESTED);
+            accountDetail.setStatus(EAccountDetailStatus.APPROVE);
             accountDetail.setPassword(PasswordUtil.BCryptPasswordEncoder(accountDetail.getPassword()));
 
             accountDetailList.add(accountDetail);
@@ -370,8 +370,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         Account teacher = securityUtil.getCurrentUserThrowNotFoundException();
 //        List<EmailDto> mail = new ArrayList<>();
         List<AccountDetail> accountDetailList = new ArrayList<>();
-        List<Long> ids = new ArrayList<>();
-        ids.add(editAccountDetailRequest.getId());
+
         Account account = accountRepository.findById(editAccountDetailRequest.getId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay tài khoản")));
 
@@ -390,7 +389,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
                         .withMessage(messageUtil.getLocalMessage("Không thể phê duyệt tài khoản vì không có password"));
             }
 
-            accountDetail.setStatus(EAccountDetailStatus.REQUESTING);
+            accountDetail.setStatus(EAccountDetailStatus.EDITREQUEST);
 
             FeedbackAccountLog log = new FeedbackAccountLog();
             log.setAccountDetail(accountDetail);
