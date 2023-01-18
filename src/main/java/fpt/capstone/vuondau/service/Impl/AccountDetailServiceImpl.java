@@ -6,9 +6,12 @@ import fpt.capstone.vuondau.entity.dto.EmailDto;
 import fpt.capstone.vuondau.entity.dto.ResourceDto;
 import fpt.capstone.vuondau.entity.dto.SubjectDto;
 import fpt.capstone.vuondau.entity.request.AccountDetailRequest;
+import fpt.capstone.vuondau.entity.request.RequestEditAccountDetailRequest;
 import fpt.capstone.vuondau.entity.request.UploadAvatarRequest;
 import fpt.capstone.vuondau.entity.response.AccountDetailResponse;
 
+import fpt.capstone.vuondau.entity.response.FeedbackAccountLogResponse;
+import fpt.capstone.vuondau.entity.response.ResponseAccountDetailResponse;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IAccountDetailService;
 import fpt.capstone.vuondau.util.*;
@@ -40,6 +43,8 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
     private final AccountDetailRepository accountDetailRepository;
 
+    private final FeedbackAccountLogRepository feedbackAccountLogRepository;
+
 
     private final KeycloakUserUtil keycloakUserUtil;
     private final KeycloakRoleUtil keycloakRoleUtil;
@@ -62,11 +67,12 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
     @Value("${minio.url}")
     String minioUrl;
 
-    public AccountDetailServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, PasswordEncoder passwordEncoder, AccountDetailRepository accountDetailRepository, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, RoleRepository roleRepository, SecurityUtil securityUtil, SubjectRepository subjectRepository, ClassLevelRepository classLevelRepository, SendMailServiceImplServiceImpl sendMailServiceImplService) {
+    public AccountDetailServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, PasswordEncoder passwordEncoder, AccountDetailRepository accountDetailRepository, FeedbackAccountLogRepository feedbackAccountLogRepository, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, RoleRepository roleRepository, SecurityUtil securityUtil, SubjectRepository subjectRepository, ClassLevelRepository classLevelRepository, SendMailServiceImplServiceImpl sendMailServiceImplService) {
         this.accountRepository = accountRepository;
         this.messageUtil = messageUtil;
         this.passwordEncoder = passwordEncoder;
         this.accountDetailRepository = accountDetailRepository;
+        this.feedbackAccountLogRepository = feedbackAccountLogRepository;
         this.keycloakUserUtil = keycloakUserUtil;
         this.keycloakRoleUtil = keycloakRoleUtil;
         this.minioAdapter = minioAdapter;
@@ -292,59 +298,178 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
     }
 
     @Override
-    public List<EmailDto> approveRegisterAccount(List<Long> id) {
-        List<EmailDto> mail = new ArrayList<>();
+    public ResponseAccountDetailResponse approveRegisterAccount(RequestEditAccountDetailRequest editAccountDetailRequest) {
+        ResponseAccountDetailResponse response = new ResponseAccountDetailResponse();
         List<AccountDetail> accountDetailList = new ArrayList<>();
-        List<Account> accounts = accountRepository.findAllByIdInAndIsActiveIsFalse(id);
-        if (accounts.size() == 0) {
-            throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Không tìm thấy tài khoản để phê duyêt"));
-        }
-        accounts.forEach(account -> {
-            AccountDetail accountDetail = account.getAccountDetail();
-            if (accountDetail != null) {
-                EmailDto emailDto = new EmailDto();
+        Account teacher = accountRepository.findById(editAccountDetailRequest.getId())
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay tài khoản")));
+        List<FeedbackAccountLog> feedbackAccountLogs = new ArrayList<>();
 
+        AccountDetail accountDetail = teacher.getAccountDetail();
+        if (accountDetail != null) {
+            EmailDto emailDto = new EmailDto();
 
-                if (accountDetail.getEmail() == null) {
-                    throw ApiException.create(HttpStatus.BAD_REQUEST)
-                            .withMessage(messageUtil.getLocalMessage("Không thể phê duyệt tài khoản vì không có email"));
-                }
-                if (accountDetail.getPassword() == null) {
-                    throw ApiException.create(HttpStatus.BAD_REQUEST)
-                            .withMessage(messageUtil.getLocalMessage("Không thể phê duyệt tài khoản vì không có password"));
-                }
-
-
-                Role role = roleRepository.findRoleByCode(EAccountRole.TEACHER).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay role"));
-                Boolean saveAccountSuccess = keycloakUserUtil.create(account);
-                Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getCode().name(), account);
-                Account save = accountRepository.save(account);
-
-                account.setIsActive(true);
-                account.setPassword(passwordEncoder.encode(account.getPassword()));
-                account.setKeycloak(true);
-
-                accountDetail.setActive(true);
-                accountDetail.setStatus(EAccountDetailStatus.REQUESTED);
-                accountDetail.setPassword(PasswordUtil.BCryptPasswordEncoder(accountDetail.getPassword()));
-                accountDetail.setActive(true);
-                accountDetailList.add(accountDetail);
-                emailDto.setMail(accountDetail.getEmail());
-                emailDto.setName(accountDetail.getFirstName() + "" + accountDetail.getLastName());
-                emailDto.setPassword(accountDetail.getPassword());
-
-                mail.add(emailDto);
-
+            if (accountDetail.getEmail() == null) {
+                throw ApiException.create(HttpStatus.BAD_REQUEST)
+                        .withMessage(messageUtil.getLocalMessage("Không thể phê duyệt tài khoản vì không có email"));
             }
-        });
+            if (accountDetail.getPassword() == null) {
+                throw ApiException.create(HttpStatus.BAD_REQUEST)
+                        .withMessage(messageUtil.getLocalMessage("Không thể phê duyệt tài khoản vì không có password"));
+            }
+
+            FeedbackAccountLog log = new FeedbackAccountLog();
+            log.setAccountDetail(accountDetail);
+            log.setAccount(teacher);
+            log.setStatus(EFeedbackAccountLogStatus.APPROVE);
+            log.setContent(editAccountDetailRequest.getContent());
+            feedbackAccountLogs.add(log);
+            accountDetail.setFeedbackAccountLogs(feedbackAccountLogs);
+            accountDetailList.add(accountDetail);
+            accountDetail.setStatus(EAccountDetailStatus.REQUESTED);
+            accountDetail.setPassword(PasswordUtil.BCryptPasswordEncoder(accountDetail.getPassword()));
+
+            accountDetailList.add(accountDetail);
+//                emailDto.setMail(accountDetail.getEmail());
+//                emailDto.setName(accountDetail.getFirstName() + "" + accountDetail.getLastName());
+//                emailDto.setPassword(accountDetail.getPassword());
+
+//                mail.add(emailDto);
+
+            AccountDetailResponse accountDetailResponse = ConvertUtil.doConvertEntityToResponse(accountDetail);
+            List<FeedbackAccountLogResponse> feedbackAccountLogResponseList = new ArrayList<>();
+            response.setAccountDetail(accountDetailResponse);
+            feedbackAccountLogs.forEach(feedbackAccountLog -> {
+                feedbackAccountLogResponseList.add(ConvertUtil.doConvertEntityToResponse(log));
+            });
+            response.setFeedbackAccountLog(feedbackAccountLogResponseList);
+        }
 
 
-        sendMailServiceImplService.sendMail(mail);
-        List<AccountDetail> accountDetailList1 = accountDetailRepository.saveAll(accountDetailList);
+        List<FeedbackAccountLog> feedbackAccountLog = feedbackAccountLogRepository.saveAll(feedbackAccountLogs);
 
-        return mail;
+
+//        sendMailServiceImplService.sendMail(mail);
+        return response;
     }
+
+    @Override
+    public ResponseAccountDetailResponse requestEditRegisterAccount(RequestEditAccountDetailRequest editAccountDetailRequest) {
+        ResponseAccountDetailResponse response = new ResponseAccountDetailResponse();
+        Account teacher = securityUtil.getCurrentUserThrowNotFoundException();
+//        List<EmailDto> mail = new ArrayList<>();
+        List<AccountDetail> accountDetailList = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
+        ids.add(editAccountDetailRequest.getId());
+        Account account = accountRepository.findById(editAccountDetailRequest.getId())
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay tài khoản")));
+
+        List<FeedbackAccountLog> feedbackAccountLogs = new ArrayList<>();
+
+        AccountDetail accountDetail = account.getAccountDetail();
+        if (accountDetail != null) {
+//            EmailDto emailDto = new EmailDto();
+
+            if (accountDetail.getEmail() == null) {
+                throw ApiException.create(HttpStatus.BAD_REQUEST)
+                        .withMessage(messageUtil.getLocalMessage("Không thể phê duyệt tài khoản vì không có email"));
+            }
+            if (accountDetail.getPassword() == null) {
+                throw ApiException.create(HttpStatus.BAD_REQUEST)
+                        .withMessage(messageUtil.getLocalMessage("Không thể phê duyệt tài khoản vì không có password"));
+            }
+
+            accountDetail.setStatus(EAccountDetailStatus.REQUESTING);
+
+            FeedbackAccountLog log = new FeedbackAccountLog();
+            log.setAccountDetail(accountDetail);
+            log.setAccount(teacher);
+            log.setStatus(EFeedbackAccountLogStatus.EDITREQUEST);
+            log.setContent(editAccountDetailRequest.getContent());
+            feedbackAccountLogs.add(log);
+
+            accountDetail.setFeedbackAccountLogs(feedbackAccountLogs);
+
+
+            accountDetailList.add(accountDetail);
+//            emailDto.setMail(accountDetail.getEmail());
+//            emailDto.setName(accountDetail.getFirstName() + "" + accountDetail.getLastName());
+//            emailDto.setPassword(accountDetail.getPassword());
+
+//            mail.add(emailDto);
+            AccountDetailResponse accountDetailResponse = ConvertUtil.doConvertEntityToResponse(accountDetail);
+
+            response.setAccountDetail(accountDetailResponse);
+            List<FeedbackAccountLogResponse> feedbackAccountLogResponseList = new ArrayList<>();
+            response.setAccountDetail(accountDetailResponse);
+            feedbackAccountLogs.forEach(feedbackAccountLog -> {
+                feedbackAccountLogResponseList.add(ConvertUtil.doConvertEntityToResponse(log));
+            });
+            response.setFeedbackAccountLog(feedbackAccountLogResponseList);
+        }
+
+
+        List<FeedbackAccountLog> feedbackAccountLog = feedbackAccountLogRepository.saveAll(feedbackAccountLogs);
+
+
+//        sendMailServiceImplService.sendMail(mail);
+        return response;
+    }
+
+    @Override
+    public ResponseAccountDetailResponse refuseRegisterAccount(RequestEditAccountDetailRequest editAccountDetailRequest) {
+        ResponseAccountDetailResponse response = new ResponseAccountDetailResponse();
+        Account teacher = securityUtil.getCurrentUserThrowNotFoundException();
+//        List<EmailDto> mail = new ArrayList<>();
+        List<AccountDetail> accountDetailList = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
+        ids.add(editAccountDetailRequest.getId());
+        Account account = accountRepository.findById(editAccountDetailRequest.getId())
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay tài khoản")));
+
+        List<FeedbackAccountLog> feedbackAccountLogs = new ArrayList<>();
+
+        AccountDetail accountDetail = account.getAccountDetail();
+        if (accountDetail != null) {
+//            EmailDto emailDto = new EmailDto();
+
+            accountDetail.setStatus(EAccountDetailStatus.REFUSE);
+
+            FeedbackAccountLog log = new FeedbackAccountLog();
+            log.setAccountDetail(accountDetail);
+            log.setAccount(teacher);
+            log.setStatus(EFeedbackAccountLogStatus.REFUSE);
+            log.setContent(editAccountDetailRequest.getContent());
+            feedbackAccountLogs.add(log);
+
+            accountDetail.setFeedbackAccountLogs(feedbackAccountLogs);
+
+
+            accountDetailList.add(accountDetail);
+//            emailDto.setMail(accountDetail.getEmail());
+//            emailDto.setName(accountDetail.getFirstName() + "" + accountDetail.getLastName());
+//            emailDto.setPassword(accountDetail.getPassword());
+
+//            mail.add(emailDto);
+            AccountDetailResponse accountDetailResponse = ConvertUtil.doConvertEntityToResponse(accountDetail);
+
+            response.setAccountDetail(accountDetailResponse);
+            List<FeedbackAccountLogResponse> feedbackAccountLogResponseList = new ArrayList<>();
+            response.setAccountDetail(accountDetailResponse);
+            feedbackAccountLogs.forEach(feedbackAccountLog -> {
+                feedbackAccountLogResponseList.add(ConvertUtil.doConvertEntityToResponse(log));
+            });
+            response.setFeedbackAccountLog(feedbackAccountLogResponseList);
+        }
+
+
+        List<FeedbackAccountLog> feedbackAccountLog = feedbackAccountLogRepository.saveAll(feedbackAccountLogs);
+
+
+//        sendMailServiceImplService.sendMail(mail);
+        return response;
+    }
+
 
     @Override
     public ApiPage<AccountDetailResponse> getRequestToActiveAccount(EAccountDetailStatus status, Pageable pageable) {
@@ -361,6 +486,30 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         return PageUtil.convert(accounts.map(account -> ConvertUtil.doConvertEntityToResponse(account.getAccountDetail())));
 
     }
+
+    @Override
+    public ResponseAccountDetailResponse teacherGetInfo() {
+        ResponseAccountDetailResponse response = new ResponseAccountDetailResponse();
+        Account teacher = securityUtil.getCurrentUserThrowNotFoundException();
+        AccountDetailResponse accountDetailResponse = ConvertUtil.doConvertEntityToResponse(teacher.getAccountDetail());
+        response.setAccountDetail(accountDetailResponse);
+
+        List<FeedbackAccountLogResponse> feedbackAccountLogResponseList = new ArrayList<>();
+        if (teacher.getAccountDetail() != null) {
+            List<FeedbackAccountLog> feedbackAccountLogList = feedbackAccountLogRepository.findFeedbackAccountLogByAccountDetailId(teacher.getAccountDetail().getId());
+
+            feedbackAccountLogList.forEach(feedbackAccountLog -> {
+                FeedbackAccountLogResponse convertEntityToResponse = ConvertUtil.doConvertEntityToResponse(feedbackAccountLog);
+                feedbackAccountLogResponseList.add(convertEntityToResponse);
+            });
+
+        }
+
+        response.setFeedbackAccountLog(feedbackAccountLogResponseList);
+        return response;
+
+    }
+
 
     @Override
     public AccountDetailResponse getAccountDetail(Long accountId) {

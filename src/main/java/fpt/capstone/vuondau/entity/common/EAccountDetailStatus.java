@@ -6,6 +6,9 @@ public enum EAccountDetailStatus {
 
     REQUESTED,
 
+    REFUSE
+
+
 
 
 }

@@ -24,10 +24,16 @@ public interface IAccountDetailService {
 
     List<ResourceDto> uploadImageRegisterProfile(Long id,  UploadAvatarRequest uploadImageRequest);
 
-    List<EmailDto> approveRegisterAccount(List<Long> id);
+    ResponseAccountDetailResponse approveRegisterAccount(RequestEditAccountDetailRequest editAccountDetailRequest);
 
     ApiPage<AccountDetailResponse> getRequestToActiveAccount(EAccountDetailStatus status , Pageable pageable);
 
 
     AccountDetailResponse getAccountDetail(Long accountId);
+
+    ResponseAccountDetailResponse teacherGetInfo();
+
+    ResponseAccountDetailResponse requestEditRegisterAccount(RequestEditAccountDetailRequest editAccountDetailReques);
+
+    ResponseAccountDetailResponse refuseRegisterAccount(RequestEditAccountDetailRequest editAccountDetailRequest);
 }

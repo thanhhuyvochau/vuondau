@@ -53,6 +53,13 @@ public class AccountController {
         return ResponseEntity.ok(ApiResponse.success(accountService.getTeacherAccounts(pageable)));
     }
 
+    @GetMapping("/staff")
+    @Operation(summary = "Lấy tất cả tài khoản nhân viên ")
+//    @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
+    public ResponseEntity<ApiResponse<ApiPage<AccountResponse>>> getStaffAccounts(Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(accountService.getStaffAccounts(pageable)));
+    }
+
     @Operation(summary = "Cập nhật ảnh dại diện cho tài khoản")
     @PostMapping("/{id}/avatar")
     @PreAuthorize("hasAnyAuthority('STUDENT','MANAGER','TEACHER')")
@@ -62,6 +69,7 @@ public class AccountController {
 
     @Operation(summary = "Tìm Kiếm account")
     @GetMapping("/search-account")
+
     public ResponseEntity<ApiResponse<ApiPage<AccountResponse>>> searchAccount(@Nullable AccountSearchRequest query,
                                                                                Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.success(accountService.searchAccount(query, pageable)));

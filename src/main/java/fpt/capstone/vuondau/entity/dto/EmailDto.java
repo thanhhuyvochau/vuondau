@@ -8,7 +8,7 @@ public class EmailDto {
     private String name ;
     private String mail ;
     private String password   ;
-    private BigDecimal price  ;
+
 
     public String getName() {
         return name;
@@ -34,11 +34,4 @@ public class EmailDto {
         this.password = password;
     }
 
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
 }

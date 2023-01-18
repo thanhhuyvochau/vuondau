@@ -9,9 +9,11 @@ import fpt.capstone.vuondau.entity.dto.EmailDto;
 import fpt.capstone.vuondau.entity.dto.ProvincesDto;
 import fpt.capstone.vuondau.entity.dto.ResourceDto;
 import fpt.capstone.vuondau.entity.request.AccountDetailRequest;
+import fpt.capstone.vuondau.entity.request.RequestEditAccountDetailRequest;
 import fpt.capstone.vuondau.entity.request.UploadAvatarRequest;
 import fpt.capstone.vuondau.entity.response.AccountDetailResponse;
 import fpt.capstone.vuondau.entity.response.GenderResponse;
+import fpt.capstone.vuondau.entity.response.ResponseAccountDetailResponse;
 import fpt.capstone.vuondau.service.IAccountDetailService;
 import fpt.capstone.vuondau.service.ISendMailService;
 import fpt.capstone.vuondau.util.GenderUtil;
@@ -36,7 +38,7 @@ public class AccountProfileController {
     private final RestTemplate restTemplate;
     private final IAccountDetailService iAccountDetailService;
 
-    private final ISendMailService iSendMailService ;
+    private final ISendMailService iSendMailService;
 
     @Value("${provinces}")
     private String province;
@@ -55,23 +57,45 @@ public class AccountProfileController {
 
     @Operation(summary = "upload dại diện - bằng cấp - CMMD.CDCC  để đk giảng dạy")
     @PostMapping("/{id}/image-register-profile")
-    public ResponseEntity<List<ResourceDto>> uploadImageRegisterProfile(@PathVariable Long id, @ModelAttribute UploadAvatarRequest uploadImageRequest ) throws IOException {
+    public ResponseEntity<List<ResourceDto>> uploadImageRegisterProfile(@PathVariable Long id, @ModelAttribute UploadAvatarRequest uploadImageRequest) throws IOException {
         return ResponseEntity.ok(iAccountDetailService.uploadImageRegisterProfile(id, uploadImageRequest));
     }
 
     @Operation(summary = "Admin phê duyệt request đăng ký giang dạy của giao vien")
     @PutMapping("/approve-request-register-profile")
     @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
-    public ResponseEntity<List<EmailDto>> approveRegisterAccount(@RequestBody List<Long> id) {
-        return ResponseEntity.ok(iAccountDetailService.approveRegisterAccount(id));
+    public ResponseEntity<ResponseAccountDetailResponse> approveRegisterAccount(@RequestBody RequestEditAccountDetailRequest editAccountDetailRequest) {
+        return ResponseEntity.ok(iAccountDetailService.approveRegisterAccount(editAccountDetailRequest));
+    }
+
+    @Operation(summary = "Admin từ chối request đăng ký giang dạy của giao vien")
+    @PutMapping("/refuse-request-register-profile")
+    @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
+    public ResponseEntity<ResponseAccountDetailResponse> refuseRegisterAccount(@RequestBody RequestEditAccountDetailRequest editAccountDetailRequest) {
+        return ResponseEntity.ok(iAccountDetailService.refuseRegisterAccount(editAccountDetailRequest));
+    }
+
+    @Operation(summary = "Admin yêu đầu thay đổi thông tin  request đăng ký giang dạy của giao vien")
+    @PutMapping("/request-edit-register-profile")
+    @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
+    public ResponseEntity<ResponseAccountDetailResponse> requestEditRegisterAccount(@RequestBody RequestEditAccountDetailRequest editAccountDetailRequest) {
+        return ResponseEntity.ok(iAccountDetailService.requestEditRegisterAccount(editAccountDetailRequest));
+    }
+
+    @GetMapping("/teacher-detail")
+    @Operation(summary = "Giáo viên xem thông tin hồ sơ mình vừa đăng ký ")
+    @PreAuthorize("hasAnyAuthority('TEACHER')")
+    public ResponseEntity<ApiResponse<ResponseAccountDetailResponse>> teacherGetInfo() {
+        return ResponseEntity.ok(ApiResponse.success(iAccountDetailService.teacherGetInfo()));
     }
 
     @GetMapping
     @Operation(summary = "Lấy tất cả request tạo tk để đang ký giang dạy theo trạng thái (đã duyệt/chờ)")
     @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
-    public ResponseEntity<ApiResponse<ApiPage<AccountDetailResponse>>> getRequestToActiveAccount(EAccountDetailStatus status    , Pageable pageable) {
-        return ResponseEntity.ok(ApiResponse.success(iAccountDetailService.getRequestToActiveAccount(status , pageable)));
+    public ResponseEntity<ApiResponse<ApiPage<AccountDetailResponse>>> getRequestToActiveAccount(EAccountDetailStatus status, Pageable pageable) {
+        return ResponseEntity.ok(ApiResponse.success(iAccountDetailService.getRequestToActiveAccount(status, pageable)));
     }
+
 
     @GetMapping("/genders")
     @Operation(summary = "Lấy tất cả giới tính")
@@ -84,7 +108,8 @@ public class AccountProfileController {
     public List<ProvincesDto> getProvinces() throws JsonProcessingException {
 
         ResponseEntity<List<ProvincesDto>> response = restTemplate.exchange("https://provinces.open-api.vn/api/?depth=1", HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<ProvincesDto>>() {});
+                new ParameterizedTypeReference<List<ProvincesDto>>() {
+                });
 
         return response.getBody();
     }
@@ -92,7 +117,7 @@ public class AccountProfileController {
 
     @PostMapping("/sendMail")
     public ResponseEntity<ApiResponse<Boolean>> sendMail(List<EmailDto> emailDto) {
-        return ResponseEntity.ok(ApiResponse.success(iSendMailService.sendMail( emailDto )));
+        return ResponseEntity.ok(ApiResponse.success(iSendMailService.sendMail(emailDto)));
 
     }
 

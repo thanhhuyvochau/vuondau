@@ -79,6 +79,8 @@ public class Account extends BaseEntity {
     @OneToMany(mappedBy = "notifier",cascade = CascadeType.PERSIST)
     private List<Notifier> notifiers = new ArrayList<>();
 
+    @OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
+    private List<FeedbackAccountLog> feedbackAccountLogs = new ArrayList<>();
 
 
     public Long getId() {
@@ -283,4 +285,11 @@ public class Account extends BaseEntity {
         this.notifiers = notifiers;
     }
 
+    public List<FeedbackAccountLog> getFeedbackAccountLogs() {
+        return feedbackAccountLogs;
+    }
+
+    public void setFeedbackAccountLogs(List<FeedbackAccountLog> feedbackAccountLogs) {
+        this.feedbackAccountLogs = feedbackAccountLogs;
+    }
 }
