@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.util;
 
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
+import fpt.capstone.vuondau.entity.Module;
 import fpt.capstone.vuondau.entity.VoteNumberReponse;
 import fpt.capstone.vuondau.entity.common.EForumType;
 import fpt.capstone.vuondau.entity.common.EGenderType;
