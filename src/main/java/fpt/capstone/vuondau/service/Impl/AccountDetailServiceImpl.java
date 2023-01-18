@@ -108,7 +108,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
                 || accountDetailRequest.getEmail() == null
                 || accountDetailRepository.existsAccountByEmail(accountDetailRequest.getEmail())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Email đã có tà khoản trong hệ thống"));
+                    .withMessage(messageUtil.getLocalMessage("Email đã có tài khoản trong hệ thống"));
         }
 
         if (accountDetailRepository.existsAccountDetailByPhone(accountDetailRequest.getPhone()) || accountDetailRequest.getPhone() == null) {
@@ -226,10 +226,8 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
                     .withMessage(messageUtil.getLocalMessage("Hệ thống cần bạn upload đầy đủ hình ảnh."));
         }
 
-
-//        resourceRepository.saveAll(resourceList);
         accountDetail.setResources(resourceList);
-//        accountDetail.getResources().addAll(resourceList) ;
+
 
         Account account = new Account();
         account.setUsername(accountDetailRequest.getEmail());
