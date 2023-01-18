@@ -150,10 +150,11 @@ public class AccountServiceImpl implements IAccountService {
         }
 
         Account account = new Account();
+        account.setUsername(studentRequest.getUserName());
         if (!EmailUtil.isValidEmail(studentRequest.getEmail())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage("Email không đúng định dạng. ");
         }
-        account.setUsername(studentRequest.getEmail());
+
         if (!PasswordUtil.validationPassword(studentRequest.getPassword()) || studentRequest.getPassword() == null) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Mật khẩu phải có ít nhất một ký tự số, ký tự viết thường, ký tự viết hoa, ký hiệu đặc biệt trong số @#$% và độ dài phải từ 8 đến 20"));
