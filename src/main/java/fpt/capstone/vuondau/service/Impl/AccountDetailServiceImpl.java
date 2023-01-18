@@ -204,6 +204,10 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
 
         List<Resource> resourceList = new ArrayList<>();
+        List<UploadAvatarRequest> files = accountDetailRequest.getFiles();
+        if (!files.isEmpty()){
+
+
         for (UploadAvatarRequest uploadImageRequest : accountDetailRequest.getFiles()) {
             try {
                 String name = uploadImageRequest.getFile().getOriginalFilename() + "-" + Instant.now().toString();
@@ -228,6 +232,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+        }
         }
         if (resourceList.size() < 4) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
