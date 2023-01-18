@@ -240,7 +240,12 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay role")));
         account.setRole(role);
 
+
         accountDetail.setAccount(account);
+
+        Boolean saveAccountSuccess = keycloakUserUtil.create(account);
+        Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getCode().name(), account);
+
         AccountDetail save = accountDetailRepository.save(accountDetail);
 
 
