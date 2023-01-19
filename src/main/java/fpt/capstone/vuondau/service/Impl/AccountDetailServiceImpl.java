@@ -203,45 +203,6 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         accountDetail.setActive(true);
 
 
-        List<Resource> resourceList = new ArrayList<>();
-        List<UploadAvatarRequest> files = accountDetailRequest.getFiles();
-        if (!files.isEmpty()) {
-
-
-            for (UploadAvatarRequest uploadImageRequest : accountDetailRequest.getFiles()) {
-                try {
-                    String name = uploadImageRequest.getFile().getOriginalFilename() + "-" + Instant.now().toString();
-                    ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, uploadImageRequest.getFile().getContentType(),
-                            uploadImageRequest.getFile().getInputStream(), uploadImageRequest.getFile().getSize());
-
-                    Resource resource = new Resource();
-                    resource.setName(name);
-                    resource.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
-                    resource.setAccountDetail(accountDetail);
-                    if (uploadImageRequest.getResourceType().equals(EResourceType.CARTPHOTO)) {
-                        resource.setResourceType(EResourceType.CARTPHOTO);
-                    } else if (uploadImageRequest.getResourceType().equals(EResourceType.DEGREE)) {
-                        resource.setResourceType(EResourceType.CARTPHOTO);
-                    } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCDONE)) {
-                        resource.setResourceType(EResourceType.CCCD);
-
-                    } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCDTWO)) {
-                        resource.setResourceType(EResourceType.CCCD);
-                    }
-                    resourceList.add(resource);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        if (resourceList.size() < 4) {
-            throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Hệ thống cần bạn upload đầy đủ hình ảnh."));
-        }
-
-        accountDetail.setResources(resourceList);
-
-
         Account account = new Account();
         if (accountRepository.existsAccountByUsername(accountDetailRequest.getUserName())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
@@ -287,8 +248,11 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
             if (uploadImageRequest.getResourceType().equals(EResourceType.CARTPHOTO)) {
                 resource.setResourceType(EResourceType.CARTPHOTO);
             } else if (uploadImageRequest.getResourceType().equals(EResourceType.DEGREE)) {
-                resource.setResourceType(EResourceType.DEGREE);
-            } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCD)) {
+                resource.setResourceType(EResourceType.CARTPHOTO);
+            } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCDONE)) {
+                resource.setResourceType(EResourceType.CCCD);
+
+            } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCDTWO)) {
                 resource.setResourceType(EResourceType.CCCD);
             }
 
@@ -296,6 +260,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
 
         resourceRepository.saveAll(resourceList);
 
@@ -530,7 +495,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Bạn chưa chọn lớp dạy !"));
 
-            }
+        }
         for (Long classLevelId : classLevels) {
             AccountDetailClassLevel accountDetailClassLevel = new AccountDetailClassLevel();
             AccountDetailClassLevelKey accountDetailClassLevelKey = new AccountDetailClassLevelKey();
@@ -545,7 +510,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         }
 
         accountDetail.getAccountDetailClassLevels().clear();
-        accountDetail.getAccountDetailClassLevels().addAll(accountDetailClassLevelList) ;
+        accountDetail.getAccountDetailClassLevels().addAll(accountDetailClassLevelList);
 //        accountDetail.setAccountDetailClassLevels(accountDetailClassLevelList);
 
 
