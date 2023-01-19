@@ -64,11 +64,15 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
     private final SendMailServiceImplServiceImpl sendMailServiceImplService;
 
+    private final AccountDetailClassLevelRepository accountDetailClassLevelRepository;
+
+    private final AccountDetailSubjectRepository accountDetailSubjectRepository;
+
 
     @Value("${minio.url}")
     String minioUrl;
 
-    public AccountDetailServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, PasswordEncoder passwordEncoder, AccountDetailRepository accountDetailRepository, FeedbackAccountLogRepository feedbackAccountLogRepository, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, RoleRepository roleRepository, SecurityUtil securityUtil, SubjectRepository subjectRepository, ClassLevelRepository classLevelRepository, SendMailServiceImplServiceImpl sendMailServiceImplService) {
+    public AccountDetailServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, PasswordEncoder passwordEncoder, AccountDetailRepository accountDetailRepository, FeedbackAccountLogRepository feedbackAccountLogRepository, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, RoleRepository roleRepository, SecurityUtil securityUtil, SubjectRepository subjectRepository, ClassLevelRepository classLevelRepository, SendMailServiceImplServiceImpl sendMailServiceImplService, AccountDetailClassLevelRepository accountDetailClassLevelRepository, AccountDetailSubjectRepository accountDetailSubjectRepository) {
         this.accountRepository = accountRepository;
         this.messageUtil = messageUtil;
         this.passwordEncoder = passwordEncoder;
@@ -83,6 +87,8 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         this.subjectRepository = subjectRepository;
         this.classLevelRepository = classLevelRepository;
         this.sendMailServiceImplService = sendMailServiceImplService;
+        this.accountDetailClassLevelRepository = accountDetailClassLevelRepository;
+        this.accountDetailSubjectRepository = accountDetailSubjectRepository;
     }
 
 
@@ -489,6 +495,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         // ngành học
         accountDetail.setMajors(editAccountDetailRequest.getMajors());
         // trinh độ : h , cao đẳng
+
         List<AccountDetailClassLevel> accountDetailClassLevelList = new ArrayList<>();
         List<Long> classLevels = editAccountDetailRequest.getClassLevels();
         if (classLevels == null) {
@@ -496,7 +503,18 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
                     .withMessage(messageUtil.getLocalMessage("Bạn chưa chọn lớp dạy !"));
 
         }
+
+
+        List<AccountDetailClassLevel> allByAccountDetail = accountDetailClassLevelRepository.findAllByAccountDetail(accountDetail);
+        accountDetailClassLevelRepository.deleteAll(allByAccountDetail);
+
+        List<AccountDetailSubject> allByAccountDetail1 = accountDetailSubjectRepository.findAllByAccountDetail(accountDetail);
+        accountDetailSubjectRepository.deleteAll(allByAccountDetail1);
+
+        List<Resource> allByAccountDetail2 = resourceRepository.findAllByAccountDetail(accountDetail);
+        resourceRepository.deleteAll(allByAccountDetail2);
         for (Long classLevelId : classLevels) {
+
             AccountDetailClassLevel accountDetailClassLevel = new AccountDetailClassLevel();
             AccountDetailClassLevelKey accountDetailClassLevelKey = new AccountDetailClassLevelKey();
             accountDetailClassLevelKey.setClassLevelId(classLevelId);
@@ -506,33 +524,37 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
             ClassLevel classLevel = classLevelRepository.findById(classLevelId)
                     .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Không tim thấy lớp dạy")));
             accountDetailClassLevel.setClassLevel(classLevel);
+            AccountDetailClassLevel byAccountDetailAndClassLevel = accountDetailClassLevelRepository.findByAccountDetailAndClassLevel(accountDetail, classLevel);
+
             accountDetailClassLevelList.add(accountDetailClassLevel);
+
         }
 
-        accountDetail.getAccountDetailClassLevels().clear();
+
         accountDetail.getAccountDetailClassLevels().addAll(accountDetailClassLevelList);
-//        accountDetail.setAccountDetailClassLevels(accountDetailClassLevelList);
+
+
+
+
 
 
         List<Long> subjects = editAccountDetailRequest.getSubjects();
         List<AccountDetailSubject> accountDetailSubjectList = new ArrayList<>();
-        if (subjects != null) {
-            List<Subject> allSubjects = subjectRepository.findAllById(subjects);
 
-
-            allSubjects.forEach(subject -> {
-                AccountDetailSubject accountDetailSubject = new AccountDetailSubject();
-                AccountDetailSubjectKey accountDetailSubjectKey = new AccountDetailSubjectKey();
-                accountDetailSubjectKey.setSubjectId(subject.getId());
-                accountDetailSubjectKey.setAccountDetailId(accountDetail.getId());
-                accountDetailSubject.setId(accountDetailSubjectKey);
-                accountDetailSubject.setSubject(subject);
-                accountDetailSubject.setAccountDetail(accountDetail);
-                accountDetailSubjectList.add(accountDetailSubject);
-            });
+        for (Long subjectId : subjects) {
+            AccountDetailSubject accountDetailSubject = new AccountDetailSubject();
+            AccountDetailSubjectKey accountDetailSubjectKey = new AccountDetailSubjectKey();
+            accountDetailSubjectKey.setSubjectId(subjectId);
+            accountDetailSubjectKey.setAccountDetailId(accountDetail.getId());
+            accountDetailSubject.setId(accountDetailSubjectKey);
+            Subject subject = subjectRepository.findById(subjectId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Không tim thấy lớp môn")));
+            accountDetailSubject.setSubject(subject);
+            accountDetailSubject.setAccountDetail(accountDetail);
+            accountDetailSubjectList.add(accountDetailSubject);
         }
-//            accountDetail.setAccountDetailSubjects(accountDetailSubjectList);
-        accountDetail.getAccountDetailSubjects().clear();
+
+
+
         accountDetail.getAccountDetailSubjects().addAll(accountDetailSubjectList);
 
 
@@ -542,6 +564,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
 
         List<Resource> resourceList = new ArrayList<>();
+
         for (UploadAvatarRequest uploadImageRequest : editAccountDetailRequest.getFiles()) {
             try {
                 String name = uploadImageRequest.getFile().getOriginalFilename() + "-" + Instant.now().toString();
@@ -571,7 +594,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Hệ thống cần bạn upload đầy đủ hình ảnh."));
         }
-        accountDetail.getResources().clear();
+
         accountDetail.getResources().addAll(resourceList);
 
         accountDetailRepository.save(accountDetail);

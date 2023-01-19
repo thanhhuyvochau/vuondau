@@ -404,7 +404,6 @@ public class AccountServiceImpl implements IAccountService {
     @Override
     public AccountResponse createManagerOrAccountant(CreateAccountRequest request) {
 
-
         EAccountRole roleCode = request.getRole();
         if (roleCode == null || !(roleCode.equals(EAccountRole.ACCOUNTANT) || roleCode.equals(EAccountRole.MANAGER))) {
             throw ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Chỉ có thể tạo tài khoản cho Quản lý và Kế toán!"));
