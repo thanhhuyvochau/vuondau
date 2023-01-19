@@ -376,10 +376,10 @@ public class AccountServiceImpl implements IAccountService {
 
     @Override
     public AccountResponse getSelfAccount() {
-//        Account currentUser = securityUtil.getCurrentUserThrowNotFoundException();
+        Account currentUser = securityUtil.getCurrentUserThrowNotFoundException();
 //        accountUtil.synchronizedCurrentAccountInfo();
-//        return ConvertUtil.doConvertEntityToResponse(currentUser);
-        return null ;
+        return ConvertUtil.doConvertEntityToResponse(currentUser);
+//        return null ;
     }
 
     public AccountResponse getAccountById(long id) {
@@ -403,7 +403,6 @@ public class AccountServiceImpl implements IAccountService {
 
     @Override
     public AccountResponse createManagerOrAccountant(CreateAccountRequest request) {
-
 
         EAccountRole roleCode = request.getRole();
         if (roleCode == null || !(roleCode.equals(EAccountRole.ACCOUNTANT) || roleCode.equals(EAccountRole.MANAGER))) {

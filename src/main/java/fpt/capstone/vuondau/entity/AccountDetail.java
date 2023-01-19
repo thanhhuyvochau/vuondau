@@ -77,14 +77,16 @@ public class AccountDetail extends BaseEntity  {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @OneToMany(mappedBy = "accountDetail", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "accountDetail"  ,fetch = FetchType.LAZY ,cascade ={CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<AccountDetailSubject> accountDetailSubjects = new ArrayList<>();
 
-    @OneToMany(mappedBy = "accountDetail", cascade = CascadeType.ALL, orphanRemoval = true)
+
+
+    @OneToMany(mappedBy = "accountDetail" ,fetch = FetchType.LAZY ,cascade ={CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<AccountDetailClassLevel> accountDetailClassLevels = new ArrayList<>();
 
 
-    @OneToMany(mappedBy = "accountDetail" , cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "accountDetail" ,fetch = FetchType.LAZY, cascade ={CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Resource> resources;
 
     @OneToMany(mappedBy = "accountDetail",cascade = CascadeType.ALL)

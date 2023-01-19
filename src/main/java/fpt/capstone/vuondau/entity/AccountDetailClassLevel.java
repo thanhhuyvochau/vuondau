@@ -9,6 +9,7 @@ public class AccountDetailClassLevel extends BaseEntity {
     @EmbeddedId
     private AccountDetailClassLevelKey id = new AccountDetailClassLevelKey();
 
+
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("accountDetailId")
     @JoinColumn(name = "account_detail_id")
