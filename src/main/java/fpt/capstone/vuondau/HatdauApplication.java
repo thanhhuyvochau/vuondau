@@ -572,6 +572,35 @@ public class HatdauApplication {
         return true;
     }
 
+    @EventListener(ApplicationReadyEvent.class)
+    public void intiDataAccountAdmin() {
+
+        List<ClassLevel> all = classLevelRepository.findAll();
+        Boolean existClass10 = false;
+        Boolean existClass11 = false;
+        Boolean existClass12 = false;
+
+        for (ClassLevel classType : all) {
+            if (classType.getCode().equals(EClassLevel.TEN)) {
+                existClass10 = true;
+            }
+
+        }
+
+        List<ClassLevel> classTypeList = new ArrayList<>();
+        if (!existClass10) {
+            ClassLevel classLevel = new ClassLevel();
+            classLevel.setCode(EClassLevel.TEN);
+            classLevel.setName("Lớp 10");
+
+            classTypeList.add(classLevel);
+        }
+
+
+        classLevelRepository.saveAll(classTypeList);
+
+
+    }
 
     @EventListener(ApplicationReadyEvent.class)
     public void intiDataClassLevel() {
