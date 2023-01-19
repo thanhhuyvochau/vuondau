@@ -1319,8 +1319,14 @@ public class ClassServiceImpl implements IClassService {
         if (now.isAfter(expire)) {
             throw ApiException.create(HttpStatus.METHOD_NOT_ALLOWED).withMessage("Xác nhận đã hết hạn!");
         }
-        confirmation.setIsAccept(true);
         Class clazz = confirmation.getCandidate().getClazz();
+        EClassStatus status = clazz.getStatus();
+
+        if(!Objects.equals(status,EClassStatus.RECRUITING)){
+            throw ApiException.create(HttpStatus.METHOD_NOT_ALLOWED).withMessage("Lớp đã thay đổi, vui lòng liên hệ quản lý để được hỗ trợ!");
+        }
+
+        confirmation.setIsAccept(true);
         clazz.setStatus(EClassStatus.NOTSTART);
         classRepository.save(clazz);
         teachingConfirmationRepository.save(confirmation);

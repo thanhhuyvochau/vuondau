@@ -262,4 +262,10 @@ public class ClassController {
     public ResponseEntity<ApiResponse<Boolean>> confirmTeaching(@RequestParam String code) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.confirmTeaching(code)));
     }
+
+    @Operation(summary = "Hủy lớp đang PENDING")
+    @DeleteMapping({"/{classId}/pending-class"})
+    public ResponseEntity<ApiResponse<ClassDto>> deletePendingClass(@PathVariable Long classId) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.cancelPendingClass(classId)));
+    }
 }
