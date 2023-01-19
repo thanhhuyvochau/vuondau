@@ -32,7 +32,10 @@ public class MoodleUtil {
     public MoodleUserResponse getMoodleUserIfExistByKeycloakId(String keycloakId) throws JsonProcessingException {
         List<MoodleUserResponse> moodleUsers = moodleUserRepository.getUserByUserName(keycloakId);
         if (moodleUsers.size() < 1) {
-            throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("You have to update your moodle profile before pay any class!");
+            StringBuilder message = new StringBuilder("Bạn phải cập nhật hồ sơ theo đường dẫn bên dưới nếu muốn sử dụng tiếp chức năng này: ")
+                    .append(moodleUserRepository.getRootUrl());
+
+            throw ApiException.create(HttpStatus.NOT_FOUND).withMessage(message.toString());
         } else if (moodleUsers.size() > 1) {
             throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Some errors happened, please contact admin for helping!");
         }

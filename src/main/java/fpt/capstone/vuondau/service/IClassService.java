@@ -2,8 +2,6 @@ package fpt.capstone.vuondau.service;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import fpt.capstone.vuondau.entity.Class;
-import fpt.capstone.vuondau.moodle.request.CreateCourseRequest;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.dto.ClassDetailDto;
@@ -46,7 +44,7 @@ public interface IClassService {
 
     ApiPage<ClassDto> classSuggestion(long infoFindTutorId, Pageable pageable);
 
-    Long createClassForRecruiting(CreateClassRequest createClassRequest) throws JsonProcessingException, ParseException;
+    Long createClassForRecruiting(CreateRecruitingClassRequest createRecruitingClassRequest) throws JsonProcessingException, ParseException;
 
     Boolean applyToRecruitingClass(Long classId);
 
@@ -77,6 +75,17 @@ public interface IClassService {
 
     ClassDto confirmAppreciation(Long id) throws JsonProcessingException;
 
-    Long updateClassForRecruiting(Long id, CreateClassRequest createClassRequest) throws ParseException;
+    Long updateClassForRecruiting(Long id, CreateRecruitingClassRequest createRecruitingClassRequest) throws ParseException;
+
     ClassDto adminRejectRequestCreateClass(Long id) throws JsonProcessingException;
+
+    Boolean adminEnrolStudentIntoClass(Long studentId, Long classId) throws JsonProcessingException;
+
+    ClassDto cancelPendingClass(Long classId);
+
+    Boolean detectExpireRecruitingClass();
+
+    Boolean confirmTeaching(String confirmCode) throws JsonProcessingException;
+
+    Boolean detectExpireConfirmation();
 }

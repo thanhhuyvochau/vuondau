@@ -4,8 +4,12 @@ public enum EAccountDetailStatus {
 
     REQUESTING,
 
-    REQUESTED,
+    REFUSE,
+
+    EDITREQUEST,
 
 
+    APPROVE
 
-}
+
+    }

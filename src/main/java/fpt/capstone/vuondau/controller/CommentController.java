@@ -41,7 +41,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
     public ResponseEntity<ApiResponse<Boolean>> deleteComment(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success(commentService.deleteComment(id)));
     }

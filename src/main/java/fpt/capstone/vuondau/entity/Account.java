@@ -29,7 +29,7 @@ public class Account extends BaseEntity {
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @OneToOne(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private AccountDetail accountDetail;
 
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
@@ -50,8 +50,6 @@ public class Account extends BaseEntity {
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<StudentAnswer> studentAnswers = new ArrayList<>();
 
-
-
     @Column(name = "is_keycloak")
     private Boolean isKeycloak;
 
@@ -59,8 +57,6 @@ public class Account extends BaseEntity {
     private List<Question> questions = new ArrayList<>();
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
-
-
 
 
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
@@ -78,9 +74,11 @@ public class Account extends BaseEntity {
     private List<Vote> votes = new ArrayList<>();
     private String keycloakUserId;
     private Integer moodleUserId;
-    @OneToMany(mappedBy = "notifier",cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "notifier", cascade = CascadeType.PERSIST)
     private List<Notifier> notifiers = new ArrayList<>();
 
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    private List<FeedbackAccountLog> feedbackAccountLogs = new ArrayList<>();
 
 
     public Long getId() {
@@ -285,4 +283,11 @@ public class Account extends BaseEntity {
         this.notifiers = notifiers;
     }
 
+    public List<FeedbackAccountLog> getFeedbackAccountLogs() {
+        return feedbackAccountLogs;
+    }
+
+    public void setFeedbackAccountLogs(List<FeedbackAccountLog> feedbackAccountLogs) {
+        this.feedbackAccountLogs = feedbackAccountLogs;
+    }
 }

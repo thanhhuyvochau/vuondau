@@ -80,12 +80,15 @@ public class AccountDetail extends BaseEntity  {
     @OneToMany(mappedBy = "accountDetail", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AccountDetailSubject> accountDetailSubjects = new ArrayList<>();
 
-    @OneToMany(mappedBy = "accountDetail", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "accountDetail", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<AccountDetailClassLevel> accountDetailClassLevels = new ArrayList<>();
 
-    @OneToMany(mappedBy = "accountDetail")
+
+    @OneToMany(mappedBy = "accountDetail" , cascade = CascadeType.ALL)
     private List<Resource> resources;
 
+    @OneToMany(mappedBy = "accountDetail",cascade = CascadeType.ALL)
+    private List<FeedbackAccountLog> feedbackAccountLogs = new ArrayList<>();
 
 
     public Long getId() {
@@ -262,5 +265,13 @@ public class AccountDetail extends BaseEntity  {
 
     public void setGender(EGenderType gender) {
         this.gender = gender;
+    }
+
+    public List<FeedbackAccountLog> getFeedbackAccountLogs() {
+        return feedbackAccountLogs;
+    }
+
+    public void setFeedbackAccountLogs(List<FeedbackAccountLog> feedbackAccountLogs) {
+        this.feedbackAccountLogs = feedbackAccountLogs;
     }
 }

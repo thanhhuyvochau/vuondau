@@ -22,13 +22,13 @@ spring:
       max-request-size: 10MB
       file-size-threshold: 2KB
       max-file-size: 5MB
+
+
 minio:
   bucket: requestformstudent
   url: http://103.173.255.39:9000
   access-key: ELrwUZXIzBLOlp5s
   secret-key: gCHswS6KZKVohYsIiWKCnfvF5UWbBUWE
-
-
 
 management:
   endpoints:

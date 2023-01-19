@@ -42,6 +42,9 @@ public class MoodleBaseRepository {
     @Value("${moodle.url.assignments.get}")
     private String getAssignments;
 
+    @Value("${moodle.url.root}")
+    private String rootUrl;
+
     protected final Caller caller;
 
     public MoodleBaseRepository(Caller caller) {
@@ -162,5 +165,13 @@ public class MoodleBaseRepository {
 
     public void setGetAssignments(String getAssignments) {
         this.getAssignments = getAssignments;
+    }
+
+    public String getRootUrl() {
+        return rootUrl;
+    }
+
+    public void setRootUrl(String rootUrl) {
+        this.rootUrl = rootUrl;
     }
 }

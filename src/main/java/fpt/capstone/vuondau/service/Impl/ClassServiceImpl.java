@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.service.Impl;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import fpt.capstone.vuondau.entity.Module;
 import fpt.capstone.vuondau.moodle.repository.MoodleCourseRepository;
 import fpt.capstone.vuondau.moodle.request.GetMoodleCourseRequest;
 import fpt.capstone.vuondau.moodle.request.CreateCourseRequest;
@@ -19,6 +20,7 @@ import fpt.capstone.vuondau.service.IClassService;
 import fpt.capstone.vuondau.service.IMoodleService;
 import fpt.capstone.vuondau.util.*;
 import fpt.capstone.vuondau.util.specification.ClassSpecificationBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -60,12 +63,15 @@ public class ClassServiceImpl implements IClassService {
     private final InfoFindTutorRepository infoFindTutorRepository;
     private final IMoodleService moodleService;
     protected final ClassTeacherCandicateRepository classTeacherCandicateRepository;
+    private final TeachingConfirmationRepository teachingConfirmationRepository;
+    @Value("${teaching-confirmation-url}")
+    private String confirmLink;
 
     public ClassServiceImpl(AccountRepository accountRepository
             , SubjectRepository subjectRepository, ClassRepository classRepository,
                             CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, ClassLevelRepository classLevelRepository,
                             MessageUtil messageUtil, SecurityUtil securityUtil, AttendanceRepository attendanceRepository,
-                            InfoFindTutorRepository infoFindTutorRepository, IMoodleService moodleService, ClassTeacherCandicateRepository classTeacherCandicateRepository) {
+                            InfoFindTutorRepository infoFindTutorRepository, IMoodleService moodleService, ClassTeacherCandicateRepository classTeacherCandicateRepository, TeachingConfirmationRepository teachingConfirmationRepository) {
         this.accountRepository = accountRepository;
         this.subjectRepository = subjectRepository;
         this.classRepository = classRepository;
@@ -79,6 +85,7 @@ public class ClassServiceImpl implements IClassService {
         this.infoFindTutorRepository = infoFindTutorRepository;
         this.moodleService = moodleService;
         this.classTeacherCandicateRepository = classTeacherCandicateRepository;
+        this.teachingConfirmationRepository = teachingConfirmationRepository;
     }
 
 
@@ -125,7 +132,7 @@ public class ClassServiceImpl implements IClassService {
         clazz.setUnitPrice(createClassRequest.getEachStudentPayPrice());
         Class save = classRepository.save(clazz);
         createMoodleCourse(save, course);
-        moodleService.enrolUserToCourseMoodle(save);
+        moodleService.enrolUserToCourseMoodle(save, save.getAccount());
         return save.getId();
     }
 
@@ -254,19 +261,11 @@ public class ClassServiceImpl implements IClassService {
 
 
         StudentClass studentClass = new StudentClass();
-//        StudentClassKey key = new StudentClassKey();
-//        key.setClassId(aClass.getId());
-//        key.setStudentId(studentId);
-//
-//        studentClass.setId(key);
         studentClass.setAClass(aClass);
         studentClass.setAccount(student);
         studentClass.setIs_enrolled(false);
-//        Long numberStudent = aClass.getNumberStudent();
-//        aClass.setNumberStudent(numberStudent  + 1);
         student.getStudentClasses().add(studentClass);
         accountRepository.save(student);
-
 
         return true;
     }
@@ -380,42 +379,103 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
-    public Long createClassForRecruiting(CreateClassRequest createClassRequest) throws JsonProcessingException, ParseException {
+    public Long createClassForRecruiting(CreateRecruitingClassRequest createRecruitingClassRequest) throws JsonProcessingException, ParseException {
         // set class bên vườn đậu
         Class clazz = new Class();
-        clazz.setName(createClassRequest.getName());
-        if (classRepository.existsByCode(createClassRequest.getCode())) {
+        clazz.setName(createRecruitingClassRequest.getName());
+        if (classRepository.existsByCode(createRecruitingClassRequest.getCode())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("class code da ton tai"));
+                    .withMessage(messageUtil.getLocalMessage("Mã lớp đã tồn tại"));
         }
         Instant now = DayUtil.convertDayInstant(Instant.now().toString());
-        if (!DayUtil.checkTwoDateBigger(now.toString(), createClassRequest.getStartDate().toString(), 3)) {
+        if (!DayUtil.checkTwoDateBigger(now.toString(), createRecruitingClassRequest.getClosingDate().toString(), 3)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày hiện tại la 3 ngay"));
+                    .withMessage(messageUtil.getLocalMessage("Ngày đóng tuyển giáo viên phải sớm hơn ngày hiện tại là 3 ngày"));
         }
-
-        if (!DayUtil.checkTwoDateBigger(createClassRequest.getStartDate().toString(), createClassRequest.getEndDate().toString(), 30)) {
+        if (!DayUtil.checkTwoDateBigger(createRecruitingClassRequest.getClosingDate().toString(), createRecruitingClassRequest.getStartDate().toString(), 3)) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Ngày đóng tuyển giáo viên phải sớm hơn ngày bắt đầu lớp là 3 ngay"));
+        }
+        if (!DayUtil.checkTwoDateBigger(createRecruitingClassRequest.getStartDate().toString(), createRecruitingClassRequest.getEndDate().toString(), 30)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày kêt thúc lớp la 30 ngay"));
         }
 
-        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+        Course course = courseRepository.findById(createRecruitingClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createRecruitingClassRequest.getCourseId()));
         clazz.setCourse(course);
-        clazz.setCode(createClassRequest.getCode());
-        clazz.setStartDate(DayUtil.convertDayInstant(createClassRequest.getStartDate().toString()));
-        clazz.setEndDate(DayUtil.convertDayInstant(createClassRequest.getEndDate().toString()));
-        clazz.setMinNumberStudent(createClassRequest.getMinNumberStudent());
-        clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
+        clazz.setCode(createRecruitingClassRequest.getCode());
+        clazz.setStartDate(DayUtil.convertDayInstant(createRecruitingClassRequest.getStartDate().toString()));
+        clazz.setEndDate(DayUtil.convertDayInstant(createRecruitingClassRequest.getEndDate().toString()));
+        clazz.setClosingDate(DayUtil.convertDayInstant(createRecruitingClassRequest.getClosingDate().toString()));
+        clazz.setMinNumberStudent(createRecruitingClassRequest.getMinNumberStudent());
+        clazz.setMaxNumberStudent(createRecruitingClassRequest.getMaxNumberStudent());
         clazz.setStatus(EClassStatus.RECRUITING);
-        clazz.setStartDate(createClassRequest.getStartDate());
-        clazz.setEndDate(createClassRequest.getEndDate());
-        ClassLevel classLevel = classLevelRepository.findByCode(createClassRequest.getClassLevel()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getClassLevel()));
+        clazz.setStartDate(createRecruitingClassRequest.getStartDate());
+        clazz.setEndDate(createRecruitingClassRequest.getEndDate());
+        ClassLevel classLevel = classLevelRepository.findByCode(createRecruitingClassRequest.getClassLevel()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createRecruitingClassRequest.getClassLevel()));
         clazz.setClassLevel(classLevel);
-        clazz.setClassType(createClassRequest.getClassType());
+        clazz.setClassType(createRecruitingClassRequest.getClassType());
         clazz.setActive(false);
-        clazz.setUnitPrice(createClassRequest.getEachStudentPayPrice());
+        clazz.setUnitPrice(createRecruitingClassRequest.getEachStudentPayPrice());
         Class save = classRepository.save(clazz);
         return save.getId();
+    }
+
+    @Override
+    public Boolean adminEnrolStudentIntoClass(Long studentId, Long classId) throws JsonProcessingException {
+        Account student = accountRepository.findById(studentId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Không tìm thấy học sinh: " + studentId));
+
+        Class clazz = classRepository.findById(classId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Không tìm thấy lớp: " + classId));
+
+
+        List<StudentClass> studentClasses = student.getStudentClasses();
+        studentClasses.forEach(studentClass -> {
+            if (studentClass.getaClass().equals(clazz)) {
+                throw ApiException.create(HttpStatus.BAD_REQUEST)
+                        .withMessage(messageUtil.getLocalMessage("Học sinh đã đăng ký học lớp này !"));
+            }
+        });
+
+        StudentClass studentClass = new StudentClass();
+        studentClass.setAClass(clazz);
+        studentClass.setAccount(student);
+        studentClass.setIs_enrolled(true);
+        student.getStudentClasses().add(studentClass);
+        accountRepository.save(student);
+        moodleService.enrolUserToCourseMoodle(clazz, student);
+        return true;
+    }
+
+    @Override
+    public Boolean detectExpireRecruitingClass() {
+        List<Class> allRecruitingClass = classRepository.findAllByStatus(EClassStatus.RECRUITING);
+
+        for (Class recruitingClass : allRecruitingClass) {
+            Instant now = Instant.now().truncatedTo(ChronoUnit.DAYS);
+            Instant closingDate = recruitingClass.getClosingDate().truncatedTo(ChronoUnit.DAYS).plus(1, ChronoUnit.DAYS);
+            try {
+                if (now.equals(closingDate)) {
+                    recruitingClass.setStatus(EClassStatus.PENDING);
+                }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+        }
+        classRepository.saveAll(allRecruitingClass);
+        return true;
+    }
+
+    @Override
+    public ClassDto cancelPendingClass(Long classId) {
+        Class clazz = classRepository.findById(classId)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Không tìm thấy lớp: " + classId));
+        if (!Objects.equals(clazz.getStatus(), EClassStatus.PENDING)) {
+            throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Lớp có trạng thái không hợp lệ: " + classId);
+        }
+        clazz.setStatus(EClassStatus.CANCEL);
+        return ConvertUtil.doConvertEntityToResponse(clazz);
     }
 
     @Override
@@ -429,46 +489,49 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
-    public Long updateClassForRecruiting(Long id, CreateClassRequest createClassRequest) throws ParseException {
+    public Long updateClassForRecruiting(Long id, CreateRecruitingClassRequest createRecruitingClassRequest) throws ParseException {
         Class clazz = classRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage(CLASS_NOT_FOUND_BY_ID) + id));
         if (!clazz.getStatus().equals(EClassStatus.RECRUITING)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage(CLASS_NOT_ALLOW_UPDATE));
         }
-        clazz.setName(createClassRequest.getName());
-        if (classRepository.existsByCode(createClassRequest.getCode()) && !clazz.getCode().equals(createClassRequest.getCode())) {
+        clazz.setName(createRecruitingClassRequest.getName());
+        if (classRepository.existsByCode(createRecruitingClassRequest.getCode()) && !clazz.getCode().equals(createRecruitingClassRequest.getCode())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage(CODE_ALREADY_EXISTED));
         }
         Instant now = DayUtil.convertDayInstant(Instant.now().toString());
-        if (!DayUtil.checkTwoDateBigger(now.toString(), createClassRequest.getStartDate().toString(), 3)) {
+        if (!DayUtil.checkTwoDateBigger(now.toString(), createRecruitingClassRequest.getClosingDate().toString(), 3)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày hiện tại la 3 ngay"));
+                    .withMessage(messageUtil.getLocalMessage("Ngày đóng tuyển giáo viên phải sớm hơn ngày hiện tại là 3 ngày"));
         }
-
-        if (!DayUtil.checkTwoDateBigger(createClassRequest.getStartDate().toString(), createClassRequest.getEndDate().toString(), 30)) {
+        if (!DayUtil.checkTwoDateBigger(createRecruitingClassRequest.getClosingDate().toString(), createRecruitingClassRequest.getStartDate().toString(), 3)) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Ngày đóng tuyển giáo viên phải sớm hơn ngày bắt đầu lớp là 3 ngay"));
+        }
+        if (!DayUtil.checkTwoDateBigger(createRecruitingClassRequest.getStartDate().toString(), createRecruitingClassRequest.getEndDate().toString(), 30)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày kêt thúc lớp la 30 ngay"));
         }
 
-        Course course = courseRepository.findById(createClassRequest.getCourseId())
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(TOPIC_NOT_FOUND_BY_ID + createClassRequest.getCourseId()));
+        Course course = courseRepository.findById(createRecruitingClassRequest.getCourseId())
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(TOPIC_NOT_FOUND_BY_ID + createRecruitingClassRequest.getCourseId()));
         clazz.setCourse(course);
-        clazz.setCode(createClassRequest.getCode());
-        clazz.setStartDate(DayUtil.convertDayInstant(createClassRequest.getStartDate().toString()));
-        clazz.setEndDate(DayUtil.convertDayInstant(createClassRequest.getEndDate().toString()));
-        clazz.setMinNumberStudent(createClassRequest.getMinNumberStudent());
-        clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
+        clazz.setCode(createRecruitingClassRequest.getCode());
+        clazz.setStartDate(DayUtil.convertDayInstant(createRecruitingClassRequest.getStartDate().toString()));
+        clazz.setEndDate(DayUtil.convertDayInstant(createRecruitingClassRequest.getEndDate().toString()));
+        clazz.setMinNumberStudent(createRecruitingClassRequest.getMinNumberStudent());
+        clazz.setMaxNumberStudent(createRecruitingClassRequest.getMaxNumberStudent());
         clazz.setStatus(EClassStatus.RECRUITING);
-        clazz.setStartDate(createClassRequest.getStartDate());
-        clazz.setEndDate(createClassRequest.getEndDate());
-        ClassLevel classLevel = classLevelRepository.findByCode(createClassRequest.getClassLevel())
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("class level not found by id:" + createClassRequest.getClassLevel()));
+        clazz.setStartDate(createRecruitingClassRequest.getStartDate());
+        clazz.setEndDate(createRecruitingClassRequest.getEndDate());
+        ClassLevel classLevel = classLevelRepository.findByCode(createRecruitingClassRequest.getClassLevel())
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("class level not found by id:" + createRecruitingClassRequest.getClassLevel()));
         clazz.setClassLevel(classLevel);
-        clazz.setClassType(createClassRequest.getClassType());
+        clazz.setClassType(createRecruitingClassRequest.getClassType());
         clazz.setActive(false);
-        clazz.setUnitPrice(createClassRequest.getEachStudentPayPrice());
+        clazz.setUnitPrice(createRecruitingClassRequest.getEachStudentPayPrice());
         Class save = classRepository.save(clazz);
         return save.getId();
     }
@@ -539,18 +602,36 @@ public class ClassServiceImpl implements IClassService {
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
         Account teacher = accountRepository.findById(teacherId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay teacher" + teacherId));
-        List<ClassTeacherCandicate> candicates = clazz.getCandicates();
-        for (ClassTeacherCandicate classTeacherCandicate : candicates) {
+        List<ClassTeacherCandicate> candidates = clazz.getCandicates();
+        for (ClassTeacherCandicate classTeacherCandicate : candidates) {
             if (classTeacherCandicate.getTeacher().getId().equals(teacherId)) {
                 classTeacherCandicate.setStatus(ECandicateStatus.SELECTED);
-                clazz.setStatus(EClassStatus.NOTSTART);
+                clazz.setStatus(EClassStatus.RESPONSING);
                 clazz.setAccount(teacher);
+                TeachingConfirmation teachingConfirmation = createTeachingConfirmation(classTeacherCandicate);
+                classTeacherCandicate.getTeachingConfirmations().add(teachingConfirmation);
             } else {
                 classTeacherCandicate.setStatus(ECandicateStatus.CLOSED);
             }
         }
+
+        /**TODO
+         * Gửi mail cho giáo viên xác nhận giáo viên nhận lớp
+         *
+         * */
+
+
         classRepository.save(clazz);
         return ConvertUtil.doConvertEntityToResponse(teacher);
+    }
+
+    private TeachingConfirmation createTeachingConfirmation(ClassTeacherCandicate classTeacherCandicate) {
+        TeachingConfirmation teachingConfirmation = new TeachingConfirmation();
+        teachingConfirmation.setExpireDate(Instant.now().plus(3, ChronoUnit.DAYS)); // 3 ngày là thời hạn để trả lời
+        teachingConfirmation.setCandidate(classTeacherCandicate);
+        teachingConfirmation.setCode(UUID.randomUUID().toString());
+        teachingConfirmation.setStatus(EConfirmStatus.WAITING);
+        return teachingConfirmation;
     }
 
     @Override
@@ -1224,5 +1305,59 @@ public class ClassServiceImpl implements IClassService {
         }).collect(Collectors.toList());
         classDetail.setTimeTable(timeTableDtoList);
         return classDetail;
+    }
+
+    public Boolean confirmTeaching(String confirmCode) throws JsonProcessingException {
+        TeachingConfirmation confirmation = teachingConfirmationRepository.findByCode(confirmCode);
+        Account teacher = confirmation.getCandidate().getTeacher();
+        Account currentAccount = securityUtil.getCurrentUserThrowNotFoundException();
+        if (!Objects.equals(teacher.getId(), currentAccount.getId())) {
+            throw ApiException.create(HttpStatus.METHOD_NOT_ALLOWED).withMessage("Xác nhận không hợp lệ!");
+        }
+        Instant now = Instant.now().truncatedTo(ChronoUnit.DAYS);
+        Instant expire = confirmation.getExpireDate().truncatedTo(ChronoUnit.DAYS);
+        if (now.isAfter(expire)) {
+            throw ApiException.create(HttpStatus.METHOD_NOT_ALLOWED).withMessage("Xác nhận đã hết hạn!");
+        }
+        confirmation.setIsAccept(true);
+        Class clazz = confirmation.getCandidate().getClazz();
+        clazz.setStatus(EClassStatus.NOTSTART);
+        classRepository.save(clazz);
+        teachingConfirmationRepository.save(confirmation);
+        moodleService.enrolUserToCourseMoodle(clazz, teacher);
+        // Link để điều hướng màn hình xác nhận qua front end
+        // Để get link này gửi email dùng phương thức .toString()
+        StringBuilder fullConfirmLink = new StringBuilder(confirmLink);
+        fullConfirmLink.append("?code=");
+        fullConfirmLink.append(confirmCode);
+
+        /**TODO
+         * Gửi email từ chối cho tất cả các ứng viên khác
+         * */
+        return true;
+    }
+
+    public Boolean detectExpireConfirmation() {
+        List<Class> modifyClasses = new ArrayList<>();
+        List<TeachingConfirmation> teachingConfirmations = teachingConfirmationRepository.findByStatus(EConfirmStatus.WAITING);
+        List<TeachingConfirmation> expireConfirmations = teachingConfirmations.stream().filter(teachingConfirmation -> {
+            Instant now = Instant.now().truncatedTo(ChronoUnit.DAYS);
+            Instant expire = teachingConfirmation.getExpireDate().truncatedTo(ChronoUnit.DAYS);
+            return now.isAfter(expire);
+        }).collect(Collectors.toList());
+
+        for (TeachingConfirmation expirteConfirmation : expireConfirmations) {
+            expirteConfirmation.setStatus(EConfirmStatus.REFUSED);
+            Class clazz = expirteConfirmation.getCandidate().getClazz();
+            clazz.setStatus(EClassStatus.RECRUITING);
+            modifyClasses.add(clazz);
+        }
+
+        if (!modifyClasses.isEmpty()) {
+            classRepository.saveAll(modifyClasses);
+            detectExpireRecruitingClass();
+        }
+        teachingConfirmationRepository.saveAll(expireConfirmations);
+        return true;
     }
 }

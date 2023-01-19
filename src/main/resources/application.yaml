@@ -35,6 +35,7 @@ moodle:
       get: core_user_get_users_by_field
     assignments:
       get: mod_assign_get_submissions
+    root: http://moodle-vuondau.amazingtech.vn
   token: c60c932ed4585b4534362b56045e653d
 
 app:
@@ -42,6 +43,7 @@ app:
 
 # Return URL after payment
 payment-redirect: http://localhost:10000/processing
+teaching-confirmation-url: localhost:15212/
 
 
 

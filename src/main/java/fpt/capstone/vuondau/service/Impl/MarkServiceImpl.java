@@ -3,6 +3,7 @@ package fpt.capstone.vuondau.service.Impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
+import fpt.capstone.vuondau.entity.Module;
 import fpt.capstone.vuondau.entity.common.ApiException;
 import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.common.EClassStatus;

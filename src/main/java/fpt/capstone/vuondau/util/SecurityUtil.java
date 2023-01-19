@@ -1,9 +1,7 @@
 package fpt.capstone.vuondau.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.common.ApiException;
-import fpt.capstone.vuondau.moodle.response.MoodleUserResponse;
 import fpt.capstone.vuondau.repository.AccountRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -18,35 +16,19 @@ import java.util.Optional;
 public class SecurityUtil {
 
     private final AccountRepository accountRepository;
-    private final MoodleUtil moodleUtil;
 
-    public SecurityUtil(AccountRepository accountRepository, MoodleUtil moodleUtil) {
+
+    public SecurityUtil(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
-        this.moodleUtil = moodleUtil;
     }
 
     public Account getCurrentUserThrowNotFoundException() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Jwt principal = (Jwt) authentication.getPrincipal();
         String username = principal.getClaimAsString("preferred_username");
-        Account account = Optional.ofNullable(accountRepository.findByUsername(username))
+        Account currentAccount = Optional.ofNullable(accountRepository.findByUsername(username))
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Student not found by username"));
-        synchronizedAccountInfo(principal, account);
-        return account;
-    }
-
-    private void synchronizedAccountInfo(Jwt principal, Account account) {
-        try {
-            if (account.getKeycloakUserId() == null) {
-                account.setKeycloakUserId(principal.getClaimAsString("sub"));
-            }
-            if (account.getMoodleUserId() == null) {
-                MoodleUserResponse moodleUserResponse = moodleUtil.getMoodleUserIfExistByKeycloakId(account.getKeycloakUserId());
-                account.setMoodleUserId(moodleUserResponse.getId());
-            }
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        return currentAccount;
     }
 
     public static Optional<String> getCurrentUserName() {
@@ -74,11 +56,7 @@ public class SecurityUtil {
         } else {
             Jwt principal = (Jwt) authentication.getPrincipal();
             String username = principal.getClaimAsString("preferred_username");
-            Account account = accountRepository.findByUsername(username);
-            if (account != null) {
-                synchronizedAccountInfo(principal, account);
-            }
-            return account;
+            return accountRepository.findByUsername(username);
         }
     }
 }

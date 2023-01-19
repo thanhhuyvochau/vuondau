@@ -37,8 +37,6 @@ public class DayUtil {
     }
 
     public static Instant convertDayInstant(String day) {
-
-
         String s = Instant.parse(day)
                 .truncatedTo(ChronoUnit.DAYS)
                 .toString();

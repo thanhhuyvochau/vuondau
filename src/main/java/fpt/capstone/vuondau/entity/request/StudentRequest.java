@@ -10,6 +10,7 @@ import java.util.List;
 
 public class StudentRequest {
 
+    private String userName  ;
     private String firstName;
 
     private String lastName;
@@ -32,6 +33,14 @@ public class StudentRequest {
     private List<Long> subjects ;
 
     private Long classLevel ;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
     public String getFirstName() {
         return firstName;

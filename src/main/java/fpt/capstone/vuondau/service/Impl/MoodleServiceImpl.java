@@ -2,7 +2,9 @@ package fpt.capstone.vuondau.service.Impl;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import fpt.capstone.vuondau.entity.Module;
 import fpt.capstone.vuondau.entity.common.ApiException;
+import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.moodle.repository.MoodleCourseRepository;
 import fpt.capstone.vuondau.moodle.repository.MoodleRoleRepository;
 import fpt.capstone.vuondau.moodle.repository.MoodleUserRepository;
@@ -146,8 +148,7 @@ public class MoodleServiceImpl implements IMoodleService {
     }
 
     @Override
-    public String enrolUserToCourseMoodle(Class clazz) throws JsonProcessingException {
-        Account account = clazz.getAccount();
+    public String enrolUserToCourseMoodle(Class clazz,Account account) throws JsonProcessingException {
         Role role = account.getRole();
 
         MoodleUserResponse moodleAccountOfUser = moodleUtil.getMoodleUserIfExist(account);
@@ -214,9 +215,10 @@ public class MoodleServiceImpl implements IMoodleService {
 
         List<Role> roles = roleRepository.findAll();
         for (Role role : roles) {
-            String roleName = role.getName() != null ? role.getName().toLowerCase().trim() : "";
-            if (!roleName.isEmpty()) {
-                MoodleRoleResponse moodleRoleResponse = moodleRolesMap.get(roleName);
+            EAccountRole roleCode = role.getCode();
+            String moodleRoleName = roleCode.getMoodleName();
+            if (!moodleRoleName.isEmpty()) {
+                MoodleRoleResponse moodleRoleResponse = moodleRolesMap.get(moodleRoleName);
                 if (moodleRoleResponse != null) {
                     role.setMoodleRoleId((long) moodleRoleResponse.getId());
                 }
@@ -247,7 +249,7 @@ public class MoodleServiceImpl implements IMoodleService {
         module.setType(getModuleType(moodleModuleResponse.getModname()));
         module.setSection(section);
         module.setUrl(moodleModuleResponse.getUrl());
-        module.setMoodleId( moodleModuleResponse.getId().intValue());
+        module.setMoodleId(moodleModuleResponse.getId().intValue());
         return module;
     }
 

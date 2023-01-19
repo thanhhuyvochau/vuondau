@@ -1,6 +1,5 @@
 package fpt.capstone.vuondau.entity.request;
 
-import fpt.capstone.vuondau.entity.ClassLevel;
 import fpt.capstone.vuondau.entity.common.EClassLevel;
 import fpt.capstone.vuondau.entity.common.EClassType;
 
@@ -9,13 +8,15 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 
-public class CreateClassRequest implements Serializable {
+public class CreateRecruitingClassRequest implements Serializable {
 
 
     private String name;
     private String code;
     private Instant startDate;
     private Instant endDate;
+
+    private Instant closingDate;
     private EClassLevel classLevel;
 
     private EClassType classType;
@@ -24,14 +25,6 @@ public class CreateClassRequest implements Serializable {
     private Long maxNumberStudent;
 
     private Long courseId;
-
-
-
-
-
-
-
-
 
     private BigDecimal eachStudentPayPrice;
 
@@ -116,5 +109,13 @@ public class CreateClassRequest implements Serializable {
 
     public void setEachStudentPayPrice(BigDecimal eachStudentPayPrice) {
         this.eachStudentPayPrice = eachStudentPayPrice;
+    }
+
+    public Instant getClosingDate() {
+        return closingDate;
+    }
+
+    public void setClosingDate(Instant closingDate) {
+        this.closingDate = closingDate;
     }
 }

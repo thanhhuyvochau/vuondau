@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.entity.Account;
 import fpt.capstone.vuondau.entity.AccountDetail;
 import fpt.capstone.vuondau.entity.common.ApiPage;
+import fpt.capstone.vuondau.entity.common.EAccountDetailStatus;
 import fpt.capstone.vuondau.entity.dto.EmailDto;
 import fpt.capstone.vuondau.entity.dto.ProvincesDto;
 import fpt.capstone.vuondau.entity.dto.ResourceDto;
@@ -23,10 +24,18 @@ public interface IAccountDetailService {
 
     List<ResourceDto> uploadImageRegisterProfile(Long id,  UploadAvatarRequest uploadImageRequest);
 
-    List<EmailDto> approveRegisterAccount(List<Long> id);
+    ResponseAccountDetailResponse approveRegisterAccount(RequestEditAccountDetailRequest editAccountDetailRequest);
 
-    ApiPage<AccountDetailResponse> getRequestToActiveAccount( Boolean isActive, Pageable pageable);
+    ApiPage<AccountDetailResponse> getRequestToActiveAccount(EAccountDetailStatus status , Pageable pageable);
 
 
     AccountDetailResponse getAccountDetail(Long accountId);
+
+    ResponseAccountDetailResponse teacherGetInfo();
+
+    ResponseAccountDetailResponse requestEditRegisterAccount(RequestEditAccountDetailRequest editAccountDetailReques);
+
+    ResponseAccountDetailResponse refuseRegisterAccount(RequestEditAccountDetailRequest editAccountDetailRequest);
+
+    Long teacherUpdateProfileForAdmin(AccountDetailEditRequest editAccountDetailRequest);
 }

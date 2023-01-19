@@ -8,6 +8,7 @@ import fpt.capstone.vuondau.service.IRevenueService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +22,7 @@ import java.util.List;
 public class RevenueController {
 
 
-    private final IRevenueService iRevenueService ;
+    private final IRevenueService iRevenueService;
 
     public RevenueController(IRevenueService iRevenueService) {
         this.iRevenueService = iRevenueService;
@@ -41,7 +42,6 @@ public class RevenueController {
     }
 
 
-
     @Operation(summary = "Xem doanh thu theo tất cả lơp")
     @GetMapping("/classes")
     public ResponseEntity<ApiResponse<List<RevenueClassResponse>>> RevenueAllClass() {
@@ -50,9 +50,11 @@ public class RevenueController {
 
     @Operation(summary = "admin xem doanh thu ")
     @GetMapping("/search")
+    @PreAuthorize("hasAuthority('ACCOUNTANT')")
     public ResponseEntity<ApiResponse<List<RevenueClassResponse>>> searchRevenue(@Nullable RevenueSearchRequest query) {
         return ResponseEntity.ok(ApiResponse.success(iRevenueService.searchRevenue(query)));
     }
+
 
     @Operation(summary = "Học sinh / giao vien xem số tiền học phí đã đóng / đã nhận")
     @GetMapping("/student/search-tuition-fee")

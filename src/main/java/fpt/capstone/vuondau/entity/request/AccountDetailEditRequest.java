@@ -7,9 +7,9 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
-public class AccountDetailRequest implements Serializable {
+public class AccountDetailEditRequest implements Serializable {
 
-    private String userName;
+
     private String firstName;
     private String lastName;
     private Instant birthDay;
@@ -35,15 +35,8 @@ public class AccountDetailRequest implements Serializable {
     private List<Long> subjects;
     private List<Long> classLevels;
 
-//    private List<UploadAvatarRequest> files;
+    private List<UploadAvatarRequest> files;
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
 
     public String getFirstName() {
         return firstName;
@@ -181,12 +174,12 @@ public class AccountDetailRequest implements Serializable {
         this.classLevels = classLevels;
     }
 
-//    public List<UploadAvatarRequest> getFiles() {
-//        return files;
-//    }
-//
-//    public void setFiles(List<UploadAvatarRequest> files) {
-//        this.files = files;
-//    }
+    public List<UploadAvatarRequest> getFiles() {
+        return files;
+    }
+
+    public void setFiles(List<UploadAvatarRequest> files) {
+        this.files = files;
+    }
 
 }

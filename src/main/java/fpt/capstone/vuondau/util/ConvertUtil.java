@@ -2,6 +2,7 @@ package fpt.capstone.vuondau.util;
 
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
+import fpt.capstone.vuondau.entity.Module;
 import fpt.capstone.vuondau.entity.VoteNumberReponse;
 import fpt.capstone.vuondau.entity.common.EForumType;
 import fpt.capstone.vuondau.entity.common.EGenderType;
@@ -193,6 +194,20 @@ public class ConvertUtil {
         return requestFormResponese;
     }
 
+    public static FeedbackAccountLogResponse doConvertEntityToResponse(FeedbackAccountLog feedbackAccountLog) {
+        FeedbackAccountLogResponse response = new FeedbackAccountLogResponse();
+        response.setId(feedbackAccountLog.getId());
+        if (feedbackAccountLog.getAccount() != null) {
+            response.setAccount(feedbackAccountLog.getAccount().getId());
+        }
+        if (feedbackAccountLog.getAccountDetail()!= null) {
+            response.setAccountDetail(feedbackAccountLog.getAccountDetail().getId());
+        }
+        response.setStatus(feedbackAccountLog.getStatus());
+        response.setContent(feedbackAccountLog.getContent());
+        response.setCreateDate(feedbackAccountLog.getLastModified());
+        return response ;
+    }
     public static AccountDetailResponse doConvertEntityToResponse(AccountDetail accountDetail) {
         if (accountDetail == null) return null;
         AccountDetailResponse accountDetailResponse = ObjectUtil.copyProperties(accountDetail, new AccountDetailResponse(), AccountDetailResponse.class, true);
@@ -218,14 +233,20 @@ public class ConvertUtil {
         accountDetailResponse.setResources(resourceDtoList);
         accountDetailResponse.setActive(accountDetail.getActive());
         accountDetailResponse.setGender(accountDetail.getGender().getLabel());
-
+        List<AccountDetailClassLevel> accountDetailClassLevels = accountDetail.getAccountDetailClassLevels();
+        List<ClassLevelResponse> classLevelResponseList = new ArrayList<>();
+        accountDetailClassLevels.forEach(accountDetailClassLevel -> {
+            ClassLevel classLevel = accountDetailClassLevel.getClassLevel();
+            classLevelResponseList.add(ObjectUtil.copyProperties(classLevel, new ClassLevelResponse(), ClassLevelResponse.class));
+        });
+        accountDetailResponse.setClassLevel(classLevelResponseList);
         return accountDetailResponse;
 
     }
 
     public static CourseDetailResponse doConvertEntityToResponse(Course course) {
         CourseDetailResponse courseDetailResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class);
-//        courseDetailResponse.setGrade(course.getGrade());
+
         return courseDetailResponse;
     }
 
@@ -324,8 +345,6 @@ public class ConvertUtil {
         response.setStatus(classTeacherCandicate.getStatus());
         return response;
     }
-
-
 
 
     public static List<MoodleRecourseDtoResponse> doConvertExercise(Class aClass) {

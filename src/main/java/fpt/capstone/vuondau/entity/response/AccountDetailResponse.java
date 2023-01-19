@@ -1,9 +1,6 @@
 package fpt.capstone.vuondau.entity.response;
 
-import fpt.capstone.vuondau.entity.Account;
-import fpt.capstone.vuondau.entity.AccountDetailClassLevel;
-import fpt.capstone.vuondau.entity.AccountDetailSubject;
-import fpt.capstone.vuondau.entity.Resource;
+import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.dto.ResourceDto;
 import fpt.capstone.vuondau.entity.dto.SubjectDto;
 
@@ -65,7 +62,7 @@ public class AccountDetailResponse {
     private String majors;
 
 
-    private String  level;
+    private List<ClassLevelResponse>  classLevel;
 
 
     private Boolean isActive;
@@ -190,12 +187,12 @@ public class AccountDetailResponse {
         this.majors = majors;
     }
 
-    public String getLevel() {
-        return level;
+    public List<ClassLevelResponse> getClassLevel() {
+        return classLevel;
     }
 
-    public void setLevel(String level) {
-        this.level = level;
+    public void setClassLevel(List<ClassLevelResponse> classLevel) {
+        this.classLevel = classLevel;
     }
 
     public Boolean getActive() {
