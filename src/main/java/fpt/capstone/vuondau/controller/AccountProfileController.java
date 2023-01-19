@@ -82,6 +82,7 @@ public class AccountProfileController {
     public ResponseEntity<Long> teacherUpdateProfileForAdmin(@ModelAttribute  AccountDetailEditRequest editAccountDetailRequest) {
         return ResponseEntity.ok(iAccountDetailService.teacherUpdateProfileForAdmin(editAccountDetailRequest));
     }
+
     @Operation(summary = "Admin yêu đầu thay đổi thông tin  request đăng ký giang dạy của giao vien")
     @PutMapping("/request-edit-register-profile")
     @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
