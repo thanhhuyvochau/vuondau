@@ -553,8 +553,6 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
             accountDetailSubjectList.add(accountDetailSubject);
         }
 
-
-
         accountDetail.getAccountDetailSubjects().addAll(accountDetailSubjectList);
 
 
@@ -612,7 +610,9 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
         Page<Account> accounts = null;
 
-        status = EAccountDetailStatus.REQUESTING;
+//        status = EAccountDetailStatus.REQUESTING;
+
+
 
         accounts = accountRepository.findAccountByRoleAndAccountDetailStatus(role, status, pageable);
 
