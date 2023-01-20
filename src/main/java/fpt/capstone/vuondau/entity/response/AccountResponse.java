@@ -19,18 +19,13 @@ public class AccountResponse {
     private String email;
 
     private Instant birthday;
-    private String introduce;
+
     private String phoneNumber;
 
     private RoleDto role;
     private GenderResponse gender;
     private String avatar;
 
-
-    private String domicile;
-
-
-    private String province;
 
 
     private String voice;
@@ -55,24 +50,8 @@ public class AccountResponse {
     private String level;
 
 
-    private String password;
 
 
-    public String getDomicile() {
-        return domicile;
-    }
-
-    public void setDomicile(String domicile) {
-        this.domicile = domicile;
-    }
-
-    public String getProvince() {
-        return province;
-    }
-
-    public void setProvince(String province) {
-        this.province = province;
-    }
 
     public String getVoice() {
         return voice;
@@ -130,13 +109,6 @@ public class AccountResponse {
         this.level = level;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public String getAvatar() {
         return avatar;
@@ -193,14 +165,7 @@ public class AccountResponse {
     public void setEmail(String email) {
         this.email = email;
     }
-//
-//    public String getCvUrl() {
-//        return cvUrl;
-//    }
-//
-//    public void setCvUrl(String cvUrl) {
-//        this.cvUrl = cvUrl;
-//    }
+
 
     public Instant getBirthday() {
         return birthday;
@@ -210,13 +175,7 @@ public class AccountResponse {
         this.birthday = birthday;
     }
 
-    public String getIntroduce() {
-        return introduce;
-    }
 
-    public void setIntroduce(String introduce) {
-        this.introduce = introduce;
-    }
 
     public String getPhoneNumber() {
         return phoneNumber;

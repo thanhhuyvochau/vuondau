@@ -112,12 +112,10 @@ public class ConvertUtil {
                     accountResponse.setGender(genderResponse);
                 }
 
-
                 accountResponse.setPhoneNumber(accountDetail.getPhone());
                 accountResponse.setBirthday(accountDetail.getBirthDay());
                 accountResponse.setLastName(accountDetail.getLastName());
                 accountResponse.setFirstName(accountDetail.getFirstName());
-                accountResponse.setDomicile(accountDetail.getDomicile());
                 accountResponse.setCurrentAddress(accountDetail.getCurrentAddress());
                 accountResponse.setIdCard(accountDetail.getIdCard());
                 accountResponse.setLevel(accountDetail.getLevel());
@@ -127,7 +125,6 @@ public class ConvertUtil {
                 accountResponse.setVoice(accountDetail.getVoice());
                 accountResponse.setStatus(accountDetail.getStatus());
                 accountResponse.setEmail(accountDetail.getEmail());
-                accountResponse.setProvince(accountDetail.getTeachingProvince());
 
 
             }

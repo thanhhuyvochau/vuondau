@@ -15,9 +15,11 @@ import fpt.capstone.vuondau.entity.request.UploadAvatarRequest;
 import fpt.capstone.vuondau.entity.response.AccountDetailResponse;
 import fpt.capstone.vuondau.entity.response.GenderResponse;
 import fpt.capstone.vuondau.entity.response.ResponseAccountDetailResponse;
+import fpt.capstone.vuondau.entity.response.VoiceResponse;
 import fpt.capstone.vuondau.service.IAccountDetailService;
 import fpt.capstone.vuondau.service.ISendMailService;
 import fpt.capstone.vuondau.util.GenderUtil;
+import fpt.capstone.vuondau.util.VoiceUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -111,6 +113,19 @@ public class AccountProfileController {
         return ResponseEntity.ok(ApiResponse.success(GenderUtil.getGendersAsList()));
     }
 
+    @GetMapping("/voice")
+    @Operation(summary = "Lấy tất cả giọng nói")
+    public ResponseEntity<ApiResponse<List<VoiceResponse>>> getVoice() {
+        return ResponseEntity.ok(ApiResponse.success(VoiceUtil.getVoice()));
+
+    }
+//        @PostMapping("/sendMail")
+//    public ResponseEntity<ApiResponse<Boolean>> sendMail(List<EmailDto> emailDto) {
+//        return ResponseEntity.ok(ApiResponse.success(iSendMailService.sendMail(emailDto)));
+//
+//    }
+
+
     @GetMapping("/provinces")
     @Operation(summary = "Lấy tât cả tỉnh thành ở viêt nam")
     public List<ProvincesDto> getProvinces() throws JsonProcessingException {
@@ -123,11 +138,7 @@ public class AccountProfileController {
     }
 
 
-    @PostMapping("/sendMail")
-    public ResponseEntity<ApiResponse<Boolean>> sendMail(List<EmailDto> emailDto) {
-        return ResponseEntity.ok(ApiResponse.success(iSendMailService.sendMail(emailDto)));
-
-    }
+//
 
     @GetMapping("/{accountId}/account-detail")
     @Operation(summary = "Lấy tất cả thông tin của giáo viên")

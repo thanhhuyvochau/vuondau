@@ -33,11 +33,6 @@ public class AccountDetail extends BaseEntity  {
     private String phone;
 
 
-    @Column(name = "domicile")
-    private String domicile;
-
-    @Column(name = "province")
-    private String teachingProvince;
 
     @Column(name = "voice")
     private String voice;
@@ -149,21 +144,8 @@ public class AccountDetail extends BaseEntity  {
         this.phone = phone;
     }
 
-    public String getDomicile() {
-        return domicile;
-    }
 
-    public void setDomicile(String domicile) {
-        this.domicile = domicile;
-    }
 
-    public String getTeachingProvince() {
-        return teachingProvince;
-    }
-
-    public void setTeachingProvince(String teachingProvince) {
-        this.teachingProvince = teachingProvince;
-    }
 
     public String getVoice() {
         return voice;
