@@ -119,14 +119,22 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
 
         AccountDetail accountDetail = new AccountDetail();
-
-        if (accountRepository.existsAccountByUsername(accountDetailRequest.getEmail())
-                || accountDetailRequest.getEmail() == null
-                || accountDetailRepository.existsAccountByEmail(accountDetailRequest.getEmail())) {
+        if (accountDetailRequest.getUsername() == null) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Địa chỉ mail đã đã được đăng ký trong hệ thống"));
+                    .withMessage(messageUtil.getLocalMessage("Tài khoản không được để trống"));
         }
-
+        if (accountRepository.existsAccountByUsername(accountDetailRequest.getUsername())) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Tài khoản đã tồn tại"));
+        }
+        if (accountDetailRequest.getEmail() == null) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Email không được để trống"));
+        }
+        if (accountDetailRepository.existsAccountByEmail(accountDetailRequest.getEmail())) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Email đã đã tồn tại"));
+        }
         if (accountDetailRepository.existsAccountDetailByPhone(accountDetailRequest.getPhone()) || accountDetailRequest.getPhone() == null) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Số điên thoại đã được đăng ký trong hệ thống"));
@@ -216,11 +224,11 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
 
         Account account = new Account();
-        if (accountRepository.existsAccountByUsername(accountDetailRequest.getUserName())) {
+        if (accountRepository.existsAccountByUsername(accountDetailRequest.getUsername())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Tên đăng nhập đã tồn tại"));
         }
-        account.setUsername(accountDetailRequest.getUserName());
+        account.setUsername(accountDetailRequest.getUsername());
         account.setIsActive(true);
         account.setKeycloak(true);
         account.setPassword(accountDetail.getPassword());
@@ -248,7 +256,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 //            save = accountDetailRepository.save(accountDetail);
 //        }
 
-        AccountDetail  save = accountDetailRepository.save(accountDetail);
+        AccountDetail save = accountDetailRepository.save(accountDetail);
         return save.getId();
     }
 
@@ -387,13 +395,12 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
             accountDetailList.add(accountDetail);
 
-            EmailDto emailDto = new EmailDto() ;
+            EmailDto emailDto = new EmailDto();
             emailDto.setMail(accountDetail.getEmail());
             emailDto.setMail(accountDetail.getEmail());
 
 
-
-            sendMailServiceImplService.sendMail(emailDto , "" , "") ;
+            sendMailServiceImplService.sendMail(emailDto, "", "");
 
 
             AccountDetailResponse accountDetailResponse = ConvertUtil.doConvertEntityToResponse(accountDetail);
