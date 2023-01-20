@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.service;
 
 import fpt.capstone.vuondau.entity.Account;
+import fpt.capstone.vuondau.entity.AccountDetail;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.dto.EmailDto;
 import fpt.capstone.vuondau.entity.request.*;
@@ -16,7 +17,10 @@ import java.util.Optional;
 
 public interface ISendMailService {
 
-    Boolean sendMail (List<EmailDto> emailDto) ;
+    Boolean sendMail (EmailDto emailDto, String title , String content) ;
 
 
+    Boolean sendMailToRegisterDoTeacher(List<EmailDto> emailDto, AccountDetail accountDetail, String password);
+
+//    Boolean sendMailToRegisterDoTeacher(AccountDetail accountDetail);
 }

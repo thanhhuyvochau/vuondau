@@ -234,9 +234,21 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         Boolean saveAccountSuccess = keycloakUserUtil.create(account);
         Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getCode().name(), account);
 
-        AccountDetail save = accountDetailRepository.save(accountDetail);
+//        List<EmailDto> mailList = new ArrayList<>();
+//        EmailDto emailDto = new EmailDto();
+//
+//        emailDto.setName(accountDetail.getFirstName() + "" + accountDetail.getLastName());
+//        emailDto.setPassword(accountDetail.getPassword());
+//
+//        mailList.add(emailDto);
+//        String passMail = "qpdrqauknkrxtsrs" ;
+//        Boolean aBoolean = sendMailServiceImplService.sendMailToRegisterDoTeacher(mailList, accountDetail, passMail);
+//        AccountDetail save = null;
+//        if (aBoolean) {
+//            save = accountDetailRepository.save(accountDetail);
+//        }
 
-
+        AccountDetail  save = accountDetailRepository.save(accountDetail);
         return save.getId();
     }
 
@@ -318,11 +330,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
             accountDetail.setPassword(PasswordUtil.BCryptPasswordEncoder(accountDetail.getPassword()));
 
             accountDetailList.add(accountDetail);
-//                emailDto.setMail(accountDetail.getEmail());
-//                emailDto.setName(accountDetail.getFirstName() + "" + accountDetail.getLastName());
-//                emailDto.setPassword(accountDetail.getPassword());
 
-//                mail.add(emailDto);
 
             AccountDetailResponse accountDetailResponse = ConvertUtil.doConvertEntityToResponse(accountDetail);
             List<FeedbackAccountLogResponse> feedbackAccountLogResponseList = new ArrayList<>();
@@ -337,7 +345,6 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         List<FeedbackAccountLog> feedbackAccountLog = feedbackAccountLogRepository.saveAll(feedbackAccountLogs);
 
 
-//        sendMailServiceImplService.sendMail(mail);
         return response;
     }
 
@@ -379,11 +386,16 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
 
             accountDetailList.add(accountDetail);
-//            emailDto.setMail(accountDetail.getEmail());
-//            emailDto.setName(accountDetail.getFirstName() + "" + accountDetail.getLastName());
-//            emailDto.setPassword(accountDetail.getPassword());
 
-//            mail.add(emailDto);
+            EmailDto emailDto = new EmailDto() ;
+            emailDto.setMail(accountDetail.getEmail());
+            emailDto.setMail(accountDetail.getEmail());
+
+
+
+            sendMailServiceImplService.sendMail(emailDto , "" , "") ;
+
+
             AccountDetailResponse accountDetailResponse = ConvertUtil.doConvertEntityToResponse(accountDetail);
             response.setAccountDetail(accountDetailResponse);
             response.setAccountDetail(accountDetailResponse);

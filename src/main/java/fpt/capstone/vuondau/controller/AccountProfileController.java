@@ -117,7 +117,14 @@ public class AccountProfileController {
     @Operation(summary = "Lấy tất cả giọng nói")
     public ResponseEntity<ApiResponse<List<VoiceResponse>>> getVoice() {
         return ResponseEntity.ok(ApiResponse.success(VoiceUtil.getVoice()));
+
     }
+//        @PostMapping("/sendMail")
+//    public ResponseEntity<ApiResponse<Boolean>> sendMail(List<EmailDto> emailDto) {
+//        return ResponseEntity.ok(ApiResponse.success(iSendMailService.sendMail(emailDto)));
+//
+//    }
+
 
     @GetMapping("/provinces")
     @Operation(summary = "Lấy tât cả tỉnh thành ở viêt nam")
@@ -131,11 +138,7 @@ public class AccountProfileController {
     }
 
 
-    @PostMapping("/sendMail")
-    public ResponseEntity<ApiResponse<Boolean>> sendMail(List<EmailDto> emailDto) {
-        return ResponseEntity.ok(ApiResponse.success(iSendMailService.sendMail(emailDto)));
-
-    }
+//
 
     @GetMapping("/{accountId}/account-detail")
     @Operation(summary = "Lấy tất cả thông tin của giáo viên")
