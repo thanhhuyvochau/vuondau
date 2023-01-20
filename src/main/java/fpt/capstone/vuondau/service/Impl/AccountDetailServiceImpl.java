@@ -683,6 +683,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         if (gender != null) {
             accountDetailResponse.setGender(gender.getLabel());
         }
+        accountDetailResponse.setAccountId(account.getId());
 
         return accountDetailResponse;
     }

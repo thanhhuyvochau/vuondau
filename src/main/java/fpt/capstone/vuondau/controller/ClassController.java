@@ -17,8 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import javax.ws.rs.POST;
 import java.text.ParseException;
 import java.util.List;
 
