@@ -15,9 +15,11 @@ import fpt.capstone.vuondau.entity.request.UploadAvatarRequest;
 import fpt.capstone.vuondau.entity.response.AccountDetailResponse;
 import fpt.capstone.vuondau.entity.response.GenderResponse;
 import fpt.capstone.vuondau.entity.response.ResponseAccountDetailResponse;
+import fpt.capstone.vuondau.entity.response.VoiceResponse;
 import fpt.capstone.vuondau.service.IAccountDetailService;
 import fpt.capstone.vuondau.service.ISendMailService;
 import fpt.capstone.vuondau.util.GenderUtil;
+import fpt.capstone.vuondau.util.VoiceUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -109,6 +111,12 @@ public class AccountProfileController {
     @Operation(summary = "Lấy tất cả giới tính")
     public ResponseEntity<ApiResponse<List<GenderResponse>>> getGenderAsList() {
         return ResponseEntity.ok(ApiResponse.success(GenderUtil.getGendersAsList()));
+    }
+
+    @GetMapping("/voice")
+    @Operation(summary = "Lấy tất cả giọng nói")
+    public ResponseEntity<ApiResponse<List<VoiceResponse>>> getVoice() {
+        return ResponseEntity.ok(ApiResponse.success(VoiceUtil.getVoice()));
     }
 
     @GetMapping("/provinces")

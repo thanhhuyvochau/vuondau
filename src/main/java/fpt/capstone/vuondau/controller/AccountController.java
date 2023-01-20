@@ -119,12 +119,12 @@ public class AccountController {
         return ResponseEntity.ok(accountService.editStudentProfile(id, accountEditRequest));
     }
 
-//    @GetMapping("/detail")
-//    @Operation(summary = "Lấy tất thông tin tài khoản")
-//    @PreAuthorize("hasAnyAuthority('STUDENT','MANAGER','TEACHER')")
-//    public ResponseEntity<ApiResponse<AccountResponse>> getSelfAccount() {
-//        return ResponseEntity.ok(ApiResponse.success(accountService.getSelfAccount()));
-//    }
+    @GetMapping("/detail")
+    @Operation(summary = "Lấy tất thông tin tài khoản")
+    @PreAuthorize("hasAnyAuthority('STUDENT','MANAGER','TEACHER')")
+    public ResponseEntity<ApiResponse<AccountResponse>> getSelfAccount() {
+        return ResponseEntity.ok(ApiResponse.success(accountService.getSelfAccount()));
+    }
 
     @Operation(summary = "Admin tạo tài khoản cho quản lý hoặc kế toán")
     @PostMapping("/staff")

@@ -57,7 +57,9 @@ public class HatdauApplication {
     private final NotificationTypeRepository notificationTypeRepository;
     private final IMoodleService moodleService;
 
-    public HatdauApplication(Environment evn, NotificationProperties notificationProperties, RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository, MoodleCourseRepository moodleCourseRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ClassRepository classRepository, ForumRepository forumRepository, ClassLevelRepository classLevelRepository, NotificationTypeRepository notificationTypeRepository, IMoodleService moodleService) {
+    private final VoiceRepository voiceRepository ;
+
+    public HatdauApplication(Environment evn, NotificationProperties notificationProperties, RoleRepository roleRepository, SubjectRepository subjectRepository, RequestTypeRepository requestTypeRepository, MoodleCourseRepository moodleCourseRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ClassRepository classRepository, ForumRepository forumRepository, ClassLevelRepository classLevelRepository, NotificationTypeRepository notificationTypeRepository, IMoodleService moodleService, VoiceRepository voiceRepository) {
         this.evn = evn;
         this.notificationProperties = notificationProperties;
         this.roleRepository = roleRepository;
@@ -72,6 +74,7 @@ public class HatdauApplication {
         this.notificationTypeRepository = notificationTypeRepository;
 
         this.moodleService = moodleService;
+        this.voiceRepository = voiceRepository;
     }
 
 
@@ -685,6 +688,58 @@ public class HatdauApplication {
 
         }
         requestTypeRepository.saveAll(requestTypeList);
+    }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void intiDataVoice() {
+
+        List<Voice> all = voiceRepository.findAll();
+
+
+        Boolean mienNam = false;
+        Boolean mienBac = false;
+        Boolean mienTrung = false;
+        Boolean khac = false;
+
+        for (Voice voice : all) {
+            if (voice.getName().equals("Miền nam")) {
+                mienNam = true;
+            }
+            if (voice.getName().equals("Miền bắc")) {
+                mienBac = true;
+            }
+            if (voice.getName().equals("Miền trung")) {
+                mienTrung = true;
+            }
+            if (voice.getName().equals("Giọng Khác")) {
+                khac = true;
+            }
+        }
+
+        List<Voice> voiceList = new ArrayList<>();
+        if (!mienNam) {
+            Voice voice = new Voice();
+            voice.setName("Miền nam");
+            voiceList.add(voice);
+        }
+        if (!mienBac) {
+
+            Voice voice = new Voice();
+            voice.setName("Miền bắc");
+            voiceList.add(voice);
+        }
+
+        if (!mienTrung) {
+            Voice voice = new Voice();
+            voice.setName("Miền trung");
+            voiceList.add(voice);
+        }
+        if (!khac) {
+            Voice voice = new Voice();
+            voice.setName("Giọng Khác");
+            voiceList.add(voice);
+        }
+        voiceRepository.saveAll(voiceList);
     }
 
     @EventListener(ApplicationReadyEvent.class)

@@ -42,6 +42,8 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final VoiceRepository voiceRepository;
+
     private final AccountDetailRepository accountDetailRepository;
 
     private final FeedbackAccountLogRepository feedbackAccountLogRepository;
@@ -72,10 +74,11 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
     @Value("${minio.url}")
     String minioUrl;
 
-    public AccountDetailServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, PasswordEncoder passwordEncoder, AccountDetailRepository accountDetailRepository, FeedbackAccountLogRepository feedbackAccountLogRepository, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, RoleRepository roleRepository, SecurityUtil securityUtil, SubjectRepository subjectRepository, ClassLevelRepository classLevelRepository, SendMailServiceImplServiceImpl sendMailServiceImplService, AccountDetailClassLevelRepository accountDetailClassLevelRepository, AccountDetailSubjectRepository accountDetailSubjectRepository) {
+    public AccountDetailServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, PasswordEncoder passwordEncoder, VoiceRepository voiceRepository, AccountDetailRepository accountDetailRepository, FeedbackAccountLogRepository feedbackAccountLogRepository, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, RoleRepository roleRepository, SecurityUtil securityUtil, SubjectRepository subjectRepository, ClassLevelRepository classLevelRepository, SendMailServiceImplServiceImpl sendMailServiceImplService, AccountDetailClassLevelRepository accountDetailClassLevelRepository, AccountDetailSubjectRepository accountDetailSubjectRepository) {
         this.accountRepository = accountRepository;
         this.messageUtil = messageUtil;
         this.passwordEncoder = passwordEncoder;
+        this.voiceRepository = voiceRepository;
         this.accountDetailRepository = accountDetailRepository;
         this.feedbackAccountLogRepository = feedbackAccountLogRepository;
         this.keycloakUserUtil = keycloakUserUtil;
@@ -129,7 +132,6 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
                     .withMessage(messageUtil.getLocalMessage("Số điên thoại đã được đăng ký trong hệ thống"));
         }
 
-        accountDetail.setTeachingProvince(accountDetailRequest.getTeachingProvince());
 
         accountDetail.setLastName(accountDetailRequest.getLastName());
         accountDetail.setFirstName(accountDetailRequest.getFirstName());
@@ -137,7 +139,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         accountDetail.setBirthDay(accountDetailRequest.getBirthDay());
 
         //Nguyên quán
-        accountDetail.setDomicile(accountDetailRequest.getDomicile());
+
         accountDetail.setGender(accountDetailRequest.getGender());
         accountDetail.setCurrentAddress(accountDetailRequest.getCurrentAddress());
         if (accountDetailRepository.existsAccountDetailByIdCard(accountDetailRequest.getIdCard()) || accountDetailRequest.getIdCard() == null) {
@@ -204,7 +206,11 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
 
         accountDetail.setAccountDetailClassLevels(accountDetailClassLevelList);
-        accountDetail.setVoice(accountDetailRequest.getVoice());
+
+        Voice voice = voiceRepository.findById(accountDetailRequest.getVoiceId())
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("không tìm thấy giọng")));
+
+        accountDetail.setVoice(voice.getName());
         accountDetail.setStatus(EAccountDetailStatus.REQUESTING);
         accountDetail.setActive(true);
 
@@ -461,15 +467,14 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         if (accountDetail == null) {
             throw ApiException.create(HttpStatus.CONFLICT).withMessage("Tài Khoản không tồn tại");
         }
-        accountDetail.setTeachingProvince(editAccountDetailRequest.getTeachingProvince());
+
 
         accountDetail.setLastName(editAccountDetailRequest.getLastName());
         accountDetail.setFirstName(editAccountDetailRequest.getFirstName());
 
         accountDetail.setBirthDay(editAccountDetailRequest.getBirthDay());
 
-        //Nguyên quán
-        accountDetail.setDomicile(editAccountDetailRequest.getDomicile());
+
         accountDetail.setGender(editAccountDetailRequest.getGender());
         accountDetail.setCurrentAddress(editAccountDetailRequest.getCurrentAddress());
 
@@ -504,7 +509,6 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
         }
 
-
         List<AccountDetailClassLevel> allByAccountDetail = accountDetailClassLevelRepository.findAllByAccountDetail(accountDetail);
         accountDetailClassLevelRepository.deleteAll(allByAccountDetail);
 
@@ -530,12 +534,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
         }
 
-
         accountDetail.getAccountDetailClassLevels().addAll(accountDetailClassLevelList);
-
-
-
-
 
 
         List<Long> subjects = editAccountDetailRequest.getSubjects();
@@ -556,7 +555,10 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         accountDetail.getAccountDetailSubjects().addAll(accountDetailSubjectList);
 
 
-        accountDetail.setVoice(editAccountDetailRequest.getVoice());
+        Voice voice = voiceRepository.findById(editAccountDetailRequest.getVoiceId())
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("không tìm thấy giọng")));
+        accountDetail.setVoice(voice.getName());
+
         accountDetail.setStatus(EAccountDetailStatus.REQUESTING);
         accountDetail.setActive(true);
 
@@ -611,7 +613,6 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         Page<Account> accounts = null;
 
 //        status = EAccountDetailStatus.REQUESTING;
-
 
 
         accounts = accountRepository.findAccountByRoleAndAccountDetailStatus(role, status, pageable);
