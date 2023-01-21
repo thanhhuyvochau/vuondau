@@ -12,7 +12,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "account_detail")
-public class AccountDetail extends BaseEntity  {
+public class AccountDetail extends BaseEntity {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_id_generator")
@@ -33,9 +33,9 @@ public class AccountDetail extends BaseEntity  {
     private String phone;
 
 
-
-    @Column(name = "voice")
-    private String voice;
+    @ManyToOne
+    @JoinColumn(name = "voice_id")
+    private Voice voice;
 
     @Column(name = "current_address")
     private String currentAddress;
@@ -72,19 +72,18 @@ public class AccountDetail extends BaseEntity  {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @OneToMany(mappedBy = "accountDetail"  ,fetch = FetchType.LAZY ,cascade ={CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "accountDetail", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<AccountDetailSubject> accountDetailSubjects = new ArrayList<>();
 
 
-
-    @OneToMany(mappedBy = "accountDetail" ,fetch = FetchType.LAZY ,cascade ={CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "accountDetail", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<AccountDetailClassLevel> accountDetailClassLevels = new ArrayList<>();
 
 
-    @OneToMany(mappedBy = "accountDetail" ,fetch = FetchType.LAZY, cascade ={CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "accountDetail", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Resource> resources;
 
-    @OneToMany(mappedBy = "accountDetail",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "accountDetail", cascade = CascadeType.ALL)
     private List<FeedbackAccountLog> feedbackAccountLogs = new ArrayList<>();
 
 
@@ -145,13 +144,11 @@ public class AccountDetail extends BaseEntity  {
     }
 
 
-
-
-    public String getVoice() {
+    public Voice getVoice() {
         return voice;
     }
 
-    public void setVoice(String voice) {
+    public void setVoice(Voice voice) {
         this.voice = voice;
     }
 

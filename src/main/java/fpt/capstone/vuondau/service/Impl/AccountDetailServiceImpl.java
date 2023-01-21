@@ -12,6 +12,7 @@ import fpt.capstone.vuondau.entity.request.UploadAvatarRequest;
 import fpt.capstone.vuondau.entity.response.AccountDetailResponse;
 
 import fpt.capstone.vuondau.entity.response.FeedbackAccountLogResponse;
+import fpt.capstone.vuondau.entity.response.GenderResponse;
 import fpt.capstone.vuondau.entity.response.ResponseAccountDetailResponse;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IAccountDetailService;
@@ -33,7 +34,6 @@ import java.io.IOException;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
-
 
 
 @Service
@@ -122,14 +122,22 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
 
         AccountDetail accountDetail = new AccountDetail();
-
-        if (accountRepository.existsAccountByUsername(accountDetailRequest.getEmail())
-                || accountDetailRequest.getEmail() == null
-                || accountDetailRepository.existsAccountByEmail(accountDetailRequest.getEmail())) {
+        if (accountDetailRequest.getUsername() == null) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Địa chỉ mail đã đã được đăng ký trong hệ thống"));
+                    .withMessage(messageUtil.getLocalMessage("Tài khoản không được để trống"));
         }
-
+        if (accountRepository.existsAccountByUsername(accountDetailRequest.getUsername())) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Tài khoản đã tồn tại"));
+        }
+        if (accountDetailRequest.getEmail() == null) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Email không được để trống"));
+        }
+        if (accountDetailRepository.existsAccountByEmail(accountDetailRequest.getEmail())) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Email đã đã tồn tại"));
+        }
         if (accountDetailRepository.existsAccountDetailByPhone(accountDetailRequest.getPhone()) || accountDetailRequest.getPhone() == null) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Số điên thoại đã được đăng ký trong hệ thống"));
@@ -213,17 +221,17 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         Voice voice = voiceRepository.findById(accountDetailRequest.getVoiceId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("không tìm thấy giọng")));
 
-        accountDetail.setVoice(voice.getName());
+        accountDetail.setVoice(voice);
         accountDetail.setStatus(EAccountDetailStatus.REQUESTING);
         accountDetail.setActive(true);
 
 
         Account account = new Account();
-        if (accountRepository.existsAccountByUsername(accountDetailRequest.getUserName())) {
+        if (accountRepository.existsAccountByUsername(accountDetailRequest.getUsername())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Tên đăng nhập đã tồn tại"));
         }
-        account.setUsername(accountDetailRequest.getUserName());
+        account.setUsername(accountDetailRequest.getUsername());
         account.setIsActive(true);
         account.setKeycloak(true);
         account.setPassword(accountDetail.getPassword());
@@ -251,7 +259,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 //            save = accountDetailRepository.save(accountDetail);
 //        }
 
-        AccountDetail  save = accountDetailRepository.save(accountDetail);
+        AccountDetail save = accountDetailRepository.save(accountDetail);
         return save.getId();
     }
 
@@ -277,10 +285,10 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
             } else if (uploadImageRequest.getResourceType().equals(EResourceType.DEGREE)) {
                 resource.setResourceType(EResourceType.CARTPHOTO);
             } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCDONE)) {
-                resource.setResourceType(EResourceType.CCCD);
+                resource.setResourceType(EResourceType.CCCDONE);
 
             } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCDTWO)) {
-                resource.setResourceType(EResourceType.CCCD);
+                resource.setResourceType(EResourceType.CCCDTWO);
             }
 
             resourceList.add(resource);
@@ -388,14 +396,13 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
             accountDetailList.add(accountDetail);
 
-            EmailDto emailDto = new EmailDto() ;
+            EmailDto emailDto = new EmailDto();
             emailDto.setMail(accountDetail.getEmail());
             emailDto.setMail(accountDetail.getEmail());
 
 
-
-            sendMailServiceImplService.sendMail(emailDto ,Constants.MailMessage.SUBJECT_MAIL_EDIT_REQUEST_PROFILE
-                    , editAccountDetailRequest.getContent() , Constants.MailMessage.FOOTER_MAIL_EDIT_REQUEST_PROFILE ) ;
+            sendMailServiceImplService.sendMail(emailDto, Constants.MailMessage.SUBJECT_MAIL_EDIT_REQUEST_PROFILE
+                    , editAccountDetailRequest.getContent(), Constants.MailMessage.FOOTER_MAIL_EDIT_REQUEST_PROFILE);
 
 
             AccountDetailResponse accountDetailResponse = ConvertUtil.doConvertEntityToResponse(accountDetail);
@@ -529,8 +536,8 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         List<AccountDetailSubject> allByAccountDetail1 = accountDetailSubjectRepository.findAllByAccountDetail(accountDetail);
         accountDetailSubjectRepository.deleteAll(allByAccountDetail1);
 
-        List<Resource> allByAccountDetail2 = resourceRepository.findAllByAccountDetail(accountDetail);
-        resourceRepository.deleteAll(allByAccountDetail2);
+//        List<Resource> allByAccountDetail2 = resourceRepository.findAllByAccountDetail(accountDetail);
+//        resourceRepository.deleteAll(allByAccountDetail2);
         for (Long classLevelId : classLevels) {
 
             AccountDetailClassLevel accountDetailClassLevel = new AccountDetailClassLevel();
@@ -571,7 +578,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
         Voice voice = voiceRepository.findById(editAccountDetailRequest.getVoiceId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("không tìm thấy giọng")));
-        accountDetail.setVoice(voice.getName());
+        accountDetail.setVoice(voice);
 
         accountDetail.setStatus(EAccountDetailStatus.REQUESTING);
         accountDetail.setActive(true);
@@ -579,37 +586,37 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
         List<Resource> resourceList = new ArrayList<>();
 
-        for (UploadAvatarRequest uploadImageRequest : editAccountDetailRequest.getFiles()) {
-            try {
-                String name = uploadImageRequest.getFile().getOriginalFilename() + "-" + Instant.now().toString();
-                ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, uploadImageRequest.getFile().getContentType(),
-                        uploadImageRequest.getFile().getInputStream(), uploadImageRequest.getFile().getSize());
-
-                Resource resource = new Resource();
-                resource.setName(name);
-                resource.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
-                resource.setAccountDetail(accountDetail);
-                if (uploadImageRequest.getResourceType().equals(EResourceType.CARTPHOTO)) {
-                    resource.setResourceType(EResourceType.CARTPHOTO);
-                } else if (uploadImageRequest.getResourceType().equals(EResourceType.DEGREE)) {
-                    resource.setResourceType(EResourceType.CARTPHOTO);
-                } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCDONE)) {
-                    resource.setResourceType(EResourceType.CCCD);
-
-                } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCDTWO)) {
-                    resource.setResourceType(EResourceType.CCCD);
-                }
-                resourceList.add(resource);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (resourceList.size() < 4) {
-            throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Hệ thống cần bạn upload đầy đủ hình ảnh."));
-        }
-
-        accountDetail.getResources().addAll(resourceList);
+//        for (UploadAvatarRequest uploadImageRequest : editAccountDetailRequest.getFiles()) {
+//            try {
+//                String name = uploadImageRequest.getFile().getOriginalFilename() + "-" + Instant.now().toString();
+//                ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, uploadImageRequest.getFile().getContentType(),
+//                        uploadImageRequest.getFile().getInputStream(), uploadImageRequest.getFile().getSize());
+//
+//                Resource resource = new Resource();
+//                resource.setName(name);
+//                resource.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
+//                resource.setAccountDetail(accountDetail);
+//                if (uploadImageRequest.getResourceType().equals(EResourceType.CARTPHOTO)) {
+//                    resource.setResourceType(EResourceType.CARTPHOTO);
+//                } else if (uploadImageRequest.getResourceType().equals(EResourceType.DEGREE)) {
+//                    resource.setResourceType(EResourceType.CARTPHOTO);
+//                } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCDONE)) {
+//                    resource.setResourceType(EResourceType.CCCDONE);
+//
+//                } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCDTWO)) {
+//                    resource.setResourceType(EResourceType.CCCDTWO);
+//                }
+//                resourceList.add(resource);
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//        if (resourceList.size() < 4) {
+//            throw ApiException.create(HttpStatus.BAD_REQUEST)
+//                    .withMessage(messageUtil.getLocalMessage("Hệ thống cần bạn upload đầy đủ hình ảnh."));
+//        }
+//
+//        accountDetail.getResources().addAll(resourceList);
 
         accountDetailRepository.save(accountDetail);
 
@@ -683,8 +690,11 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
         EGenderType gender = accountDetail.getGender();
         if (gender != null) {
-            accountDetailResponse.setGender(gender.getLabel());
+            GenderResponse genderResponse = ConvertUtil.doConvertEntityToResponse(gender);
+            accountDetailResponse.setGender(genderResponse);
+
         }
+        accountDetailResponse.setAccountId(account.getId());
 
         return accountDetailResponse;
     }

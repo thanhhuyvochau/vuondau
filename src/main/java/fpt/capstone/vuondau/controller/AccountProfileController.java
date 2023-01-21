@@ -54,7 +54,7 @@ public class AccountProfileController {
 
     @Operation(summary = "Đăng ký làm gia sư cho vườn đậu")
     @PostMapping("/register-tutor")
-    public ResponseEntity<ApiResponse<Long>> registerTutor(@ModelAttribute AccountDetailRequest accountDetailRequest) {
+    public ResponseEntity<ApiResponse<Long>> registerTutor(@RequestBody AccountDetailRequest accountDetailRequest) {
         return ResponseEntity.ok(ApiResponse.success(iAccountDetailService.registerTutor(accountDetailRequest)));
     }
 

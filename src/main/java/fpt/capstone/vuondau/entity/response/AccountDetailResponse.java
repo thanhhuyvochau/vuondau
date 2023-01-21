@@ -9,16 +9,15 @@ import java.time.Instant;
 import java.util.List;
 
 
-
 public class AccountDetailResponse {
 
     private Long id;
 
-    private Long accountId ;
+    private Long accountId;
 
-    private String userName ;
+    private String userName;
 
-    private Boolean isKeycloak ;
+    private Boolean isKeycloak;
 
 
     private String firstName;
@@ -28,32 +27,28 @@ public class AccountDetailResponse {
     private Instant birthDay;
 
 
-    private String email ;
+    private String email;
 
 
-    private String phone ;
-
+    private String phone;
 
 
     private String domicile;
 
 
-    private String  teachingProvince;
+    private String teachingProvince;
 
 
-
-    private String voice;
-
-
-    private String gender;
+    private VoiceResponse voice;
 
 
-    private String currentAddress ;
+    private GenderResponse gender;
 
+
+    private String currentAddress;
 
 
     private String idCard;
-
 
 
     private String trainingSchoolName;
@@ -62,7 +57,7 @@ public class AccountDetailResponse {
     private String majors;
 
 
-    private List<ClassLevelResponse>  classLevel;
+    private List<ClassLevelResponse> classLevel;
 
 
     private Boolean isActive;
@@ -70,8 +65,7 @@ public class AccountDetailResponse {
 
     private List<SubjectDto> subjects;
 
-    private  List<ResourceDto> resources;
-
+    private List<ResourceDto> resources;
 
 
     public Long getId() {
@@ -139,19 +133,12 @@ public class AccountDetailResponse {
         this.teachingProvince = teachingProvince;
     }
 
-    public String getVoice() {
-        return voice;
-    }
 
-    public void setVoice(String voice) {
-        this.voice = voice;
-    }
-
-    public String getGender() {
+    public GenderResponse getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(GenderResponse gender) {
         this.gender = gender;
     }
 
@@ -242,5 +229,13 @@ public class AccountDetailResponse {
 
     public void setKeycloak(Boolean keycloak) {
         isKeycloak = keycloak;
+    }
+
+    public void setVoice(VoiceResponse voice) {
+        this.voice = voice;
+    }
+
+    public VoiceResponse getVoice() {
+        return voice;
     }
 }

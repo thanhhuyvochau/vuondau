@@ -646,6 +646,7 @@ public class ClassServiceImpl implements IClassService {
     public ApiPage<ClassDto> getRecruitingClasses(Pageable pageable) {
         Page<Class> classPages = classRepository.findAllByStatus(EClassStatus.RECRUITING, pageable);
         return PageUtil.convert(classPages.map(ConvertUtil::doConvertEntityToResponse));
+
     }
 
     @Override
@@ -1062,7 +1063,7 @@ public class ClassServiceImpl implements IClassService {
                     accountResponse.setAvatar(account.getResource().getUrl());
                 }
 
-                accountResponse.setVoice(accountDetail.getVoice());
+                accountResponse.setVoice(ConvertUtil.doConvertVoiceToResponse(accountDetail.getVoice()));
                 accountResponse.setCurrentAddress(accountDetail.getCurrentAddress());
                 accountResponse.setIdCard(accountDetail.getIdCard());
                 accountResponse.setSchoolName(accountDetail.getTrainingSchoolName());
@@ -1320,7 +1321,7 @@ public class ClassServiceImpl implements IClassService {
         Class clazz = confirmation.getCandidate().getClazz();
         EClassStatus status = clazz.getStatus();
 
-        if(!Objects.equals(status,EClassStatus.RECRUITING)){
+        if (!Objects.equals(status, EClassStatus.RECRUITING)) {
             throw ApiException.create(HttpStatus.METHOD_NOT_ALLOWED).withMessage("Lớp đã thay đổi, vui lòng liên hệ quản lý để được hỗ trợ!");
         }
 

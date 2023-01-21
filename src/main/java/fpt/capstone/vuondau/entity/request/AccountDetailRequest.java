@@ -9,7 +9,7 @@ import java.util.List;
 
 public class AccountDetailRequest implements Serializable {
 
-    private String userName;
+    private String username;
     private String firstName;
     private String lastName;
     private Instant birthDay;
@@ -37,12 +37,12 @@ public class AccountDetailRequest implements Serializable {
 
 //    private List<UploadAvatarRequest> files;
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getFirstName() {
