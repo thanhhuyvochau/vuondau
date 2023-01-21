@@ -13,6 +13,7 @@ import fpt.capstone.vuondau.entity.request.TimeTableRequest;
 import fpt.capstone.vuondau.entity.request.TimeTableSearchRequest;
 import fpt.capstone.vuondau.entity.response.ClassAttendanceResponse;
 import fpt.capstone.vuondau.repository.*;
+import fpt.capstone.vuondau.service.IMoodleService;
 import fpt.capstone.vuondau.service.ITimeTableService;
 import fpt.capstone.vuondau.util.*;
 import fpt.capstone.vuondau.util.specification.TimeTableSpecificationBuilder;
@@ -35,9 +36,13 @@ import static fpt.capstone.vuondau.util.DayUtil.getDatesBetweenUsingJava8;
 @Service
 public class TimeTableServiceImpl implements ITimeTableService {
 
+    private final IMoodleService moodleService;
+
     private final ClassRepository classRepository;
 
     private final SlotRepository slotRepository;
+
+    private final AccountUtil accountUtil;
 
     private final DayOfWeekRepository dayOfWeekRepository;
 
@@ -60,10 +65,11 @@ public class TimeTableServiceImpl implements ITimeTableService {
     private final ClassServiceImpl classServiceImpl;
 
 
-
-    public TimeTableServiceImpl(ClassRepository classRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ArchetypeRepository archetypeRepository, ArchetypeTimeRepository archetypeTimeRepository, MessageUtil messageUtil, StudentClassRepository studentClassRepository, TimeTableRepository timeTableRepository, AccountRepository accountRepository, fpt.capstone.vuondau.util.SecurityUtil securityUtil, AttendanceRepository attendanceRepository, ClassServiceImpl classServiceImpl) {
+    public TimeTableServiceImpl(IMoodleService moodleService, ClassRepository classRepository, SlotRepository slotRepository, AccountUtil accountUtil, DayOfWeekRepository dayOfWeekRepository, ArchetypeRepository archetypeRepository, ArchetypeTimeRepository archetypeTimeRepository, MessageUtil messageUtil, StudentClassRepository studentClassRepository, TimeTableRepository timeTableRepository, AccountRepository accountRepository, fpt.capstone.vuondau.util.SecurityUtil securityUtil, AttendanceRepository attendanceRepository, ClassServiceImpl classServiceImpl) {
+        this.moodleService = moodleService;
         this.classRepository = classRepository;
         this.slotRepository = slotRepository;
+        this.accountUtil = accountUtil;
         this.dayOfWeekRepository = dayOfWeekRepository;
         this.archetypeRepository = archetypeRepository;
         this.archetypeTimeRepository = archetypeTimeRepository;
@@ -166,13 +172,14 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
         List<TimeTable> timeTableList1 = setDateOfWeek(timeTableRequest.getSlotDow(), slotNumber, startDate, endDate, archetype, aClass, timeTableList);
 
-//        aClass.setTimeTables(timeTableList1);
         aClass.getTimeTables().clear();
         aClass.getTimeTables().addAll(timeTableList1);
         aClass.setStatus(EClassStatus.REQUESTING);
 
         Class save = classRepository.save(aClass);
-        classServiceImpl.createMoodleCourse(save, save.getCourse());
+        accountUtil.synchronizedCurrentAccountInfo();
+        String s = moodleService.enrolUserToCourseMoodle(save, save.getAccount());
+
         return aClass.getId();
     }
 

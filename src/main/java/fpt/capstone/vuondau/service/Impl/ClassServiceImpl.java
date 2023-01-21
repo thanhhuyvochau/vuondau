@@ -129,7 +129,7 @@ public class ClassServiceImpl implements IClassService {
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setUnitPrice(createClassRequest.getEachStudentPayPrice());
         Class save = classRepository.save(clazz);
-        createMoodleCourse(save, course);
+//        createMoodleCourse(save, course);
 //        moodleService.enrolUserToCourseMoodle(save, save.getAccount());
         return save.getId();
     }
