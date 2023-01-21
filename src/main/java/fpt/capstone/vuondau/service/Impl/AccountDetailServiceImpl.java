@@ -12,6 +12,7 @@ import fpt.capstone.vuondau.entity.request.UploadAvatarRequest;
 import fpt.capstone.vuondau.entity.response.AccountDetailResponse;
 
 import fpt.capstone.vuondau.entity.response.FeedbackAccountLogResponse;
+import fpt.capstone.vuondau.entity.response.GenderResponse;
 import fpt.capstone.vuondau.entity.response.ResponseAccountDetailResponse;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IAccountDetailService;
@@ -218,7 +219,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         Voice voice = voiceRepository.findById(accountDetailRequest.getVoiceId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("không tìm thấy giọng")));
 
-        accountDetail.setVoice(voice.getName());
+        accountDetail.setVoice(voice);
         accountDetail.setStatus(EAccountDetailStatus.REQUESTING);
         accountDetail.setActive(true);
 
@@ -576,7 +577,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
         Voice voice = voiceRepository.findById(editAccountDetailRequest.getVoiceId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("không tìm thấy giọng")));
-        accountDetail.setVoice(voice.getName());
+        accountDetail.setVoice(voice);
 
         accountDetail.setStatus(EAccountDetailStatus.REQUESTING);
         accountDetail.setActive(true);
@@ -688,7 +689,9 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
         EGenderType gender = accountDetail.getGender();
         if (gender != null) {
-            accountDetailResponse.setGender(gender.getLabel());
+            GenderResponse genderResponse = ConvertUtil.doConvertEntityToResponse(gender);
+            accountDetailResponse.setGender(genderResponse);
+
         }
         accountDetailResponse.setAccountId(account.getId());
 

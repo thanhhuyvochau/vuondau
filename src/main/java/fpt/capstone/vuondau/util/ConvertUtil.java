@@ -106,9 +106,7 @@ public class ConvertUtil {
             if (accountDetail != null) {
                 EGenderType gender = accountDetail.getGender();
                 if (gender != null) {
-                    GenderResponse genderResponse = new GenderResponse();
-                    genderResponse.setCode(gender.name());
-                    genderResponse.setName(gender.getLabel());
+                    GenderResponse genderResponse = doConvertEntityToResponse(gender);
                     accountResponse.setGender(genderResponse);
                 }
 
@@ -122,7 +120,7 @@ public class ConvertUtil {
                 accountResponse.setSchoolName(accountDetail.getTrainingSchoolName());
                 accountResponse.setMajors(accountDetail.getMajors());
                 accountResponse.setActive(accountDetail.getActive());
-                accountResponse.setVoice(accountDetail.getVoice());
+                accountResponse.setVoice(doConvertVoiceToResponse(account.getAccountDetail().getVoice()));
                 accountResponse.setStatus(accountDetail.getStatus());
                 accountResponse.setEmail(accountDetail.getEmail());
 
@@ -132,6 +130,14 @@ public class ConvertUtil {
 
 
         return accountResponse;
+    }
+
+    public static GenderResponse doConvertEntityToResponse(EGenderType gender) {
+        GenderResponse genderResponse = new GenderResponse();
+        genderResponse.setCode(gender.name());
+        genderResponse.setName(gender.getLabel());
+
+        return genderResponse;
     }
 
     public static AccountSimpleResponse doConvertEntityToSimpleResponse(Account account) {
@@ -197,14 +203,15 @@ public class ConvertUtil {
         if (feedbackAccountLog.getAccount() != null) {
             response.setAccount(feedbackAccountLog.getAccount().getId());
         }
-        if (feedbackAccountLog.getAccountDetail()!= null) {
+        if (feedbackAccountLog.getAccountDetail() != null) {
             response.setAccountDetail(feedbackAccountLog.getAccountDetail().getId());
         }
         response.setStatus(feedbackAccountLog.getStatus());
         response.setContent(feedbackAccountLog.getContent());
         response.setCreateDate(feedbackAccountLog.getLastModified());
-        return response ;
+        return response;
     }
+
     public static AccountDetailResponse doConvertEntityToResponse(AccountDetail accountDetail) {
         if (accountDetail == null) return null;
         AccountDetailResponse accountDetailResponse = ObjectUtil.copyProperties(accountDetail, new AccountDetailResponse(), AccountDetailResponse.class, true);
@@ -229,7 +236,7 @@ public class ConvertUtil {
 
         accountDetailResponse.setResources(resourceDtoList);
         accountDetailResponse.setActive(accountDetail.getActive());
-        accountDetailResponse.setGender(accountDetail.getGender().getLabel());
+        accountDetailResponse.setGender(doConvertEntityToResponse(accountDetail.getGender()));
         List<AccountDetailClassLevel> accountDetailClassLevels = accountDetail.getAccountDetailClassLevels();
         List<ClassLevelResponse> classLevelResponseList = new ArrayList<>();
         accountDetailClassLevels.forEach(accountDetailClassLevel -> {
@@ -460,5 +467,9 @@ public class ConvertUtil {
 
         response.setRequestType(ObjectUtil.copyProperties(request.getRequestType(), new RequestTypeDto(), RequestTypeDto.class));
         return response;
+    }
+
+    public static VoiceResponse doConvertVoiceToResponse(Voice voice) {
+        return ObjectUtil.copyProperties(voice, new VoiceResponse(), VoiceResponse.class, true);
     }
 }
