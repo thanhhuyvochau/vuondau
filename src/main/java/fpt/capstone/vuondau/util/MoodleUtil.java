@@ -13,16 +13,13 @@ import java.util.List;
 @Component
 public class MoodleUtil {
     private final MoodleUserRepository moodleUserRepository;
-    private final MoodleUtil moodleUtil;
 
-    public MoodleUtil(MoodleUserRepository moodleUserRepository, MoodleUtil moodleUtil) {
+    public MoodleUtil(MoodleUserRepository moodleUserRepository) {
         this.moodleUserRepository = moodleUserRepository;
-
-        this.moodleUtil = moodleUtil;
     }
 
     public MoodleUserResponse getMoodleUserIfExist(Account account) throws JsonProcessingException {
-        return moodleUtil.getMoodleUserIfExistByKeycloakId(account.getKeycloakUserId());
+        return getMoodleUserIfExistByKeycloakId(account.getKeycloakUserId());
     }
 
     public MoodleUserResponse getMoodleUserIfExistByKeycloakId(String keycloakId) throws JsonProcessingException {
