@@ -441,6 +441,7 @@ public class ConvertUtil {
     public static AccountDetailResponse doConvertEntityToResponse(AccountDetail accountDetail) {
         Account account = accountDetail.getAccount();
         AccountDetailResponse accountDetailResponse = ObjectUtil.copyProperties(accountDetail, new AccountDetailResponse(), AccountDetailResponse.class);
+        accountDetailResponse.setUserName(account.getUsername());
         List<AccountDetailSubject> accountDetailSubjects = accountDetail.getAccountDetailSubjects();
         List<SubjectDto> subjects = new ArrayList<>();
         accountDetailSubjects.forEach(accountDetailSubject -> {
