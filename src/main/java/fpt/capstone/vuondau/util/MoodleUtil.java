@@ -13,20 +13,16 @@ import java.util.List;
 @Component
 public class MoodleUtil {
     private final MoodleUserRepository moodleUserRepository;
+    private final MoodleUtil moodleUtil;
 
-    public MoodleUtil(MoodleUserRepository moodleUserRepository) {
+    public MoodleUtil(MoodleUserRepository moodleUserRepository, MoodleUtil moodleUtil) {
         this.moodleUserRepository = moodleUserRepository;
 
+        this.moodleUtil = moodleUtil;
     }
 
     public MoodleUserResponse getMoodleUserIfExist(Account account) throws JsonProcessingException {
-        List<MoodleUserResponse> moodleUsers = moodleUserRepository.getUserByUserName(account.getKeycloakUserId());
-        if (moodleUsers.size() < 1) {
-            throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("You have to update your moodle profile before pay any class!");
-        } else if (moodleUsers.size() > 1) {
-            throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Some errors happened, please contact admin for helping!");
-        }
-        return moodleUsers.get(0);
+        return moodleUtil.getMoodleUserIfExistByKeycloakId(account.getKeycloakUserId());
     }
 
     public MoodleUserResponse getMoodleUserIfExistByKeycloakId(String keycloakId) throws JsonProcessingException {

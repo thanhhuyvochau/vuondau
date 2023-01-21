@@ -6,6 +6,7 @@ import fpt.capstone.vuondau.entity.dto.SubjectDto;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -32,13 +33,6 @@ public class AccountDetailResponse {
 
     private String phone;
 
-
-    private String domicile;
-
-
-    private String teachingProvince;
-
-
     private VoiceResponse voice;
 
 
@@ -57,7 +51,7 @@ public class AccountDetailResponse {
     private String majors;
 
 
-    private List<ClassLevelResponse> classLevel;
+    private List<ClassLevelResponse> classLevel = new ArrayList<>();
 
 
     private Boolean isActive;
@@ -116,23 +110,6 @@ public class AccountDetailResponse {
     public void setPhone(String phone) {
         this.phone = phone;
     }
-
-    public String getDomicile() {
-        return domicile;
-    }
-
-    public void setDomicile(String domicile) {
-        this.domicile = domicile;
-    }
-
-    public String getTeachingProvince() {
-        return teachingProvince;
-    }
-
-    public void setTeachingProvince(String teachingProvince) {
-        this.teachingProvince = teachingProvince;
-    }
-
 
     public GenderResponse getGender() {
         return gender;

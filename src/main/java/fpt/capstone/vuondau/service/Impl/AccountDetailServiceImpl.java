@@ -22,6 +22,7 @@ import fpt.capstone.vuondau.util.adapter.MinioAdapter;
 import fpt.capstone.vuondau.util.keycloak.KeycloakRoleUtil;
 import fpt.capstone.vuondau.util.keycloak.KeycloakUserUtil;
 import io.minio.ObjectWriteResponse;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -657,7 +658,6 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
                 FeedbackAccountLogResponse convertEntityToResponse = ConvertUtil.doConvertEntityToResponse(feedbackAccountLog);
                 feedbackAccountLogResponseList.add(convertEntityToResponse);
             });
-
         }
 
         response.setFeedbackAccountLog(feedbackAccountLogResponseList);
@@ -670,33 +670,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
     public AccountDetailResponse getAccountDetail(Long accountId) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay account")));
-        AccountDetail accountDetail = accountDetailRepository.findByAccount(account);
-        AccountDetailResponse accountDetailResponse = ObjectUtil.copyProperties(accountDetail, new AccountDetailResponse(), AccountDetailResponse.class);
-        List<AccountDetailSubject> accountDetailSubjects = accountDetail.getAccountDetailSubjects();
-        List<SubjectDto> subjects = new ArrayList<>();
-        accountDetailSubjects.forEach(accountDetailSubject -> {
-            subjects.add(ObjectUtil.copyProperties(accountDetailSubject.getSubject(), new SubjectDto(), SubjectDto.class));
-        });
-        accountDetailResponse.setSubjects(subjects);
-
-        List<Resource> resources = accountDetail.getResources();
-
-        List<ResourceDto> resourceDtoList = new ArrayList<>();
-        resources.forEach(resource -> {
-            resourceDtoList.add(ObjectUtil.copyProperties(resource, new ResourceDto(), ResourceDto.class));
-        });
-
-        accountDetailResponse.setResources(resourceDtoList);
-
-        EGenderType gender = accountDetail.getGender();
-        if (gender != null) {
-            GenderResponse genderResponse = ConvertUtil.doConvertEntityToResponse(gender);
-            accountDetailResponse.setGender(genderResponse);
-
-        }
-        accountDetailResponse.setAccountId(account.getId());
-
-        return accountDetailResponse;
+        return ConvertUtil.doConvertEntityToResponse(account.getAccountDetail());
     }
 
 
