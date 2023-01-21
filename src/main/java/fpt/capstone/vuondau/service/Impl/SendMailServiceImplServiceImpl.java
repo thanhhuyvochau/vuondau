@@ -26,7 +26,7 @@ public class SendMailServiceImplServiceImpl implements ISendMailService {
     }
 
     @Override
-    public Boolean sendMail(EmailDto emailDto ,String titleMail , String content ) {
+    public Boolean sendMail(EmailDto emailDto ,String subject , String content,  String footer  ) {
 
             String to = emailDto.getMail();
             String host = "smtp.gmail.com";
@@ -58,7 +58,7 @@ public class SendMailServiceImplServiceImpl implements ISendMailService {
                 message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
 
                 // Set Subject: header field
-                message.setSubject(titleMail);
+                message.setSubject(subject);
 
                 Multipart multipart = new MimeMultipart();
 
@@ -66,7 +66,7 @@ public class SendMailServiceImplServiceImpl implements ISendMailService {
                 MimeBodyPart textPart = new MimeBodyPart();
 
 
-                textPart.setText(content);
+                textPart.setText(content + footer);
                 multipart.addBodyPart(textPart);
 
                 message.setContent(multipart);

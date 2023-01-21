@@ -35,7 +35,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static fpt.capstone.vuondau.util.common.Constants.ErrorMessage.*;
+
 
 
 @Service
@@ -481,7 +481,7 @@ public class ClassServiceImpl implements IClassService {
     @Override
     public ClassDto adminRejectRequestCreateClass(Long id) {
         Class clazz = classRepository.findById(id)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage(CLASS_NOT_FOUND_BY_ID) + id));
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Lớp không tìm thấy") + id));
         if (!Objects.equals(clazz.getStatus(), EClassStatus.WAITING)) {
             clazz.setStatus(EClassStatus.REJECTED);
         }
@@ -491,15 +491,15 @@ public class ClassServiceImpl implements IClassService {
     @Override
     public Long updateClassForRecruiting(Long id, CreateRecruitingClassRequest createRecruitingClassRequest) throws ParseException {
         Class clazz = classRepository.findById(id)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage(CLASS_NOT_FOUND_BY_ID) + id));
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Lớp không tìm thấy") + id));
         if (!clazz.getStatus().equals(EClassStatus.RECRUITING)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage(CLASS_NOT_ALLOW_UPDATE));
+                    .withMessage(messageUtil.getLocalMessage("lớp không cho phép cập nhật"));
         }
         clazz.setName(createRecruitingClassRequest.getName());
         if (classRepository.existsByCode(createRecruitingClassRequest.getCode()) && !clazz.getCode().equals(createRecruitingClassRequest.getCode())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage(CODE_ALREADY_EXISTED));
+                    .withMessage(messageUtil.getLocalMessage("code đã tồn tại"));
         }
         Instant now = DayUtil.convertDayInstant(Instant.now().toString());
         if (!DayUtil.checkTwoDateBigger(now.toString(), createRecruitingClassRequest.getClosingDate().toString(), 3)) {
@@ -516,7 +516,7 @@ public class ClassServiceImpl implements IClassService {
         }
 
         Course course = courseRepository.findById(createRecruitingClassRequest.getCourseId())
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(TOPIC_NOT_FOUND_BY_ID + createRecruitingClassRequest.getCourseId()));
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Chủ đề không tìm thâấy" + createRecruitingClassRequest.getCourseId()));
         clazz.setCourse(course);
         clazz.setCode(createRecruitingClassRequest.getCode());
         clazz.setStartDate(DayUtil.convertDayInstant(createRecruitingClassRequest.getStartDate().toString()));
@@ -539,7 +539,7 @@ public class ClassServiceImpl implements IClassService {
     @Override
     public ApiPage<ClassDto> classSuggestion(long infoFindTutorId, Pageable pageable) {
         InfoFindTutor infoFindTutor = infoFindTutorRepository.findById(infoFindTutorId)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(TOPIC_NOT_FOUND_BY_ID + infoFindTutorId));
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Chủ đề không tìm thấy" + infoFindTutorId));
 
         List<Long> idTeacher = infoFindTutor.getInfoFindTutorAccounts().stream().map(infoFindTutorAccount -> infoFindTutorAccount.getTeacher().getId()).collect(Collectors.toList());
         List<Account> teachers = accountRepository.findAllById(idTeacher);

@@ -18,6 +18,7 @@ import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IAccountDetailService;
 import fpt.capstone.vuondau.util.*;
 import fpt.capstone.vuondau.util.adapter.MinioAdapter;
+
 import fpt.capstone.vuondau.util.keycloak.KeycloakRoleUtil;
 import fpt.capstone.vuondau.util.keycloak.KeycloakUserUtil;
 import io.minio.ObjectWriteResponse;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
+
 
 @Service
 @Transactional
@@ -281,12 +283,12 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
             if (uploadImageRequest.getResourceType().equals(EResourceType.CARTPHOTO)) {
                 resource.setResourceType(EResourceType.CARTPHOTO);
             } else if (uploadImageRequest.getResourceType().equals(EResourceType.DEGREE)) {
-                resource.setResourceType(EResourceType.CARTPHOTO);
+                resource.setResourceType(EResourceType.DEGREE);
             } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCDONE)) {
-                resource.setResourceType(EResourceType.CCCD);
+                resource.setResourceType(EResourceType.CCCDONE);
 
             } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCDTWO)) {
-                resource.setResourceType(EResourceType.CCCD);
+                resource.setResourceType(EResourceType.CCCDTWO);
             }
 
             resourceList.add(resource);
@@ -365,16 +367,14 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         List<AccountDetail> accountDetailList = new ArrayList<>();
 
         Account account = accountRepository.findById(editAccountDetailRequest.getId())
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay tài khoản")));
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("lớp không tìm thấy"));
 
         List<FeedbackAccountLog> feedbackAccountLogs = new ArrayList<>();
 
         AccountDetail accountDetail = account.getAccountDetail();
         if (accountDetail != null) {
-//            EmailDto emailDto = new EmailDto();
-
             if (accountDetail.getEmail() == null) {
-                throw ApiException.create(HttpStatus.BAD_REQUEST)
+                throw ApiException.create(HttpStatus.NOT_FOUND)
                         .withMessage(messageUtil.getLocalMessage("Không thể phê duyệt tài khoản vì không có email"));
             }
             if (accountDetail.getPassword() == null) {
@@ -401,7 +401,8 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
             emailDto.setMail(accountDetail.getEmail());
 
 
-            sendMailServiceImplService.sendMail(emailDto, "", "");
+            sendMailServiceImplService.sendMail(emailDto, Constants.MailMessage.SUBJECT_MAIL_EDIT_REQUEST_PROFILE
+                    , editAccountDetailRequest.getContent(), Constants.MailMessage.FOOTER_MAIL_EDIT_REQUEST_PROFILE);
 
 
             AccountDetailResponse accountDetailResponse = ConvertUtil.doConvertEntityToResponse(accountDetail);
@@ -419,7 +420,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         });
         response.setFeedbackAccountLog(feedbackAccountLogResponseList);
 
-//        sendMailServiceImplService.sendMail(mail);
+
         return response;
     }
 
@@ -535,8 +536,8 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         List<AccountDetailSubject> allByAccountDetail1 = accountDetailSubjectRepository.findAllByAccountDetail(accountDetail);
         accountDetailSubjectRepository.deleteAll(allByAccountDetail1);
 
-        List<Resource> allByAccountDetail2 = resourceRepository.findAllByAccountDetail(accountDetail);
-        resourceRepository.deleteAll(allByAccountDetail2);
+//        List<Resource> allByAccountDetail2 = resourceRepository.findAllByAccountDetail(accountDetail);
+//        resourceRepository.deleteAll(allByAccountDetail2);
         for (Long classLevelId : classLevels) {
 
             AccountDetailClassLevel accountDetailClassLevel = new AccountDetailClassLevel();
@@ -585,37 +586,37 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
         List<Resource> resourceList = new ArrayList<>();
 
-        for (UploadAvatarRequest uploadImageRequest : editAccountDetailRequest.getFiles()) {
-            try {
-                String name = uploadImageRequest.getFile().getOriginalFilename() + "-" + Instant.now().toString();
-                ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, uploadImageRequest.getFile().getContentType(),
-                        uploadImageRequest.getFile().getInputStream(), uploadImageRequest.getFile().getSize());
-
-                Resource resource = new Resource();
-                resource.setName(name);
-                resource.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
-                resource.setAccountDetail(accountDetail);
-                if (uploadImageRequest.getResourceType().equals(EResourceType.CARTPHOTO)) {
-                    resource.setResourceType(EResourceType.CARTPHOTO);
-                } else if (uploadImageRequest.getResourceType().equals(EResourceType.DEGREE)) {
-                    resource.setResourceType(EResourceType.CARTPHOTO);
-                } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCDONE)) {
-                    resource.setResourceType(EResourceType.CCCD);
-
-                } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCDTWO)) {
-                    resource.setResourceType(EResourceType.CCCD);
-                }
-                resourceList.add(resource);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (resourceList.size() < 4) {
-            throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Hệ thống cần bạn upload đầy đủ hình ảnh."));
-        }
-
-        accountDetail.getResources().addAll(resourceList);
+//        for (UploadAvatarRequest uploadImageRequest : editAccountDetailRequest.getFiles()) {
+//            try {
+//                String name = uploadImageRequest.getFile().getOriginalFilename() + "-" + Instant.now().toString();
+//                ObjectWriteResponse objectWriteResponse = minioAdapter.uploadFile(name, uploadImageRequest.getFile().getContentType(),
+//                        uploadImageRequest.getFile().getInputStream(), uploadImageRequest.getFile().getSize());
+//
+//                Resource resource = new Resource();
+//                resource.setName(name);
+//                resource.setUrl(RequestUrlUtil.buildUrl(minioUrl, objectWriteResponse));
+//                resource.setAccountDetail(accountDetail);
+//                if (uploadImageRequest.getResourceType().equals(EResourceType.CARTPHOTO)) {
+//                    resource.setResourceType(EResourceType.CARTPHOTO);
+//                } else if (uploadImageRequest.getResourceType().equals(EResourceType.DEGREE)) {
+//                    resource.setResourceType(EResourceType.CARTPHOTO);
+//                } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCDONE)) {
+//                    resource.setResourceType(EResourceType.CCCDONE);
+//
+//                } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCDTWO)) {
+//                    resource.setResourceType(EResourceType.CCCDTWO);
+//                }
+//                resourceList.add(resource);
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//        if (resourceList.size() < 4) {
+//            throw ApiException.create(HttpStatus.BAD_REQUEST)
+//                    .withMessage(messageUtil.getLocalMessage("Hệ thống cần bạn upload đầy đủ hình ảnh."));
+//        }
+//
+//        accountDetail.getResources().addAll(resourceList);
 
         accountDetailRepository.save(accountDetail);
 

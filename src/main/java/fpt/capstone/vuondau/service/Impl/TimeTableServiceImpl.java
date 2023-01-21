@@ -29,8 +29,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static fpt.capstone.vuondau.util.DayUtil.getDatesBetweenUsingJava8;
-import static fpt.capstone.vuondau.util.common.Constants.ErrorMessage.CLASS_NOT_ALLOW_UPDATE;
-import static fpt.capstone.vuondau.util.common.Constants.ErrorMessage.CLASS_NOT_FOUND_BY_ID;
+
 
 @Service
 public class TimeTableServiceImpl implements ITimeTableService {
@@ -375,10 +374,10 @@ public class TimeTableServiceImpl implements ITimeTableService {
     public Long adminCreateTimeTableClass(Long classId, Long numberSlot, TimeTableRequest timeTableRequest) throws ParseException {
         Account currentUser = SecurityUtil.getCurrentUserThrowNotFoundException();
 
-        Class aClass = classRepository.findById(classId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(CLASS_NOT_FOUND_BY_ID + classId));
+        Class aClass = classRepository.findById(classId).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Lớp không tìm thấy" + classId));
         if (!aClass.getStatus().equals(EClassStatus.RECRUITING)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage(CLASS_NOT_ALLOW_UPDATE));
+                    .withMessage(messageUtil.getLocalMessage("Lớp không thể cập nhật"));
         }
 
         if (aClass.getTimeTables().size() > 0) {
