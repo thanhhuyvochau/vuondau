@@ -18,6 +18,7 @@ public class MoodleUtil {
         this.moodleUserRepository = moodleUserRepository;
     }
 
+
     public MoodleUserResponse getMoodleUserIfExist(Account account) throws JsonProcessingException {
         return getMoodleUserIfExistByKeycloakId(account.getKeycloakUserId());
     }
