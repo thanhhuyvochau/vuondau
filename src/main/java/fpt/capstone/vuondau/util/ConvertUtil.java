@@ -15,6 +15,7 @@ import fpt.capstone.vuondau.moodle.response.MoodleRecourseDtoResponse;
 import fpt.capstone.vuondau.moodle.response.MoodleResourceResponse;
 import fpt.capstone.vuondau.moodle.response.MoodleSectionResponse;
 import fpt.capstone.vuondau.repository.ClassLevelRepository;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -212,46 +213,9 @@ public class ConvertUtil {
         return response;
     }
 
-    public static AccountDetailResponse doConvertEntityToResponse(AccountDetail accountDetail) {
-        if (accountDetail == null) return null;
-        AccountDetailResponse accountDetailResponse = ObjectUtil.copyProperties(accountDetail, new AccountDetailResponse(), AccountDetailResponse.class, true);
-        Account account = accountDetail.getAccount();
-        if (account != null) {
-            accountDetailResponse.setAccountId(account.getId());
-            accountDetailResponse.setKeycloak(account.getKeycloak());
-            accountDetailResponse.setUserName(account.getUsername());
-        }
-
-        List<AccountDetailSubject> accountDetailSubjects = accountDetail.getAccountDetailSubjects();
-        List<SubjectDto> subjects = new ArrayList<>();
-        accountDetailSubjects.forEach(accountDetailSubject -> {
-            subjects.add(ObjectUtil.copyProperties(accountDetailSubject.getSubject(), new SubjectDto(), SubjectDto.class));
-        });
-        accountDetailResponse.setSubjects(subjects);
-        List<ResourceDto> resourceDtoList = new ArrayList<>();
-        List<Resource> resources = accountDetail.getResources();
-        resources.forEach(resource -> {
-            resourceDtoList.add(ObjectUtil.copyProperties(resource, new ResourceDto(), ResourceDto.class));
-        });
-
-        accountDetailResponse.setResources(resourceDtoList);
-        accountDetailResponse.setActive(accountDetail.getActive());
-        accountDetailResponse.setGender(doConvertEntityToResponse(accountDetail.getGender()));
-        List<AccountDetailClassLevel> accountDetailClassLevels = accountDetail.getAccountDetailClassLevels();
-        List<ClassLevelResponse> classLevelResponseList = new ArrayList<>();
-        accountDetailClassLevels.forEach(accountDetailClassLevel -> {
-            ClassLevel classLevel = accountDetailClassLevel.getClassLevel();
-            classLevelResponseList.add(ObjectUtil.copyProperties(classLevel, new ClassLevelResponse(), ClassLevelResponse.class));
-        });
-        accountDetailResponse.setClassLevel(classLevelResponseList);
-        return accountDetailResponse;
-
-    }
-
     public static CourseDetailResponse doConvertEntityToResponse(Course course) {
-        CourseDetailResponse courseDetailResponse = ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class);
 
-        return courseDetailResponse;
+        return ObjectUtil.copyProperties(course, new CourseDetailResponse(), CourseDetailResponse.class);
     }
 
     public static CourseResponse doConvertCourseToCourseResponse(Course course) {
@@ -471,5 +435,41 @@ public class ConvertUtil {
 
     public static VoiceResponse doConvertVoiceToResponse(Voice voice) {
         return ObjectUtil.copyProperties(voice, new VoiceResponse(), VoiceResponse.class, true);
+    }
+
+
+    public static AccountDetailResponse doConvertEntityToResponse(AccountDetail accountDetail) {
+        Account account = accountDetail.getAccount();
+        AccountDetailResponse accountDetailResponse = ObjectUtil.copyProperties(accountDetail, new AccountDetailResponse(), AccountDetailResponse.class);
+        List<AccountDetailSubject> accountDetailSubjects = accountDetail.getAccountDetailSubjects();
+        List<SubjectDto> subjects = new ArrayList<>();
+        accountDetailSubjects.forEach(accountDetailSubject -> {
+            subjects.add(ObjectUtil.copyProperties(accountDetailSubject.getSubject(), new SubjectDto(), SubjectDto.class));
+        });
+        accountDetailResponse.setSubjects(subjects);
+
+        List<Resource> resources = accountDetail.getResources();
+
+        List<ResourceDto> resourceDtoList = new ArrayList<>();
+        resources.forEach(resource -> {
+            resourceDtoList.add(ObjectUtil.copyProperties(resource, new ResourceDto(), ResourceDto.class));
+        });
+
+        accountDetailResponse.setResources(resourceDtoList);
+
+        EGenderType gender = accountDetail.getGender();
+        if (gender != null) {
+            GenderResponse genderResponse = ConvertUtil.doConvertEntityToResponse(gender);
+            accountDetailResponse.setGender(genderResponse);
+
+        }
+        Voice voice = accountDetail.getVoice();
+        if (voice != null) {
+            VoiceResponse voiceResponse = ConvertUtil.doConvertVoiceToResponse(voice);
+            accountDetailResponse.setVoice(voiceResponse);
+        }
+        accountDetailResponse.setAccountId(account.getId());
+
+        return accountDetailResponse;
     }
 }

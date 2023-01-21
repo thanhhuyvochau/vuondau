@@ -11,10 +11,7 @@ public class ResponseAccountDetailResponse {
 
 
     private AccountDetailResponse accountDetail ;
-
     private List<FeedbackAccountLogResponse> feedbackAccountLog ;
-
-
 
     public AccountDetailResponse getAccountDetail() {
         return accountDetail;
