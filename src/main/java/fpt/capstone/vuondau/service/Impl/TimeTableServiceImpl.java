@@ -1,5 +1,6 @@
 package fpt.capstone.vuondau.service.Impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.Class;
 
@@ -58,6 +59,8 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
     private final ClassServiceImpl classServiceImpl;
 
+
+
     public TimeTableServiceImpl(ClassRepository classRepository, SlotRepository slotRepository, DayOfWeekRepository dayOfWeekRepository, ArchetypeRepository archetypeRepository, ArchetypeTimeRepository archetypeTimeRepository, MessageUtil messageUtil, StudentClassRepository studentClassRepository, TimeTableRepository timeTableRepository, AccountRepository accountRepository, fpt.capstone.vuondau.util.SecurityUtil securityUtil, AttendanceRepository attendanceRepository, ClassServiceImpl classServiceImpl) {
         this.classRepository = classRepository;
         this.slotRepository = slotRepository;
@@ -75,7 +78,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
 
     @Override
-    public Long createTimeTableClass(Long classId, Long numberSlot, TimeTableRequest timeTableRequest) throws ParseException {
+    public Long createTimeTableClass(Long classId, Long numberSlot, TimeTableRequest timeTableRequest) throws ParseException, JsonProcessingException {
         Account currentUser = SecurityUtil.getCurrentUserThrowNotFoundException();
 
 
@@ -168,8 +171,8 @@ public class TimeTableServiceImpl implements ITimeTableService {
         aClass.getTimeTables().addAll(timeTableList1);
         aClass.setStatus(EClassStatus.REQUESTING);
 
-        classRepository.save(aClass);
-
+        Class save = classRepository.save(aClass);
+        classServiceImpl.createMoodleCourse(save, save.getCourse());
         return aClass.getId();
     }
 

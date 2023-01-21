@@ -1,13 +1,8 @@
 package fpt.capstone.vuondau.entity.dto;
 
-import fpt.capstone.vuondau.entity.common.EGradeType;
-import fpt.capstone.vuondau.entity.dto.SubjectDto;
-import fpt.capstone.vuondau.entity.dto.TeacherCourseDto;
-import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class RequestFormDto  implements Serializable {
 

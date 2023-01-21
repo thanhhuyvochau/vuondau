@@ -1,12 +1,7 @@
 package fpt.capstone.vuondau.entity;
 
 
-import fpt.capstone.vuondau.entity.common.EGradeType;
-
-
 import javax.persistence.*;
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -34,9 +29,7 @@ public class Course extends BaseEntity {
 
 
 
-    @JoinColumn(name = "grade")
-    @Enumerated(EnumType.STRING)
-    private EGradeType grade;
+
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "subject_id")
@@ -106,13 +99,6 @@ public class Course extends BaseEntity {
         isActive = active;
     }
 
-    public EGradeType getGrade() {
-        return grade;
-    }
-
-    public void setGrade(EGradeType grade) {
-        this.grade = grade;
-    }
 
     public Subject getSubject() {
         return subject;

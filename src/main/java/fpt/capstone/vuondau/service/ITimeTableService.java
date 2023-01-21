@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.service;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import fpt.capstone.vuondau.entity.common.ApiPage;
 import fpt.capstone.vuondau.entity.dto.TimeTableDto;
 import fpt.capstone.vuondau.entity.request.TimeTableRequest;
@@ -14,7 +15,7 @@ import java.util.List;
 public interface ITimeTableService {
 
 
-    Long createTimeTableClass(Long classId,Long numberSlot ,TimeTableRequest timeTableRequest ) throws ParseException;
+    Long createTimeTableClass(Long classId,Long numberSlot ,TimeTableRequest timeTableRequest ) throws ParseException, JsonProcessingException;
 
     ApiPage<TimeTableDto> getTimeTableInDay(TimeTableSearchRequest timeTableSearchRequest, Pageable pageable) ;
 

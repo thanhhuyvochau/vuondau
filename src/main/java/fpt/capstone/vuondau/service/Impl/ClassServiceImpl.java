@@ -36,8 +36,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-
-
 @Service
 @Transactional
 public class ClassServiceImpl implements IClassService {
@@ -101,19 +99,19 @@ public class ClassServiceImpl implements IClassService {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Class code existed!"));
         }
-
-        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
         clazz.setCode(createClassRequest.getCode());
+        Course course = courseRepository.findById(createClassRequest.getCourseId()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getCourseId()));
+
 
         Instant now = DayUtil.convertDayInstant(Instant.now().toString());
-        if (!DayUtil.checkTwoDateBigger(now.toString(), createClassRequest.getStartDate().toString(), 3)) {
+        if (!DayUtil.checkTwoDateBigger(now.toString(), createClassRequest.getStartDate().toString(), 10)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày hiện tại la 3 ngay"));
+                    .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày hiện tại la 10 ngay"));
         }
 
         if (!DayUtil.checkTwoDateBigger(createClassRequest.getStartDate().toString(), createClassRequest.getEndDate().toString(), 30)) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày kêt thúc lớp la 30 ngay"));
+                    .withMessage(messageUtil.getLocalMessage("Ngày bắt đâu mở lơp phải sớm hơn ngày kêt thúc lớp ít nhất la 30 ngay"));
         }
 
 
@@ -123,7 +121,7 @@ public class ClassServiceImpl implements IClassService {
         clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
         ClassLevel classLevel = classLevelRepository.findByCode(createClassRequest.getClassLevel()).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Course not found by id:" + createClassRequest.getClassLevel()));
         clazz.setClassLevel(classLevel);
-        clazz.setMaxNumberStudent(createClassRequest.getMaxNumberStudent());
+
         clazz.setActive(false);
         clazz.setAccount(teacher);
         clazz.setCourse(course);
@@ -132,7 +130,7 @@ public class ClassServiceImpl implements IClassService {
         clazz.setUnitPrice(createClassRequest.getEachStudentPayPrice());
         Class save = classRepository.save(clazz);
         createMoodleCourse(save, course);
-        moodleService.enrolUserToCourseMoodle(save, save.getAccount());
+//        moodleService.enrolUserToCourseMoodle(save, save.getAccount());
         return save.getId();
     }
 
@@ -205,7 +203,7 @@ public class ClassServiceImpl implements IClassService {
         return classDto;
     }
 
-    private void createMoodleCourse(Class save, Course course) throws JsonProcessingException {
+    public void createMoodleCourse(Class save, Course course) throws JsonProcessingException {
         S1CourseRequest s1CourseRequest = new S1CourseRequest();
         List<CreateCourseRequest.CreateCourseBody> createCourseBodyList = new ArrayList<>();
 
