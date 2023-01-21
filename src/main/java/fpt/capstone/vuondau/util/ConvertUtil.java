@@ -468,8 +468,22 @@ public class ConvertUtil {
             VoiceResponse voiceResponse = ConvertUtil.doConvertVoiceToResponse(voice);
             accountDetailResponse.setVoice(voiceResponse);
         }
+
+        List<AccountDetailClassLevel> accountDetailClassLevels = accountDetail.getAccountDetailClassLevels();
+        if (!accountDetailClassLevels.isEmpty()) {
+            List<ClassLevelResponse> classLevelResponses = accountDetailClassLevels.stream()
+                    .map(accountDetailClassLevel -> doConvertEntityToResponse(accountDetailClassLevel.getClassLevel()))
+                    .collect(Collectors.toList());
+
+            accountDetailResponse.getClassLevel().addAll((classLevelResponses));
+        }
         accountDetailResponse.setAccountId(account.getId());
 
         return accountDetailResponse;
     }
+
+    public static ClassLevelResponse doConvertEntityToResponse(ClassLevel classLevel) {
+        return ObjectUtil.copyProperties(classLevel, new ClassLevelResponse(), ClassLevelResponse.class, true);
+    }
+
 }
