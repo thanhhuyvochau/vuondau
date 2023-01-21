@@ -17,6 +17,7 @@ import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IAccountDetailService;
 import fpt.capstone.vuondau.util.*;
 import fpt.capstone.vuondau.util.adapter.MinioAdapter;
+
 import fpt.capstone.vuondau.util.keycloak.KeycloakRoleUtil;
 import fpt.capstone.vuondau.util.keycloak.KeycloakUserUtil;
 import io.minio.ObjectWriteResponse;
@@ -32,6 +33,8 @@ import java.io.IOException;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
+
+
 
 @Service
 @Transactional
@@ -356,16 +359,14 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         List<AccountDetail> accountDetailList = new ArrayList<>();
 
         Account account = accountRepository.findById(editAccountDetailRequest.getId())
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay tài khoản")));
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("lớp không tìm thấy"));
 
         List<FeedbackAccountLog> feedbackAccountLogs = new ArrayList<>();
 
         AccountDetail accountDetail = account.getAccountDetail();
         if (accountDetail != null) {
-//            EmailDto emailDto = new EmailDto();
-
             if (accountDetail.getEmail() == null) {
-                throw ApiException.create(HttpStatus.BAD_REQUEST)
+                throw ApiException.create(HttpStatus.NOT_FOUND)
                         .withMessage(messageUtil.getLocalMessage("Không thể phê duyệt tài khoản vì không có email"));
             }
             if (accountDetail.getPassword() == null) {
@@ -393,7 +394,8 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
 
 
-            sendMailServiceImplService.sendMail(emailDto , "" , "") ;
+            sendMailServiceImplService.sendMail(emailDto ,Constants.MailMessage.SUBJECT_MAIL_EDIT_REQUEST_PROFILE
+                    , editAccountDetailRequest.getContent() , Constants.MailMessage.FOOTER_MAIL_EDIT_REQUEST_PROFILE ) ;
 
 
             AccountDetailResponse accountDetailResponse = ConvertUtil.doConvertEntityToResponse(accountDetail);
@@ -411,7 +413,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         });
         response.setFeedbackAccountLog(feedbackAccountLogResponseList);
 
-//        sendMailServiceImplService.sendMail(mail);
+
         return response;
     }
 
