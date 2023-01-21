@@ -283,7 +283,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
             if (uploadImageRequest.getResourceType().equals(EResourceType.CARTPHOTO)) {
                 resource.setResourceType(EResourceType.CARTPHOTO);
             } else if (uploadImageRequest.getResourceType().equals(EResourceType.DEGREE)) {
-                resource.setResourceType(EResourceType.CARTPHOTO);
+                resource.setResourceType(EResourceType.DEGREE);
             } else if (uploadImageRequest.getResourceType().equals(EResourceType.CCCDONE)) {
                 resource.setResourceType(EResourceType.CCCDONE);
 
