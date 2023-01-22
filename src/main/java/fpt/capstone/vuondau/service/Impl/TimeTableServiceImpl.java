@@ -174,11 +174,10 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
         aClass.getTimeTables().clear();
         aClass.getTimeTables().addAll(timeTableList1);
-        aClass.setStatus(EClassStatus.REQUESTING);
 
-        Class save = classRepository.save(aClass);
-        accountUtil.synchronizedCurrentAccountInfo();
-        String s = moodleService.enrolUserToCourseMoodle(save, save.getAccount());
+        moodleService.enrolUserToCourseMoodle(aClass, aClass.getAccount());
+        classRepository.save(aClass);
+
 
         return aClass.getId();
     }

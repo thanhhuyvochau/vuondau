@@ -53,6 +53,8 @@ public class ClassServiceImpl implements IClassService {
 
     private final MessageUtil messageUtil;
 
+    private final AccountUtil accountUtil ;
+
     private final SecurityUtil securityUtil;
 
     private final AttendanceRepository attendanceRepository;
@@ -68,7 +70,7 @@ public class ClassServiceImpl implements IClassService {
     public ClassServiceImpl(AccountRepository accountRepository
             , SubjectRepository subjectRepository, ClassRepository classRepository,
                             CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, ClassLevelRepository classLevelRepository,
-                            MessageUtil messageUtil, SecurityUtil securityUtil, AttendanceRepository attendanceRepository,
+                            MessageUtil messageUtil, AccountUtil accountUtil, SecurityUtil securityUtil, AttendanceRepository attendanceRepository,
                             InfoFindTutorRepository infoFindTutorRepository, IMoodleService moodleService, ClassTeacherCandicateRepository classTeacherCandicateRepository, TeachingConfirmationRepository teachingConfirmationRepository) {
         this.accountRepository = accountRepository;
         this.subjectRepository = subjectRepository;
@@ -78,6 +80,7 @@ public class ClassServiceImpl implements IClassService {
         this.classLevelRepository = classLevelRepository;
 
         this.messageUtil = messageUtil;
+        this.accountUtil = accountUtil;
         this.securityUtil = securityUtil;
         this.attendanceRepository = attendanceRepository;
         this.infoFindTutorRepository = infoFindTutorRepository;
@@ -128,9 +131,10 @@ public class ClassServiceImpl implements IClassService {
         clazz.setStatus(EClassStatus.REQUESTING);
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setUnitPrice(createClassRequest.getEachStudentPayPrice());
+        createMoodleCourse(clazz ,course);
+        accountUtil.synchronizedCurrentAccountInfo();
         Class save = classRepository.save(clazz);
-//        createMoodleCourse(save, course);
-//        moodleService.enrolUserToCourseMoodle(save, save.getAccount());
+
         return save.getId();
     }
 

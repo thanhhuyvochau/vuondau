@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.entity.response;
 
 import fpt.capstone.vuondau.entity.*;
+import fpt.capstone.vuondau.entity.common.EAccountDetailStatus;
 import fpt.capstone.vuondau.entity.dto.ResourceDto;
 import fpt.capstone.vuondau.entity.dto.SubjectDto;
 
@@ -20,7 +21,7 @@ public class AccountDetailResponse {
 
     private Boolean isKeycloak;
 
-
+    private EAccountDetailStatus status;
     private String firstName;
     private String lastName;
 
@@ -41,7 +42,7 @@ public class AccountDetailResponse {
 
     private String currentAddress;
 
-
+    private String level;
     private String idCard;
 
 
@@ -70,6 +71,23 @@ public class AccountDetailResponse {
         this.id = id;
     }
 
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+
+    public EAccountDetailStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(EAccountDetailStatus status) {
+        this.status = status;
+    }
 
     public String getFirstName() {
         return firstName;

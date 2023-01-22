@@ -32,7 +32,7 @@ public class TimeTableController {
     }
 
 
-    @Operation(summary = "Giáo viên tao lich dạy")
+    @Operation(summary = "Giáo viên tao lich dạy cho lớp chờ amdin phê duyệt")
     @PostMapping({"/{classId}"})
     @PreAuthorize("hasAuthority('TEACHER')")
     public ResponseEntity<ApiResponse<Long>> createTimeTableClass(@PathVariable Long classId, Long numberSlot, @RequestBody TimeTableRequest timeTableRequest) throws ParseException, JsonProcessingException {
