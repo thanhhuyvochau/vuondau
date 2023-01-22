@@ -448,7 +448,7 @@ public class ConvertUtil {
             subjects.add(ObjectUtil.copyProperties(accountDetailSubject.getSubject(), new SubjectDto(), SubjectDto.class));
         });
         accountDetailResponse.setSubjects(subjects);
-
+        accountDetailResponse.setStatus(accountDetail.getStatus());
         List<Resource> resources = accountDetail.getResources();
 
         List<ResourceDto> resourceDtoList = new ArrayList<>();

@@ -4,7 +4,6 @@ import fpt.capstone.vuondau.entity.*;
 import fpt.capstone.vuondau.entity.common.*;
 import fpt.capstone.vuondau.entity.dto.EmailDto;
 import fpt.capstone.vuondau.entity.dto.ResourceDto;
-import fpt.capstone.vuondau.entity.dto.SubjectDto;
 import fpt.capstone.vuondau.entity.request.AccountDetailEditRequest;
 import fpt.capstone.vuondau.entity.request.AccountDetailRequest;
 import fpt.capstone.vuondau.entity.request.RequestEditAccountDetailRequest;
@@ -12,7 +11,6 @@ import fpt.capstone.vuondau.entity.request.UploadAvatarRequest;
 import fpt.capstone.vuondau.entity.response.AccountDetailResponse;
 
 import fpt.capstone.vuondau.entity.response.FeedbackAccountLogResponse;
-import fpt.capstone.vuondau.entity.response.GenderResponse;
 import fpt.capstone.vuondau.entity.response.ResponseAccountDetailResponse;
 import fpt.capstone.vuondau.repository.*;
 import fpt.capstone.vuondau.service.IAccountDetailService;
@@ -22,7 +20,6 @@ import fpt.capstone.vuondau.util.adapter.MinioAdapter;
 import fpt.capstone.vuondau.util.keycloak.KeycloakRoleUtil;
 import fpt.capstone.vuondau.util.keycloak.KeycloakUserUtil;
 import io.minio.ObjectWriteResponse;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +42,8 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
     private final MessageUtil messageUtil;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final AccountUtil accountUtil;
 
     private final VoiceRepository voiceRepository;
 
@@ -78,10 +77,11 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
     @Value("${minio.url}")
     String minioUrl;
 
-    public AccountDetailServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, PasswordEncoder passwordEncoder, VoiceRepository voiceRepository, AccountDetailRepository accountDetailRepository, FeedbackAccountLogRepository feedbackAccountLogRepository, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, RoleRepository roleRepository, SecurityUtil securityUtil, SubjectRepository subjectRepository, ClassLevelRepository classLevelRepository, SendMailServiceImplServiceImpl sendMailServiceImplService, AccountDetailClassLevelRepository accountDetailClassLevelRepository, AccountDetailSubjectRepository accountDetailSubjectRepository) {
+    public AccountDetailServiceImpl(AccountRepository accountRepository, MessageUtil messageUtil, PasswordEncoder passwordEncoder, AccountUtil accountUtil, VoiceRepository voiceRepository, AccountDetailRepository accountDetailRepository, FeedbackAccountLogRepository feedbackAccountLogRepository, KeycloakUserUtil keycloakUserUtil, KeycloakRoleUtil keycloakRoleUtil, MinioAdapter minioAdapter, ResourceRepository resourceRepository, RoleRepository roleRepository, SecurityUtil securityUtil, SubjectRepository subjectRepository, ClassLevelRepository classLevelRepository, SendMailServiceImplServiceImpl sendMailServiceImplService, AccountDetailClassLevelRepository accountDetailClassLevelRepository, AccountDetailSubjectRepository accountDetailSubjectRepository) {
         this.accountRepository = accountRepository;
         this.messageUtil = messageUtil;
         this.passwordEncoder = passwordEncoder;
+        this.accountUtil = accountUtil;
         this.voiceRepository = voiceRepository;
         this.accountDetailRepository = accountDetailRepository;
         this.feedbackAccountLogRepository = feedbackAccountLogRepository;
@@ -337,7 +337,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
             log.setContent(editAccountDetailRequest.getContent());
             feedbackAccountLogs.add(log);
             accountDetail.setFeedbackAccountLogs(feedbackAccountLogs);
-            accountDetailList.add(accountDetail);
+
             accountDetail.setStatus(EAccountDetailStatus.APPROVE);
             accountDetail.setPassword(PasswordUtil.BCryptPasswordEncoder(accountDetail.getPassword()));
 
@@ -355,7 +355,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
 
 
         List<FeedbackAccountLog> feedbackAccountLog = feedbackAccountLogRepository.saveAll(feedbackAccountLogs);
-
+        accountUtil.synchronizedCurrentAccountInfo();
 
         return response;
     }
@@ -368,7 +368,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         List<AccountDetail> accountDetailList = new ArrayList<>();
 
         Account account = accountRepository.findById(editAccountDetailRequest.getId())
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("lớp không tìm thấy"));
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("tài khoản không tìm thấy"));
 
         List<FeedbackAccountLog> feedbackAccountLogs = new ArrayList<>();
 
@@ -484,7 +484,9 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         Account teacher = securityUtil.getCurrentUserThrowNotFoundException();
 //        AccountDetail accountDetail = accountDetailRepository.findById(id).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(messageUtil.getLocalMessage("Khong tim thay tài khoản")));
         AccountDetail accountDetail = teacher.getAccountDetail();
-
+//        if (!accountDetail.getStatus().equals(EAccountDetailStatus.EDITREQUEST)) {
+//            throw ApiException.create(HttpStatus.CONFLICT).withMessage("Tài Khoản không được cập nhật vì trạng thái không cho phép ");
+//        }
 
         if (accountDetail == null) {
             throw ApiException.create(HttpStatus.CONFLICT).withMessage("Tài Khoản không tồn tại");
@@ -512,11 +514,11 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         }
 
         accountDetail.setPhone(editAccountDetailRequest.getPhone());
-        if (!PasswordUtil.validationPassword(editAccountDetailRequest.getPassword()) || editAccountDetailRequest.getPassword() == null) {
-            throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Mật khẩu phải có ít nhất một ký tự số, ký tự viết thường, ký tự viết hoa, ký hiệu đặc biệt trong số @#$% và độ dài phải từ 8 đến 20"));
-        }
-        accountDetail.setPassword(editAccountDetailRequest.getPassword());
+//        if (!PasswordUtil.validationPassword(editAccountDetailRequest.getPassword()) || editAccountDetailRequest.getPassword() == null) {
+//            throw ApiException.create(HttpStatus.BAD_REQUEST)
+//                    .withMessage(messageUtil.getLocalMessage("Mật khẩu phải có ít nhất một ký tự số, ký tự viết thường, ký tự viết hoa, ký hiệu đặc biệt trong số @#$% và độ dài phải từ 8 đến 20"));
+//        }
+//        accountDetail.setPassword(editAccountDetailRequest.getPassword());
         // tên trươnng đh / cao đang đã học
         accountDetail.setTrainingSchoolName(editAccountDetailRequest.getTrainingSchoolName());
         // ngành học
@@ -585,7 +587,7 @@ public class AccountDetailServiceImpl implements IAccountDetailService {
         accountDetail.setActive(true);
 
 
-        List<Resource> resourceList = new ArrayList<>();
+//        List<Resource> resourceList = new ArrayList<>();
 
 //        for (UploadAvatarRequest uploadImageRequest : editAccountDetailRequest.getFiles()) {
 //            try {

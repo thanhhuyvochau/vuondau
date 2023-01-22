@@ -4,7 +4,7 @@ public enum EClassStatus {
     RECRUITING, // Lớp đang tuyển gia sư
     PENDING, // Lớp đã tới hạn đóng tuyển gia sư đang đợi quản lý xử lý
     REQUESTING, // Lớp được yêu cầu mở nhưng chưa sẵn sàng duyệt của giáo viên
-    WAITING, // Lớp đã sẵn được được duyệt
+    WAITING, // Lớp đã sẵn được  duyệt
     REJECTED, // Từ chối mở lớp
     NOTSTART, // Lớp được duyệt và đang trong quá trình tuyển sinh
 

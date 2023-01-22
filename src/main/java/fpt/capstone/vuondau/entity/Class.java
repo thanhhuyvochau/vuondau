@@ -80,7 +80,7 @@ public class Class extends BaseEntity {
     @OneToMany(mappedBy = "clazz", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<TimeTable> timeTables = new ArrayList<>();
 
-    @Column(name = "resource_mooodle_id")
+    @Column(name = "course_mooodle_id")
     private Long moodleClassId;
 
     @OneToOne(mappedBy = "clazz", cascade = CascadeType.ALL)
