@@ -138,6 +138,30 @@ public class ClassServiceImpl implements IClassService {
         return save.getId();
     }
 
+    @Override
+    public Long teacherSubmitRequestCreateClass(Long id) {
+        Account teacher = securityUtil.getCurrentUserThrowNotFoundException();
+        Class byIdAndAccount = classRepository.findByIdAndAccount(id, teacher);
+        if (byIdAndAccount == null) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Không tim thấy lớp"));
+
+
+        }
+
+        if (byIdAndAccount.getMoodleClassId()== null ){
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Lớp chưa được tạo nội dụng bài học , vui lòng cập nhật!!"));
+        }
+        if (byIdAndAccount.getTimeTables() == null ){
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Lớp chưa được tạo thời khóa bểu , vui lòng cập nhật!!"));
+        }
+        byIdAndAccount.setStatus(EClassStatus.WAITING);
+        Class save = classRepository.save(byIdAndAccount);
+        return save.getId();
+    }
+
 
     @Override
     public Long teacherRequestCreateClassSubjectCourse(Long id, CreateClassSubjectRequest createClassRequest) {
