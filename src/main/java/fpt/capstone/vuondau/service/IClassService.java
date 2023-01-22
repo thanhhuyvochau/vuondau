@@ -20,7 +20,7 @@ public interface IClassService {
 
     Long teacherRequestCreateClass(TeacherCreateClassRequest createClassRequest) throws JsonProcessingException, ParseException;
 
-    Long teacherSubmitRequestCreateClass(Long id);
+    Long teacherSubmitRequestCreateClass(Long id) throws JsonProcessingException;
 
     Long teacherRequestCreateClassSubjectCourse(Long id, CreateClassSubjectRequest createClassRequest);
 

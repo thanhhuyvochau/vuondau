@@ -53,7 +53,7 @@ public class ClassServiceImpl implements IClassService {
 
     private final MessageUtil messageUtil;
 
-    private final AccountUtil accountUtil ;
+    private final AccountUtil accountUtil;
 
     private final SecurityUtil securityUtil;
 
@@ -131,7 +131,7 @@ public class ClassServiceImpl implements IClassService {
         clazz.setStatus(EClassStatus.REQUESTING);
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setUnitPrice(createClassRequest.getEachStudentPayPrice());
-        createMoodleCourse(clazz ,course);
+        createMoodleCourse(clazz, course);
         accountUtil.synchronizedCurrentAccountInfo();
         Class save = classRepository.save(clazz);
 
@@ -139,26 +139,31 @@ public class ClassServiceImpl implements IClassService {
     }
 
     @Override
-    public Long teacherSubmitRequestCreateClass(Long id) {
+    public Long teacherSubmitRequestCreateClass(Long id) throws JsonProcessingException {
         Account teacher = securityUtil.getCurrentUserThrowNotFoundException();
-        Class byIdAndAccount = classRepository.findByIdAndAccount(id, teacher);
-        if (byIdAndAccount == null) {
+        Class clazz = classRepository.findByIdAndAccount(id, teacher);
+        if (clazz == null) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Không tim thấy lớp"));
-
-
         }
 
-        if (byIdAndAccount.getMoodleClassId()== null ){
+        if (clazz.getMoodleClassId() == null) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST)
+                    .withMessage(messageUtil.getLocalMessage("Lớp chưa được tạo nội ở Moodle, vui lòng liên hệ quản lý để được hỗ trợ!!"));
+        }
+
+        moodleService.synchronizedClassDetailFromMoodle(clazz);
+        if (clazz.getSections().isEmpty() || clazz.getSections().size() < 2) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Lớp chưa được tạo nội dụng bài học , vui lòng cập nhật!!"));
         }
-        if (byIdAndAccount.getTimeTables() == null ){
+
+        if (clazz.getTimeTables() == null) {
             throw ApiException.create(HttpStatus.BAD_REQUEST)
                     .withMessage(messageUtil.getLocalMessage("Lớp chưa được tạo thời khóa bểu , vui lòng cập nhật!!"));
         }
-        byIdAndAccount.setStatus(EClassStatus.WAITING);
-        Class save = classRepository.save(byIdAndAccount);
+        clazz.setStatus(EClassStatus.WAITING);
+        Class save = classRepository.save(clazz);
         return save.getId();
     }
 
