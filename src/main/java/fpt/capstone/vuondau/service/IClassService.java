@@ -26,6 +26,7 @@ public interface IClassService {
 
     ClassDto adminApproveRequestCreateClass(Long id) throws JsonProcessingException;
 
+    ChangeInfoClassRequest adminRequestChangeInfoClass(Long id, String content);
 
     ApiPage<ClassDto> getClassRequesting(ClassSearchRequest query, Pageable pageable);
 
@@ -90,6 +91,7 @@ public interface IClassService {
     Boolean confirmTeaching(String confirmCode) throws JsonProcessingException;
 
     Boolean detectExpireConfirmation();
+
 
 
 }

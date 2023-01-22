@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 import java.text.ParseException;
 import java.util.List;
 
@@ -51,14 +52,8 @@ public class ClassController {
 
     }
 
-//    @Operation(summary = "Giáo viên yêu cầu tạo class (subject-course) chờ admin phê duyệt ")
-//    @PostMapping({"/{id}/teacher-request-create-class-subject-course"})
-//    @PreAuthorize("hasAnyAuthority('ADMIN','TEACHER')")
-//    public ResponseEntity<ApiResponse<Long>> teacherRequestCreateClassSubjectCourse(@PathVariable Long id, @Nullable @RequestBody CreateClassSubjectRequest createClassRequest) throws JsonProcessingException, ParseException {
-//        return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClassSubjectCourse(id, createClassRequest)));
-//    }
 
-    @Operation(summary = "lấy tất cả class chờ duyệt")
+    @Operation(summary = "admin lấy tất cả class chờ duyệt")
     @GetMapping({"/class-request"})
     @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
     public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getClassRequesting(@Nullable ClassSearchRequest query, Pageable pageable) {
@@ -83,6 +78,13 @@ public class ClassController {
     @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
     public ResponseEntity<ApiResponse<ClassDto>> adminApproveRequestCreateClass(@PathVariable Long id) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.adminApproveRequestCreateClass(id)));
+    }
+
+    @Operation(summary = "Admin yêu cầu sửa thông tin lớp request  của teacher ")
+    @PutMapping({"/{id}/request-change-class"})
+    @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
+    public ResponseEntity<ApiResponse<ChangeInfoClassRequest>> adminRequestChangeInfoClass(@PathVariable Long id, @RequestBody String content) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.adminRequestChangeInfoClass(id, content)));
     }
 
 //    @Operation(summary = "Tạo class qua moodle")

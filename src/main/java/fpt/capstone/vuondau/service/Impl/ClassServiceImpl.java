@@ -64,6 +64,8 @@ public class ClassServiceImpl implements IClassService {
     private final IMoodleService moodleService;
     protected final ClassTeacherCandicateRepository classTeacherCandicateRepository;
     private final TeachingConfirmationRepository teachingConfirmationRepository;
+
+    private final FeedbackClassLogRepository feedbackClassLogRepository;
     @Value("${teaching-confirmation-url}")
     private String confirmLink;
 
@@ -71,7 +73,7 @@ public class ClassServiceImpl implements IClassService {
             , SubjectRepository subjectRepository, ClassRepository classRepository,
                             CourseRepository courseRepository, MoodleCourseRepository moodleCourseRepository, ClassLevelRepository classLevelRepository,
                             MessageUtil messageUtil, AccountUtil accountUtil, SecurityUtil securityUtil, AttendanceRepository attendanceRepository,
-                            InfoFindTutorRepository infoFindTutorRepository, IMoodleService moodleService, ClassTeacherCandicateRepository classTeacherCandicateRepository, TeachingConfirmationRepository teachingConfirmationRepository) {
+                            InfoFindTutorRepository infoFindTutorRepository, IMoodleService moodleService, ClassTeacherCandicateRepository classTeacherCandicateRepository, TeachingConfirmationRepository teachingConfirmationRepository, FeedbackClassLogRepository feedbackClassLogRepository) {
         this.accountRepository = accountRepository;
         this.subjectRepository = subjectRepository;
         this.classRepository = classRepository;
@@ -87,6 +89,7 @@ public class ClassServiceImpl implements IClassService {
         this.moodleService = moodleService;
         this.classTeacherCandicateRepository = classTeacherCandicateRepository;
         this.teachingConfirmationRepository = teachingConfirmationRepository;
+        this.feedbackClassLogRepository = feedbackClassLogRepository;
     }
 
 
@@ -225,7 +228,6 @@ public class ClassServiceImpl implements IClassService {
         }
         if (clazz.getCourse() != null) {
 
-
             classDto.setCourse(ConvertUtil.doConvertCourseToCourseResponse(course));
         }
 
@@ -234,6 +236,27 @@ public class ClassServiceImpl implements IClassService {
 
         }
         return classDto;
+    }
+
+    @Override
+    public ChangeInfoClassRequest adminRequestChangeInfoClass(Long id, String content) {
+        Account teacher = securityUtil.getCurrentUserThrowNotFoundException();
+        Class clazz = classRepository.findById(id)
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
+        clazz.setStatus(EClassStatus.EDITREQUEST);
+        FeedbackClassLog log = new FeedbackClassLog();
+        log.setaClass(clazz);
+        log.setAccount(teacher);
+        log.setContent(content);
+        log.setStatus(EFeedbackClassLogStatus.EDITREQUEST);
+
+        feedbackClassLogRepository.save(log);
+
+        classRepository.save(clazz);
+        ChangeInfoClassRequest response = new ChangeInfoClassRequest();
+        response.setContent(content);
+        response.setId(clazz.getId());
+        return response;
     }
 
     public void createMoodleCourse(Class save, Course course) throws JsonProcessingException {
