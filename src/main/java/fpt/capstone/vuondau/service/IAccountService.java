@@ -52,4 +52,6 @@ public interface IAccountService {
     AccountResponse createManagerOrAccountant(CreateAccountRequest request);
 
     ApiPage<AccountResponse> getStaffAccounts(Pageable pageable);
+
+
 }

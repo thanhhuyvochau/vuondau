@@ -134,9 +134,14 @@ public class ClassServiceImpl implements IClassService {
         clazz.setStatus(EClassStatus.REQUESTING);
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setUnitPrice(createClassRequest.getEachStudentPayPrice());
-        createMoodleCourse(clazz, course);
-        accountUtil.synchronizedCurrentAccountInfo();
+
         Class save = classRepository.save(clazz);
+        Boolean synchronizedAccount = accountUtil.synchronizedCurrentAccountInfo();
+
+        if (synchronizedAccount){
+            Boolean moodleCourse = createMoodleCourse(save, course);
+        }
+
 
         return save.getId();
     }
@@ -259,7 +264,7 @@ public class ClassServiceImpl implements IClassService {
         return response;
     }
 
-    public void createMoodleCourse(Class save, Course course) throws JsonProcessingException {
+    public Boolean createMoodleCourse(Class save, Course course) throws JsonProcessingException {
         S1CourseRequest s1CourseRequest = new S1CourseRequest();
         List<CreateCourseRequest.CreateCourseBody> createCourseBodyList = new ArrayList<>();
 
@@ -281,12 +286,19 @@ public class ClassServiceImpl implements IClassService {
         List<MoodleCourseResponse> courseResponses = moodleCourseRepository.createCourse(s1CourseRequest);
         MoodleCourseResponse moodleCourseResponse = courseResponses.get(0);
         save.setMoodleClassId(moodleCourseResponse.getId());
+        return true;
     }
 
     @Override
     public ApiPage<ClassDto> getClassRequesting(ClassSearchRequest query, Pageable pageable) {
         ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
-                .queryByClassStatus(query.getStatus());
+                .query(query.getQ())
+                .queryByClassStatus(query.getStatus())
+                .queryBySubject(query.getSubjectId())
+                .queryByClassType(query.getClassType())
+                .queryByDate(query.getDateFrom(), query.getDateTo())
+                .queryTeacherClass(query.getTeacherId());
+
 
         Page<Class> classesPage = classRepository.findAll(builder.build(), pageable);
 
@@ -358,10 +370,10 @@ public class ClassServiceImpl implements IClassService {
     public ApiPage<ClassDto> searchClass(ClassSearchRequest query, Pageable pageable) {
         List<Long> classIds = query.getSubjectIds();
         ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
-                .queryLikeByClassName(query.getQ())
+                .query(query.getQ())
                 .queryByClassStatus(query.getStatus())
-                .queryByEndDate(query.getEndDate())
-                .queryByStartDate(query.getStartDate())
+                .queryByDate(query.getDateFrom(), query.getDateTo())
+
                 .isActive(true)
                 .queryByPriceBetween(query.getMinPrice(), query.getMaxPrice());
         if (!classIds.isEmpty()) {
@@ -604,7 +616,7 @@ public class ClassServiceImpl implements IClassService {
 
         ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
                 .queryLevelClass(infoFindTutor.getClassLevel())
-                .queryTeacherClass(teachers)
+//                .queryTeacherClass(teachers)
                 .querySubjectClass(subjects);
 
         Page<Class> classesPage = classRepository.findAll(builder.build(), pageable);
@@ -711,14 +723,14 @@ public class ClassServiceImpl implements IClassService {
         Role role = account.getRole();
 
         ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
-                .queryLikeByClassName(request.getQ())
+                .query(request.getQ())
                 .queryByClassStatus(request.getStatus());
         if (role != null) {
             if (role.getCode().equals(EAccountRole.STUDENT)) {
                 builder.queryByStudent(account);
             }
             if (role.getCode().equals(EAccountRole.TEACHER)) {
-                builder.queryTeacherClass(accounts);
+                builder.queryTeachersClass(accounts);
             }
         }
         Page<Class> classPage = classRepository.findAll(builder.build(), pageable);
@@ -1144,7 +1156,7 @@ public class ClassServiceImpl implements IClassService {
         ClassSpecificationBuilder builder = new ClassSpecificationBuilder();
         builder.queryByClassStatus(guestSearchClassRequest.getStatus());
         builder.queryByClassType(guestSearchClassRequest.getClassType());
-        builder.queryByCSubject(guestSearchClassRequest.getSubject());
+        builder.queryBySubject(guestSearchClassRequest.getSubject());
 
         Specification<Class> classSpecification = builder.build();
         Page<Class> classesPage = classRepository.findAll(classSpecification, pageable);

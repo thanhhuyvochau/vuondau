@@ -14,6 +14,7 @@ import fpt.capstone.vuondau.service.ITeacherService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -47,6 +48,13 @@ public class TeacherController {
         return ResponseEntity.ok(accountService.getAllInfoTeacher(pageable));
     }
 
+
+    @Operation(summary = "Lấy danh sách tất cả các giáo viên")
+    @GetMapping("/list")
+    @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
+    public ResponseEntity<ApiPage<AccountDetailResponse>> getAllTeacher(Pageable pageable) {
+        return ResponseEntity.ok(iTeacherService.getAllTeacher(pageable));
+    }
 
 
 }

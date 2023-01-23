@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.entity.common;
 
 public enum EClassStatus {
+
     RECRUITING, // Lớp đang tuyển gia sư
     PENDING, // Lớp đã tới hạn đóng tuyển gia sư đang đợi quản lý xử lý
     REQUESTING, // Lớp được yêu cầu mở nhưng chưa sẵn sàng duyệt của giáo viên

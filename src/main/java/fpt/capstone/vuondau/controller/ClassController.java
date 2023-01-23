@@ -53,7 +53,7 @@ public class ClassController {
     }
 
 
-    @Operation(summary = "admin lấy tất cả class chờ duyệt")
+    @Operation(summary = "admin seach class tất cả type")
     @GetMapping({"/class-request"})
     @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
     public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getClassRequesting(@Nullable ClassSearchRequest query, Pageable pageable) {
