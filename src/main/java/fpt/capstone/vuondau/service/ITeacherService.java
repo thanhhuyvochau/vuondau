@@ -1,9 +1,7 @@
 package fpt.capstone.vuondau.service;
 
 import fpt.capstone.vuondau.entity.Account;
-import fpt.capstone.vuondau.entity.Role;
 import fpt.capstone.vuondau.entity.common.ApiPage;
-import fpt.capstone.vuondau.entity.common.EAccountRole;
 import fpt.capstone.vuondau.entity.response.AccountDetailResponse;
 import org.springframework.data.domain.Pageable;
 

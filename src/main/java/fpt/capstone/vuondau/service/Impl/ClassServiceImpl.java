@@ -134,9 +134,14 @@ public class ClassServiceImpl implements IClassService {
         clazz.setStatus(EClassStatus.REQUESTING);
         clazz.setClassType(createClassRequest.getClassType());
         clazz.setUnitPrice(createClassRequest.getEachStudentPayPrice());
-        createMoodleCourse(clazz, course);
-        accountUtil.synchronizedCurrentAccountInfo();
+
         Class save = classRepository.save(clazz);
+        Boolean synchronizedAccount = accountUtil.synchronizedCurrentAccountInfo();
+
+        if (synchronizedAccount){
+            Boolean moodleCourse = createMoodleCourse(save, course);
+        }
+
 
         return save.getId();
     }
@@ -259,7 +264,7 @@ public class ClassServiceImpl implements IClassService {
         return response;
     }
 
-    public void createMoodleCourse(Class save, Course course) throws JsonProcessingException {
+    public Boolean createMoodleCourse(Class save, Course course) throws JsonProcessingException {
         S1CourseRequest s1CourseRequest = new S1CourseRequest();
         List<CreateCourseRequest.CreateCourseBody> createCourseBodyList = new ArrayList<>();
 
@@ -281,6 +286,7 @@ public class ClassServiceImpl implements IClassService {
         List<MoodleCourseResponse> courseResponses = moodleCourseRepository.createCourse(s1CourseRequest);
         MoodleCourseResponse moodleCourseResponse = courseResponses.get(0);
         save.setMoodleClassId(moodleCourseResponse.getId());
+        return true;
     }
 
     @Override
@@ -366,7 +372,7 @@ public class ClassServiceImpl implements IClassService {
         ClassSpecificationBuilder builder = ClassSpecificationBuilder.specification()
                 .query(query.getQ())
                 .queryByClassStatus(query.getStatus())
-                .queryByDate(query.getDateFrom() , query.getDateTo())
+                .queryByDate(query.getDateFrom(), query.getDateTo())
 
                 .isActive(true)
                 .queryByPriceBetween(query.getMinPrice(), query.getMaxPrice());
