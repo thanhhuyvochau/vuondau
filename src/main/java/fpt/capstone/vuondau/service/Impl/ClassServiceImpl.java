@@ -644,11 +644,11 @@ public class ClassServiceImpl implements IClassService {
     public Boolean applyToRecruitingClass(Long classId) {
         Account teacher = securityUtil.getCurrentUserThrowNotFoundException();
         Class clazz = classRepository.findById(classId)
-                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + classId));
+                .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Không tìm thấy lớp: " + classId));
         List<ClassTeacherCandicate> candicates = clazz.getCandicates();
         boolean isContain = candicates.stream().anyMatch(candicate -> candicate.getTeacher().getId().equals(teacher.getId()));
         if (isContain) {
-            throw ApiException.create(HttpStatus.CONFLICT).withMessage("Teacher already");
+            throw ApiException.create(HttpStatus.CONFLICT).withMessage("Giáo viên đã apply vào lớp này!");
         } else {
             ClassTeacherCandicate classTeacherCandicate = new ClassTeacherCandicate();
             classTeacherCandicate.setTeacher(teacher);

@@ -17,6 +17,7 @@ import fpt.capstone.vuondau.service.IMoodleService;
 import fpt.capstone.vuondau.service.ITimeTableService;
 import fpt.capstone.vuondau.util.*;
 import fpt.capstone.vuondau.util.specification.TimeTableSpecificationBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -63,6 +64,8 @@ public class TimeTableServiceImpl implements ITimeTableService {
     private final AttendanceRepository attendanceRepository;
 
     private final ClassServiceImpl classServiceImpl;
+    @Value("${moodle-course-url}")
+    private  String moodleViewLink;
 
 
     public TimeTableServiceImpl(IMoodleService moodleService, ClassRepository classRepository, SlotRepository slotRepository, AccountUtil accountUtil, DayOfWeekRepository dayOfWeekRepository, ArchetypeRepository archetypeRepository, ArchetypeTimeRepository archetypeTimeRepository, MessageUtil messageUtil, StudentClassRepository studentClassRepository, TimeTableRepository timeTableRepository, AccountRepository accountRepository, fpt.capstone.vuondau.util.SecurityUtil securityUtil, AttendanceRepository attendanceRepository, ClassServiceImpl classServiceImpl) {
@@ -84,7 +87,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
 
     @Override
-    public Long createTimeTableClass(Long classId, Long numberSlot, TimeTableRequest timeTableRequest) throws ParseException, JsonProcessingException {
+    public String createTimeTableClass(Long classId, Long numberSlot, TimeTableRequest timeTableRequest) throws ParseException, JsonProcessingException {
         Account currentUser = SecurityUtil.getCurrentUserThrowNotFoundException();
 
 
@@ -179,7 +182,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
         classRepository.save(aClass);
 
 
-        return aClass.getId();
+        return moodleViewLink+aClass.getMoodleClassId();
     }
 
     private List<TimeTable> setDateOfWeek(List<SlotDowDto> slotDowDtoList, int slotNumber, Instant startDate,

@@ -35,7 +35,7 @@ public class TimeTableController {
     @Operation(summary = "Giáo viên tao lich dạy cho lớp chờ amdin phê duyệt")
     @PostMapping({"/{classId}"})
     @PreAuthorize("hasAuthority('TEACHER')")
-    public ResponseEntity<ApiResponse<Long>> createTimeTableClass(@PathVariable Long classId, Long numberSlot, @RequestBody TimeTableRequest timeTableRequest) throws ParseException, JsonProcessingException {
+    public ResponseEntity<ApiResponse<String>> createTimeTableClass(@PathVariable Long classId, Long numberSlot, @RequestBody TimeTableRequest timeTableRequest) throws ParseException, JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iTimeTableService.createTimeTableClass(classId, numberSlot, timeTableRequest)));
     }
 

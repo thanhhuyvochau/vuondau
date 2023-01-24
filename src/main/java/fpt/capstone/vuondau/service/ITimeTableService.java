@@ -15,7 +15,7 @@ import java.util.List;
 public interface ITimeTableService {
 
 
-    Long createTimeTableClass(Long classId,Long numberSlot ,TimeTableRequest timeTableRequest ) throws ParseException, JsonProcessingException;
+    String createTimeTableClass(Long classId,Long numberSlot ,TimeTableRequest timeTableRequest ) throws ParseException, JsonProcessingException;
 
     ApiPage<TimeTableDto> getTimeTableInDay(TimeTableSearchRequest timeTableSearchRequest, Pageable pageable) ;
 
