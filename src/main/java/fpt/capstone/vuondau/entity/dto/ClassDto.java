@@ -13,37 +13,39 @@ import java.util.List;
 
 public class ClassDto {
 
-    private Long id ;
+    private Long id;
     private String name;
     private String code;
 
-    private EClassStatus status ;
+    private EClassStatus status;
 
-    private EClassType classType ;
+    private EClassType classType;
 
-    private EClassLevel classLevel ;
-
-
-    private Instant startDate ;
-
-    private Instant endDate ;
+    private EClassLevel classLevel;
 
 
-    private Long numberStudent ;
+    private Instant startDate;
 
-    private Long maxNumberStudent ;
-    private Long minNumberStudent ;
+    private Instant endDate;
 
-    private CourseResponse course ;
+
+    private Long numberStudent;
+
+    private Long maxNumberStudent;
+    private Long minNumberStudent;
+
+    private CourseResponse course;
 
     private BigDecimal unitPrice;
 
-    private BigDecimal teacherReceivedPrice ;
+    private BigDecimal teacherReceivedPrice;
 
     private List<SectionDto> resources;
-    private AccountSimpleResponse teacher  ;
+    private AccountSimpleResponse teacher;
     private ArchetypeDto archetype;
     private boolean isEnrolled = false;
+    private boolean isApplied = false;
+
     public Long getId() {
         return id;
     }
@@ -189,5 +191,13 @@ public class ClassDto {
 
     public void setEnrolled(boolean enrolled) {
         isEnrolled = enrolled;
+    }
+
+    public boolean isApplied() {
+        return isApplied;
+    }
+
+    public void setApplied(boolean applied) {
+        isApplied = applied;
     }
 }

@@ -138,7 +138,7 @@ public class ClassServiceImpl implements IClassService {
         Class save = classRepository.save(clazz);
         Boolean synchronizedAccount = accountUtil.synchronizedCurrentAccountInfo();
 
-        if (synchronizedAccount){
+        if (synchronizedAccount) {
             Boolean moodleCourse = createMoodleCourse(save, course);
         }
 
@@ -401,12 +401,24 @@ public class ClassServiceImpl implements IClassService {
 
 
     @Override
-    public ClassDto classDetail(Long id) throws JsonProcessingException {
+    public ClassDto classDetail(Long id) {
         Class aClass = classRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class" + id));
-        Boolean validClassForStudent = ForumUtil.isValidClassForStudent(securityUtil.getCurrentUser(), aClass);
         ClassDto classDto = ConvertUtil.doConvertEntityToResponse(aClass);
-        classDto.setEnrolled(validClassForStudent);
+        Account currentUser = securityUtil.getCurrentUser();
+        if (Objects.equals(aClass.getStatus(), EClassStatus.RECRUITING)) {
+            boolean isApplied = false;
+            if (currentUser != null) {
+                long count = aClass.getCandicates().stream().filter(classTeacherCandicate -> Objects.equals(classTeacherCandicate.getTeacher().getId(), currentUser.getId())).count();
+                if (count >= 1) {
+                    isApplied = true;
+                }
+            }
+            classDto.setApplied(isApplied);
+        } else {
+            Boolean validClassForStudent = ForumUtil.isValidClassForStudent(currentUser, aClass);
+            classDto.setEnrolled(validClassForStudent);
+        }
         return classDto;
     }
 
