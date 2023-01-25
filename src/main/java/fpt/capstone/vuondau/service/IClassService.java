@@ -93,5 +93,5 @@ public interface IClassService {
     Boolean detectExpireConfirmation();
 
 
-
+    Long updateClassForRequesting(Long id, CreateRequestingClassRequest createRequestingClassRequest) throws ParseException;
 }
