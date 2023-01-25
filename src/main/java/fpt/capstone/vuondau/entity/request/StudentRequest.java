@@ -30,9 +30,9 @@ public class StudentRequest {
 
     private String schoolName;
 
-    private List<Long> subjects ;
+//    private List<Long> subjects ;
 
-    private Long classLevel ;
+//    private Long classLevel ;
 
     public String getUserName() {
         return userName;
@@ -116,19 +116,19 @@ public class StudentRequest {
         this.schoolName = schoolName;
     }
 
-    public List<Long> getSubjects() {
-        return subjects;
-    }
-
-    public void setSubjects(List<Long> subjects) {
-        this.subjects = subjects;
-    }
-
-    public Long getClassLevel() {
-        return classLevel;
-    }
-
-    public void setClassLevel(Long classLevel) {
-        this.classLevel = classLevel;
-    }
+//    public List<Long> getSubjects() {
+//        return subjects;
+//    }
+//
+//    public void setSubjects(List<Long> subjects) {
+//        this.subjects = subjects;
+//    }
+//
+//    public Long getClassLevel() {
+//        return classLevel;
+//    }
+//
+//    public void setClassLevel(Long classLevel) {
+//        this.classLevel = classLevel;
+//    }
 }

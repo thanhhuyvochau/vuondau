@@ -73,7 +73,7 @@ public class ClassController {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getAllClassForUser(pageable, guestSearchClassRequest)));
     }
 
-    @Operation(summary = "Admin phê duyệt request tao class của teacher ")
+    @Operation(summary = "  ")
     @PostMapping({"/{id}/approve-class"})
     @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
     public ResponseEntity<ApiResponse<ClassDto>> adminApproveRequestCreateClass(@PathVariable Long id) throws JsonProcessingException {
