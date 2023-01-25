@@ -44,6 +44,14 @@ public class ClassController {
 
     }
 
+    @Operation(summary = "giao vien update lớp khi còn ở trạng thái requesting va editting")
+    @PutMapping({"/{id}/for-requesting"})
+    @PreAuthorize("hasAnyAuthority('TEACHER')")
+    public ResponseEntity<ApiResponse<Long>> updateClassForRequesting(@PathVariable Long id, @Nullable @RequestBody CreateRequestingClassRequest createRequestingClassRequest) throws JsonProcessingException, ParseException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.updateClassForRequesting(id, createRequestingClassRequest)));
+    }
+
+
     @Operation(summary = "Giáo viên đã hoàn thành tạo lớp và gửi yêu cầu phê duyệt ")
     @PutMapping({"{id}/teacher-submit-request-create-class"})
     @PreAuthorize("hasAuthority('TEACHER')")
@@ -73,7 +81,7 @@ public class ClassController {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getAllClassForUser(pageable, guestSearchClassRequest)));
     }
 
-    @Operation(summary = "Admin phê duyệt request tao class của teacher ")
+    @Operation(summary = "  ")
     @PostMapping({"/{id}/approve-class"})
     @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
     public ResponseEntity<ApiResponse<ClassDto>> adminApproveRequestCreateClass(@PathVariable Long id) throws JsonProcessingException {
