@@ -3,9 +3,8 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-
     url: jdbc:mysql://mysql8:3306/vuondau
-#    url: jdbc:mysql://103.173.255.39:3306/vuondau
+    #    url: jdbc:mysql://103.173.255.39:3306/vuondau
     username: root
     password: OOiyw5qptYd6xXDl
   jpa:
@@ -30,16 +29,6 @@ minio:
   access-key: ELrwUZXIzBLOlp5s
   secret-key: gCHswS6KZKVohYsIiWKCnfvF5UWbBUWE
 
-
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: '*'
-  endpoint:
-    health:
-      show-details: always
 # Keycloak settings
 keycloak:
   realm: vuondau-application
@@ -49,33 +38,7 @@ keycloak:
   credentials:
     secret: 0Z8fWR17uURSeTWmKd4EdapEUF8ck9ku
 
-app:
-  firebase-configuration-file: /store/vuondau-450bf-firebase-adminsdk-al83z-5d94e1225d.json
 
 
 
 
-  mail:
-    properties:
-      mail:
-        smtp:
-          starttls:
-            enable: 'true'
-          auth: 'true'
-    host: smtp.gmail.com
-    username: <login user to smtp server>
-    password: <login password to smtp server>
-    port: '587'
-
-
-# VnPay settings
-vnp_product_type: 250000
-vnp_PayUrl: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
-vnp_HashSecret: NSZFYQQMCHFKNHOUKYIJLUQVZTCWBUZR
-vnp_Returnurl: http://103.173.255.39:8889/api/payment/payment-result
-vnp_TmnCode: 76E1ZE8I
-vnp_apiUrl: https://sandbox.vnpayment.vn/merchant_webapi/merchant.html
-
-# provinces
-provinces: https://provinces.open-api.vn/api/?depth=1
-payment-redirect: http://localhost:10000/processing
