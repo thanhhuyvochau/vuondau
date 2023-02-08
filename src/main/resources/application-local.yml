@@ -30,14 +30,6 @@ minio:
   access-key: ELrwUZXIzBLOlp5s
   secret-key: gCHswS6KZKVohYsIiWKCnfvF5UWbBUWE
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: '*'
-  endpoint:
-    health:
-      show-details: always
 # Keycloak settings
 keycloak:
   realm: vuondau-application
@@ -47,18 +39,6 @@ keycloak:
   credentials:
     secret: 0Z8fWR17uURSeTWmKd4EdapEUF8ck9ku
 
-vnp_product_type: 250000
-vnp_PayUrl: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
-vnp_HashSecret: NSZFYQQMCHFKNHOUKYIJLUQVZTCWBUZR
-vnp_Returnurl: http://localhost:8082/api/payment/payment-result
-vnp_TmnCode: 76E1ZE8I
-vnp_apiUrl: https://sandbox.vnpayment.vn/merchant_webapi/merchant.html
-
-# provinces
-provinces: https://provinces.open-api.vn/api/?depth=1
-
-# Return URL after payment
-payment-redirect: http://localhost:10000/processing
 
 
 

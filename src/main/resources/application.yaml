@@ -46,6 +46,40 @@ payment-redirect: http://localhost:10000/processing
 teaching-confirmation-url: localhost:15212/
 moodle-course-url: http://moodle-vuondau.amazingtech.vn/course/view.php?id=
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+
+# VNPay Config
+vnp_product_type: 250000
+vnp_PayUrl: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+vnp_HashSecret: NSZFYQQMCHFKNHOUKYIJLUQVZTCWBUZR
+vnp_Returnurl: http://localhost:8082/api/payment/payment-result
+vnp_TmnCode: 76E1ZE8I
+vnp_apiUrl: https://sandbox.vnpayment.vn/merchant_webapi/merchant.html
+
+# External API
+provinces: https://provinces.open-api.vn/api/?depth=1
+
+# Mail Config
+mail:
+  properties:
+    mail:
+      smtp:
+        starttls:
+          enable: 'true'
+        auth: 'true'
+  host: smtp.gmail.com
+  username: <login user to smtp server>
+  password: <login password to smtp server>
+  port: '587'
+
+
 
 
 
