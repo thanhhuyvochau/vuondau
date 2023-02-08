@@ -40,27 +40,6 @@ public class SubjectSpecificationBuilder {
         return this;
     }
 
-//    public SubjectSpecificationBuilder queryBySubjectIn(List<Subject> subjects) {
-//        if (subjects == null || subjects.isEmpty()) {
-//            return this;
-//        }
-//
-//        specifications.add((root, query, criteriaBuilder) -> {
-//            Path<Object> coursePath = root.get(Subject_.COURSES);
-//            return coursePath.get(Course_.SUBJECT).in(subjects);
-//        });
-//        return this;
-//    }
-//    public SubjectSpecificationBuilder queryByClassIn(List<Class> classes) {
-//        if (classes == null || classes.isEmpty()) {
-//            return this;
-//        }
-//
-//        specifications.add((root, query, criteriaBuilder) -> {
-//            return root.get(Forum).in(classes);
-//        });
-//        return this;
-//    }
     public Specification<Subject> build() {
         return specifications.stream().filter(Objects::nonNull)
                 .reduce(all(), Specification::and);

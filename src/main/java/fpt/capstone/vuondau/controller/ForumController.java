@@ -35,28 +35,15 @@ public class ForumController {
     public ResponseEntity<ApiResponse<ForumDto>> updateForum(@PathVariable Long id, @RequestBody UpdateForumRequest request) {
         return ResponseEntity.ok(ApiResponse.success(forumService.updateForum(id, request)));
     }
-    /**Temporary API will be deleted in future*/
-//    @GetMapping("/auto")
-//    public ResponseEntity<ApiResponse<Boolean>> createauto() {
-//        List<Subject> all = subjectRepository.findAll();
-//        for (Subject subject : all) {
-//            forumService.createForumForSubject(subject.getId());
-//        }
-//        return ResponseEntity.ok(ApiResponse.success(true));
-//    }
 
-    /**Temporary API will be deleted in future*/
+
+    /**
+     * Temporary API will be deleted in future
+     */
     @GetMapping("/synchronize-lesson")
     public ResponseEntity<ApiResponse<Boolean>> synchronizeLessonForum(@RequestParam Long classId) {
         return ResponseEntity.ok(ApiResponse.success(forumService.synchronizeLessonForum(classId)));
     }
-
-//    @GetMapping("/synchronize-lesson")
-//    public ResponseEntity<ApiResponse<Boolean>> synchronizeLessonForum(@RequestParam Long classId) {
-//        return ResponseEntity.ok(ApiResponse.success(forumService.synchronizeLessonForum(classId)));
-//    }
-
-
 
 
 }
