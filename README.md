@@ -42,9 +42,6 @@ api:s3v4
 http://103.173.255.39:8889/swagger-ui/index.html#/
 ```
 
-## Tech Stack
+## Database Design
 
-
-
-**Server:** Spring Boot, Keycloak, MySQL, Docker
-
+![VuondauDBDesign-V2 drawio](https://user-images.githubusercontent.com/82113538/217585404-6e6798af-1150-4493-a461-b46d7393f079.png)
