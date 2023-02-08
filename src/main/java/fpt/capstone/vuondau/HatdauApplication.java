@@ -277,46 +277,46 @@ public class HatdauApplication {
         subjectRepository.saveAll(subjectList);
     }
 
-
-    @EventListener(ApplicationReadyEvent.class)
-    public void intiClassMoodleOntoToClass() throws JsonProcessingException {
-
-        MoodleMasterDataRequest request = new MoodleMasterDataRequest();
-
-        List<MoodleCourseResponse> courseMoodle = moodleCourseRepository.getCourses(request);
-
-        List<Class> allClass = classRepository.findAll();
-        List<Class> classList = new ArrayList<>();
-        courseMoodle.stream().map(moodleClassResponse -> {
-            for (Class aClass : allClass) {
-                if (aClass.getCode().equals(moodleClassResponse.getShortname())) {
-                    aClass.setMoodleClassId(moodleClassResponse.getId());
-                    classList.add(aClass);
-                }
-            }
-            return moodleClassResponse;
-        }).collect(Collectors.toList());
-
-        courseMoodle.forEach(moodleClassResponse -> {
-            Class byCode = classRepository.findByCode(moodleClassResponse.getShortname());
-            if (byCode != null) {
-                byCode.setMoodleClassId(moodleClassResponse.getId());
-
-                classList.add(byCode);
-            }
-            if (byCode == null) {
-//                Subject byCategoryMoodleId = subjectRepository.findByCategoryMoodleId(moodleClassResponse.getCategoryid());
-                Class aClass = new Class();
-                aClass.setCode(moodleClassResponse.getShortname());
-                aClass.setName(moodleClassResponse.getFullname());
-
-                aClass.setActive(true);
-                classList.add(aClass);
-            }
-        });
-
-        classRepository.saveAll(classList);
-    }
+/**TODO: fix bug null pointer exception this function @Dang*/
+//    @EventListener(ApplicationReadyEvent.class)
+//    public void intiClassMoodleOntoToClass() throws JsonProcessingException {
+//
+//        MoodleMasterDataRequest request = new MoodleMasterDataRequest();
+//
+//        List<MoodleCourseResponse> courseMoodle = moodleCourseRepository.getCourses(request);
+//
+//        List<Class> allClass = classRepository.findAll();
+//        List<Class> classList = new ArrayList<>();
+//        courseMoodle.stream().map(moodleClassResponse -> {
+//            for (Class aClass : allClass) {
+//                if (aClass.getCode().equals(moodleClassResponse.getShortname())) {
+//                    aClass.setMoodleClassId(moodleClassResponse.getId());
+//                    classList.add(aClass);
+//                }
+//            }
+//            return moodleClassResponse;
+//        }).collect(Collectors.toList());
+//
+//        courseMoodle.forEach(moodleClassResponse -> {
+//            Class byCode = classRepository.findByCode(moodleClassResponse.getShortname());
+//            if (byCode != null) {
+//                byCode.setMoodleClassId(moodleClassResponse.getId());
+//
+//                classList.add(byCode);
+//            }
+//            if (byCode == null) {
+////                Subject byCategoryMoodleId = subjectRepository.findByCategoryMoodleId(moodleClassResponse.getCategoryid());
+//                Class aClass = new Class();
+//                aClass.setCode(moodleClassResponse.getShortname());
+//                aClass.setName(moodleClassResponse.getFullname());
+//
+//                aClass.setActive(true);
+//                classList.add(aClass);
+//            }
+//        });
+//
+//        classRepository.saveAll(classList);
+//    }
 
 
     @EventListener(ApplicationReadyEvent.class)

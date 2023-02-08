@@ -16,17 +16,11 @@ public class MoodleUtil {
 
     public MoodleUtil(MoodleUserRepository moodleUserRepository) {
         this.moodleUserRepository = moodleUserRepository;
-
     }
 
+
     public MoodleUserResponse getMoodleUserIfExist(Account account) throws JsonProcessingException {
-        List<MoodleUserResponse> moodleUsers = moodleUserRepository.getUserByUserName(account.getKeycloakUserId());
-        if (moodleUsers.size() < 1) {
-            throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("You have to update your moodle profile before pay any class!");
-        } else if (moodleUsers.size() > 1) {
-            throw ApiException.create(HttpStatus.NOT_FOUND).withMessage("Some errors happened, please contact admin for helping!");
-        }
-        return moodleUsers.get(0);
+        return getMoodleUserIfExistByKeycloakId(account.getKeycloakUserId());
     }
 
     public MoodleUserResponse getMoodleUserIfExistByKeycloakId(String keycloakId) throws JsonProcessingException {

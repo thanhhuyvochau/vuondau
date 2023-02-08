@@ -1,10 +1,9 @@
 package fpt.capstone.vuondau.entity;
 
 
-
-
 import javax.persistence.*;
-
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -17,6 +16,9 @@ public class Voice extends BaseEntity {
 
     @Column(name = "name")
     private String name;
+
+    @OneToMany(mappedBy = "voice")
+    private List<AccountDetail> accountDetails = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -32,5 +34,13 @@ public class Voice extends BaseEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<AccountDetail> getAccountDetails() {
+        return accountDetails;
+    }
+
+    public void setAccountDetails(List<AccountDetail> accountDetails) {
+        this.accountDetails = accountDetails;
     }
 }

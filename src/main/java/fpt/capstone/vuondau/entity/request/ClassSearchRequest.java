@@ -1,6 +1,7 @@
 package fpt.capstone.vuondau.entity.request;
 
 import fpt.capstone.vuondau.entity.common.EClassStatus;
+import fpt.capstone.vuondau.entity.common.EClassType;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -12,12 +13,32 @@ public class ClassSearchRequest implements Serializable {
     private String q;
 
     private EClassStatus status;
-    private Instant startDate;
-    private Instant endDate;
+    private Instant dateFrom;
+
+    private EClassType classType ;
+    private Instant dateTo;
     private BigDecimal minPrice;
     private BigDecimal maxPrice;
     private List<Long> subjectIds = new ArrayList<>();
+    private Long subjectId ;
 
+    private Long teacherId;
+
+    public Long getTeacherId() {
+        return teacherId;
+    }
+
+    public void setTeacherId(Long teacherId) {
+        this.teacherId = teacherId;
+    }
+
+    public EClassType getClassType() {
+        return classType;
+    }
+
+    public void setClassType(EClassType classType) {
+        this.classType = classType;
+    }
 
     public String getQ() {
         return q;
@@ -35,20 +56,20 @@ public class ClassSearchRequest implements Serializable {
         this.status = status;
     }
 
-    public Instant getStartDate() {
-        return startDate;
+    public Instant getDateFrom() {
+        return dateFrom;
     }
 
-    public void setStartDate(Instant startDate) {
-        this.startDate = startDate;
+    public void setDateFrom(Instant dateFrom) {
+        this.dateFrom = dateFrom;
     }
 
-    public Instant getEndDate() {
-        return endDate;
+    public Instant getDateTo() {
+        return dateTo;
     }
 
-    public void setEndDate(Instant endDate) {
-        this.endDate = endDate;
+    public void setDateTo(Instant dateTo) {
+        this.dateTo = dateTo;
     }
 
     public BigDecimal getMinPrice() {
@@ -73,5 +94,13 @@ public class ClassSearchRequest implements Serializable {
 
     public void setSubjectIds(List<Long> subjectIds) {
         this.subjectIds = subjectIds;
+    }
+
+    public Long getSubjectId() {
+        return subjectId;
+    }
+
+    public void setSubjectId(Long subjectId) {
+        this.subjectId = subjectId;
     }
 }

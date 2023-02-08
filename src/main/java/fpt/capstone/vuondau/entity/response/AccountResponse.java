@@ -27,16 +27,13 @@ public class AccountResponse {
     private String avatar;
 
 
-
-    private String voice;
+    private VoiceResponse voice;
 
 
     private String currentAddress;
 
 
-
     private String idCard;
-
 
 
     private String schoolName;
@@ -49,15 +46,11 @@ public class AccountResponse {
 
     private String level;
 
-
-
-
-
-    public String getVoice() {
+    public VoiceResponse getVoice() {
         return voice;
     }
 
-    public void setVoice(String voice) {
+    public void setVoice(VoiceResponse voice) {
         this.voice = voice;
     }
 
@@ -176,7 +169,6 @@ public class AccountResponse {
     }
 
 
-
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -184,7 +176,6 @@ public class AccountResponse {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
-
 
 
     public RoleDto getRole() {

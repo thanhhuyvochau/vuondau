@@ -17,7 +17,7 @@ public class AccountUtil {
         this.securityUtil = securityUtil;
     }
 
-    public void synchronizedCurrentAccountInfo() {
+    public Boolean synchronizedCurrentAccountInfo() {
         Account account = securityUtil.getCurrentUserThrowNotFoundException();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Jwt principal = (Jwt) authentication.getPrincipal();
@@ -32,5 +32,6 @@ public class AccountUtil {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+        return true ;
     }
 }

@@ -17,7 +17,7 @@ import java.util.Optional;
 
 public interface ISendMailService {
 
-    Boolean sendMail (EmailDto emailDto, String title , String content) ;
+    Boolean sendMail (EmailDto emailDto, String title , String content,  String footer ) ;
 
 
     Boolean sendMailToRegisterDoTeacher(List<EmailDto> emailDto, AccountDetail accountDetail, String password);

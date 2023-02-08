@@ -1,26 +1,27 @@
 package fpt.capstone.vuondau.entity.response;
 
 import fpt.capstone.vuondau.entity.*;
+import fpt.capstone.vuondau.entity.common.EAccountDetailStatus;
 import fpt.capstone.vuondau.entity.dto.ResourceDto;
 import fpt.capstone.vuondau.entity.dto.SubjectDto;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
-
 
 
 public class AccountDetailResponse {
 
     private Long id;
 
-    private Long accountId ;
+    private Long accountId;
 
-    private String userName ;
+    private String userName;
 
-    private Boolean isKeycloak ;
+    private Boolean isKeycloak;
 
-
+    private EAccountDetailStatus status;
     private String firstName;
     private String lastName;
 
@@ -28,32 +29,21 @@ public class AccountDetailResponse {
     private Instant birthDay;
 
 
-    private String email ;
+    private String email;
 
 
-    private String phone ;
+    private String phone;
+
+    private VoiceResponse voice;
 
 
-
-    private String domicile;
-
-
-    private String  teachingProvince;
+    private GenderResponse gender;
 
 
+    private String currentAddress;
 
-    private String voice;
-
-
-    private String gender;
-
-
-    private String currentAddress ;
-
-
-
+    private String level;
     private String idCard;
-
 
 
     private String trainingSchoolName;
@@ -62,7 +52,7 @@ public class AccountDetailResponse {
     private String majors;
 
 
-    private List<ClassLevelResponse>  classLevel;
+    private List<ClassLevelResponse> classLevel = new ArrayList<>();
 
 
     private Boolean isActive;
@@ -70,8 +60,7 @@ public class AccountDetailResponse {
 
     private List<SubjectDto> subjects;
 
-    private  List<ResourceDto> resources;
-
+    private List<ResourceDto> resources;
 
 
     public Long getId() {
@@ -82,6 +71,23 @@ public class AccountDetailResponse {
         this.id = id;
     }
 
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+
+    public EAccountDetailStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(EAccountDetailStatus status) {
+        this.status = status;
+    }
 
     public String getFirstName() {
         return firstName;
@@ -123,35 +129,11 @@ public class AccountDetailResponse {
         this.phone = phone;
     }
 
-    public String getDomicile() {
-        return domicile;
-    }
-
-    public void setDomicile(String domicile) {
-        this.domicile = domicile;
-    }
-
-    public String getTeachingProvince() {
-        return teachingProvince;
-    }
-
-    public void setTeachingProvince(String teachingProvince) {
-        this.teachingProvince = teachingProvince;
-    }
-
-    public String getVoice() {
-        return voice;
-    }
-
-    public void setVoice(String voice) {
-        this.voice = voice;
-    }
-
-    public String getGender() {
+    public GenderResponse getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(GenderResponse gender) {
         this.gender = gender;
     }
 
@@ -242,5 +224,13 @@ public class AccountDetailResponse {
 
     public void setKeycloak(Boolean keycloak) {
         isKeycloak = keycloak;
+    }
+
+    public void setVoice(VoiceResponse voice) {
+        this.voice = voice;
+    }
+
+    public VoiceResponse getVoice() {
+        return voice;
     }
 }

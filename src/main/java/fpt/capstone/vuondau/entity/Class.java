@@ -52,8 +52,6 @@ public class Class extends BaseEntity {
     @OneToMany(mappedBy = "aClass", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<StudentClass> studentClasses = new ArrayList<>();
 
-
-
     @Column(name = "number_student")
     private Long numberStudent = 0L;
 
@@ -80,7 +78,7 @@ public class Class extends BaseEntity {
     @OneToMany(mappedBy = "clazz", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<TimeTable> timeTables = new ArrayList<>();
 
-    @Column(name = "resource_mooodle_id")
+    @Column(name = "course_mooodle_id")
     private Long moodleClassId;
 
     @OneToOne(mappedBy = "clazz", cascade = CascadeType.ALL)
@@ -94,6 +92,9 @@ public class Class extends BaseEntity {
     @JsonIgnore
     @OneToMany(mappedBy = "paymentClass")
     private List<Transaction> transactions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "aClass", cascade = CascadeType.ALL)
+    private List<FeedbackClassLog> feedbackClassLogs = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -289,5 +290,13 @@ public class Class extends BaseEntity {
 
     public void setStudentClasses(List<StudentClass> studentClasses) {
         this.studentClasses = studentClasses;
+    }
+
+    public List<FeedbackClassLog> getFeedbackClassLogs() {
+        return feedbackClassLogs;
+    }
+
+    public void setFeedbackClassLogs(List<FeedbackClassLog> feedbackClassLogs) {
+        this.feedbackClassLogs = feedbackClassLogs;
     }
 }

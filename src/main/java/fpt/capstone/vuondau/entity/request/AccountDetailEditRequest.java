@@ -16,12 +16,12 @@ public class AccountDetailEditRequest implements Serializable {
 
     private String email;
 
-    private String password;
+//    private String password;
     private String phone;
     private EGenderType gender;
-    private String domicile;
+
     private Long voiceId;
-    private String teachingProvince;
+
     private String currentAddress;
 
     private String idCard;
@@ -35,7 +35,7 @@ public class AccountDetailEditRequest implements Serializable {
     private List<Long> subjects;
     private List<Long> classLevels;
 
-    private List<UploadAvatarRequest> files;
+
 
 
     public String getFirstName() {
@@ -70,13 +70,13 @@ public class AccountDetailEditRequest implements Serializable {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
+//    public String getPassword() {
+//        return password;
+//    }
+//
+//    public void setPassword(String password) {
+//        this.password = password;
+//    }
 
     public String getPhone() {
         return phone;
@@ -94,13 +94,6 @@ public class AccountDetailEditRequest implements Serializable {
         this.gender = gender;
     }
 
-    public String getDomicile() {
-        return domicile;
-    }
-
-    public void setDomicile(String domicile) {
-        this.domicile = domicile;
-    }
 
     public Long getVoiceId() {
         return voiceId;
@@ -110,13 +103,7 @@ public class AccountDetailEditRequest implements Serializable {
         this.voiceId = voiceId;
     }
 
-    public String getTeachingProvince() {
-        return teachingProvince;
-    }
 
-    public void setTeachingProvince(String teachingProvince) {
-        this.teachingProvince = teachingProvince;
-    }
 
     public String getCurrentAddress() {
         return currentAddress;
@@ -174,12 +161,12 @@ public class AccountDetailEditRequest implements Serializable {
         this.classLevels = classLevels;
     }
 
-    public List<UploadAvatarRequest> getFiles() {
-        return files;
-    }
-
-    public void setFiles(List<UploadAvatarRequest> files) {
-        this.files = files;
-    }
+//    public List<UploadAvatarRequest> getFiles() {
+//        return files;
+//    }
+//
+//    public void setFiles(List<UploadAvatarRequest> files) {
+//        this.files = files;
+//    }
 
 }

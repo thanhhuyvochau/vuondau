@@ -134,8 +134,8 @@ public class AccountServiceImpl implements IAccountService {
 
         //set Account
 
-        if (accountRepository.existsAccountByUsername(studentRequest.getEmail())) {
-            throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage("Username đã tồn tại");
+        if (accountRepository.existsAccountByUsername(studentRequest.getUserName())) {
+            throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage("Tên đăng nhập đã tồn tại");
         }
         if (accountDetailRepository.existsAccountDetailByPhone(studentRequest.getPhone())) {
             throw ApiException.create(HttpStatus.BAD_REQUEST).withMessage("Số điện thoại đã tồn tại");
@@ -185,50 +185,47 @@ public class AccountServiceImpl implements IAccountService {
         accountDetail.setPassword(passwordEncoder.encode(studentRequest.getPassword()));
         accountDetail.setTrainingSchoolName(studentRequest.getSchoolName());
 
-        if (!PasswordUtil.validationPassword(studentRequest.getPassword()) || studentRequest.getPassword() == null) {
-            throw ApiException.create(HttpStatus.BAD_REQUEST)
-                    .withMessage(messageUtil.getLocalMessage("Mật khẩu phải có ít nhất một ký tự số, ký tự viết thường, ký tự viết hoa, ký hiệu đặc biệt trong số @#$% và độ dài phải từ 8 đến 20"));
-        }
 
 
-        List<Long> subjects = studentRequest.getSubjects();
-        List<AccountDetailSubject> accountDetailSubjectList = new ArrayList<>();
-        if (subjects != null) {
-            List<Subject> allSubjects = subjectRepository.findAllById(subjects);
-            allSubjects.forEach(subject -> {
-                AccountDetailSubject accountDetailSubject = new AccountDetailSubject();
-                AccountDetailSubjectKey accountDetailSubjectKey = new AccountDetailSubjectKey();
-                accountDetailSubjectKey.setSubjectId(subject.getId());
-                accountDetailSubjectKey.setAccountDetailId(accountDetail.getId());
-                accountDetailSubject.setId(accountDetailSubjectKey);
-                accountDetailSubject.setSubject(subject);
-                accountDetailSubject.setAccountDetail(accountDetail);
-                accountDetailSubjectList.add(accountDetailSubject);
-            });
-        }
 
-        accountDetail.setAccountDetailSubjects(accountDetailSubjectList);
-        List<AccountDetailClassLevel> accountDetailClassLevelList = new ArrayList<>();
-        Long classLevel = studentRequest.getClassLevel();
-        if (classLevel != null) {
-            ClassLevel classLevel1 = classLevelRepository.findById(classLevel).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class level" + classLevel));
-            AccountDetailClassLevel accountDetailClassLevel = new AccountDetailClassLevel();
-            AccountDetailClassLevelKey accountDetailClassLevelKey = new AccountDetailClassLevelKey();
-            accountDetailClassLevelKey.setClassLevelId(classLevel1.getId());
-            accountDetailClassLevelKey.setAccountDetailId(accountDetail.getId());
-            accountDetailClassLevel.setId(accountDetailClassLevelKey);
-            accountDetailClassLevel.setAccountDetail(accountDetail);
-            accountDetailClassLevel.setClassLevel(classLevel1);
-            accountDetailClassLevelList.add(accountDetailClassLevel);
-        }
-
-        accountDetail.setAccountDetailClassLevels(accountDetailClassLevelList);
+//        List<Long> subjects = studentRequest.getSubjects();
+//        List<AccountDetailSubject> accountDetailSubjectList = new ArrayList<>();
+//        if (subjects != null) {
+//            List<Subject> allSubjects = subjectRepository.findAllById(subjects);
+//            allSubjects.forEach(subject -> {
+//                AccountDetailSubject accountDetailSubject = new AccountDetailSubject();
+//                AccountDetailSubjectKey accountDetailSubjectKey = new AccountDetailSubjectKey();
+//                accountDetailSubjectKey.setSubjectId(subject.getId());
+//                accountDetailSubjectKey.setAccountDetailId(accountDetail.getId());
+//                accountDetailSubject.setId(accountDetailSubjectKey);
+//                accountDetailSubject.setSubject(subject);
+//                accountDetailSubject.setAccountDetail(accountDetail);
+//                accountDetailSubjectList.add(accountDetailSubject);
+//            });
+//        }
+//
+//        accountDetail.setAccountDetailSubjects(accountDetailSubjectList);
+//        List<AccountDetailClassLevel> accountDetailClassLevelList = new ArrayList<>();
+//        Long classLevel = studentRequest.getClassLevel();
+//        if (classLevel != null) {
+//            ClassLevel classLevel1 = classLevelRepository.findById(classLevel).orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay class level" + classLevel));
+//            AccountDetailClassLevel accountDetailClassLevel = new AccountDetailClassLevel();
+//            AccountDetailClassLevelKey accountDetailClassLevelKey = new AccountDetailClassLevelKey();
+//            accountDetailClassLevelKey.setClassLevelId(classLevel1.getId());
+//            accountDetailClassLevelKey.setAccountDetailId(accountDetail.getId());
+//            accountDetailClassLevel.setId(accountDetailClassLevelKey);
+//            accountDetailClassLevel.setAccountDetail(accountDetail);
+//            accountDetailClassLevel.setClassLevel(classLevel1);
+//            accountDetailClassLevelList.add(accountDetailClassLevel);
+//        }
+//
+//        accountDetail.setAccountDetailClassLevels(accountDetailClassLevelList);
         account.setAccountDetail(accountDetail);
         StudentResponse studentResponse = new StudentResponse();
         Boolean saveAccountSuccess = keycloakUserUtil.create(account);
         Boolean assignRoleSuccess = keycloakRoleUtil.assignRoleToUser(role.getCode().name(), account);
         if (saveAccountSuccess && assignRoleSuccess) {
-            account.setPassword(passwordEncoder.encode(studentRequest.getPassword()));
+//            account.setPassword(passwordEncoder.encode(studentRequest.getPassword()));
             Account accountSave = accountRepository.save(account);
             studentResponse.setId(accountSave.getId());
             studentResponse.setEmail(studentRequest.getEmail());
@@ -241,8 +238,15 @@ public class AccountServiceImpl implements IAccountService {
 
     @Override
     public Boolean uploadAvatar(long id, UploadAvatarRequest uploadAvatarRequest) {
+
+        Account teacher = securityUtil.getCurrentUserThrowNotFoundException();
+
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay account" + id));
+
+        if(!teacher.getId().equals(account.getId())){
+            throw ApiException.create(HttpStatus.CONFLICT).withMessage("Bạn không thể cập nhật avatar cho tài khoản khác!!");
+        }
         List<Account> accounts = new ArrayList<>();
         accounts.add(account);
         try {

@@ -1,10 +1,7 @@
 package fpt.capstone.vuondau.entity;
 
 
-import fpt.capstone.vuondau.entity.common.EGradeType;
-
 import javax.persistence.*;
-import java.util.List;
 
 
 @Entity

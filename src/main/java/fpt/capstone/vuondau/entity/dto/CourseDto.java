@@ -1,9 +1,6 @@
 package fpt.capstone.vuondau.entity.dto;
 
 
-import fpt.capstone.vuondau.entity.common.EGradeType;
-import org.jetbrains.annotations.Nullable;
-
 import java.math.BigDecimal;
 
 public class CourseDto {
@@ -11,7 +8,7 @@ public class CourseDto {
     private Long id ;
     private String name;
     private String code;
-    private EGradeType grade;
+
 
     private SubjectDto subjectDto;
 
@@ -88,11 +85,5 @@ public class CourseDto {
         this.code = code;
     }
 
-    public EGradeType getGrade() {
-        return grade;
-    }
 
-    public void setGrade(EGradeType grade) {
-        this.grade = grade;
-    }
 }

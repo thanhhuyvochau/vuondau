@@ -6,11 +6,13 @@ import fpt.capstone.vuondau.entity.Class;
 import fpt.capstone.vuondau.entity.common.EClassLevel;
 import fpt.capstone.vuondau.entity.common.EClassStatus;
 import fpt.capstone.vuondau.entity.common.EClassType;
+import fpt.capstone.vuondau.util.SpecificationUtil;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.*;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,10 +30,12 @@ public class ClassSpecificationBuilder {
             return this;
         }
         specifications.add((root, query, criteriaBuilder) -> root.get(Class_.CLASS_TYPE).in(classTypes));
+
         return this;
+
     }
 
-    public ClassSpecificationBuilder queryByCSubject(Long subjectId) {
+    public ClassSpecificationBuilder queryBySubject(Long subjectId) {
         if (subjectId == null) {
             return this;
         }
@@ -69,11 +73,15 @@ public class ClassSpecificationBuilder {
         return this;
     }
 
-    public ClassSpecificationBuilder queryByStartDate(Instant instant) {
-        if (instant == null) {
+    public ClassSpecificationBuilder queryByDate(Instant dateFrom, Instant dateTo) {
+        if (dateFrom == null && dateTo == null) {
             return this;
         }
-        specifications.add((root, query, criteriaBuilder) -> criteriaBuilder.greaterThanOrEqualTo(root.get(Class_.START_DATE), instant));
+
+
+        Instant dateToPlus = dateTo.plus(1, ChronoUnit.DAYS);
+        specifications.add((root, query, criteriaBuilder) -> criteriaBuilder.greaterThanOrEqualTo(root.get(Class_.START_DATE), dateFrom));
+        specifications.add((root, query, criteriaBuilder) -> criteriaBuilder.lessThanOrEqualTo(root.get(Class_.END_DATE), dateToPlus));
         return this;
     }
 
@@ -89,21 +97,21 @@ public class ClassSpecificationBuilder {
         return this;
     }
 
-    public ClassSpecificationBuilder queryByEndDate(Instant instant) {
-        if (instant == null) {
-            return this;
-        }
-        specifications.add((root, query, criteriaBuilder) -> criteriaBuilder.lessThanOrEqualTo(root.get(Class_.START_DATE), instant));
-        return this;
-    }
 
-    public ClassSpecificationBuilder queryLikeByClassName(String q) {
+
+    public ClassSpecificationBuilder query(String q) {
         if (q == null) {
             return this;
         }
         specifications.add((root, query, criteriaBuilder) -> {
             Expression<String> classname = root.get(Class_.name);
-            return criteriaBuilder.like(classname, '%' + q + '%');
+            Expression<String> classCode = root.get(Class_.code);
+            Join<Account, Class> accountClassJoin = root.join(Class_.ACCOUNT);
+//            Join<AccountDetail, Account> accountDetailAccountJoin = accountClassJoin.join(Account_.ACCOUNT_DETAIL);
+//            Expression<String> teacherName = accountDetailAccountJoin.get(AccountDetail_.firstName.toString().concat(AccountDetail_.lastName.toString()));
+            Expression<String> stringExpression = SpecificationUtil.concat(criteriaBuilder, " ", classname, classCode);
+            return criteriaBuilder.like(stringExpression, '%' + q + '%');
+
         });
         return this;
     }
@@ -125,13 +133,25 @@ public class ClassSpecificationBuilder {
         return this;
     }
 
-    public ClassSpecificationBuilder queryTeacherClass(List<Account> teachers) {
+    public ClassSpecificationBuilder queryTeachersClass(List<Account> teachers) {
         if (teachers == null) {
             return this;
         }
         specifications.add((root, query, criteriaBuilder) -> criteriaBuilder.or(
                 criteriaBuilder.and(root.get(Class_.account).in(teachers)))
         );
+        return this;
+    }
+
+    public ClassSpecificationBuilder queryTeacherClass(Long teacherId) {
+        if (teacherId == null) {
+            return this;
+        }
+        specifications.add((root, query, criteriaBuilder) ->
+        {
+            Join<Account, Class> accountClassJoin = root.join(Class_.ACCOUNT);
+            return criteriaBuilder.or((accountClassJoin.get(Account_.ID)).in(teacherId));
+        });
         return this;
     }
 

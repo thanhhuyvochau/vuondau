@@ -54,7 +54,7 @@ public class AccountProfileController {
 
     @Operation(summary = "Đăng ký làm gia sư cho vườn đậu")
     @PostMapping("/register-tutor")
-    public ResponseEntity<ApiResponse<Long>> registerTutor(@ModelAttribute AccountDetailRequest accountDetailRequest) {
+    public ResponseEntity<ApiResponse<Long>> registerTutor(@RequestBody AccountDetailRequest accountDetailRequest) {
         return ResponseEntity.ok(ApiResponse.success(iAccountDetailService.registerTutor(accountDetailRequest)));
     }
 
@@ -81,7 +81,7 @@ public class AccountProfileController {
     @Operation(summary = "Giáo viên cập nhật hồ sơ khi bị admin từ chối hoặc yêu cầu thay đổi thông tin . ")
     @PutMapping
     @PreAuthorize("hasAnyAuthority('TEACHER')")
-    public ResponseEntity<Long> teacherUpdateProfileForAdmin(@ModelAttribute  AccountDetailEditRequest editAccountDetailRequest) {
+    public ResponseEntity<Long> teacherUpdateProfileForAdmin(@RequestBody  AccountDetailEditRequest editAccountDetailRequest) {
         return ResponseEntity.ok(iAccountDetailService.teacherUpdateProfileForAdmin(editAccountDetailRequest));
     }
 

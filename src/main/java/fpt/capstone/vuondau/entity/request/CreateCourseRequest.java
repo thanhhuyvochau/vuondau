@@ -1,10 +1,6 @@
 package fpt.capstone.vuondau.entity.request;
 
-import fpt.capstone.vuondau.entity.common.EGradeType;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class CreateCourseRequest {
 

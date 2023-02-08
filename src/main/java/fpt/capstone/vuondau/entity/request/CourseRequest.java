@@ -1,7 +1,5 @@
 package fpt.capstone.vuondau.entity.request;
 
-import fpt.capstone.vuondau.entity.common.EGradeType;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +12,7 @@ public class CourseRequest {
     private String description ;
     private String code;
 
-    private EGradeType gradeType;
+
 
     private Long subjectId;
 
@@ -52,13 +50,7 @@ public class CourseRequest {
         this.code = code;
     }
 
-    public EGradeType getGradeType() {
-        return gradeType;
-    }
 
-    public void setGradeType(EGradeType gradeType) {
-        this.gradeType = gradeType;
-    }
 
     public Long getSubjectId() {
         return subjectId;

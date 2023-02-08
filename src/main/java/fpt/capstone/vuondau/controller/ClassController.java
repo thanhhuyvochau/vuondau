@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 import java.text.ParseException;
 import java.util.List;
 
@@ -43,14 +44,24 @@ public class ClassController {
 
     }
 
-//    @Operation(summary = "Giáo viên yêu cầu tạo class (subject-course) chờ admin phê duyệt ")
-//    @PostMapping({"/{id}/teacher-request-create-class-subject-course"})
-//    @PreAuthorize("hasAnyAuthority('ADMIN','TEACHER')")
-//    public ResponseEntity<ApiResponse<Long>> teacherRequestCreateClassSubjectCourse(@PathVariable Long id, @Nullable @RequestBody CreateClassSubjectRequest createClassRequest) throws JsonProcessingException, ParseException {
-//        return ResponseEntity.ok(ApiResponse.success(iClassService.teacherRequestCreateClassSubjectCourse(id, createClassRequest)));
-//    }
+    @Operation(summary = "giao vien update lớp khi còn ở trạng thái requesting va editting")
+    @PutMapping({"/{id}/for-requesting"})
+    @PreAuthorize("hasAnyAuthority('TEACHER')")
+    public ResponseEntity<ApiResponse<Long>> updateClassForRequesting(@PathVariable Long id, @Nullable @RequestBody CreateRequestingClassRequest createRequestingClassRequest) throws JsonProcessingException, ParseException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.updateClassForRequesting(id, createRequestingClassRequest)));
+    }
 
-    @Operation(summary = "lấy tất cả class chờ duyệt")
+
+    @Operation(summary = "Giáo viên đã hoàn thành tạo lớp và gửi yêu cầu phê duyệt ")
+    @PutMapping({"{id}/teacher-submit-request-create-class"})
+    @PreAuthorize("hasAuthority('TEACHER')")
+    public ResponseEntity<ApiResponse<Long>> teacherSubmitRequestCreateClass(@PathVariable Long id) throws JsonProcessingException, ParseException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.teacherSubmitRequestCreateClass(id)));
+
+    }
+
+
+    @Operation(summary = "admin seach class tất cả type")
     @GetMapping({"/class-request"})
     @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
     public ResponseEntity<ApiResponse<ApiPage<ClassDto>>> getClassRequesting(@Nullable ClassSearchRequest query, Pageable pageable) {
@@ -70,11 +81,18 @@ public class ClassController {
         return ResponseEntity.ok(ApiResponse.success(iClassService.getAllClassForUser(pageable, guestSearchClassRequest)));
     }
 
-    @Operation(summary = "Admin phê duyệt request tao class của teacher ")
+    @Operation(summary = "  ")
     @PostMapping({"/{id}/approve-class"})
     @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
     public ResponseEntity<ApiResponse<ClassDto>> adminApproveRequestCreateClass(@PathVariable Long id) throws JsonProcessingException {
         return ResponseEntity.ok(ApiResponse.success(iClassService.adminApproveRequestCreateClass(id)));
+    }
+
+    @Operation(summary = "Admin yêu cầu sửa thông tin lớp request  của teacher ")
+    @PutMapping({"/{id}/request-change-class"})
+    @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")
+    public ResponseEntity<ApiResponse<ChangeInfoClassRequest>> adminRequestChangeInfoClass(@PathVariable Long id, @RequestBody String content) throws JsonProcessingException {
+        return ResponseEntity.ok(ApiResponse.success(iClassService.adminRequestChangeInfoClass(id, content)));
     }
 
 //    @Operation(summary = "Tạo class qua moodle")

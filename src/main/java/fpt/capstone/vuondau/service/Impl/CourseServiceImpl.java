@@ -72,7 +72,7 @@ public class CourseServiceImpl implements ICourseService {
             Course course = new Course();
             course.setCode(courseDto.getCode());
             course.setName(courseDto.getName());
-            course.setGrade(courseDto.getGrade());
+
             course.setSubject(subject);
             List<TeacherCourse> teacherCourseList = new ArrayList<>();
             TeacherCourse teacherCourse = new TeacherCourse();
@@ -330,7 +330,7 @@ public class CourseServiceImpl implements ICourseService {
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage("Khong tim thay course" + courseID));
         course.setCode(courseRequest.getCode());
         course.setName(courseRequest.getName());
-        course.setGrade(courseRequest.getGradeType());
+
         Subject subject = subjectRepository.findById(courseRequest.getSubjectId())
                 .orElseThrow(() -> ApiException.create(HttpStatus.NOT_FOUND).withMessage(("Khong tim thay subject") + courseRequest.getSubjectId()));
         course.setSubject(subject);
@@ -488,7 +488,7 @@ public class CourseServiceImpl implements ICourseService {
                     .withMessage(messageUtil.getLocalMessage("course code da ton tai"));
         }
         course.setCode(courseRequest.getCode());
-        course.setGrade(courseRequest.getGradeType());
+
         course.setTitle(courseRequest.getTitle());
         course.setDescription(courseRequest.getDescription());
         course.setIsActive(true);

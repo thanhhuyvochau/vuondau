@@ -20,10 +20,13 @@ public interface IClassService {
 
     Long teacherRequestCreateClass(TeacherCreateClassRequest createClassRequest) throws JsonProcessingException, ParseException;
 
+    Long teacherSubmitRequestCreateClass(Long id) throws JsonProcessingException;
+
     Long teacherRequestCreateClassSubjectCourse(Long id, CreateClassSubjectRequest createClassRequest);
 
     ClassDto adminApproveRequestCreateClass(Long id) throws JsonProcessingException;
 
+    ChangeInfoClassRequest adminRequestChangeInfoClass(Long id, String content);
 
     ApiPage<ClassDto> getClassRequesting(ClassSearchRequest query, Pageable pageable);
 
@@ -88,4 +91,7 @@ public interface IClassService {
     Boolean confirmTeaching(String confirmCode) throws JsonProcessingException;
 
     Boolean detectExpireConfirmation();
+
+
+    Long updateClassForRequesting(Long id, CreateRequestingClassRequest createRequestingClassRequest) throws ParseException;
 }
