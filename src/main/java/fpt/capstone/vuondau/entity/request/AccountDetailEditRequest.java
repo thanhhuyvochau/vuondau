@@ -20,7 +20,7 @@ public class AccountDetailEditRequest implements Serializable {
     private String phone;
     private EGenderType gender;
     private String domicile;
-    private String voice;
+    private Long voiceId;
     private String teachingProvince;
     private String currentAddress;
 
@@ -102,12 +102,12 @@ public class AccountDetailEditRequest implements Serializable {
         this.domicile = domicile;
     }
 
-    public String getVoice() {
-        return voice;
+    public Long getVoiceId() {
+        return voiceId;
     }
 
-    public void setVoice(String voice) {
-        this.voice = voice;
+    public void setVoiceId(Long voiceId) {
+        this.voiceId = voiceId;
     }
 
     public String getTeachingProvince() {

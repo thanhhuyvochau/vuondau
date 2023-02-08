@@ -9,7 +9,7 @@ import java.util.List;
 
 public class AccountDetailRequest implements Serializable {
 
-    private String userName;
+    private String username;
     private String firstName;
     private String lastName;
     private Instant birthDay;
@@ -19,9 +19,9 @@ public class AccountDetailRequest implements Serializable {
     private String password;
     private String phone;
     private EGenderType gender;
-    private String domicile;
-    private String voice;
-    private String teachingProvince;
+
+    private Long voiceId;
+
     private String currentAddress;
 
     private String idCard;
@@ -37,12 +37,12 @@ public class AccountDetailRequest implements Serializable {
 
 //    private List<UploadAvatarRequest> files;
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getFirstName() {
@@ -101,28 +101,13 @@ public class AccountDetailRequest implements Serializable {
         this.gender = gender;
     }
 
-    public String getDomicile() {
-        return domicile;
+
+    public Long getVoiceId() {
+        return voiceId;
     }
 
-    public void setDomicile(String domicile) {
-        this.domicile = domicile;
-    }
-
-    public String getVoice() {
-        return voice;
-    }
-
-    public void setVoice(String voice) {
-        this.voice = voice;
-    }
-
-    public String getTeachingProvince() {
-        return teachingProvince;
-    }
-
-    public void setTeachingProvince(String teachingProvince) {
-        this.teachingProvince = teachingProvince;
+    public void setVoiceId(Long voiceId) {
+        this.voiceId = voiceId;
     }
 
     public String getCurrentAddress() {

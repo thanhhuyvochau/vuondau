@@ -646,6 +646,7 @@ public class ClassServiceImpl implements IClassService {
     public ApiPage<ClassDto> getRecruitingClasses(Pageable pageable) {
         Page<Class> classPages = classRepository.findAllByStatus(EClassStatus.RECRUITING, pageable);
         return PageUtil.convert(classPages.map(ConvertUtil::doConvertEntityToResponse));
+
     }
 
     @Override
@@ -1062,8 +1063,6 @@ public class ClassServiceImpl implements IClassService {
                     accountResponse.setAvatar(account.getResource().getUrl());
                 }
 
-                accountResponse.setDomicile(accountDetail.getDomicile());
-                accountResponse.setProvince(accountDetail.getTeachingProvince());
                 accountResponse.setVoice(accountDetail.getVoice());
                 accountResponse.setCurrentAddress(accountDetail.getCurrentAddress());
                 accountResponse.setIdCard(accountDetail.getIdCard());
