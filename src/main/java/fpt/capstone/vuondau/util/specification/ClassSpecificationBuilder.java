@@ -116,7 +116,6 @@ public class ClassSpecificationBuilder {
         return this;
     }
 
-
     public Specification<Class> build() {
         return specifications.stream().filter(Objects::nonNull)
                 .reduce(all(), Specification::and);

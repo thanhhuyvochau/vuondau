@@ -89,12 +89,6 @@ public class AccountController {
         return ResponseEntity.ok(ApiResponse.success(accountService.banAndUbBanAccount(id)));
     }
 
-    //    @Operation(summary = "Cập nhật role cho account")
-//    @PutMapping("/{id}/role")
-//    public ResponseEntity<ApiResponse<AccountResponse>> updateAccountRole(@PathVariable long id, @RequestParam EAccountRole eAccountRole) {
-//        return ResponseEntity.ok(ApiResponse.success(accountService.updateRoleAccount(id, eAccountRole)));
-//    }
-
     @Operation(summary = "cập nhật role-active cho account")
     @PutMapping("/{id}/role-active")
     @PreAuthorize("hasAnyAuthority('MANAGER','ROOT')")

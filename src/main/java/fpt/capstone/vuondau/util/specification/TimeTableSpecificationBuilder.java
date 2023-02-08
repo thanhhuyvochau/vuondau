@@ -64,29 +64,6 @@ public class TimeTableSpecificationBuilder {
         return this;
     }
 
-
-//    public TimeTableSpecificationBuilder queryStudentInClass(Account account) {
-//        if (account == null) {
-//            return this;
-//        }
-//
-//
-//            specifications.add((root, query, criteriaBuilder) -> {
-//
-//                Join<TimeTable, Class> classJoin = root.join(TimeTable_.clazz, JoinType.INNER);
-//                Join<StudentClass, Class> studentClassClassJoin = classJoin.join(Class_.STUDENT_CLASSES, JoinType.INNER);
-//                Path<Account> accountPath = studentClassClassJoin.get(StudentClass_.ACCOUNT);
-//                return criteriaBuilder.and(accountPath.get(StudentClass_.ACCOUNT).in(account));
-//
-//            });
-//
-//
-//
-//        return this;
-//    }
-
-
-
     public TimeTableSpecificationBuilder date(Instant dateFrom, Instant dateTo) {
         if (dateFrom == null && dateTo == null) {
             return this;
